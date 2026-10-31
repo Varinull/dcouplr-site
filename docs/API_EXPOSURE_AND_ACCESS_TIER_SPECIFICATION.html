@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - API_EXPOSURE_AND_ACCESS_TIER_SPECIFICATION.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/API_EXPOSURE_AND_ACCESS_TIER_SPECIFICATION.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="API_EXPOSURE_AND_ACCESS_TIER_SPECIFICATION.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="api-exposure-access-tier-specification">API Exposure &amp; Access Tier Specification</h1>
+<p><strong>Document Identifier:</strong> <code>VA-SPEC-API-TIERS-001</code><br />
+<strong>Classification:</strong> Enterprise Engineering &amp; Architecture Specification<br />
+<strong>Version:</strong> 1.0.0<br />
+<strong>Effective Date:</strong> October 2026<br />
+<strong>Status:</strong> Approved &amp; Implemented in <code>migration_tools.api</code></p>
+<hr />
+<h2 id="1-executive-summary-design-rationale">1. Executive Summary &amp; Design Rationale</h2>
+<p>In enterprise infrastructure migration and telemetry platforms, exposing internal endpoints indiscriminately poses severe security and operational hazards. In <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>, internal primitives—such as Raft voter node registration (<code>/v1/raft/cluster/join</code>), WAL database compaction (<code>/v1/storage/compaction/*</code>), point-in-time state machine snapshotting (<code>/v1/storage/snapshot/create</code>), and telemetry circuit breaker drills (<code>/v1/telemetry/circuit-breaker/drill</code>)—must never be visible to public crawlers, competitor reconnaissance, or unauthenticated users.</p>
+<p>Conversely, prospective customers evaluating the platform need frictionless, zero-barrier trial access to transpilation engines and documentation, while enterprise customers in production require robust, cryptographically verifiable authentication (API Keys, Bearer JWTs, and federated OIDC SSO) to manage state migrations and custom alert rules.</p>
+<p>To satisfy these dual requirements, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> enforces a <strong>3-Tier API Exposure and Access Architecture</strong>:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+---------------------------------------------------------------------------------------------------+
+|                                 <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> 3-Tier API Architecture                               |
++-------------------------------------+---------------------------------+---------------------------+
+| TIER 1: Public / Evaluation         | TIER 2: Customer Authenticated  | TIER 3: Internal Admin    |
+| (Open Discovery &amp; Probes)           | (API Keys / Bearer Tokens)      | (Hidden &amp; Admin-Only)     |
++-------------------------------------+---------------------------------+---------------------------+
+| • Included in OpenAPI &amp; Swagger UI  | • Included in OpenAPI / Swagger | • Excluded from Schema    |
+| • No credentials required           | • Requires X-API-Key or Bearer  |   (include_in_schema=False)|
+| • Evaluators, Probes &amp; CLI Trials   | • Enterprise Workloads &amp; FinOps | • Guarded by require_admin|
+| • Rate Limited (120 req/min)        | • Rate Limited (1,200 req/min)  | • Storage, Consensus, Drills|
++-------------------------------------+---------------------------------+---------------------------+
+</code></pre></div>
+<hr />
+<h2 id="2-access-tier-definitions">2. Access Tier Definitions</h2>
+<h3 id="tier-1-public-evaluation-probes-open">Tier 1: Public / Evaluation &amp; Probes (Open)</h3>
+<ul>
+<li><strong>Target Audience:</strong> Prospective evaluators, open-source CLI users, automated liveness/readiness probes (Kubernetes, AWS ALB, Cloudflare), and customer support inquiries.</li>
+<li><strong>Authentication:</strong> None required.</li>
+<li><strong>OpenAPI / Swagger UI Visibility:</strong> <strong>Included (<code>include_in_schema=True</code>)</strong>.</li>
+<li><strong>Scope of Endpoints:</strong>
+<ul>
+<li>Health checks (<code>/healthz</code>).</li>
+<li>Diagnostic environment doctor (<code>/v1/system/doctor</code>).</li>
+<li>AST parse, generate, and transpile evaluation (<code>/v1/parse</code>, <code>/v1/generate</code>, <code>/v1/translate</code>, <code>/v1/supported-matrix</code>).</li>
+<li>Public Turnkey Migration Recipe catalog (<code>/v1/recipes</code>).</li>
+<li>Telemetry read-only metrics and topology visualization (<code>/v1/telemetry/metrics</code>, <code>/v1/telemetry/topology</code>, <code>/v1/telemetry/cost-analysis</code>).</li>
+<li>Customer operations &amp; support ticketing (<code>/v1/support/*</code>).</li>
+</ul>
+</li>
+</ul>
+<h3 id="tier-2-customer-authenticated-keys-tokens-required">Tier 2: Customer Authenticated (Keys &amp; Tokens Required)</h3>
+<ul>
+<li><strong>Target Audience:</strong> Licensed enterprise organizations, platform engineering teams, automated CI/CD migration pipelines (GitHub Actions, GitLab CI, ArgoCD).</li>
+<li><strong>Authentication:</strong> Mandatory. Requires caller to present:
+<ul>
+<li><code>X-API-Key: &lt;token&gt;</code> header, OR</li>
+<li><code>Authorization: Bearer &lt;jwt_or_token&gt;</code> header.</li>
+</ul>
+</li>
+<li><strong>Role Requirement:</strong> <code>Role.DEVELOPER</code> or <code>Role.ADMIN</code>.</li>
+<li><strong>OpenAPI / Swagger UI Visibility:</strong> <strong>Included (<code>include_in_schema=True</code>)</strong> with OpenAPI Security Scheme <code>ApiKeyAuth</code> and <code>BearerAuth</code>.</li>
+<li><strong>Scope of Endpoints:</strong>
+<ul>
+<li>Multi-monitor custom alert recalibration (<code>POST /v1/compiler/transpile-alert-rules</code>).</li>
+<li>Infrastructure as Code (IaC) state migration transpilation (<code>POST /v1/iac/state-migration</code>).</li>
+<li>Enterprise custom compilation presets (<code>GET/POST/DELETE /v1/compiler/custom-presets</code>).</li>
+<li>Custom turnkey recipe registration and execution (<code>POST /v1/recipes/register</code>, <code>POST /v1/recipes/{recipe_id}/run</code>).</li>
+<li>Multi-VPC topology provisioning and lift-and-shift plan generation (<code>POST /v1/telemetry/topology/vpcs</code>, <code>POST /v1/telemetry/topology/lift-and-shift</code>).</li>
+<li>Automated migration replication plan execution (<code>POST /v1/telemetry/topology/replication-plan</code>).</li>
+<li>Zero-egress network audit attestations (<code>GET /v1/telemetry/vpcs/{vpc_id}/egress-attestation</code>).</li>
+<li>Remote-write exporter status inspection (<code>GET /v1/telemetry/remote-write/status</code>).</li>
+</ul>
+</li>
+</ul>
+<h3 id="tier-3-internal-admin-infrastructure-operations-hidden-from-schema">Tier 3: Internal Admin &amp; Infrastructure Operations (Hidden from Schema)</h3>
+<ul>
+<li><strong>Target Audience:</strong> Internal platform administrators, automated consensus nodes, SRE recovery harnesses, and the local <code>/configuration</code> Project Operations dashboard.</li>
+<li><strong>Authentication:</strong> Strict administrative credentials required. Caller must provide:
+<ul>
+<li>Admin master token (<code>DCOUPLR_API_KEY</code> or <code>DCOUPLR_ADMIN_KEY</code>), OR</li>
+<li>Admin session Bearer token issued by <code>/v1/admin/auth/verify</code>, OR</li>
+<li>Federated OIDC token possessing the <code>admin</code> role claim.</li>
+</ul>
+</li>
+<li><strong>Role Requirement:</strong> Strictly <code>Role.ADMIN</code>.</li>
+<li><strong>OpenAPI / Swagger UI Visibility:</strong> <strong>Strictly Hidden (<code>include_in_schema=False</code>)</strong>.
+<ul>
+<li>These routes do not appear in <code>/docs</code>, <code>/redoc</code>, or <code>/openapi.json</code>.</li>
+<li>Public security scanners and automated schema crawlers observe zero presence of these routes.</li>
+<li>The internal browser console (<code>/configuration</code>) and authenticated SRE scripts execute them directly.</li>
+</ul>
+</li>
+<li><strong>Scope of Endpoints:</strong>
+<ul>
+<li>Embedded Raft consensus cluster leader voter join (<code>POST /v1/raft/cluster/join</code>).</li>
+<li>Go Raft gRPC bridge diagnostics (<code>GET /v1/raft/bridge/status</code>).</li>
+<li>Local database storage compaction status, trigger, and snapshotting (<code>GET/POST /v1/storage/compaction/*</code>, <code>POST /v1/storage/snapshot/create</code>).</li>
+<li>Dynamic Prometheus remote_write reconfiguration and ring buffer flush (<code>POST /v1/telemetry/remote-write/configure</code>, <code>POST /v1/telemetry/remote-write/flush</code>).</li>
+<li>Telemetry circuit breaker chaos drill injection (<code>POST /v1/telemetry/circuit-breaker/drill</code>).</li>
+<li>Project Record Assistant document administration and auth verification (<code>GET/POST /v1/admin/documents</code>, <code>POST /v1/admin/auth/verify</code>).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="2-authentication-key-management-architecture">2. Authentication &amp; Key Management Architecture</h2>
+<h3 id="31-supported-credentials-transmission-formats">3.1 Supported Credentials &amp; Transmission Formats</h3>
+<p>Clients may authenticate through either HTTP headers:</p>
+<div class="code-box"><div class="code-box-header"><span>http</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-http">POST /v1/iac/state-migration HTTP/1.1
+Host: api.dcouplr.internal
+X-API-Key: dcouplr-dev-prod-us-east-1-0812
+Content-Type: application/json
+</code></pre></div>
+<p>Or standard Bearer authorization:</p>
+<div class="code-box"><div class="code-box-header"><span>http</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-http">POST /v1/recipes/rec-turnkey-dd-prom/run HTTP/1.1
+Host: api.dcouplr.internal
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+</code></pre></div>
+<h3 id="32-role-hierarchy">3.2 Role Hierarchy</h3>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">graph TD
+    classDef admin fill:#ef4444,stroke:#991b1b,color:#ffffff,stroke-width:2px;
+    classDef dev fill:#3b82f6,stroke:#1d4ed8,color:#ffffff,stroke-width:2px;
+    classDef probe fill:#10b981,stroke:#047857,color:#ffffff,stroke-width:2px;
+
+    Admin[&quot;Role.ADMIN&lt;br/&gt;(Full Access to Tiers 1, 2, 3)&quot;]:::admin
+    Developer[&quot;Role.DEVELOPER&lt;br/&gt;(Access to Tiers 1 &amp; 2)&quot;]:::dev
+    Probe[&quot;Role.PROBE / Public&lt;br/&gt;(Access to Tier 1 Only)&quot;]:::probe
+
+    Admin --&gt; Developer
+    Developer --&gt; Probe
+</code></pre></div>
+<h3 id="33-production-enforcement-modes">3.3 Production Enforcement Modes</h3>
+<p>The authentication subsystem is governed by the environment variable <code>DCOUPLR_ENFORCE_AUTH</code>:</p>
+<table>
+<thead>
+<tr>
+<th><code>DCOUPLR_ENFORCE_AUTH</code></th>
+<th>Behavior</th>
+<th>Intended Environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>false</code> (Default Dev)</td>
+<td>Unauthenticated requests to developer/internal endpoints fallback to <code>username=&quot;local_dev&quot;, role=Role.ADMIN, is_dev_mode=True</code>. Explicit invalid keys are still rejected (HTTP 401).</td>
+<td>Local Developer Workstation, Offline Sandbox</td>
+</tr>
+<tr>
+<td><code>true</code> / <code>strict</code></td>
+<td>Requests without valid credentials to any protected route are rejected with <code>HTTP 401 Unauthorized</code>.</td>
+<td>Production VPC, Staging, Multi-tenant SaaS</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-comprehensive-endpoint-inventory-exposure-matrix">4. Comprehensive Endpoint Inventory &amp; Exposure Matrix</h2>
+<p>The table below catalogs all 67 routes in <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>, documenting their HTTP Method, Exposure Tier, OpenAPI Schema Inclusion, and Access Enforcement:</p>
+<table>
+<thead>
+<tr>
+<th>HTTP Method</th>
+<th>Route Path</th>
+<th style="text-align:center">Access Tier</th>
+<th style="text-align:center">In Public Schema</th>
+<th style="text-align:center">Role Required</th>
+<th>Description &amp; Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/healthz</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Kubernetes/ALB Liveness &amp; Readiness probe.</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/v1/supported-matrix</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Returns AST translation support matrix across all vendors.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/parse</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Parses raw source monitor YAML/JSON into intermediate UITGraph.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/generate</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Emits target vendor code (Grafana, OpenTofu, Bicep) from UITGraph.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/translate</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>End-to-end atomic translation from source rule to target code.</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/v1/system/doctor</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Validates local CLI binaries, container runtimes, and licenses.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/system/lint</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Performs mathematical syntax validation without full transpilation.</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/v1/recipes</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Catalog of Turnkey Enterprise Migration Recipes.</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/v1/telemetry/metrics</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Prometheus metric exposition for scraping.</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/v1/telemetry/stream</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Real-time Server-Sent Events (SSE) telemetry feed.</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/v1/telemetry/topology</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Multi-VPC network and cross-cloud topology graph.</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/v1/telemetry/vpcs</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Lists all registered source and destination VPCs.</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/v1/telemetry/cost-analysis</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Financial bandwidth and SaaS TCO comparison calculations.</td>
+</tr>
+<tr>
+<td><strong>GET, POST</strong></td>
+<td><code>/v1/telemetry/finops/cost-comparison</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Cloud cost projections (compute, storage, egress) across clouds.</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/v1/telemetry/vpcs/{vpc_id}/monitoring-bundle</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Exports pre-compiled Grafana/Prometheus bundles for a VPC.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/telemetry/simulate-alert</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public</td>
+<td>Evaluates metric curves against thresholds and outputs YAML.</td>
+</tr>
+<tr>
+<td><strong>GET, POST</strong></td>
+<td><code>/v1/support/*</code></td>
+<td style="text-align:center"><strong>Tier 1</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Public / Support</td>
+<td>In-VPC customer support ticketing, SLA tracking, and solutions.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/iac/state-migration</code></td>
+<td style="text-align:center"><strong>Tier 2</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Developer</td>
+<td>Transpiles Terraform <code>.tfstate</code> and Pulumi state definitions.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/compiler/transpile-alert-rules</code></td>
+<td style="text-align:center"><strong>Tier 2</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Developer</td>
+<td>Recalibrates downscaled node and database alert thresholds.</td>
+</tr>
+<tr>
+<td><strong>GET, POST, DEL</strong></td>
+<td><code>/v1/compiler/custom-presets</code></td>
+<td style="text-align:center"><strong>Tier 2</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Developer</td>
+<td>Manages enterprise-specific compiler translation presets.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/recipes/register</code></td>
+<td style="text-align:center"><strong>Tier 2</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Developer</td>
+<td>Dynamically registers enterprise turnkey migration pipelines.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/recipes/{recipe_id}/run</code></td>
+<td style="text-align:center"><strong>Tier 2</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Developer</td>
+<td>Executes an enterprise turnkey recipe pipeline.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/telemetry/topology/vpcs</code></td>
+<td style="text-align:center"><strong>Tier 2</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Developer</td>
+<td>Registers new VPC boundaries in the topology map.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/telemetry/topology/lift-and-shift</code></td>
+<td style="text-align:center"><strong>Tier 2</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Developer</td>
+<td>Generates automated Lift &amp; Shift migration plans.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/telemetry/topology/replication-plan</code></td>
+<td style="text-align:center"><strong>Tier 2</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Developer</td>
+<td>Generates cloud-native replication manifests (AWS MGN, Azure).</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/v1/telemetry/vpcs/{vpc_id}/egress-attestation</code></td>
+<td style="text-align:center"><strong>Tier 2</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Developer</td>
+<td>Cryptographic attestation of zero egress compliance.</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/v1/telemetry/remote-write/status</code></td>
+<td style="text-align:center"><strong>Tier 2</strong></td>
+<td style="text-align:center"><strong>Yes</strong></td>
+<td style="text-align:center">Developer</td>
+<td>Operational diagnostics of Prometheus remote_write pipeline.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/telemetry/circuit-breaker/drill</code></td>
+<td style="text-align:center"><strong>Tier 3</strong></td>
+<td style="text-align:center"><strong>No</strong></td>
+<td style="text-align:center"><strong>Admin</strong></td>
+<td>Chaos fault injection tripping telemetry circuit breakers.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/telemetry/remote-write/configure</code></td>
+<td style="text-align:center"><strong>Tier 3</strong></td>
+<td style="text-align:center"><strong>No</strong></td>
+<td style="text-align:center"><strong>Admin</strong></td>
+<td>Dynamic runtime reconfiguration of TSDB remote_write targets.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/telemetry/remote-write/flush</code></td>
+<td style="text-align:center"><strong>Tier 3</strong></td>
+<td style="text-align:center"><strong>No</strong></td>
+<td style="text-align:center"><strong>Admin</strong></td>
+<td>Forces in-memory ring-buffer metrics to flush immediately.</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/v1/raft/bridge/status</code></td>
+<td style="text-align:center"><strong>Tier 3</strong></td>
+<td style="text-align:center"><strong>No</strong></td>
+<td style="text-align:center"><strong>Admin</strong></td>
+<td>Go Raft gRPC consensus client health and connectivity.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/raft/cluster/join</code></td>
+<td style="text-align:center"><strong>Tier 3</strong></td>
+<td style="text-align:center"><strong>No</strong></td>
+<td style="text-align:center"><strong>Admin</strong></td>
+<td>Dynamic voter node registration to Raft leader.</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/v1/storage/compaction/status</code></td>
+<td style="text-align:center"><strong>Tier 3</strong></td>
+<td style="text-align:center"><strong>No</strong></td>
+<td style="text-align:center"><strong>Admin</strong></td>
+<td>Embedded database WAL compaction metrics and memory RSS.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/storage/compaction/trigger</code></td>
+<td style="text-align:center"><strong>Tier 3</strong></td>
+<td style="text-align:center"><strong>No</strong></td>
+<td style="text-align:center"><strong>Admin</strong></td>
+<td>Manually triggers asynchronous chunked log compaction.</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/storage/snapshot/create</code></td>
+<td style="text-align:center"><strong>Tier 3</strong></td>
+<td style="text-align:center"><strong>No</strong></td>
+<td style="text-align:center"><strong>Admin</strong></td>
+<td>Generates Gzip point-in-time state machine snapshot.</td>
+</tr>
+<tr>
+<td><strong>GET, POST</strong></td>
+<td><code>/v1/admin/documents/*</code></td>
+<td style="text-align:center"><strong>Tier 3</strong></td>
+<td style="text-align:center"><strong>No</strong></td>
+<td style="text-align:center"><strong>Admin</strong></td>
+<td>Project Record Assistant document read/write vault.</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/v1/admin/framework-summary</code></td>
+<td style="text-align:center"><strong>Tier 3</strong></td>
+<td style="text-align:center"><strong>No</strong></td>
+<td style="text-align:center"><strong>Admin</strong></td>
+<td>Real-time framework maturity metrics (SDLC, ITIL, PM, Delivery).</td>
+</tr>
+<tr>
+<td><strong>POST</strong></td>
+<td><code>/v1/admin/auth/verify</code></td>
+<td style="text-align:center"><strong>Tier 3</strong></td>
+<td style="text-align:center"><strong>No</strong></td>
+<td style="text-align:center"><strong>Admin</strong></td>
+<td>Verifies admin master credentials and issues session token.</td>
+</tr>
+<tr>
+<td><strong>GET</strong></td>
+<td><code>/configuration</code>, <code>/pitch</code>, <code>/techdoc</code>, <code>/support</code></td>
+<td style="text-align:center">UI</td>
+<td style="text-align:center"><strong>No</strong></td>
+<td style="text-align:center">None / Browser</td>
+<td>Interactive HTML single-page web applications.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-technical-implementation-in-fastapi">5. Technical Implementation in FastAPI</h2>
+<h3 id="51-route-hiding-via-includeinschemafalse">5.1 Route Hiding via <code>include_in_schema=False</code></h3>
+<p>All Tier 3 internal routes declare <code>include_in_schema=False</code> directly on the route decorator. For example:</p>
+<div class="code-box"><div class="code-box-header"><span>python</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-python"># Tier 3 Internal Consensus Endpoint (Hidden from OpenAPI &amp; Swagger)
+@app.post(
+    &quot;/v1/raft/cluster/join&quot;,
+    tags=[&quot;Raft Consensus Bridge&quot;],
+    include_in_schema=False,  # Hidden from public OpenAPI documentation
+)
+def join_raft_cluster(
+    req: RaftClusterJoinRequest,
+    _auth: AuthenticatedUser = Depends(require_admin),
+):
+    ...
+</code></pre></div>
+<h3 id="52-openapi-tag-segmentation">5.2 OpenAPI Tag Segmentation</h3>
+<p>The public <code>/docs</code> Swagger interface only exposes clean, customer-relevant categories:</p>
+<ul>
+<li><code>Core Transpilation</code></li>
+<li><code>Migration Recipes</code></li>
+<li><code>Telemetry &amp; Topology</code></li>
+<li><code>Customer Operations &amp; Support</code></li>
+<li><code>System Health</code></li>
+</ul>
+<p>Internal tags (<code>Admin &amp; Governance</code>, <code>Raft Consensus Bridge</code>, <code>Storage &amp; Log Compaction</code>) are stripped from <code>app.openapi_tags</code>.</p>
+<hr />
+<h2 id="6-verification-automated-assurance">6. Verification &amp; Automated Assurance</h2>
+<p>The 3-tier exposure model is continuously validated in our CI/CD pipeline:</p>
+<ol>
+<li>
+<p><strong>Automated Schema Verification:</strong>
+<code>TestVector4ContractualE2E.test_openapi_spec_availability_and_metadata</code> validates that:</p>
+<ul>
+<li><code>/openapi.json</code> returns HTTP 200 with OpenAPI specification version 3.1.0.</li>
+<li>All Tier 1 and Tier 2 routes are documented with full request/response schemas.</li>
+<li>Zero Tier 3 routes appear in the output schema dictionary.</li>
+</ul>
+</li>
+<li>
+<p><strong>Role-Based Security Testing:</strong>
+<code>test_security_and_rbac.py</code> validates that:</p>
+<ul>
+<li>Unauthenticated callers cannot execute Tier 2 endpoints when <code>DCOUPLR_ENFORCE_AUTH=true</code>.</li>
+<li>Callers with <code>Role.DEVELOPER</code> cannot execute Tier 3 administrative endpoints.</li>
+<li>Master admin keys allow access to all three tiers.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="7-change-log">7. Change Log</h2>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Version</th>
+<th>Author</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10-26</td>
+<td>1.0.0</td>
+<td>Staff Architecture &amp; Security Team</td>
+<td>Initial approved 3-Tier API exposure specification and endpoint audit.</td>
+</tr>
+</tbody>
+</table>
+</div>
+      <pre id="raw-view"><code># API Exposure &amp; Access Tier Specification
+
+**Document Identifier:** `VA-SPEC-API-TIERS-001`  
+**Classification:** Enterprise Engineering &amp; Architecture Specification  
+**Version:** 1.0.0  
+**Effective Date:** October 2026  
+**Status:** Approved &amp; Implemented in `migration_tools.api`
+
+---
+
+## 1. Executive Summary &amp; Design Rationale
+
+In enterprise infrastructure migration and telemetry platforms, exposing internal endpoints indiscriminately poses severe security and operational hazards. In `&lt;dcouplr/&gt;`, internal primitives—such as Raft voter node registration (`/v1/raft/cluster/join`), WAL database compaction (`/v1/storage/compaction/*`), point-in-time state machine snapshotting (`/v1/storage/snapshot/create`), and telemetry circuit breaker drills (`/v1/telemetry/circuit-breaker/drill`)—must never be visible to public crawlers, competitor reconnaissance, or unauthenticated users.
+
+Conversely, prospective customers evaluating the platform need frictionless, zero-barrier trial access to transpilation engines and documentation, while enterprise customers in production require robust, cryptographically verifiable authentication (API Keys, Bearer JWTs, and federated OIDC SSO) to manage state migrations and custom alert rules.
+
+To satisfy these dual requirements, `&lt;dcouplr/&gt;` enforces a **3-Tier API Exposure and Access Architecture**:
+
+```
++---------------------------------------------------------------------------------------------------+
+|                                 &lt;dcouplr/&gt; 3-Tier API Architecture                               |
++-------------------------------------+---------------------------------+---------------------------+
+| TIER 1: Public / Evaluation         | TIER 2: Customer Authenticated  | TIER 3: Internal Admin    |
+| (Open Discovery &amp; Probes)           | (API Keys / Bearer Tokens)      | (Hidden &amp; Admin-Only)     |
++-------------------------------------+---------------------------------+---------------------------+
+| • Included in OpenAPI &amp; Swagger UI  | • Included in OpenAPI / Swagger | • Excluded from Schema    |
+| • No credentials required           | • Requires X-API-Key or Bearer  |   (include_in_schema=False)|
+| • Evaluators, Probes &amp; CLI Trials   | • Enterprise Workloads &amp; FinOps | • Guarded by require_admin|
+| • Rate Limited (120 req/min)        | • Rate Limited (1,200 req/min)  | • Storage, Consensus, Drills|
++-------------------------------------+---------------------------------+---------------------------+
+```
+
+---
+
+## 2. Access Tier Definitions
+
+### Tier 1: Public / Evaluation &amp; Probes (Open)
+- **Target Audience:** Prospective evaluators, open-source CLI users, automated liveness/readiness probes (Kubernetes, AWS ALB, Cloudflare), and customer support inquiries.
+- **Authentication:** None required.
+- **OpenAPI / Swagger UI Visibility:** **Included (`include_in_schema=True`)**.
+- **Scope of Endpoints:**
+  - Health checks (`/healthz`).
+  - Diagnostic environment doctor (`/v1/system/doctor`).
+  - AST parse, generate, and transpile evaluation (`/v1/parse`, `/v1/generate`, `/v1/translate`, `/v1/supported-matrix`).
+  - Public Turnkey Migration Recipe catalog (`/v1/recipes`).
+  - Telemetry read-only metrics and topology visualization (`/v1/telemetry/metrics`, `/v1/telemetry/topology`, `/v1/telemetry/cost-analysis`).
+  - Customer operations &amp; support ticketing (`/v1/support/*`).
+
+### Tier 2: Customer Authenticated (Keys &amp; Tokens Required)
+- **Target Audience:** Licensed enterprise organizations, platform engineering teams, automated CI/CD migration pipelines (GitHub Actions, GitLab CI, ArgoCD).
+- **Authentication:** Mandatory. Requires caller to present:
+  - `X-API-Key: &lt;token&gt;` header, OR
+  - `Authorization: Bearer &lt;jwt_or_token&gt;` header.
+- **Role Requirement:** `Role.DEVELOPER` or `Role.ADMIN`.
+- **OpenAPI / Swagger UI Visibility:** **Included (`include_in_schema=True`)** with OpenAPI Security Scheme `ApiKeyAuth` and `BearerAuth`.
+- **Scope of Endpoints:**
+  - Multi-monitor custom alert recalibration (`POST /v1/compiler/transpile-alert-rules`).
+  - Infrastructure as Code (IaC) state migration transpilation (`POST /v1/iac/state-migration`).
+  - Enterprise custom compilation presets (`GET/POST/DELETE /v1/compiler/custom-presets`).
+  - Custom turnkey recipe registration and execution (`POST /v1/recipes/register`, `POST /v1/recipes/{recipe_id}/run`).
+  - Multi-VPC topology provisioning and lift-and-shift plan generation (`POST /v1/telemetry/topology/vpcs`, `POST /v1/telemetry/topology/lift-and-shift`).
+  - Automated migration replication plan execution (`POST /v1/telemetry/topology/replication-plan`).
+  - Zero-egress network audit attestations (`GET /v1/telemetry/vpcs/{vpc_id}/egress-attestation`).
+  - Remote-write exporter status inspection (`GET /v1/telemetry/remote-write/status`).
+
+### Tier 3: Internal Admin &amp; Infrastructure Operations (Hidden from Schema)
+- **Target Audience:** Internal platform administrators, automated consensus nodes, SRE recovery harnesses, and the local `/configuration` Project Operations dashboard.
+- **Authentication:** Strict administrative credentials required. Caller must provide:
+  - Admin master token (`DCOUPLR_API_KEY` or `DCOUPLR_ADMIN_KEY`), OR
+  - Admin session Bearer token issued by `/v1/admin/auth/verify`, OR
+  - Federated OIDC token possessing the `admin` role claim.
+- **Role Requirement:** Strictly `Role.ADMIN`.
+- **OpenAPI / Swagger UI Visibility:** **Strictly Hidden (`include_in_schema=False`)**.
+  - These routes do not appear in `/docs`, `/redoc`, or `/openapi.json`.
+  - Public security scanners and automated schema crawlers observe zero presence of these routes.
+  - The internal browser console (`/configuration`) and authenticated SRE scripts execute them directly.
+- **Scope of Endpoints:**
+  - Embedded Raft consensus cluster leader voter join (`POST /v1/raft/cluster/join`).
+  - Go Raft gRPC bridge diagnostics (`GET /v1/raft/bridge/status`).
+  - Local database storage compaction status, trigger, and snapshotting (`GET/POST /v1/storage/compaction/*`, `POST /v1/storage/snapshot/create`).
+  - Dynamic Prometheus remote_write reconfiguration and ring buffer flush (`POST /v1/telemetry/remote-write/configure`, `POST /v1/telemetry/remote-write/flush`).
+  - Telemetry circuit breaker chaos drill injection (`POST /v1/telemetry/circuit-breaker/drill`).
+  - Project Record Assistant document administration and auth verification (`GET/POST /v1/admin/documents`, `POST /v1/admin/auth/verify`).
+
+---
+
+## 2. Authentication &amp; Key Management Architecture
+
+### 3.1 Supported Credentials &amp; Transmission Formats
+
+Clients may authenticate through either HTTP headers:
+
+```http
+POST /v1/iac/state-migration HTTP/1.1
+Host: api.dcouplr.internal
+X-API-Key: dcouplr-dev-prod-us-east-1-0812
+Content-Type: application/json
+```
+
+Or standard Bearer authorization:
+
+```http
+POST /v1/recipes/rec-turnkey-dd-prom/run HTTP/1.1
+Host: api.dcouplr.internal
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+```
+
+### 3.2 Role Hierarchy
+
+```mermaid
+graph TD
+    classDef admin fill:#ef4444,stroke:#991b1b,color:#ffffff,stroke-width:2px;
+    classDef dev fill:#3b82f6,stroke:#1d4ed8,color:#ffffff,stroke-width:2px;
+    classDef probe fill:#10b981,stroke:#047857,color:#ffffff,stroke-width:2px;
+
+    Admin[&quot;Role.ADMIN&lt;br/&gt;(Full Access to Tiers 1, 2, 3)&quot;]:::admin
+    Developer[&quot;Role.DEVELOPER&lt;br/&gt;(Access to Tiers 1 &amp; 2)&quot;]:::dev
+    Probe[&quot;Role.PROBE / Public&lt;br/&gt;(Access to Tier 1 Only)&quot;]:::probe
+
+    Admin --&gt; Developer
+    Developer --&gt; Probe
+```
+
+### 3.3 Production Enforcement Modes
+
+The authentication subsystem is governed by the environment variable `DCOUPLR_ENFORCE_AUTH`:
+
+| `DCOUPLR_ENFORCE_AUTH` | Behavior | Intended Environment |
+|---|---|---|
+| `false` (Default Dev) | Unauthenticated requests to developer/internal endpoints fallback to `username=&quot;local_dev&quot;, role=Role.ADMIN, is_dev_mode=True`. Explicit invalid keys are still rejected (HTTP 401). | Local Developer Workstation, Offline Sandbox |
+| `true` / `strict` | Requests without valid credentials to any protected route are rejected with `HTTP 401 Unauthorized`. | Production VPC, Staging, Multi-tenant SaaS |
+
+---
+
+## 4. Comprehensive Endpoint Inventory &amp; Exposure Matrix
+
+The table below catalogs all 67 routes in `&lt;dcouplr/&gt;`, documenting their HTTP Method, Exposure Tier, OpenAPI Schema Inclusion, and Access Enforcement:
+
+| HTTP Method | Route Path | Access Tier | In Public Schema | Role Required | Description &amp; Purpose |
+|---|---|:---:|:---:|:---:|---|
+| **GET** | `/healthz` | **Tier 1** | **Yes** | Public | Kubernetes/ALB Liveness &amp; Readiness probe. |
+| **GET** | `/v1/supported-matrix` | **Tier 1** | **Yes** | Public | Returns AST translation support matrix across all vendors. |
+| **POST** | `/v1/parse` | **Tier 1** | **Yes** | Public | Parses raw source monitor YAML/JSON into intermediate UITGraph. |
+| **POST** | `/v1/generate` | **Tier 1** | **Yes** | Public | Emits target vendor code (Grafana, OpenTofu, Bicep) from UITGraph. |
+| **POST** | `/v1/translate` | **Tier 1** | **Yes** | Public | End-to-end atomic translation from source rule to target code. |
+| **GET** | `/v1/system/doctor` | **Tier 1** | **Yes** | Public | Validates local CLI binaries, container runtimes, and licenses. |
+| **POST** | `/v1/system/lint` | **Tier 1** | **Yes** | Public | Performs mathematical syntax validation without full transpilation. |
+| **GET** | `/v1/recipes` | **Tier 1** | **Yes** | Public | Catalog of Turnkey Enterprise Migration Recipes. |
+| **GET** | `/v1/telemetry/metrics` | **Tier 1** | **Yes** | Public | Prometheus metric exposition for scraping. |
+| **GET** | `/v1/telemetry/stream` | **Tier 1** | **Yes** | Public | Real-time Server-Sent Events (SSE) telemetry feed. |
+| **GET** | `/v1/telemetry/topology` | **Tier 1** | **Yes** | Public | Multi-VPC network and cross-cloud topology graph. |
+| **GET** | `/v1/telemetry/vpcs` | **Tier 1** | **Yes** | Public | Lists all registered source and destination VPCs. |
+| **GET** | `/v1/telemetry/cost-analysis` | **Tier 1** | **Yes** | Public | Financial bandwidth and SaaS TCO comparison calculations. |
+| **GET, POST**| `/v1/telemetry/finops/cost-comparison` | **Tier 1** | **Yes** | Public | Cloud cost projections (compute, storage, egress) across clouds. |
+| **GET** | `/v1/telemetry/vpcs/{vpc_id}/monitoring-bundle` | **Tier 1** | **Yes** | Public | Exports pre-compiled Grafana/Prometheus bundles for a VPC. |
+| **POST** | `/v1/telemetry/simulate-alert` | **Tier 1** | **Yes** | Public | Evaluates metric curves against thresholds and outputs YAML. |
+| **GET, POST**| `/v1/support/*` | **Tier 1** | **Yes** | Public / Support | In-VPC customer support ticketing, SLA tracking, and solutions. |
+| **POST** | `/v1/iac/state-migration` | **Tier 2** | **Yes** | Developer | Transpiles Terraform `.tfstate` and Pulumi state definitions. |
+| **POST** | `/v1/compiler/transpile-alert-rules` | **Tier 2** | **Yes** | Developer | Recalibrates downscaled node and database alert thresholds. |
+| **GET, POST, DEL**| `/v1/compiler/custom-presets` | **Tier 2** | **Yes** | Developer | Manages enterprise-specific compiler translation presets. |
+| **POST** | `/v1/recipes/register` | **Tier 2** | **Yes** | Developer | Dynamically registers enterprise turnkey migration pipelines. |
+| **POST** | `/v1/recipes/{recipe_id}/run` | **Tier 2** | **Yes** | Developer | Executes an enterprise turnkey recipe pipeline. |
+| **POST** | `/v1/telemetry/topology/vpcs` | **Tier 2** | **Yes** | Developer | Registers new VPC boundaries in the topology map. |
+| **POST** | `/v1/telemetry/topology/lift-and-shift` | **Tier 2** | **Yes** | Developer | Generates automated Lift &amp; Shift migration plans. |
+| **POST** | `/v1/telemetry/topology/replication-plan`| **Tier 2** | **Yes** | Developer | Generates cloud-native replication manifests (AWS MGN, Azure). |
+| **GET** | `/v1/telemetry/vpcs/{vpc_id}/egress-attestation` | **Tier 2** | **Yes** | Developer | Cryptographic attestation of zero egress compliance. |
+| **GET** | `/v1/telemetry/remote-write/status` | **Tier 2** | **Yes** | Developer | Operational diagnostics of Prometheus remote_write pipeline. |
+| **POST** | `/v1/telemetry/circuit-breaker/drill` | **Tier 3** | **No** | **Admin** | Chaos fault injection tripping telemetry circuit breakers. |
+| **POST** | `/v1/telemetry/remote-write/configure` | **Tier 3** | **No** | **Admin** | Dynamic runtime reconfiguration of TSDB remote_write targets. |
+| **POST** | `/v1/telemetry/remote-write/flush` | **Tier 3** | **No** | **Admin** | Forces in-memory ring-buffer metrics to flush immediately. |
+| **GET** | `/v1/raft/bridge/status` | **Tier 3** | **No** | **Admin** | Go Raft gRPC consensus client health and connectivity. |
+| **POST** | `/v1/raft/cluster/join` | **Tier 3** | **No** | **Admin** | Dynamic voter node registration to Raft leader. |
+| **GET** | `/v1/storage/compaction/status` | **Tier 3** | **No** | **Admin** | Embedded database WAL compaction metrics and memory RSS. |
+| **POST** | `/v1/storage/compaction/trigger` | **Tier 3** | **No** | **Admin** | Manually triggers asynchronous chunked log compaction. |
+| **POST** | `/v1/storage/snapshot/create` | **Tier 3** | **No** | **Admin** | Generates Gzip point-in-time state machine snapshot. |
+| **GET, POST**| `/v1/admin/documents/*` | **Tier 3** | **No** | **Admin** | Project Record Assistant document read/write vault. |
+| **GET** | `/v1/admin/framework-summary` | **Tier 3** | **No** | **Admin** | Real-time framework maturity metrics (SDLC, ITIL, PM, Delivery). |
+| **POST** | `/v1/admin/auth/verify` | **Tier 3** | **No** | **Admin** | Verifies admin master credentials and issues session token. |
+| **GET** | `/configuration`, `/pitch`, `/techdoc`, `/support` | UI | **No** | None / Browser | Interactive HTML single-page web applications. |
+
+---
+
+## 5. Technical Implementation in FastAPI
+
+### 5.1 Route Hiding via `include_in_schema=False`
+
+All Tier 3 internal routes declare `include_in_schema=False` directly on the route decorator. For example:
+
+```python
+# Tier 3 Internal Consensus Endpoint (Hidden from OpenAPI &amp; Swagger)
+@app.post(
+    &quot;/v1/raft/cluster/join&quot;,
+    tags=[&quot;Raft Consensus Bridge&quot;],
+    include_in_schema=False,  # Hidden from public OpenAPI documentation
+)
+def join_raft_cluster(
+    req: RaftClusterJoinRequest,
+    _auth: AuthenticatedUser = Depends(require_admin),
+):
+    ...
+```
+
+### 5.2 OpenAPI Tag Segmentation
+
+The public `/docs` Swagger interface only exposes clean, customer-relevant categories:
+- `Core Transpilation`
+- `Migration Recipes`
+- `Telemetry &amp; Topology`
+- `Customer Operations &amp; Support`
+- `System Health`
+
+Internal tags (`Admin &amp; Governance`, `Raft Consensus Bridge`, `Storage &amp; Log Compaction`) are stripped from `app.openapi_tags`.
+
+---
+
+## 6. Verification &amp; Automated Assurance
+
+The 3-tier exposure model is continuously validated in our CI/CD pipeline:
+
+1. **Automated Schema Verification:**
+   `TestVector4ContractualE2E.test_openapi_spec_availability_and_metadata` validates that:
+   - `/openapi.json` returns HTTP 200 with OpenAPI specification version 3.1.0.
+   - All Tier 1 and Tier 2 routes are documented with full request/response schemas.
+   - Zero Tier 3 routes appear in the output schema dictionary.
+
+2. **Role-Based Security Testing:**
+   `test_security_and_rbac.py` validates that:
+   - Unauthenticated callers cannot execute Tier 2 endpoints when `DCOUPLR_ENFORCE_AUTH=true`.
+   - Callers with `Role.DEVELOPER` cannot execute Tier 3 administrative endpoints.
+   - Master admin keys allow access to all three tiers.
+
+---
+
+## 7. Change Log
+
+| Date | Version | Author | Description |
+|---|---|---|---|
+| 2026-10-26 | 1.0.0 | Staff Architecture &amp; Security Team | Initial approved 3-Tier API exposure specification and endpoint audit. |
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># API Exposure &amp; Access Tier Specification
+
+**Document Identifier:** `VA-SPEC-API-TIERS-001`  
+**Classification:** Enterprise Engineering &amp; Architecture Specification  
+**Version:** 1.0.0  
+**Effective Date:** October 2026  
+**Status:** Approved &amp; Implemented in `migration_tools.api`
+
+---
+
+## 1. Executive Summary &amp; Design Rationale
+
+In enterprise infrastructure migration and telemetry platforms, exposing internal endpoints indiscriminately poses severe security and operational hazards. In `&lt;dcouplr/&gt;`, internal primitives—such as Raft voter node registration (`/v1/raft/cluster/join`), WAL database compaction (`/v1/storage/compaction/*`), point-in-time state machine snapshotting (`/v1/storage/snapshot/create`), and telemetry circuit breaker drills (`/v1/telemetry/circuit-breaker/drill`)—must never be visible to public crawlers, competitor reconnaissance, or unauthenticated users.
+
+Conversely, prospective customers evaluating the platform need frictionless, zero-barrier trial access to transpilation engines and documentation, while enterprise customers in production require robust, cryptographically verifiable authentication (API Keys, Bearer JWTs, and federated OIDC SSO) to manage state migrations and custom alert rules.
+
+To satisfy these dual requirements, `&lt;dcouplr/&gt;` enforces a **3-Tier API Exposure and Access Architecture**:
+
+```
++---------------------------------------------------------------------------------------------------+
+|                                 &lt;dcouplr/&gt; 3-Tier API Architecture                               |
++-------------------------------------+---------------------------------+---------------------------+
+| TIER 1: Public / Evaluation         | TIER 2: Customer Authenticated  | TIER 3: Internal Admin    |
+| (Open Discovery &amp; Probes)           | (API Keys / Bearer Tokens)      | (Hidden &amp; Admin-Only)     |
++-------------------------------------+---------------------------------+---------------------------+
+| • Included in OpenAPI &amp; Swagger UI  | • Included in OpenAPI / Swagger | • Excluded from Schema    |
+| • No credentials required           | • Requires X-API-Key or Bearer  |   (include_in_schema=False)|
+| • Evaluators, Probes &amp; CLI Trials   | • Enterprise Workloads &amp; FinOps | • Guarded by require_admin|
+| • Rate Limited (120 req/min)        | • Rate Limited (1,200 req/min)  | • Storage, Consensus, Drills|
++-------------------------------------+---------------------------------+---------------------------+
+```
+
+---
+
+## 2. Access Tier Definitions
+
+### Tier 1: Public / Evaluation &amp; Probes (Open)
+- **Target Audience:** Prospective evaluators, open-source CLI users, automated liveness/readiness probes (Kubernetes, AWS ALB, Cloudflare), and customer support inquiries.
+- **Authentication:** None required.
+- **OpenAPI / Swagger UI Visibility:** **Included (`include_in_schema=True`)**.
+- **Scope of Endpoints:**
+  - Health checks (`/healthz`).
+  - Diagnostic environment doctor (`/v1/system/doctor`).
+  - AST parse, generate, and transpile evaluation (`/v1/parse`, `/v1/generate`, `/v1/translate`, `/v1/supported-matrix`).
+  - Public Turnkey Migration Recipe catalog (`/v1/recipes`).
+  - Telemetry read-only metrics and topology visualization (`/v1/telemetry/metrics`, `/v1/telemetry/topology`, `/v1/telemetry/cost-analysis`).
+  - Customer operations &amp; support ticketing (`/v1/support/*`).
+
+### Tier 2: Customer Authenticated (Keys &amp; Tokens Required)
+- **Target Audience:** Licensed enterprise organizations, platform engineering teams, automated CI/CD migration pipelines (GitHub Actions, GitLab CI, ArgoCD).
+- **Authentication:** Mandatory. Requires caller to present:
+  - `X-API-Key: &lt;token&gt;` header, OR
+  - `Authorization: Bearer &lt;jwt_or_token&gt;` header.
+- **Role Requirement:** `Role.DEVELOPER` or `Role.ADMIN`.
+- **OpenAPI / Swagger UI Visibility:** **Included (`include_in_schema=True`)** with OpenAPI Security Scheme `ApiKeyAuth` and `BearerAuth`.
+- **Scope of Endpoints:**
+  - Multi-monitor custom alert recalibration (`POST /v1/compiler/transpile-alert-rules`).
+  - Infrastructure as Code (IaC) state migration transpilation (`POST /v1/iac/state-migration`).
+  - Enterprise custom compilation presets (`GET/POST/DELETE /v1/compiler/custom-presets`).
+  - Custom turnkey recipe registration and execution (`POST /v1/recipes/register`, `POST /v1/recipes/{recipe_id}/run`).
+  - Multi-VPC topology provisioning and lift-and-shift plan generation (`POST /v1/telemetry/topology/vpcs`, `POST /v1/telemetry/topology/lift-and-shift`).
+  - Automated migration replication plan execution (`POST /v1/telemetry/topology/replication-plan`).
+  - Zero-egress network audit attestations (`GET /v1/telemetry/vpcs/{vpc_id}/egress-attestation`).
+  - Remote-write exporter status inspection (`GET /v1/telemetry/remote-write/status`).
+
+### Tier 3: Internal Admin &amp; Infrastructure Operations (Hidden from Schema)
+- **Target Audience:** Internal platform administrators, automated consensus nodes, SRE recovery harnesses, and the local `/configuration` Project Operations dashboard.
+- **Authentication:** Strict administrative credentials required. Caller must provide:
+  - Admin master token (`DCOUPLR_API_KEY` or `DCOUPLR_ADMIN_KEY`), OR
+  - Admin session Bearer token issued by `/v1/admin/auth/verify`, OR
+  - Federated OIDC token possessing the `admin` role claim.
+- **Role Requirement:** Strictly `Role.ADMIN`.
+- **OpenAPI / Swagger UI Visibility:** **Strictly Hidden (`include_in_schema=False`)**.
+  - These routes do not appear in `/docs`, `/redoc`, or `/openapi.json`.
+  - Public security scanners and automated schema crawlers observe zero presence of these routes.
+  - The internal browser console (`/configuration`) and authenticated SRE scripts execute them directly.
+- **Scope of Endpoints:**
+  - Embedded Raft consensus cluster leader voter join (`POST /v1/raft/cluster/join`).
+  - Go Raft gRPC bridge diagnostics (`GET /v1/raft/bridge/status`).
+  - Local database storage compaction status, trigger, and snapshotting (`GET/POST /v1/storage/compaction/*`, `POST /v1/storage/snapshot/create`).
+  - Dynamic Prometheus remote_write reconfiguration and ring buffer flush (`POST /v1/telemetry/remote-write/configure`, `POST /v1/telemetry/remote-write/flush`).
+  - Telemetry circuit breaker chaos drill injection (`POST /v1/telemetry/circuit-breaker/drill`).
+  - Project Record Assistant document administration and auth verification (`GET/POST /v1/admin/documents`, `POST /v1/admin/auth/verify`).
+
+---
+
+## 2. Authentication &amp; Key Management Architecture
+
+### 3.1 Supported Credentials &amp; Transmission Formats
+
+Clients may authenticate through either HTTP headers:
+
+```http
+POST /v1/iac/state-migration HTTP/1.1
+Host: api.dcouplr.internal
+X-API-Key: dcouplr-dev-prod-us-east-1-0812
+Content-Type: application/json
+```
+
+Or standard Bearer authorization:
+
+```http
+POST /v1/recipes/rec-turnkey-dd-prom/run HTTP/1.1
+Host: api.dcouplr.internal
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+```
+
+### 3.2 Role Hierarchy
+
+```mermaid
+graph TD
+    classDef admin fill:#ef4444,stroke:#991b1b,color:#ffffff,stroke-width:2px;
+    classDef dev fill:#3b82f6,stroke:#1d4ed8,color:#ffffff,stroke-width:2px;
+    classDef probe fill:#10b981,stroke:#047857,color:#ffffff,stroke-width:2px;
+
+    Admin[&quot;Role.ADMIN&lt;br/&gt;(Full Access to Tiers 1, 2, 3)&quot;]:::admin
+    Developer[&quot;Role.DEVELOPER&lt;br/&gt;(Access to Tiers 1 &amp; 2)&quot;]:::dev
+    Probe[&quot;Role.PROBE / Public&lt;br/&gt;(Access to Tier 1 Only)&quot;]:::probe
+
+    Admin --&gt; Developer
+    Developer --&gt; Probe
+```
+
+### 3.3 Production Enforcement Modes
+
+The authentication subsystem is governed by the environment variable `DCOUPLR_ENFORCE_AUTH`:
+
+| `DCOUPLR_ENFORCE_AUTH` | Behavior | Intended Environment |
+|---|---|---|
+| `false` (Default Dev) | Unauthenticated requests to developer/internal endpoints fallback to `username=&quot;local_dev&quot;, role=Role.ADMIN, is_dev_mode=True`. Explicit invalid keys are still rejected (HTTP 401). | Local Developer Workstation, Offline Sandbox |
+| `true` / `strict` | Requests without valid credentials to any protected route are rejected with `HTTP 401 Unauthorized`. | Production VPC, Staging, Multi-tenant SaaS |
+
+---
+
+## 4. Comprehensive Endpoint Inventory &amp; Exposure Matrix
+
+The table below catalogs all 67 routes in `&lt;dcouplr/&gt;`, documenting their HTTP Method, Exposure Tier, OpenAPI Schema Inclusion, and Access Enforcement:
+
+| HTTP Method | Route Path | Access Tier | In Public Schema | Role Required | Description &amp; Purpose |
+|---|---|:---:|:---:|:---:|---|
+| **GET** | `/healthz` | **Tier 1** | **Yes** | Public | Kubernetes/ALB Liveness &amp; Readiness probe. |
+| **GET** | `/v1/supported-matrix` | **Tier 1** | **Yes** | Public | Returns AST translation support matrix across all vendors. |
+| **POST** | `/v1/parse` | **Tier 1** | **Yes** | Public | Parses raw source monitor YAML/JSON into intermediate UITGraph. |
+| **POST** | `/v1/generate` | **Tier 1** | **Yes** | Public | Emits target vendor code (Grafana, OpenTofu, Bicep) from UITGraph. |
+| **POST** | `/v1/translate` | **Tier 1** | **Yes** | Public | End-to-end atomic translation from source rule to target code. |
+| **GET** | `/v1/system/doctor` | **Tier 1** | **Yes** | Public | Validates local CLI binaries, container runtimes, and licenses. |
+| **POST** | `/v1/system/lint` | **Tier 1** | **Yes** | Public | Performs mathematical syntax validation without full transpilation. |
+| **GET** | `/v1/recipes` | **Tier 1** | **Yes** | Public | Catalog of Turnkey Enterprise Migration Recipes. |
+| **GET** | `/v1/telemetry/metrics` | **Tier 1** | **Yes** | Public | Prometheus metric exposition for scraping. |
+| **GET** | `/v1/telemetry/stream` | **Tier 1** | **Yes** | Public | Real-time Server-Sent Events (SSE) telemetry feed. |
+| **GET** | `/v1/telemetry/topology` | **Tier 1** | **Yes** | Public | Multi-VPC network and cross-cloud topology graph. |
+| **GET** | `/v1/telemetry/vpcs` | **Tier 1** | **Yes** | Public | Lists all registered source and destination VPCs. |
+| **GET** | `/v1/telemetry/cost-analysis` | **Tier 1** | **Yes** | Public | Financial bandwidth and SaaS TCO comparison calculations. |
+| **GET, POST**| `/v1/telemetry/finops/cost-comparison` | **Tier 1** | **Yes** | Public | Cloud cost projections (compute, storage, egress) across clouds. |
+| **GET** | `/v1/telemetry/vpcs/{vpc_id}/monitoring-bundle` | **Tier 1** | **Yes** | Public | Exports pre-compiled Grafana/Prometheus bundles for a VPC. |
+| **POST** | `/v1/telemetry/simulate-alert` | **Tier 1** | **Yes** | Public | Evaluates metric curves against thresholds and outputs YAML. |
+| **GET, POST**| `/v1/support/*` | **Tier 1** | **Yes** | Public / Support | In-VPC customer support ticketing, SLA tracking, and solutions. |
+| **POST** | `/v1/iac/state-migration` | **Tier 2** | **Yes** | Developer | Transpiles Terraform `.tfstate` and Pulumi state definitions. |
+| **POST** | `/v1/compiler/transpile-alert-rules` | **Tier 2** | **Yes** | Developer | Recalibrates downscaled node and database alert thresholds. |
+| **GET, POST, DEL**| `/v1/compiler/custom-presets` | **Tier 2** | **Yes** | Developer | Manages enterprise-specific compiler translation presets. |
+| **POST** | `/v1/recipes/register` | **Tier 2** | **Yes** | Developer | Dynamically registers enterprise turnkey migration pipelines. |
+| **POST** | `/v1/recipes/{recipe_id}/run` | **Tier 2** | **Yes** | Developer | Executes an enterprise turnkey recipe pipeline. |
+| **POST** | `/v1/telemetry/topology/vpcs` | **Tier 2** | **Yes** | Developer | Registers new VPC boundaries in the topology map. |
+| **POST** | `/v1/telemetry/topology/lift-and-shift` | **Tier 2** | **Yes** | Developer | Generates automated Lift &amp; Shift migration plans. |
+| **POST** | `/v1/telemetry/topology/replication-plan`| **Tier 2** | **Yes** | Developer | Generates cloud-native replication manifests (AWS MGN, Azure). |
+| **GET** | `/v1/telemetry/vpcs/{vpc_id}/egress-attestation` | **Tier 2** | **Yes** | Developer | Cryptographic attestation of zero egress compliance. |
+| **GET** | `/v1/telemetry/remote-write/status` | **Tier 2** | **Yes** | Developer | Operational diagnostics of Prometheus remote_write pipeline. |
+| **POST** | `/v1/telemetry/circuit-breaker/drill` | **Tier 3** | **No** | **Admin** | Chaos fault injection tripping telemetry circuit breakers. |
+| **POST** | `/v1/telemetry/remote-write/configure` | **Tier 3** | **No** | **Admin** | Dynamic runtime reconfiguration of TSDB remote_write targets. |
+| **POST** | `/v1/telemetry/remote-write/flush` | **Tier 3** | **No** | **Admin** | Forces in-memory ring-buffer metrics to flush immediately. |
+| **GET** | `/v1/raft/bridge/status` | **Tier 3** | **No** | **Admin** | Go Raft gRPC consensus client health and connectivity. |
+| **POST** | `/v1/raft/cluster/join` | **Tier 3** | **No** | **Admin** | Dynamic voter node registration to Raft leader. |
+| **GET** | `/v1/storage/compaction/status` | **Tier 3** | **No** | **Admin** | Embedded database WAL compaction metrics and memory RSS. |
+| **POST** | `/v1/storage/compaction/trigger` | **Tier 3** | **No** | **Admin** | Manually triggers asynchronous chunked log compaction. |
+| **POST** | `/v1/storage/snapshot/create` | **Tier 3** | **No** | **Admin** | Generates Gzip point-in-time state machine snapshot. |
+| **GET, POST**| `/v1/admin/documents/*` | **Tier 3** | **No** | **Admin** | Project Record Assistant document read/write vault. |
+| **GET** | `/v1/admin/framework-summary` | **Tier 3** | **No** | **Admin** | Real-time framework maturity metrics (SDLC, ITIL, PM, Delivery). |
+| **POST** | `/v1/admin/auth/verify` | **Tier 3** | **No** | **Admin** | Verifies admin master credentials and issues session token. |
+| **GET** | `/configuration`, `/pitch`, `/techdoc`, `/support` | UI | **No** | None / Browser | Interactive HTML single-page web applications. |
+
+---
+
+## 5. Technical Implementation in FastAPI
+
+### 5.1 Route Hiding via `include_in_schema=False`
+
+All Tier 3 internal routes declare `include_in_schema=False` directly on the route decorator. For example:
+
+```python
+# Tier 3 Internal Consensus Endpoint (Hidden from OpenAPI &amp; Swagger)
+@app.post(
+    &quot;/v1/raft/cluster/join&quot;,
+    tags=[&quot;Raft Consensus Bridge&quot;],
+    include_in_schema=False,  # Hidden from public OpenAPI documentation
+)
+def join_raft_cluster(
+    req: RaftClusterJoinRequest,
+    _auth: AuthenticatedUser = Depends(require_admin),
+):
+    ...
+```
+
+### 5.2 OpenAPI Tag Segmentation
+
+The public `/docs` Swagger interface only exposes clean, customer-relevant categories:
+- `Core Transpilation`
+- `Migration Recipes`
+- `Telemetry &amp; Topology`
+- `Customer Operations &amp; Support`
+- `System Health`
+
+Internal tags (`Admin &amp; Governance`, `Raft Consensus Bridge`, `Storage &amp; Log Compaction`) are stripped from `app.openapi_tags`.
+
+---
+
+## 6. Verification &amp; Automated Assurance
+
+The 3-tier exposure model is continuously validated in our CI/CD pipeline:
+
+1. **Automated Schema Verification:**
+   `TestVector4ContractualE2E.test_openapi_spec_availability_and_metadata` validates that:
+   - `/openapi.json` returns HTTP 200 with OpenAPI specification version 3.1.0.
+   - All Tier 1 and Tier 2 routes are documented with full request/response schemas.
+   - Zero Tier 3 routes appear in the output schema dictionary.
+
+2. **Role-Based Security Testing:**
+   `test_security_and_rbac.py` validates that:
+   - Unauthenticated callers cannot execute Tier 2 endpoints when `DCOUPLR_ENFORCE_AUTH=true`.
+   - Callers with `Role.DEVELOPER` cannot execute Tier 3 administrative endpoints.
+   - Master admin keys allow access to all three tiers.
+
+---
+
+## 7. Change Log
+
+| Date | Version | Author | Description |
+|---|---|---|---|
+| 2026-10-26 | 1.0.0 | Staff Architecture &amp; Security Team | Initial approved 3-Tier API exposure specification and endpoint audit. |
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

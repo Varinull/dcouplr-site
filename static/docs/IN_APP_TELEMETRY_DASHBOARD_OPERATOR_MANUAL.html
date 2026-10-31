@@ -1,0 +1,2314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - IN_APP_TELEMETRY_DASHBOARD_OPERATOR_MANUAL.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/IN_APP_TELEMETRY_DASHBOARD_OPERATOR_MANUAL.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="IN_APP_TELEMETRY_DASHBOARD_OPERATOR_MANUAL.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="dcouplr-in-app-zero-egress-telemetry-multi-vpc-dashboard-operator-manual"><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>: In-App Zero-Egress Telemetry &amp; Multi-VPC Dashboard Operator Manual</h1>
+<p><strong>Document ID:</strong> MANUAL-DASH-2026-v1.0<br />
+<strong>Target URL:</strong> <code>http://127.0.0.1:8000/dashboard</code><br />
+<strong>Classification:</strong> Enterprise Engineering Reference &amp; SRE Operations Guide<br />
+<strong>Software Version:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Core Engine v1.0.0 GA<br />
+<strong>Security Profile:</strong> 100% In-VPC Boundary • Zero Public WAN Egress • Volatile Memory Only</p>
+<hr />
+<h2 id="executive-summary-architectural-invariants">Executive Summary &amp; Architectural Invariants</h2>
+<p>The <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> In-App Telemetry &amp; Multi-VPC Dashboard is an embedded, zero-dependency, real-time observability and migration orchestration platform running directly inside the compiled <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> engine container.</p>
+<p>Unlike traditional monitoring architectures that require multi-megabyte external dashboards (such as standalone Grafana deployments, relational state stores, or third-party SaaS agents), the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Dashboard is served entirely from in-memory volatile ring buffers via private Server-Sent Events (SSE) and hardware-accelerated HTML5 Canvas graphics.</p>
+<h3 id="core-architectural-invariants">Core Architectural Invariants:</h3>
+<ol>
+<li><strong>Zero External Network Exfiltration:</strong> 0 WAN packets emitted. All telemetry samples, topology graphs, and migration manifests are calculated locally inside volatile memory.</li>
+<li><strong>Sub-50 MiB Memory Ceiling:</strong> The dashboard's server-side telemetry ring buffer occupies strictly $&lt; 2 \text{ MiB}$ of RAM, operating comfortably within <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>'s overall $50.0 \text{ MiB}$ container RSS ceiling.</li>
+<li><strong>60 FPS Hardware-Accelerated Rendering:</strong> Client-side time-series curves are rendered using raw HTML5 2D Canvas contexts, processing up to 150,000 telemetry points in $&lt; 5 \text{ ms}$ without external JavaScript charting libraries.</li>
+<li><strong>Adaptive Bandwidth Conservation (Tab Sleep):</strong> Uses the HTML5 Page Visibility API to automatically throttle streaming from 1-second ticks down to 30-second ticks whenever the browser tab is hidden or minimized, reducing network overhead by $96.6%$.</li>
+</ol>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text"> ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │                             <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> IN-APP DASHBOARD RUNTIME                        │
+ │                                                                                        │
+ │   ┌───────────────────────┐   ┌───────────────────────────┐   ┌────────────────────┐   │
+ │   │  Go / Python Engine   │   │  Embedded Raft Consensus  │   │  AST &amp; Query Mesh  │   │
+ │   │  Memory &amp; CPU Metrics │   │  Leader / Follower Quorum │   │  PromQL Converter  │   │
+ │   └──────────┬────────────┘   └─────────────┬─────────────┘   └─────────┬──────────┘   │
+ │              │                              │                           │              │
+ │              └──────────────────────────────┼───────────────────────────┘              │
+ │                                             ▼                                          │
+ │                        ┌────────────────────────────────────────┐                      │
+ │                        │  In-Memory Telemetry Collector (Ring)  │                      │
+ │                        │  - Circular ring buffers (1024 slots)  │                      │
+ │                        │  - Zero heap allocation per sample     │                      │
+ │                        │  - Sub-1ms snapshot calculation        │                      │
+ │                        └────────────────────┬───────────────────┘                      │
+ │                                             │                                          │
+ │                ┌────────────────────────────┴───────────────────────────┐              │
+ │                ▼                                                        ▼              │
+ │   ┌───────────────────────────┐                            ┌─────────────────────────┐ │
+ │   │  REST Snapshot APIs       │                            │  SSE Real-Time Stream   │ │
+ │   │  /v1/telemetry/metrics    │                            │  /v1/telemetry/stream   │ │
+ │   │  /v1/telemetry/topology   │                            │  (1000ms push heartbeat)│ │
+ │   └────────────┬──────────────┘                            └────────────┬────────────┘ │
+ └────────────────┼────────────────────────────────────────────────────────┼──────────────┘
+                  │                                                        │
+                  ▼                                                        ▼
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │                      BROWSER CLIENT VIEWPORT (http://127.0.0.1:8000/dashboard)         │
+ └────────────────────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="chapter-1-global-header-live-connection-status">Chapter 1: Global Header &amp; Live Connection Status</h2>
+<p>The top navigation header provides immediate, peripheral situational awareness regarding cluster health, streaming connectivity, circuit breakers, and Raft consensus.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+-------------------------------------------------------------------------------------------------------------------------+
+| <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Zero-Egress Telemetry Engine | Product Overview | Compiler Studio | Telemetry &amp; Topology [Live]              |
+|                                         | [🎫 Open Ticket] | [● SSE Live (1s)] | [Breaker: CLOSED] | [Raft: LEADER (Term 4)]|
++-------------------------------------------------------------------------------------------------------------------------+
+</code></pre></div>
+<h3 id="11-header-components">1.1 Header Components</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Element</th>
+<th style="text-align:left">DOM Identifier</th>
+<th style="text-align:left">Function &amp; Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Brand Logo &amp; Badge</strong></td>
+<td style="text-align:left"><code>.logo-brand</code></td>
+<td style="text-align:left">Navigates back to the root application (<code>/</code>). Displays the active security profile: <code>Zero-Egress Telemetry Engine</code>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Global Navigation Switcher</strong></td>
+<td style="text-align:left"><code>nav.nav-links</code></td>
+<td style="text-align:left">Instant client-side switching between <strong>Product Overview</strong> (<code>/</code>), <strong>Compiler Studio</strong> (<code>/compiler</code>), and <strong>Telemetry &amp; Topology</strong> (<code>/dashboard</code>).</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Emergency Ticket Dispatch</strong></td>
+<td style="text-align:left"><code>#btn-open-ticket-dash</code></td>
+<td style="text-align:left">Triggers the SRE Support &amp; Incident Dispatch Modal, pre-populating verified customer organization details (<code>CUST-101</code>).</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SSE Stream Status Pill</strong></td>
+<td style="text-align:left"><code>#status-stream</code></td>
+<td style="text-align:left">Indicates the real-time health of the Server-Sent Events push stream (<code>/v1/telemetry/stream</code>). Displays a glowing green pulse dot during active 1s heartbeats; turns amber during tab sleep throttling (30s ticks); turns crimson if the HTTP connection drops.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Circuit Breaker Status Badge</strong></td>
+<td style="text-align:left"><code>#status-cb</code></td>
+<td style="text-align:left">Shows the active state of the Raft telemetry gRPC circuit breaker: <code>CLOSED</code> (Normal operational state), <code>OPEN</code> (Failover active; requests backed off), or <code>HALF-OPEN</code> (Canary testing state).</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Raft Consensus Role &amp; Term</strong></td>
+<td style="text-align:left"><code>#raft-role-badge</code></td>
+<td style="text-align:left">Reports the local node's current Raft cluster leadership state (e.g., <code>LEADER (Term 4)</code> or <code>FOLLOWER (Term 4)</code>).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="chapter-2-adaptive-bandwidth-optimization-tab-sleep-engine">Chapter 2: Adaptive Bandwidth Optimization &amp; Tab Sleep Engine</h2>
+<p>In high-density engineering environments where dozens of engineers leave monitoring dashboards open on background monitors, unthrottled streaming can silently waste megabytes of private cross-AZ network traffic.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+-------------------------------------------------------------------------------------------------------------------------+
+| 💤 Tab Sleep Mode Active: Browser tab is inactive. Telemetry stream throttled from 1s to 30s to conserve VPC bandwidth.  |
+| document.hidden = true                                                                                                  |
++-------------------------------------------------------------------------------------------------------------------------+
+</code></pre></div>
+<h3 id="21-technical-mechanics">2.1 Technical Mechanics</h3>
+<ol>
+<li><strong>Visibility Listener:</strong> When an operator switches tabs or minimizes their browser window, <code>document.hidden</code> evaluates to <code>true</code>.</li>
+<li><strong>Stream Reconfiguration:</strong> The client immediately terminates the high-frequency <code>1.0s</code> EventSource stream and re-initializes a low-overhead <code>30.0s</code> heartbeat stream (<code>GET /v1/telemetry/stream?interval=30.0&amp;delta_only=false</code>).</li>
+<li><strong>Banner Activation:</strong> The amber <code>#tab-sleep-banner</code> displays across the top of the viewport.</li>
+<li><strong>Instant Wakeup:</strong> As soon as the tab regains focus (<code>document.hidden = false</code>), the banner dismisses and the high-resolution <code>1.0s</code> stream reconnects in $&lt; 15 \text{ ms}$.</li>
+</ol>
+<h3 id="22-network-footprint-reduction">2.2 Network Footprint Reduction</h3>
+<ul>
+<li><strong>Active Focused Tab:</strong> $\sim 800 \text{ bytes/sec} \times 3,600 \text{ s} \approx 2.88 \text{ MB/hour}$</li>
+<li><strong>Background Sleeping Tab:</strong> $\sim 800 \text{ bytes} \times 120 \text{ ticks/hour} \approx 0.096 \text{ MB/hour}$</li>
+<li><strong>Bandwidth Savings:</strong> <strong>96.6% reduction</strong> during inactive periods.</li>
+</ul>
+<hr />
+<h2 id="chapter-25-dynamic-core-functions-autonomous-matrix">Chapter 2.5: Dynamic Core Functions Autonomous Matrix</h2>
+<p>Located above the KPI ribbon, the <strong>Dynamic Core Functions Matrix</strong> continuously and autonomously evaluates system telemetry, topology state, and compiler capabilities without static configuration or manual operator toggling.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+───────────────────────────────────────────────────────────────────────────────────────────────────────────+
+| [●] ACTIVE DYNAMIC CORE FUNCTIONS                     Evaluated at 01:52:10 • 8 Active Core Systems       |
++------------------------------------+------------------------------------+---------------------------------+
+| ⚡ AST Transpiler Engine           | 🔐 Multi-Cloud IAM Compiler        | 🗳️ Raft Consensus Cluster       |
+| Operational (P50: 1.2ms)           | Active (AWS ↔ GCP ↔ Azure)         | LEADER (Term 4)                 |
++------------------------------------+------------------------------------+---------------------------------+
+| 📜 WAL Log Compaction              | 🌐 Multi-VPC Mesh &amp; Staging        | 📦 Turnkey Migration Recipes    |
+| ΔI = 4,420 / 8,192                 | 4 Networks Staged                  | 8+ Audited Pipelines Ready      |
++------------------------------------+------------------------------------+---------------------------------+
+| 🛡️ Zero-Egress In-Perimeter Isolation         | ⚡ Circuit Breaker Failover        |                                 |
+| Enforced (100% In-VPC)             | CLOSED (Auto-Protect)              |                                 |
++------------------------------------+------------------------------------+---------------------------------+
+</code></pre></div>
+<h3 id="251-the-8-autonomously-determined-core-functions">2.5.1 The 8 Autonomously Determined Core Functions</h3>
+<ol>
+<li><strong>AST Transpiler Engine:</strong> Monitors P50/P99 latency and total translation counter to confirm zero heap leaks and sub-millisecond execution.</li>
+<li><strong>Multi-Cloud IAM Compiler:</strong> Verifies cross-cloud IAM transpilation capability across AWS IAM, GCP Cloud IAM, and Azure Managed Identities.</li>
+<li><strong>Raft Consensus Cluster:</strong> Dynamically verifies active quorum status ($2F+1$), leader identity, and cluster term.</li>
+<li><strong>WAL Log Compaction:</strong> Tracks active uncompacted delta $\Delta I = \text{Applied} - \text{Snapshot}$ against the $8,192$ threshold.</li>
+<li><strong>Multi-VPC Mesh &amp; Staging:</strong> Reconciles active connected VPC networks, subnet CIDR boundaries, and inter-cloud peering links.</li>
+<li><strong>Turnkey Migration Recipes:</strong> Dynamically discovers, indexes, and surfaces audited migration playbooks from disk and API.</li>
+<li><strong>Zero-Egress In-Perimeter Isolation Guard:</strong> Confirms that 100% of execution remains inside volatile VPC RAM with zero external WAN calls.</li>
+<li><strong>Circuit Breaker Failover:</strong> Monitors consecutive failures, backoff delays, and automatic recovery states (CLOSED $\to$ OPEN $\to$ HALF-OPEN).</li>
+</ol>
+<h3 id="252-node-specific-core-function-dynamic-determination">2.5.2 Node-Specific Core Function Dynamic Determination</h3>
+<p>When an operator selects any network node in the <strong>Interactive Multi-VPC Topology Map</strong>, the Node Inspector dynamically determines the exact migration and transpilation capabilities applicable to that cloud provider:</p>
+<ul>
+<li><strong>AWS VPC:</strong> Emits <code>[AWS -&gt; GCP OpenTofu HCL]</code>, <code>[IAM Role -&gt; ServiceAccount Mapping]</code>, <code>[Continuous Block Replication (AWS MGN)]</code>, and <code>[Subnet CIDR Slicing &amp; Route Tables]</code>.</li>
+<li><strong>GCP VPC:</strong> Emits <code>[GCP -&gt; Azure Bicep Translation]</code>, <code>[Direct VPC Egress Optimizer]</code>, <code>[Workload Identity Federation]</code>, and <code>[Google M4CE Replication Factory]</code>.</li>
+<li><strong>Azure VNet:</strong> Emits <code>[Azure Managed Identity Normalization]</code>, <code>[KQL &amp; Scheduled Query Rules -&gt; PromQL]</code>, and <code>[Azure Migrate Appliance Orchestrator]</code>.</li>
+<li><strong>On-Premises / Legacy DC:</strong> Emits <code>[Legacy Bare-Metal Lift &amp; Shift Factory]</code>, <code>[IPsec / DirectConnect Mesh]</code>, <code>[KVM Hypervisor Re-Platforming]</code>, and <code>[eBPF Zero-Exfiltration Packet Inspection]</code>.</li>
+</ul>
+<h3 id="253-compiler-studio-dynamic-dialect-capability-autodetection">2.5.3 Compiler Studio Dynamic Dialect &amp; Capability Autodetection</h3>
+<p>In <a href="/docs/compiler.html"><code>Compiler Studio</code></a>, the editor features a real-time Lexer HUD (<code>#dynamic-function-hud</code>) that analyzes user input and automatically determines:</p>
+<ul>
+<li>Source language syntax (JSON, HCL, YAML, PromQL, KQL)</li>
+<li>Vendor dialect (Datadog, AWS CloudWatch, New Relic, Azure Monitor, Terraform HCL, CloudFormation)</li>
+<li>Required core mathematical pipelines: <code>[Multi-Threshold RefId A-D]</code>, <code>[IAM Cross-Compilation]</code>, <code>[2σ Anomaly Normalizer]</code>, <code>[ISO 8601 Windowing]</code>, <code>[Direct VPC Egress Optimizer]</code>, and <code>[Google SRE Multi-Burn-Rate]</code>.</li>
+<li><strong>Automatic Selector Synchronization:</strong> Automatically reconfigures the source dropdown and target presets with zero manual intervention.</li>
+</ul>
+<hr />
+<h2 id="chapter-3-row-1-key-performance-indicator-kpi-ribbon">Chapter 3: Row 1 — Key Performance Indicator (KPI) Ribbon</h2>
+<p>The KPI Ribbon delivers 6 high-density micro-gauges summarizing engine efficiency, memory boundaries, SLA performance, and security proofs.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+------------------+-------------------+--------------------+--------------------+-------------------+--------------------+
+| CPU Utilization  | Memory Footprint  | Latency (P50/P99)  | AST Velocity       | Zero-Egress Guard | Monthly Cost       |
+| 3.2 % of 1 vCPU  | 37.4 / 50.0 MiB   | 1.2 / 8.1 ms       | 46.5 transpiles/s  | 0 WAN Packets     | $0.00 / month      |
+| [==            ] | [============== ] | [===             ] | [==========      ] | [================]| [================] |
+| Target: &lt; 0.2%   | Headroom: 12.6MB  | Sub-5ms SLA        | Total: 1,429 ops   | 4,120 scrubbed    | 100% In-VPC        |
++------------------+-------------------+--------------------+--------------------+-------------------+--------------------+
+</code></pre></div>
+<h3 id="31-gauge-specifications">3.1 Gauge Specifications</h3>
+<h4 id="1-cpu-utilization-card-cpu">1. CPU Utilization (<code>#card-cpu</code>)</h4>
+<ul>
+<li><strong>Metric:</strong> Active percentage of 1 allocated vCPU consumed by the transpiler engine and SSE streaming threads.</li>
+<li><strong>Operational Target:</strong> Continuous daemon background load $&lt; 0.2%$, scaling linearly during heavy AST batch jobs.</li>
+<li><strong>Alert Boundary:</strong> Soft warning triggered if sustained $&gt; 80%$ for $&gt; 60 \text{ s}$.</li>
+</ul>
+<h4 id="2-memory-footprint-rss-card-memory">2. Memory Footprint RSS (<code>#card-memory</code>)</h4>
+<ul>
+<li><strong>Metric:</strong> Resident Set Size (RSS) memory consumption measured directly via OS kernel primitives (<code>psutil</code> / Linux <code>/proc/self/statm</code>).</li>
+<li><strong>Container Ceiling:</strong> Strictly bounded by the $50.0 \text{ MiB}$ hardened container cap.</li>
+<li><strong>Dynamic Headroom Display (<code>#kpi-mem-headroom</code>):</strong> Real-time safe buffer calculation ($50.0 \text{ MiB} - \text{RSS}$). Turns amber if headroom drops below $8.0 \text{ MiB}$; turns crimson if headroom $&lt; 4.0 \text{ MiB}$.</li>
+</ul>
+<h4 id="3-latency-percentiles-card-latency">3. Latency Percentiles (<code>#card-latency</code>)</h4>
+<ul>
+<li><strong>Metric:</strong> Real-time distribution of AST transpilation and query processing speeds.</li>
+<li><strong>P50 (Median):</strong> Typical AST parsing time ($\sim 1.0 - 1.5 \text{ ms}$).</li>
+<li><strong>P99 (Worst-Case):</strong> Tail-latency SLA benchmark ($\sim 5.0 - 8.5 \text{ ms}$).</li>
+<li><strong>Compliance Indicator:</strong> Validates adherence to the enterprise sub-5ms SLA guarantee.</li>
+</ul>
+<h4 id="4-ast-velocity-card-throughput">4. AST Velocity (<code>#card-throughput</code>)</h4>
+<ul>
+<li><strong>Metric:</strong> Real-time throughput expressed in transpiled configurations per second (<code>transpiles/sec</code>).</li>
+<li><strong>Cumulative Operations (<code>#kpi-tp-total</code>):</strong> Lifetime total of alert rules, OpenTofu resources, and Bicep declarations processed since pod initialization.</li>
+</ul>
+<h4 id="5-zero-egress-security-guard-card-security">5. Zero-Egress Security Guard (<code>#card-security</code>)</h4>
+<ul>
+<li><strong>WAN Packet Counter:</strong> Hardcoded to strictly <code>0 WAN Packets</code>. Any attempted outbound network socket creation to non-loopback addresses triggers immediate rejection.</li>
+<li><strong>Tokens Scrubbed (<code>#kpi-tokens-scrubbed</code>):</strong> Real-time counter of proprietary credentials, AWS access keys (<code>AKIA...</code>), Datadog API keys, and corporate hostnames purged by the <code>LocalTokenAnonymizer</code> before AST synthesis.</li>
+</ul>
+<h4 id="6-monthly-software-cost-card-cost">6. Monthly Software Cost (<code>#card-cost</code>)</h4>
+<ul>
+<li><strong>Value:</strong> <code>$0.00 / month</code>.</li>
+<li><strong>Principle:</strong> Demonstrates that running the embedded telemetry mesh inside existing enterprise VPC infrastructure incurs zero per-seat licensing fees and zero external SaaS ingestion costs.</li>
+</ul>
+<hr />
+<h2 id="chapter-4-row-2-hardware-accelerated-canvas-charts">Chapter 4: Row 2 — Hardware-Accelerated Canvas Charts</h2>
+<p>Two synchronized HTML5 Canvas panels visualize high-frequency time-series telemetry with 60 FPS fluidity.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+-------------------------------------------------------+-------------------------------------------------------+
+| Sub-Millisecond Latency &amp; Translation Velocity        | In-Memory RSS Allocation vs. Strict 50 MiB Container   |
+| [ 60 FPS Hardware-Accelerated ]                       | [ Volatile Memory: 0 Disk I/O ]                       |
+|                                                       |                                                       |
+|  12 ms |                 .-.       P99 (Crimson)      |  50 MB|----------------------------------- Hard Cap   |
+|   8 ms |         .-.    /   \                         |  42 MB| - - - - - - - - - - - - - - - - -  Warn Cap   |
+|   4 ms |   .----'   '--'     \     P90 (Purple)       |  30 MB|       .-----------------                      |
+|   1 ms |=========================== P50 (Cyan)        |  20 MB|      /                  RSS Memory (Green)    |
+|   0 ms +-------------------------- Throughput (Yellow)|   0 MB+-----------------------------------------------|
+|        Legend: ● P50  ● P90  ● P99  ● Throughput      |       Legend: ● Memory RSS  ● Hard Ceiling  ● Warning |
++-------------------------------------------------------+-------------------------------------------------------+
+</code></pre></div>
+<h3 id="41-chart-1-latency-distribution-ast-velocity-canvas-latency">4.1 Chart 1: Latency Distribution &amp; AST Velocity (<code>#canvas-latency</code>)</h3>
+<ul>
+<li><strong>Data Series:</strong>
+<ul>
+<li><strong>P50 Median (Cyan <code>#00e5ff</code>):</strong> Smooth baseline representing median response times.</li>
+<li><strong>P90 Tail (Purple <code>#b388ff</code>):</strong> 90th percentile envelope capturing transient lock contention.</li>
+<li><strong>P99 Worst-Case (Crimson <code>#ff5252</code>):</strong> Peak execution spikes representing large multi-megabyte HCL configurations.</li>
+<li><strong>AST Throughput (Yellow <code>#ffd740</code>):</strong> Bar overlays indicating operations per second.</li>
+</ul>
+</li>
+<li><strong>Canvas Rendering Cycle:</strong>
+<ul>
+<li>Triggered via <code>requestAnimationFrame()</code>.</li>
+<li>Clears buffer, computes dynamic $Y$-axis scale based on max current window value, draws dashed grid lines, and traces bezier curves with linear anti-aliasing.</li>
+</ul>
+</li>
+</ul>
+<h3 id="42-chart-2-memory-footprint-vs-hard-container-cap-canvas-memory">4.2 Chart 2: Memory Footprint vs. Hard Container Cap (<code>#canvas-memory</code>)</h3>
+<ul>
+<li><strong>Data Series:</strong>
+<ul>
+<li><strong>Active RSS Memory (Emerald <code>#69f0ae</code>):</strong> Real-time memory consumption with smooth vertical gradient fill.</li>
+<li><strong>Hard Container Ceiling (Crimson <code>#ef4444</code>):</strong> Fixed reference threshold line at $50.0 \text{ MiB}$.</li>
+<li><strong>Warning Threshold (Amber <code>#f59e0b</code>):</strong> Proactive alert line at $42.0 \text{ MiB}$ ($84%$ capacity).</li>
+</ul>
+</li>
+<li><strong>Engineering Guarantee:</strong> Renders with <code>0 Disk I/O</code> assurance—all historical data points reside strictly in volatile circular memory buffers.</li>
+</ul>
+<hr />
+<h2 id="chapter-5-row-3-left-interactive-multi-vpc-topology-map">Chapter 5: Row 3 (Left) — Interactive Multi-VPC Topology Map</h2>
+<p>The Multi-VPC Architecture Topology Map provides visual modeling of cross-cloud networking infrastructure, subnets, route tables, and instance bindings.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+-------------------------------------------------------------------------------------------------------------+
+| Interactive Multi-VPC Cross-Cloud Topology Map               [⚡ Migration Staging] [➕ Register Company VPC] |
+| [ Search VPC, CIDR, Subnet... ]  [All Networks] [AWS] [GCP] [Azure] [🏢 On-Prem / Legacy]                   |
+|                                                                                                             |
+|       (AWS: us-east-1)                 (Cross-Cloud Peering)                 (GCP: us-central1)             |
+|     +--------------------+           ========================&gt;             +--------------------+           |
+|     |  production_vpc    |                                                 |  target_mesh_vpc   |           |
+|     |  10.100.0.0/16     |                                                 |  10.200.0.0/16     |           |
+|     |  ● 3 Subnets       |                                                 |  ● 3 Subnets       |           |
+|     +--------------------+                                                 +--------------------+           |
+|                                                                                                             |
+| +---------------------------------------------------------------------------------------------------------+ |
+| | Selected: production_vpc (AWS us-east-1) | CIDR: 10.100.0.0/16 • 3 Subnets • 15 Instances               | |
+| | [google_compute_network.production_vpc]                                         [⚡ Stage Migration]    | |
+| +---------------------------------------------------------------------------------------------------------+ |
++-------------------------------------------------------------------------------------------------------------+
+</code></pre></div>
+<h3 id="51-interactive-controls-filtering">5.1 Interactive Controls &amp; Filtering</h3>
+<ul>
+<li><strong>Search Bar (<code>#topology-search</code>):</strong> Real-time text filter matching network names (e.g. <code>production</code>), CIDR blocks (e.g. <code>10.100.</code>), or subnet identifiers.</li>
+<li><strong>Cloud Provider Filter Buttons (<code>.filter-btn</code>):</strong>
+<ul>
+<li><strong>All Networks:</strong> Displays full cross-cloud mesh.</li>
+<li><strong>AWS:</strong> Filters exclusively to AWS VPCs (orange <code>#ff9900</code> accent borders).</li>
+<li><strong>GCP:</strong> Filters to Google Cloud VPCs (blue <code>#4285f4</code> accent borders).</li>
+<li><strong>Azure:</strong> Filters to Microsoft Azure Virtual Networks (blue-cyan <code>#0078d4</code> accent borders).</li>
+<li><strong>🏢 On-Prem / Legacy:</strong> Highlights corporate data centers and bare-metal environments (purple <code>#8b5cf6</code> accent borders).</li>
+</ul>
+</li>
+</ul>
+<h3 id="52-dynamic-svg-visualization-stage-topology-container">5.2 Dynamic SVG Visualization Stage (<code>#topology-container</code>)</h3>
+<ul>
+<li><strong>Vector Graph Construction:</strong> Dynamically generates SVG nodes, circular status indicators, cross-cloud peering link vectors, and data-flow directional markers.</li>
+<li><strong>Node Selection &amp; Hover:</strong> Clicking any VPC node activates cyan edge glow effects and updates the bottom Node Inspector.</li>
+</ul>
+<h3 id="53-node-inspector-pane-node-inspector">5.3 Node Inspector Pane (<code>#node-inspector</code>)</h3>
+<ul>
+<li><strong>Network Metadata (<code>#inspector-details</code>):</strong> Displays parent CIDR, active subnet count, monitored instances, and local agent consensus bindings.</li>
+<li><strong>Equivalent Target Address (<code>#inspector-equivalent</code>):</strong> Previews the synthesized OpenTofu/Terraform resource ID (e.g. <code>google_compute_network.production_vpc</code> or <code>azurerm_virtual_network.production_vpc</code>).</li>
+<li><strong>Action Buttons:</strong>
+<ul>
+<li><code>⚡ Stage Migration</code> (<code>#btn-lift-and-shift</code>): Launches the 7-Tab Workload Migration Console pre-scoped to the selected VPC.</li>
+<li><code>➕ Register Company VPC</code> (<code>#btn-open-add-vpc</code>): Opens the VPC registration dialog to inject custom enterprise networks into the live topology.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="chapter-6-row-3-right-embedded-raft-consensus-wal-compaction">Chapter 6: Row 3 (Right) — Embedded Raft Consensus &amp; WAL Compaction</h2>
+<p>This panel monitors the distributed consensus layer responsible for synchronizing state, token mappings, and configuration hashes across multi-cluster deployments.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+-------------------------------------------------------------------------------------+
+| Embedded Raft Consensus &amp; WAL Compaction                         [3-Node Quorum]     |
+|                                                                                     |
+| [ Node 1 (Local) ]  10.0.1.10:8081  ● LEADER (Term 4)    Ping: 0.2ms  Commit: 28420 |
+| [ Node 2 (Peer)  ]  10.0.1.11:8081  ○ FOLLOWER (Term 4)  Ping: 1.4ms  Commit: 28420 |
+| [ Node 3 (Peer)  ]  10.0.1.12:8081  ○ FOLLOWER (Term 4)  Ping: 1.8ms  Commit: 28420 |
+|                                                                                     |
+| +---------------------------------------------------------------------------------+ |
+| | WAL Log Compaction Monitor                                53.9% of Threshold    | |
+| | [====================                   ]                                       | |
+| | Applied Index: 28,420 | Snapshot Index: 24,000 | Delta (ΔI): 4,420 / 8,192       | |
+| +---------------------------------------------------------------------------------+ |
+|                                                                                     |
+| +---------------------------------------------------------------------------------+ |
+| | ● Circuit Breaker: CLOSED (Normal)                     [⚡ Trip Circuit Breaker] | |
+| | Trip Threshold: 5 failures • Auto-Recovery: 10s backoff                         | |
+| +---------------------------------------------------------------------------------+ |
++-------------------------------------------------------------------------------------+
+</code></pre></div>
+<h3 id="61-3-node-quorum-status-cards-raft-nodes-container">6.1 3-Node Quorum Status Cards (<code>#raft-nodes-container</code>)</h3>
+<ul>
+<li><strong>Node Identifier &amp; Endpoint:</strong> IP and administrative gRPC port (<code>:8081</code>).</li>
+<li><strong>Role Badge:</strong> <code>LEADER</code> (green) or <code>FOLLOWER</code> (cyan).</li>
+<li><strong>Consensus Term:</strong> Active Raft epoch term (e.g. <code>Term 4</code>).</li>
+<li><strong>Heartbeat RTT:</strong> Sub-millisecond network ping between cluster peers.</li>
+<li><strong>Commit Index:</strong> Strictly synchronized log index verifying consistent replication across all nodes.</li>
+</ul>
+<h3 id="62-wal-log-compaction-monitor">6.2 WAL Log Compaction Monitor</h3>
+<p>Visualizes the localized embedded compaction pipeline governed by the formula:
+$$\Delta I = I_{\text{applied}} - I_{\text{snapshot}} \ge T_{\text{compact}} \quad (8,192 \text{ entries})$$</p>
+<ul>
+<li><strong>Applied Index (<code>#wal-applied-idx</code>):</strong> Highest committed state-machine index ($28,420$).</li>
+<li><strong>Snapshot Index (<code>#wal-snapshot-idx</code>):</strong> Baseline index stored in the latest immutable snapshot ($24,000$).</li>
+<li><strong>Log Delta ($\Delta I$) (<code>#wal-delta-val</code>):</strong> Current accumulated log entries ($4,420 / 8,192$).</li>
+<li><strong>Compaction Progress Bar (<code>#wal-bar-fill</code>):</strong> Automatically animates as entries arrive. Upon reaching $100%$, an automatic non-blocking MVCC snapshot trigger prunes stale logs.</li>
+</ul>
+<h3 id="63-circuit-breaker-chaos-drill-simulation">6.3 Circuit Breaker Chaos Drill Simulation</h3>
+<ul>
+<li><strong>Operational States:</strong>
+<ul>
+<li><code>CLOSED (Normal)</code>: All peer gRPC communications succeed. Dot glows emerald green.</li>
+<li><code>OPEN (Tripped)</code>: 5 consecutive failures detected. RPC traffic backed off for 10.0 seconds. Dot glows crimson red.</li>
+<li><code>HALF-OPEN (Canary)</code>: Probing cluster connectivity with single trial requests.</li>
+</ul>
+</li>
+<li><strong>Chaos Drill Button (<code>#btn-chaos-drill</code>):</strong> Dispatches <code>POST /v1/telemetry/simulate-alert</code> to intentionally trip the circuit breaker. Operators can observe the automated 10-second exponential backoff and recovery cycle live.</li>
+</ul>
+<hr />
+<h2 id="chapter-7-row-4-alert-rule-threshold-simulator-sandbox">Chapter 7: Row 4 — Alert Rule Threshold Simulator Sandbox</h2>
+<p>The Simulator Sandbox allows engineers to test Prometheus and Grafana alert threshold conditions against live telemetry curves before committing them to production Git repositories.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+-------------------------------------------------------------------------------------------------------------+
+| Interactive Alert Rule Threshold Simulator Sandbox               [Real-Time PromQL &amp; Grafana Generator]     |
+|                                                                                                             |
+| [ Target Telemetry Metric: P99 Latency (ms) ▼ ]     | [ Prometheus Alert Rule ] [ Grafana 11 Unified ]      |
+|                                                     |                                       [Copy YAML]     |
+| Alert Firing Threshold: 10.0 ms                     | groups:                                               |
+| [--------●--------------------------------] 10.0 ms | - name: dcouplr_sla_rules                             |
+|                                                     |   rules:                                              |
+| +-------------+-------------+------------+--------+ |   - alert: HighP99Latency                             |
+| | Samples: 60 | Breaches: 3 | Fires: 3/hr| Risk:2%| |     expr: dcouplr_p99_latency_ms &gt; 10.0               |
+| +-------------+-------------+------------+--------+ |     for: 2m                                           |
++-----------------------------------------------------+-------------------------------------------------------+
+</code></pre></div>
+<h3 id="71-interactive-simulator-controls">7.1 Interactive Simulator Controls</h3>
+<ol>
+<li><strong>Target Telemetry Metric (<code>#sim-metric-select</code>):</strong>
+<ul>
+<li><code>latency_p99</code>: P99 Latency (ms) — SLA worst-case envelope.</li>
+<li><code>latency_p90</code>: P90 Latency (ms) — Tail performance envelope.</li>
+<li><code>latency_p50</code>: P50 Latency (ms) — Median operational baseline.</li>
+<li><code>memory_rss</code>: Memory RSS (MiB) — 50.0 MiB container ceiling tracking.</li>
+<li><code>cpu_percent</code>: CPU Utilization (%) — Core compute consumption.</li>
+<li><code>throughput</code>: AST Velocity (transpiles/sec) — Compiler execution rate.</li>
+</ul>
+</li>
+<li><strong>Draggable Firing Threshold Slider (<code>#sim-threshold-slider</code>):</strong>
+<ul>
+<li>Fine-grained threshold adjustments ($1.0 \text{ ms}$ to $60.0 \text{ ms}$ in $0.5 \text{ ms}$ increments).</li>
+<li>Dynamically recomputes statistical breach projections on input.</li>
+</ul>
+</li>
+</ol>
+<h3 id="72-real-time-statistical-evaluation-grid">7.2 Real-Time Statistical Evaluation Grid</h3>
+<ul>
+<li><strong>Points Evaluated (<code>#sim-sample-count</code>):</strong> Number of recent samples analyzed (default: 60 data points).</li>
+<li><strong>Breach Points (<code>#sim-breach-count</code>):</strong> Number of observed telemetry ticks exceeding the selected threshold.</li>
+<li><strong>Estimated Fires / Hour (<code>#sim-fires-hr</code>):</strong> Projected alert firing frequency per hour based on current telemetry velocity.</li>
+<li><strong>False Positive Risk Score (<code>#sim-risk-pct</code>):</strong> Machine-assisted noise rating (<code>&lt; 5% Low</code>, <code>5-15% Medium</code>, <code>&gt; 15% High Alert Fatigue Risk</code>).</li>
+</ul>
+<h3 id="73-instant-code-generation-tabs">7.3 Instant Code Generation Tabs</h3>
+<ul>
+<li><strong>Prometheus Rule Tab (<code>#tab-promql</code>):</strong> Emits production-ready Prometheus Alertmanager YAML with standard <code>expr</code>, <code>for</code>, <code>labels</code> (severity), and descriptive <code>annotations</code>.</li>
+<li><strong>Grafana 11 Unified Tab (<code>#tab-grafana</code>):</strong> Emits modern Grafana Alerting YAML formatted for automated provisioning via GitOps pipelines.</li>
+<li><strong>Copy YAML Button (<code>#btn-copy-code</code>):</strong> One-click clipboard copy with visual confirmation.</li>
+</ul>
+<hr />
+<h2 id="chapter-8-row-5-in-vpc-cost-breakdown-bandwidth-financial-calculator">Chapter 8: Row 5 — In-VPC Cost Breakdown &amp; Bandwidth Financial Calculator</h2>
+<p>This panel calculates the true operational cost of running in-app observability compared to commercial SaaS monitoring solutions.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+-------------------------------------------------------------------------------------------------------------+
+| In-VPC Financial Cost Breakdown &amp; Bandwidth Calculator                  [ $0 Software • Zero Egress Tax ]   |
+|                                                                                                             |
+| 1. Software Licensing Cost: $0.00 / user (Zero vendor tax)       Active Engineers: [-----●---------] 50     |
+| 2. Cloud Infrastructure Cost: ~$0.50 - $1.50 / mo (Runs in pod)  Timeframe   | Vol/Eng  | Team Cost| Egress |
+| 3. Server Overhead: &lt; 0.2% CPU • 2 MiB Ring buffer               Min         | 48 KB    | $0.00    | $0.00  |
+| 4. Bandwidth Cost per Engineer: &lt; $0.02 / mo In-VPC              Hour        | 2.88 MB  | $0.00    | $0.00  |
+|                                                                  Month (22d) | 506 MB   | &lt; $0.50  | $0.00  |
++-------------------------------------------------------------------------------------------------------------+
+</code></pre></div>
+<h3 id="81-four-cost-categories-breakdown">8.1 Four Cost Categories Breakdown</h3>
+<ol>
+<li><strong>Software Licensing Cost:</strong> <code>$0.00</code>. Open-source core with zero per-seat user fees or ingestion volumetric pricing.</li>
+<li><strong>Cloud Infrastructure Cost:</strong> <code>~$0.50 – $1.50 / month</code>. Runs inside existing Kubernetes pod boundaries without dedicated VM instances or managed database instances.</li>
+<li><strong>Server Overhead:</strong> Consumes $&lt; 0.2%$ of 1 CPU core and strictly $2.0 \text{ MiB}$ of RAM. Emits zero disk I/O.</li>
+<li><strong>Bandwidth Cost per Engineer:</strong> Internal VPC/VPN data transfer costs less than $2$ cents per engineer per month.</li>
+</ol>
+<h3 id="82-interactive-engineer-bandwidth-calculator">8.2 Interactive Engineer Bandwidth Calculator</h3>
+<ul>
+<li><strong>Active Engineers Slider (<code>#engineers-slider</code>):</strong> Scales calculation dynamically from $1$ to $100$ concurrent engineers.</li>
+<li><strong>Comparison Table:</strong>
+<ul>
+<li><strong>Per Minute:</strong> $48 \text{ KB}$ per engineer.</li>
+<li><strong>Per Hour:</strong> $2.88 \text{ MB}$ per engineer.</li>
+<li><strong>Per Month (22 Workdays):</strong> $506 \text{ MB}$ ($0.5 \text{ GB}$) per engineer.</li>
+<li><strong>External WAN Egress Tax:</strong> Strictly <strong>$0.00</strong> (all traffic remains bounded within the private VPC).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="chapter-9-operational-modals-action-dialogs">Chapter 9: Operational Modals &amp; Action Dialogs</h2>
+<p>The Dashboard includes 4 deep-dive modal dialogs supporting day-to-day enterprise operations.</p>
+<hr />
+<h3 id="91-modal-1-register-enterprise-company-vpc-modal-add-vpc">9.1 Modal 1: Register Enterprise Company VPC (<code>#modal-add-vpc</code>)</h3>
+<p>Triggered via the <code>➕ Register Company VPC</code> button in the topology panel header.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+---------------------------------------------------------------------+
+| [●] ACTIVE MODAL: REGISTER ENTERPRISE COMPANY VPC  | ZERO WAN EGRESS|
++---------------------------------------------------------------------+
+| Register Enterprise Company VPC                                 [X] |
+| Add an existing company VPC or Kubernetes cluster to the mesh.      |
+|                                                                     |
+| VPC Network Name: [ pci_payments_mesh                             ] |
+| Cloud Provider:   [ AWS ▼ ]          Region:      [ us-east-1     ] |
+| IPv4 CIDR Block:  [ 10.150.0.0/16 ]  Instances:   [ 12            ] |
+|                                                                     |
+|                                 [ Cancel ]  [ Connect &amp; Project VPC➔]|
++---------------------------------------------------------------------+
+</code></pre></div>
+<h4 id="form-fields">Form Fields:</h4>
+<ol>
+<li><strong>VPC Network Name (<code>#vpc-form-name</code>):</strong> Normalized identifier (e.g. <code>pci_payments_vpc</code>).</li>
+<li><strong>Cloud Provider (<code>#vpc-form-cloud</code>):</strong> Select between <code>AWS</code>, <code>GCP</code>, <code>Azure</code>, or <code>OnPrem</code>.</li>
+<li><strong>Region / Data Center (<code>#vpc-form-region</code>):</strong> Geographic location string (e.g. <code>us-east-1</code>, <code>europe-west3</code>).</li>
+<li><strong>IPv4 CIDR Block (<code>#vpc-form-cidr</code>):</strong> Standard <code>/16</code> supernet notation (e.g. <code>10.150.0.0/16</code>).</li>
+<li><strong>Monitored Instances (<code>#vpc-form-instances</code>):</strong> Number of active compute nodes/workloads attached.</li>
+</ol>
+<h4 id="execution-result">Execution Result:</h4>
+<p>Submitting the form immediately injects the new network node into the live SVG topology graph, recalculates cross-cloud links, and updates filter counts without refreshing the page.</p>
+<hr />
+<h3 id="92-modal-2-sre-support-ticket-incident-dispatch-modal-dash-ticket">9.2 Modal 2: SRE Support Ticket &amp; Incident Dispatch (<code>#modal-dash-ticket</code>)</h3>
+<p>Triggered via the <code>🎫 Open Ticket</code> button in the top global header.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+---------------------------------------------------------------------+
+| [●] ACTIVE MODAL: OPEN SUPPORT TICKET &amp; INCIDENT DISPATCH           |
++---------------------------------------------------------------------+
+| Pre-Identified Identity: Acme Global Financial (CUST-101)           |
+| Tier: Cluster Large (320 Active Nodes) | TAM: Marcus Vance          |
+|                                                                     |
+| Incident Severity: [ P1 - Critical (2-Hour SLA) ▼ ]                 |
+| Category:          [ Compiler Engine / AST Parser ▼ ]               |
+| Issue Title:       [ AST syntax drift on custom Datadog JSON      ] |
+| Impacted Nodes:    [ 4                                            ] |
+| Symptoms / Logs:   [ Paste error traces or sanitized AST...       ] |
+|                                                                     |
+|                                 [ Cancel ]  [ 🚀 Dispatch to SRE ]  |
++---------------------------------------------------------------------+
+</code></pre></div>
+<h4 id="key-capabilities">Key Capabilities:</h4>
+<ul>
+<li><strong>Pre-Identified Identity Card:</strong> Automatically pulls authenticated customer metadata from session state (<code>CUST-101</code>, Acme Global Financial, Cluster Large tier, assigned Technical Account Manager).</li>
+<li><strong>Incident Severity Tiers:</strong>
+<ul>
+<li><code>P0 - Blocker</code>: 1-Hour SLA (Complete cluster outage).</li>
+<li><code>P1 - Critical</code>: 2-Hour SLA (Production impairment).</li>
+<li><code>P2 - Major</code>: 4-Hour SLA (Degraded performance).</li>
+<li><code>P3 - Minor</code>: 48-Hour SLA (General guidance / AST queries).</li>
+</ul>
+</li>
+<li><strong>Dispatch Confirmation:</strong> Upon submission, displays a unique reference ticket ID (e.g. <code>TCK-1045</code>), starts a real-time SLA countdown clock, and presents a direct link to join an active emergency Live Support Bridge.</li>
+</ul>
+<hr />
+<h3 id="93-modal-3-multi-vpc-workload-migration-console-modal-lift-and-shift">9.3 Modal 3: Multi-VPC Workload Migration Console (<code>#modal-lift-and-shift</code>)</h3>
+<p>Launched via <code>⚡ Migration Staging</code> in the topology header or <code>⚡ Stage Migration</code> in the Node Inspector. Features a fluid 2-column layout and a fullscreen expansion toggle (<code>⛶</code>).</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+--------------------------------------------------------------------------------------------------------------------+
+| [●] &lt;DCOUPLR/&gt; WORKLOAD MIGRATION &amp; REPLICATION STAGING | READY • eBPF DNAT + CLOUD-NATIVE REPLICATION        [⛶][X]|
++--------------------------------------------------------------------------------------------------------------------+
+| LEFT COLUMN: PARAMETERS                  | RIGHT COLUMN: 7-TAB WORKSPACE VIEWPORT                                  |
+|                                          | [1. OpenTofu] [2. Subnets/DNS] [3. Alerts] [4. Cutover]                 |
+| Source Network:    [ production_vpc ▼ ]  | [5. Full Bundle] [6. FinOps] [7. Replication Staging]  [📋 Copy] [💾 Export]
+| Target Cloud:      [ GCP (Google)   ▼ ]  |-------------------------------------------------------------------------|
+| Target Region:     [ us-central1      ]  | # Generated OpenTofu Landing Zone Infrastructure HCL                    |
+| Target VPC CIDR:   [ 10.200.0.0/16    ]  | resource &quot;google_compute_network&quot; &quot;production_vpc&quot; {                    |
+| [ ⚡ Re-Compile Bundle ]                 |   name                    = &quot;production-vpc&quot;                            |
+|                                          |   auto_create_subnetworks = false                                       |
+| 🌐 IP METRICS:                           | }                                                                       |
+| Subnets: 3 (/24) • Usable IPs: 762       |                                                                         |
+| Static IPs Mapped: 3 DNS Endpoints       | resource &quot;google_compute_subnetwork&quot; &quot;production_vpc_subnet_1&quot; {        |
+| eBPF Rewrites: 3 Kernel Rules            |   name          = &quot;snet-us-central1-tier1&quot;                              |
+|                                          |   ip_cidr_range = &quot;10.200.1.0/24&quot;                                       |
+| 🛡️ ZERO TRANSLATION HOLES                |   region        = &quot;us-central1&quot;                                         |
+| Child /24 subnets partition cleanly      |   network       = google_compute_network.production_vpc.id              |
+| from parent /16 supernet.                | }                                                                       |
++--------------------------------------------------------------------------------------------------------------------+
+</code></pre></div>
+<h4 id="the-7-tabbed-workspaces">The 7 Tabbed Workspaces:</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Tab</th>
+<th style="text-align:left">Title</th>
+<th style="text-align:left">Content &amp; Technical Deliverable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><strong>Tab 1</strong></td>
+<td style="text-align:left"><strong>OpenTofu IaC (HCL)</strong></td>
+<td style="text-align:left">Complete infrastructure-as-code landing zone: VPCs, subnets, instances, databases, and buckets synthesized for the target cloud provider.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>Tab 2</strong></td>
+<td style="text-align:left"><strong>Subnet &amp; Private DNS</strong></td>
+<td style="text-align:left">Three interactive mapping tables: (1) Subnet CIDR translations, (2) Hardcoded Static IP $\to$ Private DNS endpoints, and (3) Kernel eBPF / iptables DNAT rules for zero-code IP rewrites.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>Tab 3</strong></td>
+<td style="text-align:left"><strong>Prometheus Alerts</strong></td>
+<td style="text-align:left">Synthesized Prometheus Alertmanager rules and <code>PrometheusRule</code> custom resources mirroring original source alerts without translation drift.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>Tab 4</strong></td>
+<td style="text-align:left"><strong>Cutover Runbook</strong></td>
+<td style="text-align:left">Turnkey zero-downtime cutover bash script with pre-flight binary checks, state synchronization loops, and automated rollback routines.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>Tab 5</strong></td>
+<td style="text-align:left"><strong>Full Wave Bundle (JSON)</strong></td>
+<td style="text-align:left">Complete unified JSON migration payload containing all artifacts, metadata, and checksums ready for automated GitOps execution.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>Tab 6</strong></td>
+<td style="text-align:left"><strong>FinOps Cost Comparison</strong></td>
+<td style="text-align:left">Public benchmark expenditure matrix comparing source cloud vs target cloud costs across On-Demand, 1-Year Committed ($\sim 35%$ discount), and 3-Year Committed ($\sim 55%$ discount) tiers with payback ROI timelines.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>Tab 7</strong></td>
+<td style="text-align:left"><strong>Replication Staging</strong></td>
+<td style="text-align:left">Host block-replication mapping, SRE execution runbook (<code>RUNBOOK-DCOUPLR-REPL-001</code>), Provider CLI launch scripts (AWS MGN, GCP M4CE, Azure Migrate), and ephemeral JIT bootstrap scripts (PowerShell WinRM for Windows; Bash SSH for Linux).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="94-modal-4-pre-export-full-bundle-verification-modal-modal-bundle-preview">9.4 Modal 4: Pre-Export Full Bundle Verification Modal (<code>#modal-bundle-preview</code>)</h3>
+<p>Triggered via <code>🔍 View Full Bundle</code> or <code>💾 Export Full Bundle</code> from within the Migration Console.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+---------------------------------------------------------------------+
+| [●] ACTIVE MODAL: PRE-EXPORT FULL BUNDLE VERIFICATION               |
++---------------------------------------------------------------------+
+| Full Migration Wave Bundle Manifest                             [X] |
+| 100% In-VPC Zero Egress • Complete Turnkey Wave Bundle              |
+|                                                                     |
+| Metadata Chips: [Wave: wave_01] [Source: AWS] [Target: GCP] [9 Assets]
+| Toolbar: [View Mode: Raw JSON | Artifact Summary] [🔍 Search JSON...]|
+|                                                                     |
+| {                                                                   |
+|   &quot;bundle_version&quot;: &quot;1.0.0&quot;,                                        |
+|   &quot;source_vpc&quot;: &quot;production_vpc&quot;,                                   |
+|   &quot;target_cloud&quot;: &quot;GCP&quot;,                                            |
+|   &quot;opentofu_hcl&quot;: &quot;resource \&quot;google_compute_network\&quot; ...&quot;,        |
+|   &quot;ebpf_dnat_rules&quot;: [ ... ],                                       |
+|   &quot;checksum_sha256&quot;: &quot;e3b0c44298fc1c149afbf4c8996fb92427ae41e4...&quot;|
+| }                                                                   |
+|                                                                     |
+| [← Back to Editor]            [📋 Copy JSON] [💾 Confirm &amp; Download] |
++---------------------------------------------------------------------+
+</code></pre></div>
+<h4 id="verification-features">Verification Features:</h4>
+<ul>
+<li><strong>Dual View Modes:</strong>
+<ul>
+<li><strong>Raw JSON:</strong> Full highlighted syntax view of the entire JSON bundle.</li>
+<li><strong>Artifact Summary:</strong> Human-readable card hierarchy breaking down the generated OpenTofu files, DNS rules, Prometheus rules, and replication scripts.</li>
+</ul>
+</li>
+<li><strong>Search &amp; Filter:</strong> Real-time search field highlighting specific resource attributes or IP addresses across the manifest.</li>
+<li><strong>Deterministic Checksum Attestation:</strong> Validates the SHA-256 fingerprint of all generated files before saving to disk.</li>
+</ul>
+<hr />
+<h2 id="chapter-10-sre-troubleshooting-air-gap-verification-runbook">Chapter 10: SRE Troubleshooting &amp; Air-Gap Verification Runbook</h2>
+<h3 id="101-air-gap-zero-egress-verification-runbook">10.1 Air-Gap Zero-Egress Verification Runbook</h3>
+<p>To formally audit that the Dashboard makes zero public WAN requests:</p>
+<ol>
+<li><strong>Launch Dashboard in Air-Gap Sandbox:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Bind strictly to localhost / private interface
+./migration_tools serve --host 127.0.0.1 --port 8000
+</code></pre></div>
+</li>
+<li><strong>Execute Network Socket Sniffing:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Verify all established sockets are loopback only
+netstat -an | grep 8000
+</code></pre></div>
+</li>
+<li><strong>Inspect Browser Developer Tools Network Tab:</strong>
+<ul>
+<li>Filter by: <code>All</code>.</li>
+<li>Confirm all requests originate from and terminate at <code>http://127.0.0.1:8000/</code>.</li>
+<li>Confirm external font requests, analytics beacons, and CDN calls are strictly <strong>0</strong>.</li>
+</ul>
+</li>
+<li><strong>Trigger Security Test Suite:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">pytest tests/test_vector2_zero_egress_security_proofs.py -v
+</code></pre></div>
+</li>
+</ol>
+<h3 id="102-common-operational-diagnostics">10.2 Common Operational Diagnostics</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Symptom</th>
+<th style="text-align:left">Diagnostic Root Cause</th>
+<th style="text-align:left">SRE Remediation Procedure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Stream Status displays crimson &quot;SSE Disconnected&quot;</strong></td>
+<td style="text-align:left">Local API server process terminated or port 8000 blocked by host firewall.</td>
+<td style="text-align:left">Check terminal for process status. Restart server: <code>python -m migration_tools.cli serve</code>. Verify <code>/healthz</code> returns <code>200 OK</code>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Raft Role displays &quot;FOLLOWER&quot; on all nodes</strong></td>
+<td style="text-align:left">Split-brain network partition or insufficient quorum of live peers.</td>
+<td style="text-align:left">Verify at least 2 of 3 cluster nodes are reachable on gRPC port <code>8081</code>. Check firewall rules between nodes.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Circuit Breaker trips to &quot;OPEN&quot; unexpectedly</strong></td>
+<td style="text-align:left">Network latency exceeded 10.0s or peer gRPC service crashed.</td>
+<td style="text-align:left">Inspect peer container logs. The circuit breaker will auto-probe every 10 seconds and automatically reset to <code>CLOSED</code> once connectivity restores.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Canvas charts appear frozen</strong></td>
+<td style="text-align:left">Browser tab sleep active or hardware acceleration disabled.</td>
+<td style="text-align:left">Verify tab is focused. Check if <code>Tab Sleep Mode Active</code> banner is showing. In Chrome/Edge, verify <code>Use graphics acceleration when available</code> is enabled.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Modal does not scroll on small screens</strong></td>
+<td style="text-align:left">Viewport height $&lt; 600 \text{ px}$.</td>
+<td style="text-align:left">Click the fullscreen toggle (<code>⛶</code>) in the modal header to expand into responsive fluid layout mode.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="summary-of-completed-documentation-deliverables">Summary of Completed Documentation Deliverables</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Specification &amp; Manual Document</th>
+<th style="text-align:left">File Location</th>
+<th style="text-align:left">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Dashboard Operator Manual (This Document)</strong></td>
+<td style="text-align:left"><a href="/docs/IN_APP_TELEMETRY_DASHBOARD_OPERATOR_MANUAL.html"><code>docs/IN_APP_TELEMETRY_DASHBOARD_OPERATOR_MANUAL.md</code></a></td>
+<td style="text-align:left">Comprehensive step-by-step user and operations guide covering all 5 rows, 6 KPIs, 2 Canvas charts, 4 modals, and 7 migration tabs.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Dashboard Architecture &amp; Build Plan</strong></td>
+<td style="text-align:left"><a href="/docs/IN_APP_TELEMETRY_DASHBOARD_PLAN.html"><code>docs/IN_APP_TELEMETRY_DASHBOARD_PLAN.md</code></a></td>
+<td style="text-align:left">Technical architectural blueprint, data flow diagrams, and ring buffer memory specifications.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Replication SRE Execution Runbook</strong></td>
+<td style="text-align:left"><a href="/docs/runbooks/RUNBOOK-DCOUPLR-REPLICATION-MIGRATION.html"><code>docs/runbooks/RUNBOOK-DCOUPLR-REPLICATION-MIGRATION.md</code></a></td>
+<td style="text-align:left">Technical cutover steps, parameter checklists, and host agent bootstrap commands.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Zero-Egress Security &amp; Patent Register</strong></td>
+<td style="text-align:left"><a href="/docs/PROPRIETARY_INVENTION_DISCLOSURE_AND_PATENT_REGISTER.html"><code>docs/PROPRIETARY_INVENTION_DISCLOSURE_AND_PATENT_REGISTER.md</code></a></td>
+<td style="text-align:left">Patent vectors 1–11 covering local volatile ring buffers, zero egress, and streaming snapshot compactions.</td>
+</tr>
+</tbody>
+</table>
+</div>
+      <pre id="raw-view"><code># &amp;lt;dcouplr/&amp;gt;: In-App Zero-Egress Telemetry &amp; Multi-VPC Dashboard Operator Manual
+
+**Document ID:** MANUAL-DASH-2026-v1.0  
+**Target URL:** `http://127.0.0.1:8000/dashboard`  
+**Classification:** Enterprise Engineering Reference &amp; SRE Operations Guide  
+**Software Version:** `&lt;dcouplr/&gt;` Core Engine v1.0.0 GA  
+**Security Profile:** 100% In-VPC Boundary • Zero Public WAN Egress • Volatile Memory Only  
+
+---
+
+## Executive Summary &amp; Architectural Invariants
+
+The `&lt;dcouplr/&gt;` In-App Telemetry &amp; Multi-VPC Dashboard is an embedded, zero-dependency, real-time observability and migration orchestration platform running directly inside the compiled `&lt;dcouplr/&gt;` engine container. 
+
+Unlike traditional monitoring architectures that require multi-megabyte external dashboards (such as standalone Grafana deployments, relational state stores, or third-party SaaS agents), the `&lt;dcouplr/&gt;` Dashboard is served entirely from in-memory volatile ring buffers via private Server-Sent Events (SSE) and hardware-accelerated HTML5 Canvas graphics.
+
+### Core Architectural Invariants:
+1. **Zero External Network Exfiltration:** 0 WAN packets emitted. All telemetry samples, topology graphs, and migration manifests are calculated locally inside volatile memory.
+2. **Sub-50 MiB Memory Ceiling:** The dashboard&#x27;s server-side telemetry ring buffer occupies strictly $&lt; 2 \text{ MiB}$ of RAM, operating comfortably within `&lt;dcouplr/&gt;`&#x27;s overall $50.0 \text{ MiB}$ container RSS ceiling.
+3. **60 FPS Hardware-Accelerated Rendering:** Client-side time-series curves are rendered using raw HTML5 2D Canvas contexts, processing up to 150,000 telemetry points in $&lt; 5 \text{ ms}$ without external JavaScript charting libraries.
+4. **Adaptive Bandwidth Conservation (Tab Sleep):** Uses the HTML5 Page Visibility API to automatically throttle streaming from 1-second ticks down to 30-second ticks whenever the browser tab is hidden or minimized, reducing network overhead by $96.6\%$.
+
+```
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │                             &lt;dcouplr/&gt; IN-APP DASHBOARD RUNTIME                        │
+ │                                                                                        │
+ │   ┌───────────────────────┐   ┌───────────────────────────┐   ┌────────────────────┐   │
+ │   │  Go / Python Engine   │   │  Embedded Raft Consensus  │   │  AST &amp; Query Mesh  │   │
+ │   │  Memory &amp; CPU Metrics │   │  Leader / Follower Quorum │   │  PromQL Converter  │   │
+ │   └──────────┬────────────┘   └─────────────┬─────────────┘   └─────────┬──────────┘   │
+ │              │                              │                           │              │
+ │              └──────────────────────────────┼───────────────────────────┘              │
+ │                                             ▼                                          │
+ │                        ┌────────────────────────────────────────┐                      │
+ │                        │  In-Memory Telemetry Collector (Ring)  │                      │
+ │                        │  - Circular ring buffers (1024 slots)  │                      │
+ │                        │  - Zero heap allocation per sample     │                      │
+ │                        │  - Sub-1ms snapshot calculation        │                      │
+ │                        └────────────────────┬───────────────────┘                      │
+ │                                             │                                          │
+ │                ┌────────────────────────────┴───────────────────────────┐              │
+ │                ▼                                                        ▼              │
+ │   ┌───────────────────────────┐                            ┌─────────────────────────┐ │
+ │   │  REST Snapshot APIs       │                            │  SSE Real-Time Stream   │ │
+ │   │  /v1/telemetry/metrics    │                            │  /v1/telemetry/stream   │ │
+ │   │  /v1/telemetry/topology   │                            │  (1000ms push heartbeat)│ │
+ │   └────────────┬──────────────┘                            └────────────┬────────────┘ │
+ └────────────────┼────────────────────────────────────────────────────────┼──────────────┘
+                  │                                                        │
+                  ▼                                                        ▼
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │                      BROWSER CLIENT VIEWPORT (http://127.0.0.1:8000/dashboard)         │
+ └────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Chapter 1: Global Header &amp; Live Connection Status
+
+The top navigation header provides immediate, peripheral situational awareness regarding cluster health, streaming connectivity, circuit breakers, and Raft consensus.
+
+```
++-------------------------------------------------------------------------------------------------------------------------+
+| &lt;dcouplr/&gt; Zero-Egress Telemetry Engine | Product Overview | Compiler Studio | Telemetry &amp; Topology [Live]              |
+|                                         | [🎫 Open Ticket] | [● SSE Live (1s)] | [Breaker: CLOSED] | [Raft: LEADER (Term 4)]|
++-------------------------------------------------------------------------------------------------------------------------+
+```
+
+### 1.1 Header Components
+
+| Element | DOM Identifier | Function &amp; Behavior |
+| :--- | :--- | :--- |
+| **Brand Logo &amp; Badge** | `.logo-brand` | Navigates back to the root application (`/`). Displays the active security profile: `Zero-Egress Telemetry Engine`. |
+| **Global Navigation Switcher** | `nav.nav-links` | Instant client-side switching between **Product Overview** (`/`), **Compiler Studio** (`/compiler`), and **Telemetry &amp; Topology** (`/dashboard`). |
+| **Emergency Ticket Dispatch** | `#btn-open-ticket-dash` | Triggers the SRE Support &amp; Incident Dispatch Modal, pre-populating verified customer organization details (`CUST-101`). |
+| **SSE Stream Status Pill** | `#status-stream` | Indicates the real-time health of the Server-Sent Events push stream (`/v1/telemetry/stream`). Displays a glowing green pulse dot during active 1s heartbeats; turns amber during tab sleep throttling (30s ticks); turns crimson if the HTTP connection drops. |
+| **Circuit Breaker Status Badge** | `#status-cb` | Shows the active state of the Raft telemetry gRPC circuit breaker: `CLOSED` (Normal operational state), `OPEN` (Failover active; requests backed off), or `HALF-OPEN` (Canary testing state). |
+| **Raft Consensus Role &amp; Term** | `#raft-role-badge` | Reports the local node&#x27;s current Raft cluster leadership state (e.g., `LEADER (Term 4)` or `FOLLOWER (Term 4)`). |
+
+---
+
+## Chapter 2: Adaptive Bandwidth Optimization &amp; Tab Sleep Engine
+
+In high-density engineering environments where dozens of engineers leave monitoring dashboards open on background monitors, unthrottled streaming can silently waste megabytes of private cross-AZ network traffic.
+
+```
++-------------------------------------------------------------------------------------------------------------------------+
+| 💤 Tab Sleep Mode Active: Browser tab is inactive. Telemetry stream throttled from 1s to 30s to conserve VPC bandwidth.  |
+| document.hidden = true                                                                                                  |
++-------------------------------------------------------------------------------------------------------------------------+
+```
+
+### 2.1 Technical Mechanics
+1. **Visibility Listener:** When an operator switches tabs or minimizes their browser window, `document.hidden` evaluates to `true`.
+2. **Stream Reconfiguration:** The client immediately terminates the high-frequency `1.0s` EventSource stream and re-initializes a low-overhead `30.0s` heartbeat stream (`GET /v1/telemetry/stream?interval=30.0&amp;delta_only=false`).
+3. **Banner Activation:** The amber `#tab-sleep-banner` displays across the top of the viewport.
+4. **Instant Wakeup:** As soon as the tab regains focus (`document.hidden = false`), the banner dismisses and the high-resolution `1.0s` stream reconnects in $&lt; 15 \text{ ms}$.
+
+### 2.2 Network Footprint Reduction
+- **Active Focused Tab:** $\sim 800 \text{ bytes/sec} \times 3,600 \text{ s} \approx 2.88 \text{ MB/hour}$
+- **Background Sleeping Tab:** $\sim 800 \text{ bytes} \times 120 \text{ ticks/hour} \approx 0.096 \text{ MB/hour}$
+- **Bandwidth Savings:** **96.6% reduction** during inactive periods.
+
+---
+
+## Chapter 2.5: Dynamic Core Functions Autonomous Matrix
+
+Located above the KPI ribbon, the **Dynamic Core Functions Matrix** continuously and autonomously evaluates system telemetry, topology state, and compiler capabilities without static configuration or manual operator toggling.
+
+```
++───────────────────────────────────────────────────────────────────────────────────────────────────────────+
+| [●] ACTIVE DYNAMIC CORE FUNCTIONS                     Evaluated at 01:52:10 • 8 Active Core Systems       |
++------------------------------------+------------------------------------+---------------------------------+
+| ⚡ AST Transpiler Engine           | 🔐 Multi-Cloud IAM Compiler        | 🗳️ Raft Consensus Cluster       |
+| Operational (P50: 1.2ms)           | Active (AWS ↔ GCP ↔ Azure)         | LEADER (Term 4)                 |
++------------------------------------+------------------------------------+---------------------------------+
+| 📜 WAL Log Compaction              | 🌐 Multi-VPC Mesh &amp; Staging        | 📦 Turnkey Migration Recipes    |
+| ΔI = 4,420 / 8,192                 | 4 Networks Staged                  | 8+ Audited Pipelines Ready      |
++------------------------------------+------------------------------------+---------------------------------+
+| 🛡️ Zero-Egress In-Perimeter Isolation         | ⚡ Circuit Breaker Failover        |                                 |
+| Enforced (100% In-VPC)             | CLOSED (Auto-Protect)              |                                 |
++------------------------------------+------------------------------------+---------------------------------+
+```
+
+### 2.5.1 The 8 Autonomously Determined Core Functions
+1. **AST Transpiler Engine:** Monitors P50/P99 latency and total translation counter to confirm zero heap leaks and sub-millisecond execution.
+2. **Multi-Cloud IAM Compiler:** Verifies cross-cloud IAM transpilation capability across AWS IAM, GCP Cloud IAM, and Azure Managed Identities.
+3. **Raft Consensus Cluster:** Dynamically verifies active quorum status ($2F+1$), leader identity, and cluster term.
+4. **WAL Log Compaction:** Tracks active uncompacted delta $\Delta I = \text{Applied} - \text{Snapshot}$ against the $8,192$ threshold.
+5. **Multi-VPC Mesh &amp; Staging:** Reconciles active connected VPC networks, subnet CIDR boundaries, and inter-cloud peering links.
+6. **Turnkey Migration Recipes:** Dynamically discovers, indexes, and surfaces audited migration playbooks from disk and API.
+7. **Zero-Egress In-Perimeter Isolation Guard:** Confirms that 100% of execution remains inside volatile VPC RAM with zero external WAN calls.
+8. **Circuit Breaker Failover:** Monitors consecutive failures, backoff delays, and automatic recovery states (CLOSED $\to$ OPEN $\to$ HALF-OPEN).
+
+### 2.5.2 Node-Specific Core Function Dynamic Determination
+When an operator selects any network node in the **Interactive Multi-VPC Topology Map**, the Node Inspector dynamically determines the exact migration and transpilation capabilities applicable to that cloud provider:
+- **AWS VPC:** Emits `[AWS -&gt; GCP OpenTofu HCL]`, `[IAM Role -&gt; ServiceAccount Mapping]`, `[Continuous Block Replication (AWS MGN)]`, and `[Subnet CIDR Slicing &amp; Route Tables]`.
+- **GCP VPC:** Emits `[GCP -&gt; Azure Bicep Translation]`, `[Direct VPC Egress Optimizer]`, `[Workload Identity Federation]`, and `[Google M4CE Replication Factory]`.
+- **Azure VNet:** Emits `[Azure Managed Identity Normalization]`, `[KQL &amp; Scheduled Query Rules -&gt; PromQL]`, and `[Azure Migrate Appliance Orchestrator]`.
+- **On-Premises / Legacy DC:** Emits `[Legacy Bare-Metal Lift &amp; Shift Factory]`, `[IPsec / DirectConnect Mesh]`, `[KVM Hypervisor Re-Platforming]`, and `[eBPF Zero-Exfiltration Packet Inspection]`.
+
+### 2.5.3 Compiler Studio Dynamic Dialect &amp; Capability Autodetection
+In [`Compiler Studio`](/docs/compiler.html), the editor features a real-time Lexer HUD (`#dynamic-function-hud`) that analyzes user input and automatically determines:
+- Source language syntax (JSON, HCL, YAML, PromQL, KQL)
+- Vendor dialect (Datadog, AWS CloudWatch, New Relic, Azure Monitor, Terraform HCL, CloudFormation)
+- Required core mathematical pipelines: `[Multi-Threshold RefId A-D]`, `[IAM Cross-Compilation]`, `[2σ Anomaly Normalizer]`, `[ISO 8601 Windowing]`, `[Direct VPC Egress Optimizer]`, and `[Google SRE Multi-Burn-Rate]`.
+- **Automatic Selector Synchronization:** Automatically reconfigures the source dropdown and target presets with zero manual intervention.
+
+---
+
+## Chapter 3: Row 1 — Key Performance Indicator (KPI) Ribbon
+
+The KPI Ribbon delivers 6 high-density micro-gauges summarizing engine efficiency, memory boundaries, SLA performance, and security proofs.
+
+```
++------------------+-------------------+--------------------+--------------------+-------------------+--------------------+
+| CPU Utilization  | Memory Footprint  | Latency (P50/P99)  | AST Velocity       | Zero-Egress Guard | Monthly Cost       |
+| 3.2 % of 1 vCPU  | 37.4 / 50.0 MiB   | 1.2 / 8.1 ms       | 46.5 transpiles/s  | 0 WAN Packets     | $0.00 / month      |
+| [==            ] | [============== ] | [===             ] | [==========      ] | [================]| [================] |
+| Target: &lt; 0.2%   | Headroom: 12.6MB  | Sub-5ms SLA        | Total: 1,429 ops   | 4,120 scrubbed    | 100% In-VPC        |
++------------------+-------------------+--------------------+--------------------+-------------------+--------------------+
+```
+
+### 3.1 Gauge Specifications
+
+#### 1. CPU Utilization (`#card-cpu`)
+- **Metric:** Active percentage of 1 allocated vCPU consumed by the transpiler engine and SSE streaming threads.
+- **Operational Target:** Continuous daemon background load $&lt; 0.2\%$, scaling linearly during heavy AST batch jobs.
+- **Alert Boundary:** Soft warning triggered if sustained $&gt; 80\%$ for $&gt; 60 \text{ s}$.
+
+#### 2. Memory Footprint RSS (`#card-memory`)
+- **Metric:** Resident Set Size (RSS) memory consumption measured directly via OS kernel primitives (`psutil` / Linux `/proc/self/statm`).
+- **Container Ceiling:** Strictly bounded by the $50.0 \text{ MiB}$ hardened container cap.
+- **Dynamic Headroom Display (`#kpi-mem-headroom`):** Real-time safe buffer calculation ($50.0 \text{ MiB} - \text{RSS}$). Turns amber if headroom drops below $8.0 \text{ MiB}$; turns crimson if headroom $&lt; 4.0 \text{ MiB}$.
+
+#### 3. Latency Percentiles (`#card-latency`)
+- **Metric:** Real-time distribution of AST transpilation and query processing speeds.
+- **P50 (Median):** Typical AST parsing time ($\sim 1.0 - 1.5 \text{ ms}$).
+- **P99 (Worst-Case):** Tail-latency SLA benchmark ($\sim 5.0 - 8.5 \text{ ms}$).
+- **Compliance Indicator:** Validates adherence to the enterprise sub-5ms SLA guarantee.
+
+#### 4. AST Velocity (`#card-throughput`)
+- **Metric:** Real-time throughput expressed in transpiled configurations per second (`transpiles/sec`).
+- **Cumulative Operations (`#kpi-tp-total`):** Lifetime total of alert rules, OpenTofu resources, and Bicep declarations processed since pod initialization.
+
+#### 5. Zero-Egress Security Guard (`#card-security`)
+- **WAN Packet Counter:** Hardcoded to strictly `0 WAN Packets`. Any attempted outbound network socket creation to non-loopback addresses triggers immediate rejection.
+- **Tokens Scrubbed (`#kpi-tokens-scrubbed`):** Real-time counter of proprietary credentials, AWS access keys (`AKIA...`), Datadog API keys, and corporate hostnames purged by the `LocalTokenAnonymizer` before AST synthesis.
+
+#### 6. Monthly Software Cost (`#card-cost`)
+- **Value:** `$0.00 / month`.
+- **Principle:** Demonstrates that running the embedded telemetry mesh inside existing enterprise VPC infrastructure incurs zero per-seat licensing fees and zero external SaaS ingestion costs.
+
+---
+
+## Chapter 4: Row 2 — Hardware-Accelerated Canvas Charts
+
+Two synchronized HTML5 Canvas panels visualize high-frequency time-series telemetry with 60 FPS fluidity.
+
+```
++-------------------------------------------------------+-------------------------------------------------------+
+| Sub-Millisecond Latency &amp; Translation Velocity        | In-Memory RSS Allocation vs. Strict 50 MiB Container   |
+| [ 60 FPS Hardware-Accelerated ]                       | [ Volatile Memory: 0 Disk I/O ]                       |
+|                                                       |                                                       |
+|  12 ms |                 .-.       P99 (Crimson)      |  50 MB|----------------------------------- Hard Cap   |
+|   8 ms |         .-.    /   \                         |  42 MB| - - - - - - - - - - - - - - - - -  Warn Cap   |
+|   4 ms |   .----&#x27;   &#x27;--&#x27;     \     P90 (Purple)       |  30 MB|       .-----------------                      |
+|   1 ms |=========================== P50 (Cyan)        |  20 MB|      /                  RSS Memory (Green)    |
+|   0 ms +-------------------------- Throughput (Yellow)|   0 MB+-----------------------------------------------|
+|        Legend: ● P50  ● P90  ● P99  ● Throughput      |       Legend: ● Memory RSS  ● Hard Ceiling  ● Warning |
++-------------------------------------------------------+-------------------------------------------------------+
+```
+
+### 4.1 Chart 1: Latency Distribution &amp; AST Velocity (`#canvas-latency`)
+- **Data Series:**
+  - **P50 Median (Cyan `#00e5ff`):** Smooth baseline representing median response times.
+  - **P90 Tail (Purple `#b388ff`):** 90th percentile envelope capturing transient lock contention.
+  - **P99 Worst-Case (Crimson `#ff5252`):** Peak execution spikes representing large multi-megabyte HCL configurations.
+  - **AST Throughput (Yellow `#ffd740`):** Bar overlays indicating operations per second.
+- **Canvas Rendering Cycle:**
+  - Triggered via `requestAnimationFrame()`.
+  - Clears buffer, computes dynamic $Y$-axis scale based on max current window value, draws dashed grid lines, and traces bezier curves with linear anti-aliasing.
+
+### 4.2 Chart 2: Memory Footprint vs. Hard Container Cap (`#canvas-memory`)
+- **Data Series:**
+  - **Active RSS Memory (Emerald `#69f0ae`):** Real-time memory consumption with smooth vertical gradient fill.
+  - **Hard Container Ceiling (Crimson `#ef4444`):** Fixed reference threshold line at $50.0 \text{ MiB}$.
+  - **Warning Threshold (Amber `#f59e0b`):** Proactive alert line at $42.0 \text{ MiB}$ ($84\%$ capacity).
+- **Engineering Guarantee:** Renders with `0 Disk I/O` assurance—all historical data points reside strictly in volatile circular memory buffers.
+
+---
+
+## Chapter 5: Row 3 (Left) — Interactive Multi-VPC Topology Map
+
+The Multi-VPC Architecture Topology Map provides visual modeling of cross-cloud networking infrastructure, subnets, route tables, and instance bindings.
+
+```
++-------------------------------------------------------------------------------------------------------------+
+| Interactive Multi-VPC Cross-Cloud Topology Map               [⚡ Migration Staging] [➕ Register Company VPC] |
+| [ Search VPC, CIDR, Subnet... ]  [All Networks] [AWS] [GCP] [Azure] [🏢 On-Prem / Legacy]                   |
+|                                                                                                             |
+|       (AWS: us-east-1)                 (Cross-Cloud Peering)                 (GCP: us-central1)             |
+|     +--------------------+           ========================&gt;             +--------------------+           |
+|     |  production_vpc    |                                                 |  target_mesh_vpc   |           |
+|     |  10.100.0.0/16     |                                                 |  10.200.0.0/16     |           |
+|     |  ● 3 Subnets       |                                                 |  ● 3 Subnets       |           |
+|     +--------------------+                                                 +--------------------+           |
+|                                                                                                             |
+| +---------------------------------------------------------------------------------------------------------+ |
+| | Selected: production_vpc (AWS us-east-1) | CIDR: 10.100.0.0/16 • 3 Subnets • 15 Instances               | |
+| | [google_compute_network.production_vpc]                                         [⚡ Stage Migration]    | |
+| +---------------------------------------------------------------------------------------------------------+ |
++-------------------------------------------------------------------------------------------------------------+
+```
+
+### 5.1 Interactive Controls &amp; Filtering
+- **Search Bar (`#topology-search`):** Real-time text filter matching network names (e.g. `production`), CIDR blocks (e.g. `10.100.`), or subnet identifiers.
+- **Cloud Provider Filter Buttons (`.filter-btn`):**
+  - **All Networks:** Displays full cross-cloud mesh.
+  - **AWS:** Filters exclusively to AWS VPCs (orange `#ff9900` accent borders).
+  - **GCP:** Filters to Google Cloud VPCs (blue `#4285f4` accent borders).
+  - **Azure:** Filters to Microsoft Azure Virtual Networks (blue-cyan `#0078d4` accent borders).
+  - **🏢 On-Prem / Legacy:** Highlights corporate data centers and bare-metal environments (purple `#8b5cf6` accent borders).
+
+### 5.2 Dynamic SVG Visualization Stage (`#topology-container`)
+- **Vector Graph Construction:** Dynamically generates SVG nodes, circular status indicators, cross-cloud peering link vectors, and data-flow directional markers.
+- **Node Selection &amp; Hover:** Clicking any VPC node activates cyan edge glow effects and updates the bottom Node Inspector.
+
+### 5.3 Node Inspector Pane (`#node-inspector`)
+- **Network Metadata (`#inspector-details`):** Displays parent CIDR, active subnet count, monitored instances, and local agent consensus bindings.
+- **Equivalent Target Address (`#inspector-equivalent`):** Previews the synthesized OpenTofu/Terraform resource ID (e.g. `google_compute_network.production_vpc` or `azurerm_virtual_network.production_vpc`).
+- **Action Buttons:**
+  - `⚡ Stage Migration` (`#btn-lift-and-shift`): Launches the 7-Tab Workload Migration Console pre-scoped to the selected VPC.
+  - `➕ Register Company VPC` (`#btn-open-add-vpc`): Opens the VPC registration dialog to inject custom enterprise networks into the live topology.
+
+---
+
+## Chapter 6: Row 3 (Right) — Embedded Raft Consensus &amp; WAL Compaction
+
+This panel monitors the distributed consensus layer responsible for synchronizing state, token mappings, and configuration hashes across multi-cluster deployments.
+
+```
++-------------------------------------------------------------------------------------+
+| Embedded Raft Consensus &amp; WAL Compaction                         [3-Node Quorum]     |
+|                                                                                     |
+| [ Node 1 (Local) ]  10.0.1.10:8081  ● LEADER (Term 4)    Ping: 0.2ms  Commit: 28420 |
+| [ Node 2 (Peer)  ]  10.0.1.11:8081  ○ FOLLOWER (Term 4)  Ping: 1.4ms  Commit: 28420 |
+| [ Node 3 (Peer)  ]  10.0.1.12:8081  ○ FOLLOWER (Term 4)  Ping: 1.8ms  Commit: 28420 |
+|                                                                                     |
+| +---------------------------------------------------------------------------------+ |
+| | WAL Log Compaction Monitor                                53.9% of Threshold    | |
+| | [====================                   ]                                       | |
+| | Applied Index: 28,420 | Snapshot Index: 24,000 | Delta (ΔI): 4,420 / 8,192       | |
+| +---------------------------------------------------------------------------------+ |
+|                                                                                     |
+| +---------------------------------------------------------------------------------+ |
+| | ● Circuit Breaker: CLOSED (Normal)                     [⚡ Trip Circuit Breaker] | |
+| | Trip Threshold: 5 failures • Auto-Recovery: 10s backoff                         | |
+| +---------------------------------------------------------------------------------+ |
++-------------------------------------------------------------------------------------+
+```
+
+### 6.1 3-Node Quorum Status Cards (`#raft-nodes-container`)
+- **Node Identifier &amp; Endpoint:** IP and administrative gRPC port (`:8081`).
+- **Role Badge:** `LEADER` (green) or `FOLLOWER` (cyan).
+- **Consensus Term:** Active Raft epoch term (e.g. `Term 4`).
+- **Heartbeat RTT:** Sub-millisecond network ping between cluster peers.
+- **Commit Index:** Strictly synchronized log index verifying consistent replication across all nodes.
+
+### 6.2 WAL Log Compaction Monitor
+Visualizes the localized embedded compaction pipeline governed by the formula:
+$$\Delta I = I_{\text{applied}} - I_{\text{snapshot}} \ge T_{\text{compact}} \quad (8,192 \text{ entries})$$
+
+- **Applied Index (`#wal-applied-idx`):** Highest committed state-machine index ($28,420$).
+- **Snapshot Index (`#wal-snapshot-idx`):** Baseline index stored in the latest immutable snapshot ($24,000$).
+- **Log Delta ($\Delta I$) (`#wal-delta-val`):** Current accumulated log entries ($4,420 / 8,192$).
+- **Compaction Progress Bar (`#wal-bar-fill`):** Automatically animates as entries arrive. Upon reaching $100\%$, an automatic non-blocking MVCC snapshot trigger prunes stale logs.
+
+### 6.3 Circuit Breaker Chaos Drill Simulation
+- **Operational States:**
+  - `CLOSED (Normal)`: All peer gRPC communications succeed. Dot glows emerald green.
+  - `OPEN (Tripped)`: 5 consecutive failures detected. RPC traffic backed off for 10.0 seconds. Dot glows crimson red.
+  - `HALF-OPEN (Canary)`: Probing cluster connectivity with single trial requests.
+- **Chaos Drill Button (`#btn-chaos-drill`):** Dispatches `POST /v1/telemetry/simulate-alert` to intentionally trip the circuit breaker. Operators can observe the automated 10-second exponential backoff and recovery cycle live.
+
+---
+
+## Chapter 7: Row 4 — Alert Rule Threshold Simulator Sandbox
+
+The Simulator Sandbox allows engineers to test Prometheus and Grafana alert threshold conditions against live telemetry curves before committing them to production Git repositories.
+
+```
++-------------------------------------------------------------------------------------------------------------+
+| Interactive Alert Rule Threshold Simulator Sandbox               [Real-Time PromQL &amp; Grafana Generator]     |
+|                                                                                                             |
+| [ Target Telemetry Metric: P99 Latency (ms) ▼ ]     | [ Prometheus Alert Rule ] [ Grafana 11 Unified ]      |
+|                                                     |                                       [Copy YAML]     |
+| Alert Firing Threshold: 10.0 ms                     | groups:                                               |
+| [--------●--------------------------------] 10.0 ms | - name: dcouplr_sla_rules                             |
+|                                                     |   rules:                                              |
+| +-------------+-------------+------------+--------+ |   - alert: HighP99Latency                             |
+| | Samples: 60 | Breaches: 3 | Fires: 3/hr| Risk:2%| |     expr: dcouplr_p99_latency_ms &gt; 10.0               |
+| +-------------+-------------+------------+--------+ |     for: 2m                                           |
++-----------------------------------------------------+-------------------------------------------------------+
+```
+
+### 7.1 Interactive Simulator Controls
+1. **Target Telemetry Metric (`#sim-metric-select`):**
+   - `latency_p99`: P99 Latency (ms) — SLA worst-case envelope.
+   - `latency_p90`: P90 Latency (ms) — Tail performance envelope.
+   - `latency_p50`: P50 Latency (ms) — Median operational baseline.
+   - `memory_rss`: Memory RSS (MiB) — 50.0 MiB container ceiling tracking.
+   - `cpu_percent`: CPU Utilization (%) — Core compute consumption.
+   - `throughput`: AST Velocity (transpiles/sec) — Compiler execution rate.
+2. **Draggable Firing Threshold Slider (`#sim-threshold-slider`):**
+   - Fine-grained threshold adjustments ($1.0 \text{ ms}$ to $60.0 \text{ ms}$ in $0.5 \text{ ms}$ increments).
+   - Dynamically recomputes statistical breach projections on input.
+
+### 7.2 Real-Time Statistical Evaluation Grid
+- **Points Evaluated (`#sim-sample-count`):** Number of recent samples analyzed (default: 60 data points).
+- **Breach Points (`#sim-breach-count`):** Number of observed telemetry ticks exceeding the selected threshold.
+- **Estimated Fires / Hour (`#sim-fires-hr`):** Projected alert firing frequency per hour based on current telemetry velocity.
+- **False Positive Risk Score (`#sim-risk-pct`):** Machine-assisted noise rating (`&lt; 5% Low`, `5-15% Medium`, `&gt; 15% High Alert Fatigue Risk`).
+
+### 7.3 Instant Code Generation Tabs
+- **Prometheus Rule Tab (`#tab-promql`):** Emits production-ready Prometheus Alertmanager YAML with standard `expr`, `for`, `labels` (severity), and descriptive `annotations`.
+- **Grafana 11 Unified Tab (`#tab-grafana`):** Emits modern Grafana Alerting YAML formatted for automated provisioning via GitOps pipelines.
+- **Copy YAML Button (`#btn-copy-code`):** One-click clipboard copy with visual confirmation.
+
+---
+
+## Chapter 8: Row 5 — In-VPC Cost Breakdown &amp; Bandwidth Financial Calculator
+
+This panel calculates the true operational cost of running in-app observability compared to commercial SaaS monitoring solutions.
+
+```
++-------------------------------------------------------------------------------------------------------------+
+| In-VPC Financial Cost Breakdown &amp; Bandwidth Calculator                  [ $0 Software • Zero Egress Tax ]   |
+|                                                                                                             |
+| 1. Software Licensing Cost: $0.00 / user (Zero vendor tax)       Active Engineers: [-----●---------] 50     |
+| 2. Cloud Infrastructure Cost: ~$0.50 - $1.50 / mo (Runs in pod)  Timeframe   | Vol/Eng  | Team Cost| Egress |
+| 3. Server Overhead: &lt; 0.2% CPU • 2 MiB Ring buffer               Min         | 48 KB    | $0.00    | $0.00  |
+| 4. Bandwidth Cost per Engineer: &lt; $0.02 / mo In-VPC              Hour        | 2.88 MB  | $0.00    | $0.00  |
+|                                                                  Month (22d) | 506 MB   | &lt; $0.50  | $0.00  |
++-------------------------------------------------------------------------------------------------------------+
+```
+
+### 8.1 Four Cost Categories Breakdown
+1. **Software Licensing Cost:** `$0.00`. Open-source core with zero per-seat user fees or ingestion volumetric pricing.
+2. **Cloud Infrastructure Cost:** `~$0.50 – $1.50 / month`. Runs inside existing Kubernetes pod boundaries without dedicated VM instances or managed database instances.
+3. **Server Overhead:** Consumes $&lt; 0.2\%$ of 1 CPU core and strictly $2.0 \text{ MiB}$ of RAM. Emits zero disk I/O.
+4. **Bandwidth Cost per Engineer:** Internal VPC/VPN data transfer costs less than $2$ cents per engineer per month.
+
+### 8.2 Interactive Engineer Bandwidth Calculator
+- **Active Engineers Slider (`#engineers-slider`):** Scales calculation dynamically from $1$ to $100$ concurrent engineers.
+- **Comparison Table:**
+  - **Per Minute:** $48 \text{ KB}$ per engineer.
+  - **Per Hour:** $2.88 \text{ MB}$ per engineer.
+  - **Per Month (22 Workdays):** $506 \text{ MB}$ ($0.5 \text{ GB}$) per engineer.
+  - **External WAN Egress Tax:** Strictly **$0.00** (all traffic remains bounded within the private VPC).
+
+---
+
+## Chapter 9: Operational Modals &amp; Action Dialogs
+
+The Dashboard includes 4 deep-dive modal dialogs supporting day-to-day enterprise operations.
+
+---
+
+### 9.1 Modal 1: Register Enterprise Company VPC (`#modal-add-vpc`)
+
+Triggered via the `➕ Register Company VPC` button in the topology panel header.
+
+```
++---------------------------------------------------------------------+
+| [●] ACTIVE MODAL: REGISTER ENTERPRISE COMPANY VPC  | ZERO WAN EGRESS|
++---------------------------------------------------------------------+
+| Register Enterprise Company VPC                                 [X] |
+| Add an existing company VPC or Kubernetes cluster to the mesh.      |
+|                                                                     |
+| VPC Network Name: [ pci_payments_mesh                             ] |
+| Cloud Provider:   [ AWS ▼ ]          Region:      [ us-east-1     ] |
+| IPv4 CIDR Block:  [ 10.150.0.0/16 ]  Instances:   [ 12            ] |
+|                                                                     |
+|                                 [ Cancel ]  [ Connect &amp; Project VPC➔]|
++---------------------------------------------------------------------+
+```
+
+#### Form Fields:
+1. **VPC Network Name (`#vpc-form-name`):** Normalized identifier (e.g. `pci_payments_vpc`).
+2. **Cloud Provider (`#vpc-form-cloud`):** Select between `AWS`, `GCP`, `Azure`, or `OnPrem`.
+3. **Region / Data Center (`#vpc-form-region`):** Geographic location string (e.g. `us-east-1`, `europe-west3`).
+4. **IPv4 CIDR Block (`#vpc-form-cidr`):** Standard `/16` supernet notation (e.g. `10.150.0.0/16`).
+5. **Monitored Instances (`#vpc-form-instances`):** Number of active compute nodes/workloads attached.
+
+#### Execution Result:
+Submitting the form immediately injects the new network node into the live SVG topology graph, recalculates cross-cloud links, and updates filter counts without refreshing the page.
+
+---
+
+### 9.2 Modal 2: SRE Support Ticket &amp; Incident Dispatch (`#modal-dash-ticket`)
+
+Triggered via the `🎫 Open Ticket` button in the top global header.
+
+```
++---------------------------------------------------------------------+
+| [●] ACTIVE MODAL: OPEN SUPPORT TICKET &amp; INCIDENT DISPATCH           |
++---------------------------------------------------------------------+
+| Pre-Identified Identity: Acme Global Financial (CUST-101)           |
+| Tier: Cluster Large (320 Active Nodes) | TAM: Marcus Vance          |
+|                                                                     |
+| Incident Severity: [ P1 - Critical (2-Hour SLA) ▼ ]                 |
+| Category:          [ Compiler Engine / AST Parser ▼ ]               |
+| Issue Title:       [ AST syntax drift on custom Datadog JSON      ] |
+| Impacted Nodes:    [ 4                                            ] |
+| Symptoms / Logs:   [ Paste error traces or sanitized AST...       ] |
+|                                                                     |
+|                                 [ Cancel ]  [ 🚀 Dispatch to SRE ]  |
++---------------------------------------------------------------------+
+```
+
+#### Key Capabilities:
+- **Pre-Identified Identity Card:** Automatically pulls authenticated customer metadata from session state (`CUST-101`, Acme Global Financial, Cluster Large tier, assigned Technical Account Manager).
+- **Incident Severity Tiers:**
+  - `P0 - Blocker`: 1-Hour SLA (Complete cluster outage).
+  - `P1 - Critical`: 2-Hour SLA (Production impairment).
+  - `P2 - Major`: 4-Hour SLA (Degraded performance).
+  - `P3 - Minor`: 48-Hour SLA (General guidance / AST queries).
+- **Dispatch Confirmation:** Upon submission, displays a unique reference ticket ID (e.g. `TCK-1045`), starts a real-time SLA countdown clock, and presents a direct link to join an active emergency Live Support Bridge.
+
+---
+
+### 9.3 Modal 3: Multi-VPC Workload Migration Console (`#modal-lift-and-shift`)
+
+Launched via `⚡ Migration Staging` in the topology header or `⚡ Stage Migration` in the Node Inspector. Features a fluid 2-column layout and a fullscreen expansion toggle (`⛶`).
+
+```
++--------------------------------------------------------------------------------------------------------------------+
+| [●] &lt;DCOUPLR/&gt; WORKLOAD MIGRATION &amp; REPLICATION STAGING | READY • eBPF DNAT + CLOUD-NATIVE REPLICATION        [⛶][X]|
++--------------------------------------------------------------------------------------------------------------------+
+| LEFT COLUMN: PARAMETERS                  | RIGHT COLUMN: 7-TAB WORKSPACE VIEWPORT                                  |
+|                                          | [1. OpenTofu] [2. Subnets/DNS] [3. Alerts] [4. Cutover]                 |
+| Source Network:    [ production_vpc ▼ ]  | [5. Full Bundle] [6. FinOps] [7. Replication Staging]  [📋 Copy] [💾 Export]
+| Target Cloud:      [ GCP (Google)   ▼ ]  |-------------------------------------------------------------------------|
+| Target Region:     [ us-central1      ]  | # Generated OpenTofu Landing Zone Infrastructure HCL                    |
+| Target VPC CIDR:   [ 10.200.0.0/16    ]  | resource &quot;google_compute_network&quot; &quot;production_vpc&quot; {                    |
+| [ ⚡ Re-Compile Bundle ]                 |   name                    = &quot;production-vpc&quot;                            |
+|                                          |   auto_create_subnetworks = false                                       |
+| 🌐 IP METRICS:                           | }                                                                       |
+| Subnets: 3 (/24) • Usable IPs: 762       |                                                                         |
+| Static IPs Mapped: 3 DNS Endpoints       | resource &quot;google_compute_subnetwork&quot; &quot;production_vpc_subnet_1&quot; {        |
+| eBPF Rewrites: 3 Kernel Rules            |   name          = &quot;snet-us-central1-tier1&quot;                              |
+|                                          |   ip_cidr_range = &quot;10.200.1.0/24&quot;                                       |
+| 🛡️ ZERO TRANSLATION HOLES                |   region        = &quot;us-central1&quot;                                         |
+| Child /24 subnets partition cleanly      |   network       = google_compute_network.production_vpc.id              |
+| from parent /16 supernet.                | }                                                                       |
++--------------------------------------------------------------------------------------------------------------------+
+```
+
+#### The 7 Tabbed Workspaces:
+
+| Tab | Title | Content &amp; Technical Deliverable |
+| :---: | :--- | :--- |
+| **Tab 1** | **OpenTofu IaC (HCL)** | Complete infrastructure-as-code landing zone: VPCs, subnets, instances, databases, and buckets synthesized for the target cloud provider. |
+| **Tab 2** | **Subnet &amp; Private DNS** | Three interactive mapping tables: (1) Subnet CIDR translations, (2) Hardcoded Static IP $\to$ Private DNS endpoints, and (3) Kernel eBPF / iptables DNAT rules for zero-code IP rewrites. |
+| **Tab 3** | **Prometheus Alerts** | Synthesized Prometheus Alertmanager rules and `PrometheusRule` custom resources mirroring original source alerts without translation drift. |
+| **Tab 4** | **Cutover Runbook** | Turnkey zero-downtime cutover bash script with pre-flight binary checks, state synchronization loops, and automated rollback routines. |
+| **Tab 5** | **Full Wave Bundle (JSON)** | Complete unified JSON migration payload containing all artifacts, metadata, and checksums ready for automated GitOps execution. |
+| **Tab 6** | **FinOps Cost Comparison** | Public benchmark expenditure matrix comparing source cloud vs target cloud costs across On-Demand, 1-Year Committed ($\sim 35\%$ discount), and 3-Year Committed ($\sim 55\%$ discount) tiers with payback ROI timelines. |
+| **Tab 7** | **Replication Staging** | Host block-replication mapping, SRE execution runbook (`RUNBOOK-DCOUPLR-REPL-001`), Provider CLI launch scripts (AWS MGN, GCP M4CE, Azure Migrate), and ephemeral JIT bootstrap scripts (PowerShell WinRM for Windows; Bash SSH for Linux). |
+
+---
+
+### 9.4 Modal 4: Pre-Export Full Bundle Verification Modal (`#modal-bundle-preview`)
+
+Triggered via `🔍 View Full Bundle` or `💾 Export Full Bundle` from within the Migration Console.
+
+```
++---------------------------------------------------------------------+
+| [●] ACTIVE MODAL: PRE-EXPORT FULL BUNDLE VERIFICATION               |
++---------------------------------------------------------------------+
+| Full Migration Wave Bundle Manifest                             [X] |
+| 100% In-VPC Zero Egress • Complete Turnkey Wave Bundle              |
+|                                                                     |
+| Metadata Chips: [Wave: wave_01] [Source: AWS] [Target: GCP] [9 Assets]
+| Toolbar: [View Mode: Raw JSON | Artifact Summary] [🔍 Search JSON...]|
+|                                                                     |
+| {                                                                   |
+|   &quot;bundle_version&quot;: &quot;1.0.0&quot;,                                        |
+|   &quot;source_vpc&quot;: &quot;production_vpc&quot;,                                   |
+|   &quot;target_cloud&quot;: &quot;GCP&quot;,                                            |
+|   &quot;opentofu_hcl&quot;: &quot;resource \&quot;google_compute_network\&quot; ...&quot;,        |
+|   &quot;ebpf_dnat_rules&quot;: [ ... ],                                       |
+|   &quot;checksum_sha256&quot;: &quot;e3b0c44298fc1c149afbf4c8996fb92427ae41e4...&quot;|
+| }                                                                   |
+|                                                                     |
+| [← Back to Editor]            [📋 Copy JSON] [💾 Confirm &amp; Download] |
++---------------------------------------------------------------------+
+```
+
+#### Verification Features:
+- **Dual View Modes:**
+  - **Raw JSON:** Full highlighted syntax view of the entire JSON bundle.
+  - **Artifact Summary:** Human-readable card hierarchy breaking down the generated OpenTofu files, DNS rules, Prometheus rules, and replication scripts.
+- **Search &amp; Filter:** Real-time search field highlighting specific resource attributes or IP addresses across the manifest.
+- **Deterministic Checksum Attestation:** Validates the SHA-256 fingerprint of all generated files before saving to disk.
+
+---
+
+## Chapter 10: SRE Troubleshooting &amp; Air-Gap Verification Runbook
+
+### 10.1 Air-Gap Zero-Egress Verification Runbook
+
+To formally audit that the Dashboard makes zero public WAN requests:
+
+1. **Launch Dashboard in Air-Gap Sandbox:**
+   ```bash
+   # Bind strictly to localhost / private interface
+   ./migration_tools serve --host 127.0.0.1 --port 8000
+   ```
+2. **Execute Network Socket Sniffing:**
+   ```bash
+   # Verify all established sockets are loopback only
+   netstat -an | grep 8000
+   ```
+3. **Inspect Browser Developer Tools Network Tab:**
+   - Filter by: `All`.
+   - Confirm all requests originate from and terminate at `http://127.0.0.1:8000/`.
+   - Confirm external font requests, analytics beacons, and CDN calls are strictly **0**.
+4. **Trigger Security Test Suite:**
+   ```bash
+   pytest tests/test_vector2_zero_egress_security_proofs.py -v
+   ```
+
+### 10.2 Common Operational Diagnostics
+
+| Symptom | Diagnostic Root Cause | SRE Remediation Procedure |
+| :--- | :--- | :--- |
+| **Stream Status displays crimson &quot;SSE Disconnected&quot;** | Local API server process terminated or port 8000 blocked by host firewall. | Check terminal for process status. Restart server: `python -m migration_tools.cli serve`. Verify `/healthz` returns `200 OK`. |
+| **Raft Role displays &quot;FOLLOWER&quot; on all nodes** | Split-brain network partition or insufficient quorum of live peers. | Verify at least 2 of 3 cluster nodes are reachable on gRPC port `8081`. Check firewall rules between nodes. |
+| **Circuit Breaker trips to &quot;OPEN&quot; unexpectedly** | Network latency exceeded 10.0s or peer gRPC service crashed. | Inspect peer container logs. The circuit breaker will auto-probe every 10 seconds and automatically reset to `CLOSED` once connectivity restores. |
+| **Canvas charts appear frozen** | Browser tab sleep active or hardware acceleration disabled. | Verify tab is focused. Check if `Tab Sleep Mode Active` banner is showing. In Chrome/Edge, verify `Use graphics acceleration when available` is enabled. |
+| **Modal does not scroll on small screens** | Viewport height $&lt; 600 \text{ px}$. | Click the fullscreen toggle (`⛶`) in the modal header to expand into responsive fluid layout mode. |
+
+---
+
+## Summary of Completed Documentation Deliverables
+
+| Specification &amp; Manual Document | File Location | Purpose |
+| :--- | :--- | :--- |
+| **Dashboard Operator Manual (This Document)** | [`docs/IN_APP_TELEMETRY_DASHBOARD_OPERATOR_MANUAL.md`](/docs/IN_APP_TELEMETRY_DASHBOARD_OPERATOR_MANUAL.html) | Comprehensive step-by-step user and operations guide covering all 5 rows, 6 KPIs, 2 Canvas charts, 4 modals, and 7 migration tabs. |
+| **Dashboard Architecture &amp; Build Plan** | [`docs/IN_APP_TELEMETRY_DASHBOARD_PLAN.md`](/docs/IN_APP_TELEMETRY_DASHBOARD_PLAN.html) | Technical architectural blueprint, data flow diagrams, and ring buffer memory specifications. |
+| **Replication SRE Execution Runbook** | [`docs/runbooks/RUNBOOK-DCOUPLR-REPLICATION-MIGRATION.md`](/docs/runbooks/RUNBOOK-DCOUPLR-REPLICATION-MIGRATION.html) | Technical cutover steps, parameter checklists, and host agent bootstrap commands. |
+| **Zero-Egress Security &amp; Patent Register** | [`docs/PROPRIETARY_INVENTION_DISCLOSURE_AND_PATENT_REGISTER.md`](/docs/PROPRIETARY_INVENTION_DISCLOSURE_AND_PATENT_REGISTER.html) | Patent vectors 1–11 covering local volatile ring buffers, zero egress, and streaming snapshot compactions. |
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &amp;lt;dcouplr/&amp;gt;: In-App Zero-Egress Telemetry &amp; Multi-VPC Dashboard Operator Manual
+
+**Document ID:** MANUAL-DASH-2026-v1.0  
+**Target URL:** `http://127.0.0.1:8000/dashboard`  
+**Classification:** Enterprise Engineering Reference &amp; SRE Operations Guide  
+**Software Version:** `&lt;dcouplr/&gt;` Core Engine v1.0.0 GA  
+**Security Profile:** 100% In-VPC Boundary • Zero Public WAN Egress • Volatile Memory Only  
+
+---
+
+## Executive Summary &amp; Architectural Invariants
+
+The `&lt;dcouplr/&gt;` In-App Telemetry &amp; Multi-VPC Dashboard is an embedded, zero-dependency, real-time observability and migration orchestration platform running directly inside the compiled `&lt;dcouplr/&gt;` engine container. 
+
+Unlike traditional monitoring architectures that require multi-megabyte external dashboards (such as standalone Grafana deployments, relational state stores, or third-party SaaS agents), the `&lt;dcouplr/&gt;` Dashboard is served entirely from in-memory volatile ring buffers via private Server-Sent Events (SSE) and hardware-accelerated HTML5 Canvas graphics.
+
+### Core Architectural Invariants:
+1. **Zero External Network Exfiltration:** 0 WAN packets emitted. All telemetry samples, topology graphs, and migration manifests are calculated locally inside volatile memory.
+2. **Sub-50 MiB Memory Ceiling:** The dashboard&#x27;s server-side telemetry ring buffer occupies strictly $&lt; 2 \text{ MiB}$ of RAM, operating comfortably within `&lt;dcouplr/&gt;`&#x27;s overall $50.0 \text{ MiB}$ container RSS ceiling.
+3. **60 FPS Hardware-Accelerated Rendering:** Client-side time-series curves are rendered using raw HTML5 2D Canvas contexts, processing up to 150,000 telemetry points in $&lt; 5 \text{ ms}$ without external JavaScript charting libraries.
+4. **Adaptive Bandwidth Conservation (Tab Sleep):** Uses the HTML5 Page Visibility API to automatically throttle streaming from 1-second ticks down to 30-second ticks whenever the browser tab is hidden or minimized, reducing network overhead by $96.6\%$.
+
+```
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │                             &lt;dcouplr/&gt; IN-APP DASHBOARD RUNTIME                        │
+ │                                                                                        │
+ │   ┌───────────────────────┐   ┌───────────────────────────┐   ┌────────────────────┐   │
+ │   │  Go / Python Engine   │   │  Embedded Raft Consensus  │   │  AST &amp; Query Mesh  │   │
+ │   │  Memory &amp; CPU Metrics │   │  Leader / Follower Quorum │   │  PromQL Converter  │   │
+ │   └──────────┬────────────┘   └─────────────┬─────────────┘   └─────────┬──────────┘   │
+ │              │                              │                           │              │
+ │              └──────────────────────────────┼───────────────────────────┘              │
+ │                                             ▼                                          │
+ │                        ┌────────────────────────────────────────┐                      │
+ │                        │  In-Memory Telemetry Collector (Ring)  │                      │
+ │                        │  - Circular ring buffers (1024 slots)  │                      │
+ │                        │  - Zero heap allocation per sample     │                      │
+ │                        │  - Sub-1ms snapshot calculation        │                      │
+ │                        └────────────────────┬───────────────────┘                      │
+ │                                             │                                          │
+ │                ┌────────────────────────────┴───────────────────────────┐              │
+ │                ▼                                                        ▼              │
+ │   ┌───────────────────────────┐                            ┌─────────────────────────┐ │
+ │   │  REST Snapshot APIs       │                            │  SSE Real-Time Stream   │ │
+ │   │  /v1/telemetry/metrics    │                            │  /v1/telemetry/stream   │ │
+ │   │  /v1/telemetry/topology   │                            │  (1000ms push heartbeat)│ │
+ │   └────────────┬──────────────┘                            └────────────┬────────────┘ │
+ └────────────────┼────────────────────────────────────────────────────────┼──────────────┘
+                  │                                                        │
+                  ▼                                                        ▼
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │                      BROWSER CLIENT VIEWPORT (http://127.0.0.1:8000/dashboard)         │
+ └────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Chapter 1: Global Header &amp; Live Connection Status
+
+The top navigation header provides immediate, peripheral situational awareness regarding cluster health, streaming connectivity, circuit breakers, and Raft consensus.
+
+```
++-------------------------------------------------------------------------------------------------------------------------+
+| &lt;dcouplr/&gt; Zero-Egress Telemetry Engine | Product Overview | Compiler Studio | Telemetry &amp; Topology [Live]              |
+|                                         | [🎫 Open Ticket] | [● SSE Live (1s)] | [Breaker: CLOSED] | [Raft: LEADER (Term 4)]|
++-------------------------------------------------------------------------------------------------------------------------+
+```
+
+### 1.1 Header Components
+
+| Element | DOM Identifier | Function &amp; Behavior |
+| :--- | :--- | :--- |
+| **Brand Logo &amp; Badge** | `.logo-brand` | Navigates back to the root application (`/`). Displays the active security profile: `Zero-Egress Telemetry Engine`. |
+| **Global Navigation Switcher** | `nav.nav-links` | Instant client-side switching between **Product Overview** (`/`), **Compiler Studio** (`/compiler`), and **Telemetry &amp; Topology** (`/dashboard`). |
+| **Emergency Ticket Dispatch** | `#btn-open-ticket-dash` | Triggers the SRE Support &amp; Incident Dispatch Modal, pre-populating verified customer organization details (`CUST-101`). |
+| **SSE Stream Status Pill** | `#status-stream` | Indicates the real-time health of the Server-Sent Events push stream (`/v1/telemetry/stream`). Displays a glowing green pulse dot during active 1s heartbeats; turns amber during tab sleep throttling (30s ticks); turns crimson if the HTTP connection drops. |
+| **Circuit Breaker Status Badge** | `#status-cb` | Shows the active state of the Raft telemetry gRPC circuit breaker: `CLOSED` (Normal operational state), `OPEN` (Failover active; requests backed off), or `HALF-OPEN` (Canary testing state). |
+| **Raft Consensus Role &amp; Term** | `#raft-role-badge` | Reports the local node&#x27;s current Raft cluster leadership state (e.g., `LEADER (Term 4)` or `FOLLOWER (Term 4)`). |
+
+---
+
+## Chapter 2: Adaptive Bandwidth Optimization &amp; Tab Sleep Engine
+
+In high-density engineering environments where dozens of engineers leave monitoring dashboards open on background monitors, unthrottled streaming can silently waste megabytes of private cross-AZ network traffic.
+
+```
++-------------------------------------------------------------------------------------------------------------------------+
+| 💤 Tab Sleep Mode Active: Browser tab is inactive. Telemetry stream throttled from 1s to 30s to conserve VPC bandwidth.  |
+| document.hidden = true                                                                                                  |
++-------------------------------------------------------------------------------------------------------------------------+
+```
+
+### 2.1 Technical Mechanics
+1. **Visibility Listener:** When an operator switches tabs or minimizes their browser window, `document.hidden` evaluates to `true`.
+2. **Stream Reconfiguration:** The client immediately terminates the high-frequency `1.0s` EventSource stream and re-initializes a low-overhead `30.0s` heartbeat stream (`GET /v1/telemetry/stream?interval=30.0&amp;delta_only=false`).
+3. **Banner Activation:** The amber `#tab-sleep-banner` displays across the top of the viewport.
+4. **Instant Wakeup:** As soon as the tab regains focus (`document.hidden = false`), the banner dismisses and the high-resolution `1.0s` stream reconnects in $&lt; 15 \text{ ms}$.
+
+### 2.2 Network Footprint Reduction
+- **Active Focused Tab:** $\sim 800 \text{ bytes/sec} \times 3,600 \text{ s} \approx 2.88 \text{ MB/hour}$
+- **Background Sleeping Tab:** $\sim 800 \text{ bytes} \times 120 \text{ ticks/hour} \approx 0.096 \text{ MB/hour}$
+- **Bandwidth Savings:** **96.6% reduction** during inactive periods.
+
+---
+
+## Chapter 2.5: Dynamic Core Functions Autonomous Matrix
+
+Located above the KPI ribbon, the **Dynamic Core Functions Matrix** continuously and autonomously evaluates system telemetry, topology state, and compiler capabilities without static configuration or manual operator toggling.
+
+```
++───────────────────────────────────────────────────────────────────────────────────────────────────────────+
+| [●] ACTIVE DYNAMIC CORE FUNCTIONS                     Evaluated at 01:52:10 • 8 Active Core Systems       |
++------------------------------------+------------------------------------+---------------------------------+
+| ⚡ AST Transpiler Engine           | 🔐 Multi-Cloud IAM Compiler        | 🗳️ Raft Consensus Cluster       |
+| Operational (P50: 1.2ms)           | Active (AWS ↔ GCP ↔ Azure)         | LEADER (Term 4)                 |
++------------------------------------+------------------------------------+---------------------------------+
+| 📜 WAL Log Compaction              | 🌐 Multi-VPC Mesh &amp; Staging        | 📦 Turnkey Migration Recipes    |
+| ΔI = 4,420 / 8,192                 | 4 Networks Staged                  | 8+ Audited Pipelines Ready      |
++------------------------------------+------------------------------------+---------------------------------+
+| 🛡️ Zero-Egress In-Perimeter Isolation         | ⚡ Circuit Breaker Failover        |                                 |
+| Enforced (100% In-VPC)             | CLOSED (Auto-Protect)              |                                 |
++------------------------------------+------------------------------------+---------------------------------+
+```
+
+### 2.5.1 The 8 Autonomously Determined Core Functions
+1. **AST Transpiler Engine:** Monitors P50/P99 latency and total translation counter to confirm zero heap leaks and sub-millisecond execution.
+2. **Multi-Cloud IAM Compiler:** Verifies cross-cloud IAM transpilation capability across AWS IAM, GCP Cloud IAM, and Azure Managed Identities.
+3. **Raft Consensus Cluster:** Dynamically verifies active quorum status ($2F+1$), leader identity, and cluster term.
+4. **WAL Log Compaction:** Tracks active uncompacted delta $\Delta I = \text{Applied} - \text{Snapshot}$ against the $8,192$ threshold.
+5. **Multi-VPC Mesh &amp; Staging:** Reconciles active connected VPC networks, subnet CIDR boundaries, and inter-cloud peering links.
+6. **Turnkey Migration Recipes:** Dynamically discovers, indexes, and surfaces audited migration playbooks from disk and API.
+7. **Zero-Egress In-Perimeter Isolation Guard:** Confirms that 100% of execution remains inside volatile VPC RAM with zero external WAN calls.
+8. **Circuit Breaker Failover:** Monitors consecutive failures, backoff delays, and automatic recovery states (CLOSED $\to$ OPEN $\to$ HALF-OPEN).
+
+### 2.5.2 Node-Specific Core Function Dynamic Determination
+When an operator selects any network node in the **Interactive Multi-VPC Topology Map**, the Node Inspector dynamically determines the exact migration and transpilation capabilities applicable to that cloud provider:
+- **AWS VPC:** Emits `[AWS -&gt; GCP OpenTofu HCL]`, `[IAM Role -&gt; ServiceAccount Mapping]`, `[Continuous Block Replication (AWS MGN)]`, and `[Subnet CIDR Slicing &amp; Route Tables]`.
+- **GCP VPC:** Emits `[GCP -&gt; Azure Bicep Translation]`, `[Direct VPC Egress Optimizer]`, `[Workload Identity Federation]`, and `[Google M4CE Replication Factory]`.
+- **Azure VNet:** Emits `[Azure Managed Identity Normalization]`, `[KQL &amp; Scheduled Query Rules -&gt; PromQL]`, and `[Azure Migrate Appliance Orchestrator]`.
+- **On-Premises / Legacy DC:** Emits `[Legacy Bare-Metal Lift &amp; Shift Factory]`, `[IPsec / DirectConnect Mesh]`, `[KVM Hypervisor Re-Platforming]`, and `[eBPF Zero-Exfiltration Packet Inspection]`.
+
+### 2.5.3 Compiler Studio Dynamic Dialect &amp; Capability Autodetection
+In [`Compiler Studio`](/docs/compiler.html), the editor features a real-time Lexer HUD (`#dynamic-function-hud`) that analyzes user input and automatically determines:
+- Source language syntax (JSON, HCL, YAML, PromQL, KQL)
+- Vendor dialect (Datadog, AWS CloudWatch, New Relic, Azure Monitor, Terraform HCL, CloudFormation)
+- Required core mathematical pipelines: `[Multi-Threshold RefId A-D]`, `[IAM Cross-Compilation]`, `[2σ Anomaly Normalizer]`, `[ISO 8601 Windowing]`, `[Direct VPC Egress Optimizer]`, and `[Google SRE Multi-Burn-Rate]`.
+- **Automatic Selector Synchronization:** Automatically reconfigures the source dropdown and target presets with zero manual intervention.
+
+---
+
+## Chapter 3: Row 1 — Key Performance Indicator (KPI) Ribbon
+
+The KPI Ribbon delivers 6 high-density micro-gauges summarizing engine efficiency, memory boundaries, SLA performance, and security proofs.
+
+```
++------------------+-------------------+--------------------+--------------------+-------------------+--------------------+
+| CPU Utilization  | Memory Footprint  | Latency (P50/P99)  | AST Velocity       | Zero-Egress Guard | Monthly Cost       |
+| 3.2 % of 1 vCPU  | 37.4 / 50.0 MiB   | 1.2 / 8.1 ms       | 46.5 transpiles/s  | 0 WAN Packets     | $0.00 / month      |
+| [==            ] | [============== ] | [===             ] | [==========      ] | [================]| [================] |
+| Target: &lt; 0.2%   | Headroom: 12.6MB  | Sub-5ms SLA        | Total: 1,429 ops   | 4,120 scrubbed    | 100% In-VPC        |
++------------------+-------------------+--------------------+--------------------+-------------------+--------------------+
+```
+
+### 3.1 Gauge Specifications
+
+#### 1. CPU Utilization (`#card-cpu`)
+- **Metric:** Active percentage of 1 allocated vCPU consumed by the transpiler engine and SSE streaming threads.
+- **Operational Target:** Continuous daemon background load $&lt; 0.2\%$, scaling linearly during heavy AST batch jobs.
+- **Alert Boundary:** Soft warning triggered if sustained $&gt; 80\%$ for $&gt; 60 \text{ s}$.
+
+#### 2. Memory Footprint RSS (`#card-memory`)
+- **Metric:** Resident Set Size (RSS) memory consumption measured directly via OS kernel primitives (`psutil` / Linux `/proc/self/statm`).
+- **Container Ceiling:** Strictly bounded by the $50.0 \text{ MiB}$ hardened container cap.
+- **Dynamic Headroom Display (`#kpi-mem-headroom`):** Real-time safe buffer calculation ($50.0 \text{ MiB} - \text{RSS}$). Turns amber if headroom drops below $8.0 \text{ MiB}$; turns crimson if headroom $&lt; 4.0 \text{ MiB}$.
+
+#### 3. Latency Percentiles (`#card-latency`)
+- **Metric:** Real-time distribution of AST transpilation and query processing speeds.
+- **P50 (Median):** Typical AST parsing time ($\sim 1.0 - 1.5 \text{ ms}$).
+- **P99 (Worst-Case):** Tail-latency SLA benchmark ($\sim 5.0 - 8.5 \text{ ms}$).
+- **Compliance Indicator:** Validates adherence to the enterprise sub-5ms SLA guarantee.
+
+#### 4. AST Velocity (`#card-throughput`)
+- **Metric:** Real-time throughput expressed in transpiled configurations per second (`transpiles/sec`).
+- **Cumulative Operations (`#kpi-tp-total`):** Lifetime total of alert rules, OpenTofu resources, and Bicep declarations processed since pod initialization.
+
+#### 5. Zero-Egress Security Guard (`#card-security`)
+- **WAN Packet Counter:** Hardcoded to strictly `0 WAN Packets`. Any attempted outbound network socket creation to non-loopback addresses triggers immediate rejection.
+- **Tokens Scrubbed (`#kpi-tokens-scrubbed`):** Real-time counter of proprietary credentials, AWS access keys (`AKIA...`), Datadog API keys, and corporate hostnames purged by the `LocalTokenAnonymizer` before AST synthesis.
+
+#### 6. Monthly Software Cost (`#card-cost`)
+- **Value:** `$0.00 / month`.
+- **Principle:** Demonstrates that running the embedded telemetry mesh inside existing enterprise VPC infrastructure incurs zero per-seat licensing fees and zero external SaaS ingestion costs.
+
+---
+
+## Chapter 4: Row 2 — Hardware-Accelerated Canvas Charts
+
+Two synchronized HTML5 Canvas panels visualize high-frequency time-series telemetry with 60 FPS fluidity.
+
+```
++-------------------------------------------------------+-------------------------------------------------------+
+| Sub-Millisecond Latency &amp; Translation Velocity        | In-Memory RSS Allocation vs. Strict 50 MiB Container   |
+| [ 60 FPS Hardware-Accelerated ]                       | [ Volatile Memory: 0 Disk I/O ]                       |
+|                                                       |                                                       |
+|  12 ms |                 .-.       P99 (Crimson)      |  50 MB|----------------------------------- Hard Cap   |
+|   8 ms |         .-.    /   \                         |  42 MB| - - - - - - - - - - - - - - - - -  Warn Cap   |
+|   4 ms |   .----&#x27;   &#x27;--&#x27;     \     P90 (Purple)       |  30 MB|       .-----------------                      |
+|   1 ms |=========================== P50 (Cyan)        |  20 MB|      /                  RSS Memory (Green)    |
+|   0 ms +-------------------------- Throughput (Yellow)|   0 MB+-----------------------------------------------|
+|        Legend: ● P50  ● P90  ● P99  ● Throughput      |       Legend: ● Memory RSS  ● Hard Ceiling  ● Warning |
++-------------------------------------------------------+-------------------------------------------------------+
+```
+
+### 4.1 Chart 1: Latency Distribution &amp; AST Velocity (`#canvas-latency`)
+- **Data Series:**
+  - **P50 Median (Cyan `#00e5ff`):** Smooth baseline representing median response times.
+  - **P90 Tail (Purple `#b388ff`):** 90th percentile envelope capturing transient lock contention.
+  - **P99 Worst-Case (Crimson `#ff5252`):** Peak execution spikes representing large multi-megabyte HCL configurations.
+  - **AST Throughput (Yellow `#ffd740`):** Bar overlays indicating operations per second.
+- **Canvas Rendering Cycle:**
+  - Triggered via `requestAnimationFrame()`.
+  - Clears buffer, computes dynamic $Y$-axis scale based on max current window value, draws dashed grid lines, and traces bezier curves with linear anti-aliasing.
+
+### 4.2 Chart 2: Memory Footprint vs. Hard Container Cap (`#canvas-memory`)
+- **Data Series:**
+  - **Active RSS Memory (Emerald `#69f0ae`):** Real-time memory consumption with smooth vertical gradient fill.
+  - **Hard Container Ceiling (Crimson `#ef4444`):** Fixed reference threshold line at $50.0 \text{ MiB}$.
+  - **Warning Threshold (Amber `#f59e0b`):** Proactive alert line at $42.0 \text{ MiB}$ ($84\%$ capacity).
+- **Engineering Guarantee:** Renders with `0 Disk I/O` assurance—all historical data points reside strictly in volatile circular memory buffers.
+
+---
+
+## Chapter 5: Row 3 (Left) — Interactive Multi-VPC Topology Map
+
+The Multi-VPC Architecture Topology Map provides visual modeling of cross-cloud networking infrastructure, subnets, route tables, and instance bindings.
+
+```
++-------------------------------------------------------------------------------------------------------------+
+| Interactive Multi-VPC Cross-Cloud Topology Map               [⚡ Migration Staging] [➕ Register Company VPC] |
+| [ Search VPC, CIDR, Subnet... ]  [All Networks] [AWS] [GCP] [Azure] [🏢 On-Prem / Legacy]                   |
+|                                                                                                             |
+|       (AWS: us-east-1)                 (Cross-Cloud Peering)                 (GCP: us-central1)             |
+|     +--------------------+           ========================&gt;             +--------------------+           |
+|     |  production_vpc    |                                                 |  target_mesh_vpc   |           |
+|     |  10.100.0.0/16     |                                                 |  10.200.0.0/16     |           |
+|     |  ● 3 Subnets       |                                                 |  ● 3 Subnets       |           |
+|     +--------------------+                                                 +--------------------+           |
+|                                                                                                             |
+| +---------------------------------------------------------------------------------------------------------+ |
+| | Selected: production_vpc (AWS us-east-1) | CIDR: 10.100.0.0/16 • 3 Subnets • 15 Instances               | |
+| | [google_compute_network.production_vpc]                                         [⚡ Stage Migration]    | |
+| +---------------------------------------------------------------------------------------------------------+ |
++-------------------------------------------------------------------------------------------------------------+
+```
+
+### 5.1 Interactive Controls &amp; Filtering
+- **Search Bar (`#topology-search`):** Real-time text filter matching network names (e.g. `production`), CIDR blocks (e.g. `10.100.`), or subnet identifiers.
+- **Cloud Provider Filter Buttons (`.filter-btn`):**
+  - **All Networks:** Displays full cross-cloud mesh.
+  - **AWS:** Filters exclusively to AWS VPCs (orange `#ff9900` accent borders).
+  - **GCP:** Filters to Google Cloud VPCs (blue `#4285f4` accent borders).
+  - **Azure:** Filters to Microsoft Azure Virtual Networks (blue-cyan `#0078d4` accent borders).
+  - **🏢 On-Prem / Legacy:** Highlights corporate data centers and bare-metal environments (purple `#8b5cf6` accent borders).
+
+### 5.2 Dynamic SVG Visualization Stage (`#topology-container`)
+- **Vector Graph Construction:** Dynamically generates SVG nodes, circular status indicators, cross-cloud peering link vectors, and data-flow directional markers.
+- **Node Selection &amp; Hover:** Clicking any VPC node activates cyan edge glow effects and updates the bottom Node Inspector.
+
+### 5.3 Node Inspector Pane (`#node-inspector`)
+- **Network Metadata (`#inspector-details`):** Displays parent CIDR, active subnet count, monitored instances, and local agent consensus bindings.
+- **Equivalent Target Address (`#inspector-equivalent`):** Previews the synthesized OpenTofu/Terraform resource ID (e.g. `google_compute_network.production_vpc` or `azurerm_virtual_network.production_vpc`).
+- **Action Buttons:**
+  - `⚡ Stage Migration` (`#btn-lift-and-shift`): Launches the 7-Tab Workload Migration Console pre-scoped to the selected VPC.
+  - `➕ Register Company VPC` (`#btn-open-add-vpc`): Opens the VPC registration dialog to inject custom enterprise networks into the live topology.
+
+---
+
+## Chapter 6: Row 3 (Right) — Embedded Raft Consensus &amp; WAL Compaction
+
+This panel monitors the distributed consensus layer responsible for synchronizing state, token mappings, and configuration hashes across multi-cluster deployments.
+
+```
++-------------------------------------------------------------------------------------+
+| Embedded Raft Consensus &amp; WAL Compaction                         [3-Node Quorum]     |
+|                                                                                     |
+| [ Node 1 (Local) ]  10.0.1.10:8081  ● LEADER (Term 4)    Ping: 0.2ms  Commit: 28420 |
+| [ Node 2 (Peer)  ]  10.0.1.11:8081  ○ FOLLOWER (Term 4)  Ping: 1.4ms  Commit: 28420 |
+| [ Node 3 (Peer)  ]  10.0.1.12:8081  ○ FOLLOWER (Term 4)  Ping: 1.8ms  Commit: 28420 |
+|                                                                                     |
+| +---------------------------------------------------------------------------------+ |
+| | WAL Log Compaction Monitor                                53.9% of Threshold    | |
+| | [====================                   ]                                       | |
+| | Applied Index: 28,420 | Snapshot Index: 24,000 | Delta (ΔI): 4,420 / 8,192       | |
+| +---------------------------------------------------------------------------------+ |
+|                                                                                     |
+| +---------------------------------------------------------------------------------+ |
+| | ● Circuit Breaker: CLOSED (Normal)                     [⚡ Trip Circuit Breaker] | |
+| | Trip Threshold: 5 failures • Auto-Recovery: 10s backoff                         | |
+| +---------------------------------------------------------------------------------+ |
++-------------------------------------------------------------------------------------+
+```
+
+### 6.1 3-Node Quorum Status Cards (`#raft-nodes-container`)
+- **Node Identifier &amp; Endpoint:** IP and administrative gRPC port (`:8081`).
+- **Role Badge:** `LEADER` (green) or `FOLLOWER` (cyan).
+- **Consensus Term:** Active Raft epoch term (e.g. `Term 4`).
+- **Heartbeat RTT:** Sub-millisecond network ping between cluster peers.
+- **Commit Index:** Strictly synchronized log index verifying consistent replication across all nodes.
+
+### 6.2 WAL Log Compaction Monitor
+Visualizes the localized embedded compaction pipeline governed by the formula:
+$$\Delta I = I_{\text{applied}} - I_{\text{snapshot}} \ge T_{\text{compact}} \quad (8,192 \text{ entries})$$
+
+- **Applied Index (`#wal-applied-idx`):** Highest committed state-machine index ($28,420$).
+- **Snapshot Index (`#wal-snapshot-idx`):** Baseline index stored in the latest immutable snapshot ($24,000$).
+- **Log Delta ($\Delta I$) (`#wal-delta-val`):** Current accumulated log entries ($4,420 / 8,192$).
+- **Compaction Progress Bar (`#wal-bar-fill`):** Automatically animates as entries arrive. Upon reaching $100\%$, an automatic non-blocking MVCC snapshot trigger prunes stale logs.
+
+### 6.3 Circuit Breaker Chaos Drill Simulation
+- **Operational States:**
+  - `CLOSED (Normal)`: All peer gRPC communications succeed. Dot glows emerald green.
+  - `OPEN (Tripped)`: 5 consecutive failures detected. RPC traffic backed off for 10.0 seconds. Dot glows crimson red.
+  - `HALF-OPEN (Canary)`: Probing cluster connectivity with single trial requests.
+- **Chaos Drill Button (`#btn-chaos-drill`):** Dispatches `POST /v1/telemetry/simulate-alert` to intentionally trip the circuit breaker. Operators can observe the automated 10-second exponential backoff and recovery cycle live.
+
+---
+
+## Chapter 7: Row 4 — Alert Rule Threshold Simulator Sandbox
+
+The Simulator Sandbox allows engineers to test Prometheus and Grafana alert threshold conditions against live telemetry curves before committing them to production Git repositories.
+
+```
++-------------------------------------------------------------------------------------------------------------+
+| Interactive Alert Rule Threshold Simulator Sandbox               [Real-Time PromQL &amp; Grafana Generator]     |
+|                                                                                                             |
+| [ Target Telemetry Metric: P99 Latency (ms) ▼ ]     | [ Prometheus Alert Rule ] [ Grafana 11 Unified ]      |
+|                                                     |                                       [Copy YAML]     |
+| Alert Firing Threshold: 10.0 ms                     | groups:                                               |
+| [--------●--------------------------------] 10.0 ms | - name: dcouplr_sla_rules                             |
+|                                                     |   rules:                                              |
+| +-------------+-------------+------------+--------+ |   - alert: HighP99Latency                             |
+| | Samples: 60 | Breaches: 3 | Fires: 3/hr| Risk:2%| |     expr: dcouplr_p99_latency_ms &gt; 10.0               |
+| +-------------+-------------+------------+--------+ |     for: 2m                                           |
++-----------------------------------------------------+-------------------------------------------------------+
+```
+
+### 7.1 Interactive Simulator Controls
+1. **Target Telemetry Metric (`#sim-metric-select`):**
+   - `latency_p99`: P99 Latency (ms) — SLA worst-case envelope.
+   - `latency_p90`: P90 Latency (ms) — Tail performance envelope.
+   - `latency_p50`: P50 Latency (ms) — Median operational baseline.
+   - `memory_rss`: Memory RSS (MiB) — 50.0 MiB container ceiling tracking.
+   - `cpu_percent`: CPU Utilization (%) — Core compute consumption.
+   - `throughput`: AST Velocity (transpiles/sec) — Compiler execution rate.
+2. **Draggable Firing Threshold Slider (`#sim-threshold-slider`):**
+   - Fine-grained threshold adjustments ($1.0 \text{ ms}$ to $60.0 \text{ ms}$ in $0.5 \text{ ms}$ increments).
+   - Dynamically recomputes statistical breach projections on input.
+
+### 7.2 Real-Time Statistical Evaluation Grid
+- **Points Evaluated (`#sim-sample-count`):** Number of recent samples analyzed (default: 60 data points).
+- **Breach Points (`#sim-breach-count`):** Number of observed telemetry ticks exceeding the selected threshold.
+- **Estimated Fires / Hour (`#sim-fires-hr`):** Projected alert firing frequency per hour based on current telemetry velocity.
+- **False Positive Risk Score (`#sim-risk-pct`):** Machine-assisted noise rating (`&lt; 5% Low`, `5-15% Medium`, `&gt; 15% High Alert Fatigue Risk`).
+
+### 7.3 Instant Code Generation Tabs
+- **Prometheus Rule Tab (`#tab-promql`):** Emits production-ready Prometheus Alertmanager YAML with standard `expr`, `for`, `labels` (severity), and descriptive `annotations`.
+- **Grafana 11 Unified Tab (`#tab-grafana`):** Emits modern Grafana Alerting YAML formatted for automated provisioning via GitOps pipelines.
+- **Copy YAML Button (`#btn-copy-code`):** One-click clipboard copy with visual confirmation.
+
+---
+
+## Chapter 8: Row 5 — In-VPC Cost Breakdown &amp; Bandwidth Financial Calculator
+
+This panel calculates the true operational cost of running in-app observability compared to commercial SaaS monitoring solutions.
+
+```
++-------------------------------------------------------------------------------------------------------------+
+| In-VPC Financial Cost Breakdown &amp; Bandwidth Calculator                  [ $0 Software • Zero Egress Tax ]   |
+|                                                                                                             |
+| 1. Software Licensing Cost: $0.00 / user (Zero vendor tax)       Active Engineers: [-----●---------] 50     |
+| 2. Cloud Infrastructure Cost: ~$0.50 - $1.50 / mo (Runs in pod)  Timeframe   | Vol/Eng  | Team Cost| Egress |
+| 3. Server Overhead: &lt; 0.2% CPU • 2 MiB Ring buffer               Min         | 48 KB    | $0.00    | $0.00  |
+| 4. Bandwidth Cost per Engineer: &lt; $0.02 / mo In-VPC              Hour        | 2.88 MB  | $0.00    | $0.00  |
+|                                                                  Month (22d) | 506 MB   | &lt; $0.50  | $0.00  |
++-------------------------------------------------------------------------------------------------------------+
+```
+
+### 8.1 Four Cost Categories Breakdown
+1. **Software Licensing Cost:** `$0.00`. Open-source core with zero per-seat user fees or ingestion volumetric pricing.
+2. **Cloud Infrastructure Cost:** `~$0.50 – $1.50 / month`. Runs inside existing Kubernetes pod boundaries without dedicated VM instances or managed database instances.
+3. **Server Overhead:** Consumes $&lt; 0.2\%$ of 1 CPU core and strictly $2.0 \text{ MiB}$ of RAM. Emits zero disk I/O.
+4. **Bandwidth Cost per Engineer:** Internal VPC/VPN data transfer costs less than $2$ cents per engineer per month.
+
+### 8.2 Interactive Engineer Bandwidth Calculator
+- **Active Engineers Slider (`#engineers-slider`):** Scales calculation dynamically from $1$ to $100$ concurrent engineers.
+- **Comparison Table:**
+  - **Per Minute:** $48 \text{ KB}$ per engineer.
+  - **Per Hour:** $2.88 \text{ MB}$ per engineer.
+  - **Per Month (22 Workdays):** $506 \text{ MB}$ ($0.5 \text{ GB}$) per engineer.
+  - **External WAN Egress Tax:** Strictly **$0.00** (all traffic remains bounded within the private VPC).
+
+---
+
+## Chapter 9: Operational Modals &amp; Action Dialogs
+
+The Dashboard includes 4 deep-dive modal dialogs supporting day-to-day enterprise operations.
+
+---
+
+### 9.1 Modal 1: Register Enterprise Company VPC (`#modal-add-vpc`)
+
+Triggered via the `➕ Register Company VPC` button in the topology panel header.
+
+```
++---------------------------------------------------------------------+
+| [●] ACTIVE MODAL: REGISTER ENTERPRISE COMPANY VPC  | ZERO WAN EGRESS|
++---------------------------------------------------------------------+
+| Register Enterprise Company VPC                                 [X] |
+| Add an existing company VPC or Kubernetes cluster to the mesh.      |
+|                                                                     |
+| VPC Network Name: [ pci_payments_mesh                             ] |
+| Cloud Provider:   [ AWS ▼ ]          Region:      [ us-east-1     ] |
+| IPv4 CIDR Block:  [ 10.150.0.0/16 ]  Instances:   [ 12            ] |
+|                                                                     |
+|                                 [ Cancel ]  [ Connect &amp; Project VPC➔]|
++---------------------------------------------------------------------+
+```
+
+#### Form Fields:
+1. **VPC Network Name (`#vpc-form-name`):** Normalized identifier (e.g. `pci_payments_vpc`).
+2. **Cloud Provider (`#vpc-form-cloud`):** Select between `AWS`, `GCP`, `Azure`, or `OnPrem`.
+3. **Region / Data Center (`#vpc-form-region`):** Geographic location string (e.g. `us-east-1`, `europe-west3`).
+4. **IPv4 CIDR Block (`#vpc-form-cidr`):** Standard `/16` supernet notation (e.g. `10.150.0.0/16`).
+5. **Monitored Instances (`#vpc-form-instances`):** Number of active compute nodes/workloads attached.
+
+#### Execution Result:
+Submitting the form immediately injects the new network node into the live SVG topology graph, recalculates cross-cloud links, and updates filter counts without refreshing the page.
+
+---
+
+### 9.2 Modal 2: SRE Support Ticket &amp; Incident Dispatch (`#modal-dash-ticket`)
+
+Triggered via the `🎫 Open Ticket` button in the top global header.
+
+```
++---------------------------------------------------------------------+
+| [●] ACTIVE MODAL: OPEN SUPPORT TICKET &amp; INCIDENT DISPATCH           |
++---------------------------------------------------------------------+
+| Pre-Identified Identity: Acme Global Financial (CUST-101)           |
+| Tier: Cluster Large (320 Active Nodes) | TAM: Marcus Vance          |
+|                                                                     |
+| Incident Severity: [ P1 - Critical (2-Hour SLA) ▼ ]                 |
+| Category:          [ Compiler Engine / AST Parser ▼ ]               |
+| Issue Title:       [ AST syntax drift on custom Datadog JSON      ] |
+| Impacted Nodes:    [ 4                                            ] |
+| Symptoms / Logs:   [ Paste error traces or sanitized AST...       ] |
+|                                                                     |
+|                                 [ Cancel ]  [ 🚀 Dispatch to SRE ]  |
++---------------------------------------------------------------------+
+```
+
+#### Key Capabilities:
+- **Pre-Identified Identity Card:** Automatically pulls authenticated customer metadata from session state (`CUST-101`, Acme Global Financial, Cluster Large tier, assigned Technical Account Manager).
+- **Incident Severity Tiers:**
+  - `P0 - Blocker`: 1-Hour SLA (Complete cluster outage).
+  - `P1 - Critical`: 2-Hour SLA (Production impairment).
+  - `P2 - Major`: 4-Hour SLA (Degraded performance).
+  - `P3 - Minor`: 48-Hour SLA (General guidance / AST queries).
+- **Dispatch Confirmation:** Upon submission, displays a unique reference ticket ID (e.g. `TCK-1045`), starts a real-time SLA countdown clock, and presents a direct link to join an active emergency Live Support Bridge.
+
+---
+
+### 9.3 Modal 3: Multi-VPC Workload Migration Console (`#modal-lift-and-shift`)
+
+Launched via `⚡ Migration Staging` in the topology header or `⚡ Stage Migration` in the Node Inspector. Features a fluid 2-column layout and a fullscreen expansion toggle (`⛶`).
+
+```
++--------------------------------------------------------------------------------------------------------------------+
+| [●] &lt;DCOUPLR/&gt; WORKLOAD MIGRATION &amp; REPLICATION STAGING | READY • eBPF DNAT + CLOUD-NATIVE REPLICATION        [⛶][X]|
++--------------------------------------------------------------------------------------------------------------------+
+| LEFT COLUMN: PARAMETERS                  | RIGHT COLUMN: 7-TAB WORKSPACE VIEWPORT                                  |
+|                                          | [1. OpenTofu] [2. Subnets/DNS] [3. Alerts] [4. Cutover]                 |
+| Source Network:    [ production_vpc ▼ ]  | [5. Full Bundle] [6. FinOps] [7. Replication Staging]  [📋 Copy] [💾 Export]
+| Target Cloud:      [ GCP (Google)   ▼ ]  |-------------------------------------------------------------------------|
+| Target Region:     [ us-central1      ]  | # Generated OpenTofu Landing Zone Infrastructure HCL                    |
+| Target VPC CIDR:   [ 10.200.0.0/16    ]  | resource &quot;google_compute_network&quot; &quot;production_vpc&quot; {                    |
+| [ ⚡ Re-Compile Bundle ]                 |   name                    = &quot;production-vpc&quot;                            |
+|                                          |   auto_create_subnetworks = false                                       |
+| 🌐 IP METRICS:                           | }                                                                       |
+| Subnets: 3 (/24) • Usable IPs: 762       |                                                                         |
+| Static IPs Mapped: 3 DNS Endpoints       | resource &quot;google_compute_subnetwork&quot; &quot;production_vpc_subnet_1&quot; {        |
+| eBPF Rewrites: 3 Kernel Rules            |   name          = &quot;snet-us-central1-tier1&quot;                              |
+|                                          |   ip_cidr_range = &quot;10.200.1.0/24&quot;                                       |
+| 🛡️ ZERO TRANSLATION HOLES                |   region        = &quot;us-central1&quot;                                         |
+| Child /24 subnets partition cleanly      |   network       = google_compute_network.production_vpc.id              |
+| from parent /16 supernet.                | }                                                                       |
++--------------------------------------------------------------------------------------------------------------------+
+```
+
+#### The 7 Tabbed Workspaces:
+
+| Tab | Title | Content &amp; Technical Deliverable |
+| :---: | :--- | :--- |
+| **Tab 1** | **OpenTofu IaC (HCL)** | Complete infrastructure-as-code landing zone: VPCs, subnets, instances, databases, and buckets synthesized for the target cloud provider. |
+| **Tab 2** | **Subnet &amp; Private DNS** | Three interactive mapping tables: (1) Subnet CIDR translations, (2) Hardcoded Static IP $\to$ Private DNS endpoints, and (3) Kernel eBPF / iptables DNAT rules for zero-code IP rewrites. |
+| **Tab 3** | **Prometheus Alerts** | Synthesized Prometheus Alertmanager rules and `PrometheusRule` custom resources mirroring original source alerts without translation drift. |
+| **Tab 4** | **Cutover Runbook** | Turnkey zero-downtime cutover bash script with pre-flight binary checks, state synchronization loops, and automated rollback routines. |
+| **Tab 5** | **Full Wave Bundle (JSON)** | Complete unified JSON migration payload containing all artifacts, metadata, and checksums ready for automated GitOps execution. |
+| **Tab 6** | **FinOps Cost Comparison** | Public benchmark expenditure matrix comparing source cloud vs target cloud costs across On-Demand, 1-Year Committed ($\sim 35\%$ discount), and 3-Year Committed ($\sim 55\%$ discount) tiers with payback ROI timelines. |
+| **Tab 7** | **Replication Staging** | Host block-replication mapping, SRE execution runbook (`RUNBOOK-DCOUPLR-REPL-001`), Provider CLI launch scripts (AWS MGN, GCP M4CE, Azure Migrate), and ephemeral JIT bootstrap scripts (PowerShell WinRM for Windows; Bash SSH for Linux). |
+
+---
+
+### 9.4 Modal 4: Pre-Export Full Bundle Verification Modal (`#modal-bundle-preview`)
+
+Triggered via `🔍 View Full Bundle` or `💾 Export Full Bundle` from within the Migration Console.
+
+```
++---------------------------------------------------------------------+
+| [●] ACTIVE MODAL: PRE-EXPORT FULL BUNDLE VERIFICATION               |
++---------------------------------------------------------------------+
+| Full Migration Wave Bundle Manifest                             [X] |
+| 100% In-VPC Zero Egress • Complete Turnkey Wave Bundle              |
+|                                                                     |
+| Metadata Chips: [Wave: wave_01] [Source: AWS] [Target: GCP] [9 Assets]
+| Toolbar: [View Mode: Raw JSON | Artifact Summary] [🔍 Search JSON...]|
+|                                                                     |
+| {                                                                   |
+|   &quot;bundle_version&quot;: &quot;1.0.0&quot;,                                        |
+|   &quot;source_vpc&quot;: &quot;production_vpc&quot;,                                   |
+|   &quot;target_cloud&quot;: &quot;GCP&quot;,                                            |
+|   &quot;opentofu_hcl&quot;: &quot;resource \&quot;google_compute_network\&quot; ...&quot;,        |
+|   &quot;ebpf_dnat_rules&quot;: [ ... ],                                       |
+|   &quot;checksum_sha256&quot;: &quot;e3b0c44298fc1c149afbf4c8996fb92427ae41e4...&quot;|
+| }                                                                   |
+|                                                                     |
+| [← Back to Editor]            [📋 Copy JSON] [💾 Confirm &amp; Download] |
++---------------------------------------------------------------------+
+```
+
+#### Verification Features:
+- **Dual View Modes:**
+  - **Raw JSON:** Full highlighted syntax view of the entire JSON bundle.
+  - **Artifact Summary:** Human-readable card hierarchy breaking down the generated OpenTofu files, DNS rules, Prometheus rules, and replication scripts.
+- **Search &amp; Filter:** Real-time search field highlighting specific resource attributes or IP addresses across the manifest.
+- **Deterministic Checksum Attestation:** Validates the SHA-256 fingerprint of all generated files before saving to disk.
+
+---
+
+## Chapter 10: SRE Troubleshooting &amp; Air-Gap Verification Runbook
+
+### 10.1 Air-Gap Zero-Egress Verification Runbook
+
+To formally audit that the Dashboard makes zero public WAN requests:
+
+1. **Launch Dashboard in Air-Gap Sandbox:**
+   ```bash
+   # Bind strictly to localhost / private interface
+   ./migration_tools serve --host 127.0.0.1 --port 8000
+   ```
+2. **Execute Network Socket Sniffing:**
+   ```bash
+   # Verify all established sockets are loopback only
+   netstat -an | grep 8000
+   ```
+3. **Inspect Browser Developer Tools Network Tab:**
+   - Filter by: `All`.
+   - Confirm all requests originate from and terminate at `http://127.0.0.1:8000/`.
+   - Confirm external font requests, analytics beacons, and CDN calls are strictly **0**.
+4. **Trigger Security Test Suite:**
+   ```bash
+   pytest tests/test_vector2_zero_egress_security_proofs.py -v
+   ```
+
+### 10.2 Common Operational Diagnostics
+
+| Symptom | Diagnostic Root Cause | SRE Remediation Procedure |
+| :--- | :--- | :--- |
+| **Stream Status displays crimson &quot;SSE Disconnected&quot;** | Local API server process terminated or port 8000 blocked by host firewall. | Check terminal for process status. Restart server: `python -m migration_tools.cli serve`. Verify `/healthz` returns `200 OK`. |
+| **Raft Role displays &quot;FOLLOWER&quot; on all nodes** | Split-brain network partition or insufficient quorum of live peers. | Verify at least 2 of 3 cluster nodes are reachable on gRPC port `8081`. Check firewall rules between nodes. |
+| **Circuit Breaker trips to &quot;OPEN&quot; unexpectedly** | Network latency exceeded 10.0s or peer gRPC service crashed. | Inspect peer container logs. The circuit breaker will auto-probe every 10 seconds and automatically reset to `CLOSED` once connectivity restores. |
+| **Canvas charts appear frozen** | Browser tab sleep active or hardware acceleration disabled. | Verify tab is focused. Check if `Tab Sleep Mode Active` banner is showing. In Chrome/Edge, verify `Use graphics acceleration when available` is enabled. |
+| **Modal does not scroll on small screens** | Viewport height $&lt; 600 \text{ px}$. | Click the fullscreen toggle (`⛶`) in the modal header to expand into responsive fluid layout mode. |
+
+---
+
+## Summary of Completed Documentation Deliverables
+
+| Specification &amp; Manual Document | File Location | Purpose |
+| :--- | :--- | :--- |
+| **Dashboard Operator Manual (This Document)** | [`docs/IN_APP_TELEMETRY_DASHBOARD_OPERATOR_MANUAL.md`](/docs/IN_APP_TELEMETRY_DASHBOARD_OPERATOR_MANUAL.html) | Comprehensive step-by-step user and operations guide covering all 5 rows, 6 KPIs, 2 Canvas charts, 4 modals, and 7 migration tabs. |
+| **Dashboard Architecture &amp; Build Plan** | [`docs/IN_APP_TELEMETRY_DASHBOARD_PLAN.md`](/docs/IN_APP_TELEMETRY_DASHBOARD_PLAN.html) | Technical architectural blueprint, data flow diagrams, and ring buffer memory specifications. |
+| **Replication SRE Execution Runbook** | [`docs/runbooks/RUNBOOK-DCOUPLR-REPLICATION-MIGRATION.md`](/docs/runbooks/RUNBOOK-DCOUPLR-REPLICATION-MIGRATION.html) | Technical cutover steps, parameter checklists, and host agent bootstrap commands. |
+| **Zero-Egress Security &amp; Patent Register** | [`docs/PROPRIETARY_INVENTION_DISCLOSURE_AND_PATENT_REGISTER.md`](/docs/PROPRIETARY_INVENTION_DISCLOSURE_AND_PATENT_REGISTER.html) | Patent vectors 1–11 covering local volatile ring buffers, zero egress, and streaming snapshot compactions. |
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

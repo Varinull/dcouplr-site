@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - PUBLIC_TECHDOC_CANDIDATE_AUDIT_AND_CATALOG.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/PUBLIC_TECHDOC_CANDIDATE_AUDIT_AND_CATALOG.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="PUBLIC_TECHDOC_CANDIDATE_AUDIT_AND_CATALOG.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="public-technical-documentation-candidate-audit-classification-catalog">📑 <dcouplr/>: Public Technical Documentation Candidate Audit &amp; Classification Catalog</h1>
+<p><strong>Document ID:</strong> AUDIT-TECHDOC-PUBLIC-001<br />
+<strong>Category:</strong> Governance, Developer Enablement &amp; Public Documentation Strategy<br />
+<strong>Target Entities:</strong> Principal Architects, Lead Maintainers, Corporate Legal, Product Operations<br />
+<strong>Framework Alignment:</strong> ITIL Service Transition &amp; SDLC Developer Enablement Policy<br />
+<strong>Status:</strong> Staged for Administrative Review (Admin Vault Exclusive)<br />
+<strong>Security Mandate:</strong> In-Place Audit Only. Zero relocation or modification of existing Admin Vault assets.<br />
+<strong>Audit Date:</strong> October 2026</p>
+<hr />
+<h2 id="1-executive-context-objective">1. Executive Context &amp; Objective</h2>
+<p>The <strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code></strong> repository maintains over 190 internal specifications, governance dossiers, financial projections, and operational runbooks indexed inside the passcode-protected <strong>Technical Documentation Vault</strong> (<code>/docs</code>).</p>
+<p>To accelerate adoption across platform engineering, DevOps, and cloud architecture teams, high-value technical guides—such as the user manuals, syntax specifications, and migration recipes—need to be made publicly accessible under <strong>TechDoc</strong>.</p>
+<h3 id="core-operating-principles-for-public-techdoc-release">Core Operating Principles for Public TechDoc Release</h3>
+<ol>
+<li><strong>Zero Movement of Originals:</strong> All primary source documents remain intact and immutable inside their current repository locations (<code>docs/</code>, <code>ProjectAssistant/</code>, <code>recipes/</code>).</li>
+<li><strong>Selective Public Copies:</strong> Approved documents will be copied or mapped to a public Technical Documentation shelf (<code>/techdoc</code> or public viewer), leaving the Admin Vault strictly gated for administrative operations.</li>
+<li><strong>Strict Intellectual Property &amp; Confidentiality Boundary:</strong> Financial models, venture underwriting briefs, customer pipeline ledgers, internal salary data, and M&amp;A strategies remain locked inside the Admin Vault behind administrative authentication.</li>
+</ol>
+<hr />
+<h2 id="2-master-document-classification-matrix">2. Master Document Classification Matrix</h2>
+<p>Below is the complete classification of documents evaluated for public release under <strong>TechDoc</strong>:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        PUBLIC TECHDOC CLASSIFICATION OVERVIEW                          │
+├──────────────────────────┬──────────────────────────┬──────────────────────────────────┤
+│ TIER 1: Core User &amp;      │ TIER 2: Turnkey          │ TIER 3: Architecture &amp;           │
+│         Engineer Manuals │         Migration Recipes│         System Specifications    │
+│ • Field Manual           │ • Datadog to Grafana 11  │ • Unified IR Whitepaper          │
+│ • Enterprise Reference   │ • AWS to OpenTofu GCP    │ • API Security &amp; RBAC Spec       │
+│ • Local Build Guides     │ • PromQL Standardization │ • 4-Vector E2E Spec              │
+├──────────────────────────┴──────────────────────────┴──────────────────────────────────┤
+│ TIER 4: SRE Runbooks &amp; Operational Field Manuals                                       │
+│ • High-Throughput OTel Tuning • SPIFFE Socket Debugging • P1 Incident Response         │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ TIER 5: Customer Trust, Zero-Exfiltration Privacy Notice &amp; Open-Core Terms             │
+│ • Zero-Exfiltration Privacy Notice • Terms of Service • v1.0.0 Release Notes           │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 🔒 RESTRICTED PERIMETER (MUST STAY IN ADMIN VAULT ONLY - DO NOT PUBLISH)               │
+│ • Financial Models • Pitch Decks • Customer Pipeline CSV • Hiring Salaries • M&amp;A      │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="3-recommended-candidates-for-public-techdoc-release">3. Recommended Candidates for Public TechDoc Release</h2>
+<h3 id="tier-1-core-user-engineer-manuals-highest-priority-essential-for-adoption">Tier 1: Core User &amp; Engineer Manuals <em>(Highest Priority — Essential for Adoption)</em></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Document Title &amp; Path</th>
+<th style="text-align:left">Identifier</th>
+<th style="text-align:left">Content Summary</th>
+<th style="text-align:left">Why Make Public Under TechDoc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/ENGINEER_USER_MANUAL.html"><code>docs/ENGINEER_USER_MANUAL.md</code></a></strong></td>
+<td style="text-align:left"><code>VA-MAN-ENG-001</code></td>
+<td style="text-align:left">3-minute quickstarts (Web Studio, CLI, <code>curl</code>), Datadog-to-Prometheus cookbook scenarios, Terraform-to-OpenTofu cookbook, troubleshooting, FAQ, and everyday cheat sheet.</td>
+<td style="text-align:left"><strong>Crucial.</strong> This is the primary hands-on developer guide that empowers engineers to immediately use <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.html"><code>docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.md</code></a></strong></td>
+<td style="text-align:left"><code>VA-MAN-FOOLPROOF-001</code></td>
+<td style="text-align:left">Complete function-by-function reference (Python &amp; Go), EBNF syntax grammars, AST data models, and 7 verification auditor checklists.</td>
+<td style="text-align:left"><strong>Crucial.</strong> Provides the definitive technical blueprint needed by enterprise architects, SRE leads, and tech evaluators.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/guide_to_initial_local_compilation.html"><code>docs/guide_to_initial_local_compilation.md</code></a></strong></td>
+<td style="text-align:left"><code>GUIDE-INIT-COMP</code></td>
+<td style="text-align:left">Quick developer guide to cloning the repo and executing local AST transpilation passes.</td>
+<td style="text-align:left">Eliminates onboarding friction for open-source contributors and local testers.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/step_by_step_go_codebase_compilation_guide.html"><code>docs/step_by_step_go_codebase_compilation_guide.md</code></a></strong></td>
+<td style="text-align:left"><code>GUIDE-GO-BUILD</code></td>
+<td style="text-align:left">Instructions for compiling the Go distroless binaries, Protobuf stubs, and running race detector tests.</td>
+<td style="text-align:left">Practical field guide for systems engineers deploying the compiled Go binary.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="tier-2-turnkey-migration-recipes-actionable-step-by-step-playbooks">Tier 2: Turnkey Migration Recipes <em>(Actionable Step-by-Step Playbooks)</em></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Document Title &amp; Path</th>
+<th style="text-align:left">Identifier</th>
+<th style="text-align:left">Content Summary</th>
+<th style="text-align:left">Why Make Public Under TechDoc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/README.html"><code>recipes/datadog_to_grafana11/README.md</code></a></strong></td>
+<td style="text-align:left"><code>RECIPE-DD-GRAFANA11-001</code></td>
+<td style="text-align:left">Step-by-step workflow to extract Datadog monitor JSON, transpile locally, and load into Grafana 11 Unified Alerting.</td>
+<td style="text-align:left">The #1 requested enterprise migration path; immediately demonstrates cost savings.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/README.html"><code>recipes/cloudformation_to_opentofu_gcp/README.md</code></a></strong></td>
+<td style="text-align:left"><code>RECIPE-AWS-GCP-TOFU-002</code></td>
+<td style="text-align:left">Converting AWS CloudFormation / Terraform HCL into Google Cloud OpenTofu HCL with zero network egress.</td>
+<td style="text-align:left">Proves cross-cloud Infrastructure as Code portability with working code samples.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/README.html"><code>recipes/promql_standardization_azure_arc_anthos/README.md</code></a></strong></td>
+<td style="text-align:left"><code>RECIPE-PROMQL-STANDARDIZATION-003</code></td>
+<td style="text-align:left">Normalizing multi-cloud alerts into standard PromQL for Azure Arc &amp; Google Cloud Anthos managed Prometheus.</td>
+<td style="text-align:left">High utility for hybrid-cloud enterprise platform teams.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="tier-3-technical-specifications-whitepapers-architectural-legitimacy">Tier 3: Technical Specifications &amp; Whitepapers <em>(Architectural Legitimacy)</em></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Document Title &amp; Path</th>
+<th style="text-align:left">Identifier</th>
+<th style="text-align:left">Content Summary</th>
+<th style="text-align:left">Why Make Public Under TechDoc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/technical_whitepaper_unified_ir.html"><code>docs/technical_whitepaper_unified_ir.md</code></a></strong></td>
+<td style="text-align:left"><code>WHITE-UIT-IR-001</code></td>
+<td style="text-align:left">Mathematical normalization theorems, algebraic AST mappings, and dual-winged compiler theory.</td>
+<td style="text-align:left">Proves that <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> is a deterministic compiler, distinguishing it from hallucinating AI translators.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/API_SECURITY_AND_RBAC_SPECIFICATION.html"><code>docs/API_SECURITY_AND_RBAC_SPECIFICATION.md</code></a></strong></td>
+<td style="text-align:left"><code>SPEC-SEC-RBAC-001</code></td>
+<td style="text-align:left">Role permissions matrix (<code>SYSTEM_ADMIN</code>, <code>INFRA_ARCHITECT</code>, <code>VIEWER</code>), <code>X-API-Key</code> &amp; <code>X-Tenant-ID</code> header specifications, mTLS protocols.</td>
+<td style="text-align:left">Required by InfoSec and compliance teams during enterprise security assessments.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/enterprise_4vector_e2e_verification_and_hyperscaler_specification.html"><code>docs/enterprise_4vector_e2e_verification_and_hyperscaler_specification.md</code></a></strong></td>
+<td style="text-align:left"><code>SPEC-4VEC-VERIF-001</code></td>
+<td style="text-align:left">Fuzzing test methodologies, socket isolation assertions, and continuous matrix verification proofs.</td>
+<td style="text-align:left">Demonstrates the automated test rigor (214 passing test vectors) backing the platform.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/COMPETITIVE_ANALYSIS_AND_STRATEGIC_VALUE_PROPOSITION.html"><code>docs/COMPETITIVE_ANALYSIS_AND_STRATEGIC_VALUE_PROPOSITION.md</code></a></strong></td>
+<td style="text-align:left"><code>STRAT-COMP-VALUE-001</code></td>
+<td style="text-align:left">Comparison against Datadog, New Relic, Dynatrace, Splunk, Elastic, Grafana, and PagerDuty with the 10x value proposition.</td>
+<td style="text-align:left">Educates technical buyers on why in-VPC compilation beats multi-tenant SaaS.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/FEATURE_MATURITY_AND_PRODUCTION_READINESS_AUDIT.html"><code>docs/FEATURE_MATURITY_AND_PRODUCTION_READINESS_AUDIT.md</code></a></strong></td>
+<td style="text-align:left"><code>AUDIT-PROD-READINESS-001</code></td>
+<td style="text-align:left">Honest capability status scorecard, simulated vs. live components, and production roadmap.</td>
+<td style="text-align:left">Builds long-term trust by being transparent about current vs. planned features.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="tier-4-sre-runbooks-diagnostics-operational-field-procedures">Tier 4: SRE Runbooks &amp; Diagnostics <em>(Operational Field Procedures)</em></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Document Title &amp; Path</th>
+<th style="text-align:left">Identifier</th>
+<th style="text-align:left">Content Summary</th>
+<th style="text-align:left">Why Make Public Under TechDoc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/runbooks/RUNBOOK-OTEL-HIGH-THROUGHPUT-BENCHMARK.html"><code>docs/runbooks/RUNBOOK-OTEL-HIGH-THROUGHPUT-BENCHMARK.md</code></a></strong></td>
+<td style="text-align:left"><code>RUNBOOK-OTEL-001</code></td>
+<td style="text-align:left">In-VPC OpenTelemetry collector buffer sizing, CPU pinning, and memory tuning under 50,000 metrics/second load.</td>
+<td style="text-align:left">Invaluable reference for SREs tuning high-throughput telemetry pipelines.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/debugging_spiffe_workload_socket_connections.html"><code>docs/debugging_spiffe_workload_socket_connections.md</code></a></strong></td>
+<td style="text-align:left"><code>FIELD-SPIFFE-001</code></td>
+<td style="text-align:left">Troubleshooting mTLS socket attestation failures and SPIRE agent connection issues.</td>
+<td style="text-align:left">Hands-on field troubleshooting guide for zero-trust Kubernetes clusters.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/runbooks/RUNBOOK-DECOUPLER-P1-009.html"><code>docs/runbooks/RUNBOOK-DECOUPLER-P1-009.md</code></a></strong></td>
+<td style="text-align:left"><code>RUNBOOK-P1-009</code></td>
+<td style="text-align:left">Asymmetric network partition drills, circuit breaker trip states, and automatic self-healing.</td>
+<td style="text-align:left">Demonstrates production resilience and fault-tolerant operational runbooks.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="tier-5-customer-trust-privacy-license-public-assurance">Tier 5: Customer Trust, Privacy &amp; License <em>(Public Assurance)</em></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Document Title &amp; Path</th>
+<th style="text-align:left">Identifier</th>
+<th style="text-align:left">Content Summary</th>
+<th style="text-align:left">Why Make Public Under TechDoc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/01-privacy-notice.html"><code>ProjectAssistant/customers/01-privacy-notice.md</code></a></strong></td>
+<td style="text-align:left"><code>del-customer-privacy</code></td>
+<td style="text-align:left">Legal and technical confirmation that all AST parsing happens strictly in volatile RAM with zero WAN egress.</td>
+<td style="text-align:left">Essential for customer legal &amp; compliance approval (GDPR, HIPAA, SOC 2).</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/02-terms.html"><code>ProjectAssistant/customers/02-terms.md</code></a></strong></td>
+<td style="text-align:left"><code>del-customer-terms</code></td>
+<td style="text-align:left">Apache 2.0 dual-licensing terms and commercial enterprise cluster node bracket boundaries.</td>
+<td style="text-align:left">Transparent licensing terms for both open-core and enterprise users.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><a href="/docs/open_core_v1_release_notes.html"><code>docs/open_core_v1_release_notes.md</code></a></strong></td>
+<td style="text-align:left"><code>REL-NOTES-V1</code></td>
+<td style="text-align:left">Changelog, supported AST constructs, and release highlights for v1.0.0.</td>
+<td style="text-align:left">Standard software release record for external developers.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-restricted-perimeter-confidential-assets-must-remain-in-admin-vault-only">4. 🔒 Restricted Perimeter: Confidential Assets (MUST REMAIN IN ADMIN VAULT ONLY)</h2>
+<p>The following documents contain sensitive financial models, investor communications, customer pipeline data, internal salaries, and acquisition strategies. <strong>These documents must remain strictly protected inside the Admin Vault behind administrative authentication and must NEVER be published to TechDoc:</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Restricted File Name</th>
+<th style="text-align:left">Sensitivity Category</th>
+<th style="text-align:left">Why It Must Remain Private</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>docs/18_month_arr_and_customer_pilot_projections.md</code></td>
+<td style="text-align:left">Commercial / Financial</td>
+<td style="text-align:left">Contains forward-looking revenue projections ($600K $\to$ $1.48M ARR), pilot pricing models, and private valuation calculations.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>docs/seed_stage_venture_underwriting_brief.md</code></td>
+<td style="text-align:left">Venture / Investor</td>
+<td style="text-align:left">Contains confidential institutional underwriting terms, cap table models, and capital efficiency ratios.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>docs/seed_stage_pitch_deck.md</code></td>
+<td style="text-align:left">Fundraising / Investor</td>
+<td style="text-align:left">Proprietary investor narrative, slide-by-slide pitch structure, and fundraising strategy.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>docs/seed_stage_financial_model.md</code></td>
+<td style="text-align:left">Commercial / Financial</td>
+<td style="text-align:left">Detailed P&amp;L projections, 92% gross margin mathematical model, and COGS breakdown.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>docs/seed_stage_financial_worksheet.csv</code></td>
+<td style="text-align:left">Commercial / Financial</td>
+<td style="text-align:left">Raw spreadsheet formula matrix for internal financial modeling.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>docs/seed_stage_customer_acquisition_pipeline.csv</code></td>
+<td style="text-align:left">Commercial / CRM</td>
+<td style="text-align:left">Real design partner names, enterprise pilot stages, and projected Annual Contract Value (ACV) targets.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>docs/seed_stage_monetization_plan.md</code></td>
+<td style="text-align:left">Commercial Strategy</td>
+<td style="text-align:left">Enterprise monetization strategy, licensing brackets, and sales cycle velocity models.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>docs/seed_stage_capital_efficiency_thesis.md</code></td>
+<td style="text-align:left">Investor Strategy</td>
+<td style="text-align:left">Burn multiple targets, capital efficiency benchmarks, and venture syndicate strategy.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>docs/seed_stage_executive_summary.md</code></td>
+<td style="text-align:left">Investor Briefing</td>
+<td style="text-align:left">Confidential executive investment summary for institutional venture capital partners.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>docs/seed_stage_3year_technical_hiring_model.csv</code> / <code>.md</code></td>
+<td style="text-align:left">HR / Compensation</td>
+<td style="text-align:left">Private engineering salaries, equity grants, and headcount hiring timeline.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>docs/hyperscaler_strategic_value_and_mna_thesis.md</code></td>
+<td style="text-align:left">M&amp;A Strategy</td>
+<td style="text-align:left">Confidential strategic acquisition positioning targeting AWS, Microsoft, and Google corporate development teams.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>docs/investor_due_diligence_simulation.md</code></td>
+<td style="text-align:left">Investor Due Diligence</td>
+<td style="text-align:left">Simulated Tier-1 VC partner interrogations across 12 defense vectors.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>docs/enterprise_sow_template.md</code></td>
+<td style="text-align:left">Commercial Legal</td>
+<td style="text-align:left">Internal contract templates and commercial pricing terms.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>docs/executive_sow_and_cost_matrix.md</code></td>
+<td style="text-align:left">Commercial Pricing</td>
+<td style="text-align:left">Internal customer pricing formulas and discount authorization matrices.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>ProjectAssistant/governance/</code></td>
+<td style="text-align:left">Corporate Governance</td>
+<td style="text-align:left">Executive sign-off authorities, Change Advisory Board voting records, and delivery audit certificates.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-technical-delivery-mechanism-for-public-techdoc">5. Technical Delivery Mechanism for Public TechDoc</h2>
+<p>Once you review and select the desired candidates from Tiers 1 through 5, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> will implement the public documentation shelf using the following zero-disruption architecture:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        PUBLIC TECHDOC DELIVERY ARCHITECTURE                            │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 1. Original Document Remains in Admin Vault:                                           │
+│    • docs/ENGINEER_USER_MANUAL.md (Accessible via /docs)           │
+│                                                                                        │
+│ 2. Public Read-Only Endpoint (/v1/techdoc/documents):                                  │
+│    • Unauthenticated, rate-limited public endpoint serving only approved documents.   │
+│                                                                                        │
+│ 3. Dedicated Public TechDoc Viewer (/techdoc):                                         │
+│    • Clean, distraction-free markdown documentation viewer with searchable sidebar.    │
+│    • Clicking &quot;TechDoc&quot; on the landing page header links directly to /techdoc.         │
+│                                                                                        │
+│ 4. Zero Egress &amp; Cache Efficiency:                                                     │
+│    • Public documents cached in memory, zero external network calls, fast 304 caching. │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="6-administrative-approval-selection-checklist">6. Administrative Approval &amp; Selection Checklist</h2>
+<p>Review the candidate list below and mark the documents to approve for public release:</p>
+<h3 id="tier-1-user-engineer-manuals">Tier 1: User &amp; Engineer Manuals</h3>
+<ul>
+<li>[ ] <code>docs/ENGINEER_USER_MANUAL.md</code> (<code>VA-MAN-ENG-001</code>) — Practical Field Manual &amp; Quickstart Guide</li>
+<li>[ ] <code>docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.md</code> (<code>VA-MAN-FOOLPROOF-001</code>) — Complete Enterprise Reference Manual</li>
+<li>[ ] <code>docs/guide_to_initial_local_compilation.md</code> — Local AST Compilation Guide</li>
+<li>[ ] <code>docs/step_by_step_go_codebase_compilation_guide.md</code> — Go Codebase Build &amp; Compilation Guide</li>
+</ul>
+<h3 id="tier-2-migration-recipes">Tier 2: Migration Recipes</h3>
+<ul>
+<li>[ ] <code>recipes/datadog_to_grafana11/README.md</code> — Datadog to Grafana 11 Unified Alerting Recipe</li>
+<li>[ ] <code>recipes/cloudformation_to_opentofu_gcp/README.md</code> — AWS to OpenTofu GCP Infrastructure Recipe</li>
+<li>[ ] <code>recipes/promql_standardization_azure_arc_anthos/README.md</code> — PromQL Standardization Recipe</li>
+</ul>
+<h3 id="tier-3-technical-specifications-whitepapers">Tier 3: Technical Specifications &amp; Whitepapers</h3>
+<ul>
+<li>[ ] <code>docs/technical_whitepaper_unified_ir.md</code> — Unified Intermediate Representation Whitepaper</li>
+<li>[ ] <code>docs/API_SECURITY_AND_RBAC_SPECIFICATION.md</code> — API Security &amp; RBAC Specification</li>
+<li>[ ] <code>docs/enterprise_4vector_e2e_verification_and_hyperscaler_specification.md</code> — 4-Vector Verification Spec</li>
+<li>[ ] <code>docs/COMPETITIVE_ANALYSIS_AND_STRATEGIC_VALUE_PROPOSITION.md</code> — Competitive Landscape &amp; Market Strategy</li>
+<li>[ ] <code>docs/FEATURE_MATURITY_AND_PRODUCTION_READINESS_AUDIT.md</code> — Feature Maturity &amp; Production Audit</li>
+</ul>
+<h3 id="tier-4-sre-runbooks-diagnostics">Tier 4: SRE Runbooks &amp; Diagnostics</h3>
+<ul>
+<li>[ ] <code>docs/runbooks/RUNBOOK-OTEL-HIGH-THROUGHPUT-BENCHMARK.md</code> — OpenTelemetry Collector Tuning Runbook</li>
+<li>[ ] <code>docs/debugging_spiffe_workload_socket_connections.md</code> — SPIFFE Workload Socket Debugging Guide</li>
+<li>[ ] <code>docs/runbooks/RUNBOOK-DECOUPLER-P1-009.md</code> — P1 Incident Response Runbook</li>
+</ul>
+<h3 id="tier-5-customer-trust-legal">Tier 5: Customer Trust &amp; Legal</h3>
+<ul>
+<li>[ ] <code>ProjectAssistant/customers/01-privacy-notice.md</code> — Enterprise Zero-Exfiltration Privacy Notice</li>
+<li>[ ] <code>ProjectAssistant/customers/02-terms.md</code> — Open-Core &amp; Commercial Terms of Service</li>
+<li>[ ] <code>docs/open_core_v1_release_notes.md</code> — Version 1.0.0 Release Notes</li>
+</ul>
+</div>
+      <pre id="raw-view"><code># 📑 &lt;dcouplr/&gt;: Public Technical Documentation Candidate Audit &amp; Classification Catalog
+
+**Document ID:** AUDIT-TECHDOC-PUBLIC-001  
+**Category:** Governance, Developer Enablement &amp; Public Documentation Strategy  
+**Target Entities:** Principal Architects, Lead Maintainers, Corporate Legal, Product Operations  
+**Framework Alignment:** ITIL Service Transition &amp; SDLC Developer Enablement Policy  
+**Status:** Staged for Administrative Review (Admin Vault Exclusive)  
+**Security Mandate:** In-Place Audit Only. Zero relocation or modification of existing Admin Vault assets.  
+**Audit Date:** October 2026  
+
+---
+
+## 1. Executive Context &amp; Objective
+
+The **`&lt;dcouplr/&gt;`** repository maintains over 190 internal specifications, governance dossiers, financial projections, and operational runbooks indexed inside the passcode-protected **Technical Documentation Vault** (`/docs`). 
+
+To accelerate adoption across platform engineering, DevOps, and cloud architecture teams, high-value technical guides—such as the user manuals, syntax specifications, and migration recipes—need to be made publicly accessible under **TechDoc**. 
+
+### Core Operating Principles for Public TechDoc Release
+1. **Zero Movement of Originals:** All primary source documents remain intact and immutable inside their current repository locations (`docs/`, `ProjectAssistant/`, `recipes/`).
+2. **Selective Public Copies:** Approved documents will be copied or mapped to a public Technical Documentation shelf (`/techdoc` or public viewer), leaving the Admin Vault strictly gated for administrative operations.
+3. **Strict Intellectual Property &amp; Confidentiality Boundary:** Financial models, venture underwriting briefs, customer pipeline ledgers, internal salary data, and M&amp;A strategies remain locked inside the Admin Vault behind administrative authentication.
+
+---
+
+## 2. Master Document Classification Matrix
+
+Below is the complete classification of documents evaluated for public release under **TechDoc**:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        PUBLIC TECHDOC CLASSIFICATION OVERVIEW                          │
+├──────────────────────────┬──────────────────────────┬──────────────────────────────────┤
+│ TIER 1: Core User &amp;      │ TIER 2: Turnkey          │ TIER 3: Architecture &amp;           │
+│         Engineer Manuals │         Migration Recipes│         System Specifications    │
+│ • Field Manual           │ • Datadog to Grafana 11  │ • Unified IR Whitepaper          │
+│ • Enterprise Reference   │ • AWS to OpenTofu GCP    │ • API Security &amp; RBAC Spec       │
+│ • Local Build Guides     │ • PromQL Standardization │ • 4-Vector E2E Spec              │
+├──────────────────────────┴──────────────────────────┴──────────────────────────────────┤
+│ TIER 4: SRE Runbooks &amp; Operational Field Manuals                                       │
+│ • High-Throughput OTel Tuning • SPIFFE Socket Debugging • P1 Incident Response         │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ TIER 5: Customer Trust, Zero-Exfiltration Privacy Notice &amp; Open-Core Terms             │
+│ • Zero-Exfiltration Privacy Notice • Terms of Service • v1.0.0 Release Notes           │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 🔒 RESTRICTED PERIMETER (MUST STAY IN ADMIN VAULT ONLY - DO NOT PUBLISH)               │
+│ • Financial Models • Pitch Decks • Customer Pipeline CSV • Hiring Salaries • M&amp;A      │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 3. Recommended Candidates for Public TechDoc Release
+
+### Tier 1: Core User &amp; Engineer Manuals *(Highest Priority — Essential for Adoption)*
+
+| Document Title &amp; Path | Identifier | Content Summary | Why Make Public Under TechDoc |
+| :--- | :--- | :--- | :--- |
+| **[`docs/ENGINEER_USER_MANUAL.md`](/docs/ENGINEER_USER_MANUAL.html)** | `VA-MAN-ENG-001` | 3-minute quickstarts (Web Studio, CLI, `curl`), Datadog-to-Prometheus cookbook scenarios, Terraform-to-OpenTofu cookbook, troubleshooting, FAQ, and everyday cheat sheet. | **Crucial.** This is the primary hands-on developer guide that empowers engineers to immediately use `&lt;dcouplr/&gt;`. |
+| **[`docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.md`](/docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.html)** | `VA-MAN-FOOLPROOF-001` | Complete function-by-function reference (Python &amp; Go), EBNF syntax grammars, AST data models, and 7 verification auditor checklists. | **Crucial.** Provides the definitive technical blueprint needed by enterprise architects, SRE leads, and tech evaluators. |
+| **[`docs/guide_to_initial_local_compilation.md`](/docs/guide_to_initial_local_compilation.html)** | `GUIDE-INIT-COMP` | Quick developer guide to cloning the repo and executing local AST transpilation passes. | Eliminates onboarding friction for open-source contributors and local testers. |
+| **[`docs/step_by_step_go_codebase_compilation_guide.md`](/docs/step_by_step_go_codebase_compilation_guide.html)** | `GUIDE-GO-BUILD` | Instructions for compiling the Go distroless binaries, Protobuf stubs, and running race detector tests. | Practical field guide for systems engineers deploying the compiled Go binary. |
+
+---
+
+### Tier 2: Turnkey Migration Recipes *(Actionable Step-by-Step Playbooks)*
+
+| Document Title &amp; Path | Identifier | Content Summary | Why Make Public Under TechDoc |
+| :--- | :--- | :--- | :--- |
+| **[`recipes/datadog_to_grafana11/README.md`](/docs/README.html)** | `RECIPE-DD-GRAFANA11-001` | Step-by-step workflow to extract Datadog monitor JSON, transpile locally, and load into Grafana 11 Unified Alerting. | The #1 requested enterprise migration path; immediately demonstrates cost savings. |
+| **[`recipes/cloudformation_to_opentofu_gcp/README.md`](/docs/README.html)** | `RECIPE-AWS-GCP-TOFU-002` | Converting AWS CloudFormation / Terraform HCL into Google Cloud OpenTofu HCL with zero network egress. | Proves cross-cloud Infrastructure as Code portability with working code samples. |
+| **[`recipes/promql_standardization_azure_arc_anthos/README.md`](/docs/README.html)** | `RECIPE-PROMQL-STANDARDIZATION-003` | Normalizing multi-cloud alerts into standard PromQL for Azure Arc &amp; Google Cloud Anthos managed Prometheus. | High utility for hybrid-cloud enterprise platform teams. |
+
+---
+
+### Tier 3: Technical Specifications &amp; Whitepapers *(Architectural Legitimacy)*
+
+| Document Title &amp; Path | Identifier | Content Summary | Why Make Public Under TechDoc |
+| :--- | :--- | :--- | :--- |
+| **[`docs/technical_whitepaper_unified_ir.md`](/docs/technical_whitepaper_unified_ir.html)** | `WHITE-UIT-IR-001` | Mathematical normalization theorems, algebraic AST mappings, and dual-winged compiler theory. | Proves that `&lt;dcouplr/&gt;` is a deterministic compiler, distinguishing it from hallucinating AI translators. |
+| **[`docs/API_SECURITY_AND_RBAC_SPECIFICATION.md`](/docs/API_SECURITY_AND_RBAC_SPECIFICATION.html)** | `SPEC-SEC-RBAC-001` | Role permissions matrix (`SYSTEM_ADMIN`, `INFRA_ARCHITECT`, `VIEWER`), `X-API-Key` &amp; `X-Tenant-ID` header specifications, mTLS protocols. | Required by InfoSec and compliance teams during enterprise security assessments. |
+| **[`docs/enterprise_4vector_e2e_verification_and_hyperscaler_specification.md`](/docs/enterprise_4vector_e2e_verification_and_hyperscaler_specification.html)** | `SPEC-4VEC-VERIF-001` | Fuzzing test methodologies, socket isolation assertions, and continuous matrix verification proofs. | Demonstrates the automated test rigor (214 passing test vectors) backing the platform. |
+| **[`docs/COMPETITIVE_ANALYSIS_AND_STRATEGIC_VALUE_PROPOSITION.md`](/docs/COMPETITIVE_ANALYSIS_AND_STRATEGIC_VALUE_PROPOSITION.html)** | `STRAT-COMP-VALUE-001` | Comparison against Datadog, New Relic, Dynatrace, Splunk, Elastic, Grafana, and PagerDuty with the 10x value proposition. | Educates technical buyers on why in-VPC compilation beats multi-tenant SaaS. |
+| **[`docs/FEATURE_MATURITY_AND_PRODUCTION_READINESS_AUDIT.md`](/docs/FEATURE_MATURITY_AND_PRODUCTION_READINESS_AUDIT.html)** | `AUDIT-PROD-READINESS-001` | Honest capability status scorecard, simulated vs. live components, and production roadmap. | Builds long-term trust by being transparent about current vs. planned features. |
+
+---
+
+### Tier 4: SRE Runbooks &amp; Diagnostics *(Operational Field Procedures)*
+
+| Document Title &amp; Path | Identifier | Content Summary | Why Make Public Under TechDoc |
+| :--- | :--- | :--- | :--- |
+| **[`docs/runbooks/RUNBOOK-OTEL-HIGH-THROUGHPUT-BENCHMARK.md`](/docs/runbooks/RUNBOOK-OTEL-HIGH-THROUGHPUT-BENCHMARK.html)** | `RUNBOOK-OTEL-001` | In-VPC OpenTelemetry collector buffer sizing, CPU pinning, and memory tuning under 50,000 metrics/second load. | Invaluable reference for SREs tuning high-throughput telemetry pipelines. |
+| **[`docs/debugging_spiffe_workload_socket_connections.md`](/docs/debugging_spiffe_workload_socket_connections.html)** | `FIELD-SPIFFE-001` | Troubleshooting mTLS socket attestation failures and SPIRE agent connection issues. | Hands-on field troubleshooting guide for zero-trust Kubernetes clusters. |
+| **[`docs/runbooks/RUNBOOK-DECOUPLER-P1-009.md`](/docs/runbooks/RUNBOOK-DECOUPLER-P1-009.html)** | `RUNBOOK-P1-009` | Asymmetric network partition drills, circuit breaker trip states, and automatic self-healing. | Demonstrates production resilience and fault-tolerant operational runbooks. |
+
+---
+
+### Tier 5: Customer Trust, Privacy &amp; License *(Public Assurance)*
+
+| Document Title &amp; Path | Identifier | Content Summary | Why Make Public Under TechDoc |
+| :--- | :--- | :--- | :--- |
+| **[`ProjectAssistant/customers/01-privacy-notice.md`](/docs/01-privacy-notice.html)** | `del-customer-privacy` | Legal and technical confirmation that all AST parsing happens strictly in volatile RAM with zero WAN egress. | Essential for customer legal &amp; compliance approval (GDPR, HIPAA, SOC 2). |
+| **[`ProjectAssistant/customers/02-terms.md`](/docs/02-terms.html)** | `del-customer-terms` | Apache 2.0 dual-licensing terms and commercial enterprise cluster node bracket boundaries. | Transparent licensing terms for both open-core and enterprise users. |
+| **[`docs/open_core_v1_release_notes.md`](/docs/open_core_v1_release_notes.html)** | `REL-NOTES-V1` | Changelog, supported AST constructs, and release highlights for v1.0.0. | Standard software release record for external developers. |
+
+---
+
+## 4. 🔒 Restricted Perimeter: Confidential Assets (MUST REMAIN IN ADMIN VAULT ONLY)
+
+The following documents contain sensitive financial models, investor communications, customer pipeline data, internal salaries, and acquisition strategies. **These documents must remain strictly protected inside the Admin Vault behind administrative authentication and must NEVER be published to TechDoc:**
+
+| Restricted File Name | Sensitivity Category | Why It Must Remain Private |
+| :--- | :--- | :--- |
+| `docs/18_month_arr_and_customer_pilot_projections.md` | Commercial / Financial | Contains forward-looking revenue projections ($600K $\to$ $1.48M ARR), pilot pricing models, and private valuation calculations. |
+| `docs/seed_stage_venture_underwriting_brief.md` | Venture / Investor | Contains confidential institutional underwriting terms, cap table models, and capital efficiency ratios. |
+| `docs/seed_stage_pitch_deck.md` | Fundraising / Investor | Proprietary investor narrative, slide-by-slide pitch structure, and fundraising strategy. |
+| `docs/seed_stage_financial_model.md` | Commercial / Financial | Detailed P&amp;L projections, 92% gross margin mathematical model, and COGS breakdown. |
+| `docs/seed_stage_financial_worksheet.csv` | Commercial / Financial | Raw spreadsheet formula matrix for internal financial modeling. |
+| `docs/seed_stage_customer_acquisition_pipeline.csv` | Commercial / CRM | Real design partner names, enterprise pilot stages, and projected Annual Contract Value (ACV) targets. |
+| `docs/seed_stage_monetization_plan.md` | Commercial Strategy | Enterprise monetization strategy, licensing brackets, and sales cycle velocity models. |
+| `docs/seed_stage_capital_efficiency_thesis.md` | Investor Strategy | Burn multiple targets, capital efficiency benchmarks, and venture syndicate strategy. |
+| `docs/seed_stage_executive_summary.md` | Investor Briefing | Confidential executive investment summary for institutional venture capital partners. |
+| `docs/seed_stage_3year_technical_hiring_model.csv` / `.md` | HR / Compensation | Private engineering salaries, equity grants, and headcount hiring timeline. |
+| `docs/hyperscaler_strategic_value_and_mna_thesis.md` | M&amp;A Strategy | Confidential strategic acquisition positioning targeting AWS, Microsoft, and Google corporate development teams. |
+| `docs/investor_due_diligence_simulation.md` | Investor Due Diligence | Simulated Tier-1 VC partner interrogations across 12 defense vectors. |
+| `docs/enterprise_sow_template.md` | Commercial Legal | Internal contract templates and commercial pricing terms. |
+| `docs/executive_sow_and_cost_matrix.md` | Commercial Pricing | Internal customer pricing formulas and discount authorization matrices. |
+| `ProjectAssistant/governance/` | Corporate Governance | Executive sign-off authorities, Change Advisory Board voting records, and delivery audit certificates. |
+
+---
+
+## 5. Technical Delivery Mechanism for Public TechDoc
+
+Once you review and select the desired candidates from Tiers 1 through 5, `&lt;dcouplr/&gt;` will implement the public documentation shelf using the following zero-disruption architecture:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        PUBLIC TECHDOC DELIVERY ARCHITECTURE                            │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 1. Original Document Remains in Admin Vault:                                           │
+│    • docs/ENGINEER_USER_MANUAL.md (Accessible via /docs)           │
+│                                                                                        │
+│ 2. Public Read-Only Endpoint (/v1/techdoc/documents):                                  │
+│    • Unauthenticated, rate-limited public endpoint serving only approved documents.   │
+│                                                                                        │
+│ 3. Dedicated Public TechDoc Viewer (/techdoc):                                         │
+│    • Clean, distraction-free markdown documentation viewer with searchable sidebar.    │
+│    • Clicking &quot;TechDoc&quot; on the landing page header links directly to /techdoc.         │
+│                                                                                        │
+│ 4. Zero Egress &amp; Cache Efficiency:                                                     │
+│    • Public documents cached in memory, zero external network calls, fast 304 caching. │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 6. Administrative Approval &amp; Selection Checklist
+
+Review the candidate list below and mark the documents to approve for public release:
+
+### Tier 1: User &amp; Engineer Manuals
+- [ ] `docs/ENGINEER_USER_MANUAL.md` (`VA-MAN-ENG-001`) — Practical Field Manual &amp; Quickstart Guide
+- [ ] `docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.md` (`VA-MAN-FOOLPROOF-001`) — Complete Enterprise Reference Manual
+- [ ] `docs/guide_to_initial_local_compilation.md` — Local AST Compilation Guide
+- [ ] `docs/step_by_step_go_codebase_compilation_guide.md` — Go Codebase Build &amp; Compilation Guide
+
+### Tier 2: Migration Recipes
+- [ ] `recipes/datadog_to_grafana11/README.md` — Datadog to Grafana 11 Unified Alerting Recipe
+- [ ] `recipes/cloudformation_to_opentofu_gcp/README.md` — AWS to OpenTofu GCP Infrastructure Recipe
+- [ ] `recipes/promql_standardization_azure_arc_anthos/README.md` — PromQL Standardization Recipe
+
+### Tier 3: Technical Specifications &amp; Whitepapers
+- [ ] `docs/technical_whitepaper_unified_ir.md` — Unified Intermediate Representation Whitepaper
+- [ ] `docs/API_SECURITY_AND_RBAC_SPECIFICATION.md` — API Security &amp; RBAC Specification
+- [ ] `docs/enterprise_4vector_e2e_verification_and_hyperscaler_specification.md` — 4-Vector Verification Spec
+- [ ] `docs/COMPETITIVE_ANALYSIS_AND_STRATEGIC_VALUE_PROPOSITION.md` — Competitive Landscape &amp; Market Strategy
+- [ ] `docs/FEATURE_MATURITY_AND_PRODUCTION_READINESS_AUDIT.md` — Feature Maturity &amp; Production Audit
+
+### Tier 4: SRE Runbooks &amp; Diagnostics
+- [ ] `docs/runbooks/RUNBOOK-OTEL-HIGH-THROUGHPUT-BENCHMARK.md` — OpenTelemetry Collector Tuning Runbook
+- [ ] `docs/debugging_spiffe_workload_socket_connections.md` — SPIFFE Workload Socket Debugging Guide
+- [ ] `docs/runbooks/RUNBOOK-DECOUPLER-P1-009.md` — P1 Incident Response Runbook
+
+### Tier 5: Customer Trust &amp; Legal
+- [ ] `ProjectAssistant/customers/01-privacy-notice.md` — Enterprise Zero-Exfiltration Privacy Notice
+- [ ] `ProjectAssistant/customers/02-terms.md` — Open-Core &amp; Commercial Terms of Service
+- [ ] `docs/open_core_v1_release_notes.md` — Version 1.0.0 Release Notes
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># 📑 &lt;dcouplr/&gt;: Public Technical Documentation Candidate Audit &amp; Classification Catalog
+
+**Document ID:** AUDIT-TECHDOC-PUBLIC-001  
+**Category:** Governance, Developer Enablement &amp; Public Documentation Strategy  
+**Target Entities:** Principal Architects, Lead Maintainers, Corporate Legal, Product Operations  
+**Framework Alignment:** ITIL Service Transition &amp; SDLC Developer Enablement Policy  
+**Status:** Staged for Administrative Review (Admin Vault Exclusive)  
+**Security Mandate:** In-Place Audit Only. Zero relocation or modification of existing Admin Vault assets.  
+**Audit Date:** October 2026  
+
+---
+
+## 1. Executive Context &amp; Objective
+
+The **`&lt;dcouplr/&gt;`** repository maintains over 190 internal specifications, governance dossiers, financial projections, and operational runbooks indexed inside the passcode-protected **Technical Documentation Vault** (`/docs`). 
+
+To accelerate adoption across platform engineering, DevOps, and cloud architecture teams, high-value technical guides—such as the user manuals, syntax specifications, and migration recipes—need to be made publicly accessible under **TechDoc**. 
+
+### Core Operating Principles for Public TechDoc Release
+1. **Zero Movement of Originals:** All primary source documents remain intact and immutable inside their current repository locations (`docs/`, `ProjectAssistant/`, `recipes/`).
+2. **Selective Public Copies:** Approved documents will be copied or mapped to a public Technical Documentation shelf (`/techdoc` or public viewer), leaving the Admin Vault strictly gated for administrative operations.
+3. **Strict Intellectual Property &amp; Confidentiality Boundary:** Financial models, venture underwriting briefs, customer pipeline ledgers, internal salary data, and M&amp;A strategies remain locked inside the Admin Vault behind administrative authentication.
+
+---
+
+## 2. Master Document Classification Matrix
+
+Below is the complete classification of documents evaluated for public release under **TechDoc**:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        PUBLIC TECHDOC CLASSIFICATION OVERVIEW                          │
+├──────────────────────────┬──────────────────────────┬──────────────────────────────────┤
+│ TIER 1: Core User &amp;      │ TIER 2: Turnkey          │ TIER 3: Architecture &amp;           │
+│         Engineer Manuals │         Migration Recipes│         System Specifications    │
+│ • Field Manual           │ • Datadog to Grafana 11  │ • Unified IR Whitepaper          │
+│ • Enterprise Reference   │ • AWS to OpenTofu GCP    │ • API Security &amp; RBAC Spec       │
+│ • Local Build Guides     │ • PromQL Standardization │ • 4-Vector E2E Spec              │
+├──────────────────────────┴──────────────────────────┴──────────────────────────────────┤
+│ TIER 4: SRE Runbooks &amp; Operational Field Manuals                                       │
+│ • High-Throughput OTel Tuning • SPIFFE Socket Debugging • P1 Incident Response         │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ TIER 5: Customer Trust, Zero-Exfiltration Privacy Notice &amp; Open-Core Terms             │
+│ • Zero-Exfiltration Privacy Notice • Terms of Service • v1.0.0 Release Notes           │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 🔒 RESTRICTED PERIMETER (MUST STAY IN ADMIN VAULT ONLY - DO NOT PUBLISH)               │
+│ • Financial Models • Pitch Decks • Customer Pipeline CSV • Hiring Salaries • M&amp;A      │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 3. Recommended Candidates for Public TechDoc Release
+
+### Tier 1: Core User &amp; Engineer Manuals *(Highest Priority — Essential for Adoption)*
+
+| Document Title &amp; Path | Identifier | Content Summary | Why Make Public Under TechDoc |
+| :--- | :--- | :--- | :--- |
+| **[`docs/ENGINEER_USER_MANUAL.md`](/docs/ENGINEER_USER_MANUAL.html)** | `VA-MAN-ENG-001` | 3-minute quickstarts (Web Studio, CLI, `curl`), Datadog-to-Prometheus cookbook scenarios, Terraform-to-OpenTofu cookbook, troubleshooting, FAQ, and everyday cheat sheet. | **Crucial.** This is the primary hands-on developer guide that empowers engineers to immediately use `&lt;dcouplr/&gt;`. |
+| **[`docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.md`](/docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.html)** | `VA-MAN-FOOLPROOF-001` | Complete function-by-function reference (Python &amp; Go), EBNF syntax grammars, AST data models, and 7 verification auditor checklists. | **Crucial.** Provides the definitive technical blueprint needed by enterprise architects, SRE leads, and tech evaluators. |
+| **[`docs/guide_to_initial_local_compilation.md`](/docs/guide_to_initial_local_compilation.html)** | `GUIDE-INIT-COMP` | Quick developer guide to cloning the repo and executing local AST transpilation passes. | Eliminates onboarding friction for open-source contributors and local testers. |
+| **[`docs/step_by_step_go_codebase_compilation_guide.md`](/docs/step_by_step_go_codebase_compilation_guide.html)** | `GUIDE-GO-BUILD` | Instructions for compiling the Go distroless binaries, Protobuf stubs, and running race detector tests. | Practical field guide for systems engineers deploying the compiled Go binary. |
+
+---
+
+### Tier 2: Turnkey Migration Recipes *(Actionable Step-by-Step Playbooks)*
+
+| Document Title &amp; Path | Identifier | Content Summary | Why Make Public Under TechDoc |
+| :--- | :--- | :--- | :--- |
+| **[`recipes/datadog_to_grafana11/README.md`](/docs/README.html)** | `RECIPE-DD-GRAFANA11-001` | Step-by-step workflow to extract Datadog monitor JSON, transpile locally, and load into Grafana 11 Unified Alerting. | The #1 requested enterprise migration path; immediately demonstrates cost savings. |
+| **[`recipes/cloudformation_to_opentofu_gcp/README.md`](/docs/README.html)** | `RECIPE-AWS-GCP-TOFU-002` | Converting AWS CloudFormation / Terraform HCL into Google Cloud OpenTofu HCL with zero network egress. | Proves cross-cloud Infrastructure as Code portability with working code samples. |
+| **[`recipes/promql_standardization_azure_arc_anthos/README.md`](/docs/README.html)** | `RECIPE-PROMQL-STANDARDIZATION-003` | Normalizing multi-cloud alerts into standard PromQL for Azure Arc &amp; Google Cloud Anthos managed Prometheus. | High utility for hybrid-cloud enterprise platform teams. |
+
+---
+
+### Tier 3: Technical Specifications &amp; Whitepapers *(Architectural Legitimacy)*
+
+| Document Title &amp; Path | Identifier | Content Summary | Why Make Public Under TechDoc |
+| :--- | :--- | :--- | :--- |
+| **[`docs/technical_whitepaper_unified_ir.md`](/docs/technical_whitepaper_unified_ir.html)** | `WHITE-UIT-IR-001` | Mathematical normalization theorems, algebraic AST mappings, and dual-winged compiler theory. | Proves that `&lt;dcouplr/&gt;` is a deterministic compiler, distinguishing it from hallucinating AI translators. |
+| **[`docs/API_SECURITY_AND_RBAC_SPECIFICATION.md`](/docs/API_SECURITY_AND_RBAC_SPECIFICATION.html)** | `SPEC-SEC-RBAC-001` | Role permissions matrix (`SYSTEM_ADMIN`, `INFRA_ARCHITECT`, `VIEWER`), `X-API-Key` &amp; `X-Tenant-ID` header specifications, mTLS protocols. | Required by InfoSec and compliance teams during enterprise security assessments. |
+| **[`docs/enterprise_4vector_e2e_verification_and_hyperscaler_specification.md`](/docs/enterprise_4vector_e2e_verification_and_hyperscaler_specification.html)** | `SPEC-4VEC-VERIF-001` | Fuzzing test methodologies, socket isolation assertions, and continuous matrix verification proofs. | Demonstrates the automated test rigor (214 passing test vectors) backing the platform. |
+| **[`docs/COMPETITIVE_ANALYSIS_AND_STRATEGIC_VALUE_PROPOSITION.md`](/docs/COMPETITIVE_ANALYSIS_AND_STRATEGIC_VALUE_PROPOSITION.html)** | `STRAT-COMP-VALUE-001` | Comparison against Datadog, New Relic, Dynatrace, Splunk, Elastic, Grafana, and PagerDuty with the 10x value proposition. | Educates technical buyers on why in-VPC compilation beats multi-tenant SaaS. |
+| **[`docs/FEATURE_MATURITY_AND_PRODUCTION_READINESS_AUDIT.md`](/docs/FEATURE_MATURITY_AND_PRODUCTION_READINESS_AUDIT.html)** | `AUDIT-PROD-READINESS-001` | Honest capability status scorecard, simulated vs. live components, and production roadmap. | Builds long-term trust by being transparent about current vs. planned features. |
+
+---
+
+### Tier 4: SRE Runbooks &amp; Diagnostics *(Operational Field Procedures)*
+
+| Document Title &amp; Path | Identifier | Content Summary | Why Make Public Under TechDoc |
+| :--- | :--- | :--- | :--- |
+| **[`docs/runbooks/RUNBOOK-OTEL-HIGH-THROUGHPUT-BENCHMARK.md`](/docs/runbooks/RUNBOOK-OTEL-HIGH-THROUGHPUT-BENCHMARK.html)** | `RUNBOOK-OTEL-001` | In-VPC OpenTelemetry collector buffer sizing, CPU pinning, and memory tuning under 50,000 metrics/second load. | Invaluable reference for SREs tuning high-throughput telemetry pipelines. |
+| **[`docs/debugging_spiffe_workload_socket_connections.md`](/docs/debugging_spiffe_workload_socket_connections.html)** | `FIELD-SPIFFE-001` | Troubleshooting mTLS socket attestation failures and SPIRE agent connection issues. | Hands-on field troubleshooting guide for zero-trust Kubernetes clusters. |
+| **[`docs/runbooks/RUNBOOK-DECOUPLER-P1-009.md`](/docs/runbooks/RUNBOOK-DECOUPLER-P1-009.html)** | `RUNBOOK-P1-009` | Asymmetric network partition drills, circuit breaker trip states, and automatic self-healing. | Demonstrates production resilience and fault-tolerant operational runbooks. |
+
+---
+
+### Tier 5: Customer Trust, Privacy &amp; License *(Public Assurance)*
+
+| Document Title &amp; Path | Identifier | Content Summary | Why Make Public Under TechDoc |
+| :--- | :--- | :--- | :--- |
+| **[`ProjectAssistant/customers/01-privacy-notice.md`](/docs/01-privacy-notice.html)** | `del-customer-privacy` | Legal and technical confirmation that all AST parsing happens strictly in volatile RAM with zero WAN egress. | Essential for customer legal &amp; compliance approval (GDPR, HIPAA, SOC 2). |
+| **[`ProjectAssistant/customers/02-terms.md`](/docs/02-terms.html)** | `del-customer-terms` | Apache 2.0 dual-licensing terms and commercial enterprise cluster node bracket boundaries. | Transparent licensing terms for both open-core and enterprise users. |
+| **[`docs/open_core_v1_release_notes.md`](/docs/open_core_v1_release_notes.html)** | `REL-NOTES-V1` | Changelog, supported AST constructs, and release highlights for v1.0.0. | Standard software release record for external developers. |
+
+---
+
+## 4. 🔒 Restricted Perimeter: Confidential Assets (MUST REMAIN IN ADMIN VAULT ONLY)
+
+The following documents contain sensitive financial models, investor communications, customer pipeline data, internal salaries, and acquisition strategies. **These documents must remain strictly protected inside the Admin Vault behind administrative authentication and must NEVER be published to TechDoc:**
+
+| Restricted File Name | Sensitivity Category | Why It Must Remain Private |
+| :--- | :--- | :--- |
+| `docs/18_month_arr_and_customer_pilot_projections.md` | Commercial / Financial | Contains forward-looking revenue projections ($600K $\to$ $1.48M ARR), pilot pricing models, and private valuation calculations. |
+| `docs/seed_stage_venture_underwriting_brief.md` | Venture / Investor | Contains confidential institutional underwriting terms, cap table models, and capital efficiency ratios. |
+| `docs/seed_stage_pitch_deck.md` | Fundraising / Investor | Proprietary investor narrative, slide-by-slide pitch structure, and fundraising strategy. |
+| `docs/seed_stage_financial_model.md` | Commercial / Financial | Detailed P&amp;L projections, 92% gross margin mathematical model, and COGS breakdown. |
+| `docs/seed_stage_financial_worksheet.csv` | Commercial / Financial | Raw spreadsheet formula matrix for internal financial modeling. |
+| `docs/seed_stage_customer_acquisition_pipeline.csv` | Commercial / CRM | Real design partner names, enterprise pilot stages, and projected Annual Contract Value (ACV) targets. |
+| `docs/seed_stage_monetization_plan.md` | Commercial Strategy | Enterprise monetization strategy, licensing brackets, and sales cycle velocity models. |
+| `docs/seed_stage_capital_efficiency_thesis.md` | Investor Strategy | Burn multiple targets, capital efficiency benchmarks, and venture syndicate strategy. |
+| `docs/seed_stage_executive_summary.md` | Investor Briefing | Confidential executive investment summary for institutional venture capital partners. |
+| `docs/seed_stage_3year_technical_hiring_model.csv` / `.md` | HR / Compensation | Private engineering salaries, equity grants, and headcount hiring timeline. |
+| `docs/hyperscaler_strategic_value_and_mna_thesis.md` | M&amp;A Strategy | Confidential strategic acquisition positioning targeting AWS, Microsoft, and Google corporate development teams. |
+| `docs/investor_due_diligence_simulation.md` | Investor Due Diligence | Simulated Tier-1 VC partner interrogations across 12 defense vectors. |
+| `docs/enterprise_sow_template.md` | Commercial Legal | Internal contract templates and commercial pricing terms. |
+| `docs/executive_sow_and_cost_matrix.md` | Commercial Pricing | Internal customer pricing formulas and discount authorization matrices. |
+| `ProjectAssistant/governance/` | Corporate Governance | Executive sign-off authorities, Change Advisory Board voting records, and delivery audit certificates. |
+
+---
+
+## 5. Technical Delivery Mechanism for Public TechDoc
+
+Once you review and select the desired candidates from Tiers 1 through 5, `&lt;dcouplr/&gt;` will implement the public documentation shelf using the following zero-disruption architecture:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        PUBLIC TECHDOC DELIVERY ARCHITECTURE                            │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 1. Original Document Remains in Admin Vault:                                           │
+│    • docs/ENGINEER_USER_MANUAL.md (Accessible via /docs)           │
+│                                                                                        │
+│ 2. Public Read-Only Endpoint (/v1/techdoc/documents):                                  │
+│    • Unauthenticated, rate-limited public endpoint serving only approved documents.   │
+│                                                                                        │
+│ 3. Dedicated Public TechDoc Viewer (/techdoc):                                         │
+│    • Clean, distraction-free markdown documentation viewer with searchable sidebar.    │
+│    • Clicking &quot;TechDoc&quot; on the landing page header links directly to /techdoc.         │
+│                                                                                        │
+│ 4. Zero Egress &amp; Cache Efficiency:                                                     │
+│    • Public documents cached in memory, zero external network calls, fast 304 caching. │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 6. Administrative Approval &amp; Selection Checklist
+
+Review the candidate list below and mark the documents to approve for public release:
+
+### Tier 1: User &amp; Engineer Manuals
+- [ ] `docs/ENGINEER_USER_MANUAL.md` (`VA-MAN-ENG-001`) — Practical Field Manual &amp; Quickstart Guide
+- [ ] `docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.md` (`VA-MAN-FOOLPROOF-001`) — Complete Enterprise Reference Manual
+- [ ] `docs/guide_to_initial_local_compilation.md` — Local AST Compilation Guide
+- [ ] `docs/step_by_step_go_codebase_compilation_guide.md` — Go Codebase Build &amp; Compilation Guide
+
+### Tier 2: Migration Recipes
+- [ ] `recipes/datadog_to_grafana11/README.md` — Datadog to Grafana 11 Unified Alerting Recipe
+- [ ] `recipes/cloudformation_to_opentofu_gcp/README.md` — AWS to OpenTofu GCP Infrastructure Recipe
+- [ ] `recipes/promql_standardization_azure_arc_anthos/README.md` — PromQL Standardization Recipe
+
+### Tier 3: Technical Specifications &amp; Whitepapers
+- [ ] `docs/technical_whitepaper_unified_ir.md` — Unified Intermediate Representation Whitepaper
+- [ ] `docs/API_SECURITY_AND_RBAC_SPECIFICATION.md` — API Security &amp; RBAC Specification
+- [ ] `docs/enterprise_4vector_e2e_verification_and_hyperscaler_specification.md` — 4-Vector Verification Spec
+- [ ] `docs/COMPETITIVE_ANALYSIS_AND_STRATEGIC_VALUE_PROPOSITION.md` — Competitive Landscape &amp; Market Strategy
+- [ ] `docs/FEATURE_MATURITY_AND_PRODUCTION_READINESS_AUDIT.md` — Feature Maturity &amp; Production Audit
+
+### Tier 4: SRE Runbooks &amp; Diagnostics
+- [ ] `docs/runbooks/RUNBOOK-OTEL-HIGH-THROUGHPUT-BENCHMARK.md` — OpenTelemetry Collector Tuning Runbook
+- [ ] `docs/debugging_spiffe_workload_socket_connections.md` — SPIFFE Workload Socket Debugging Guide
+- [ ] `docs/runbooks/RUNBOOK-DECOUPLER-P1-009.md` — P1 Incident Response Runbook
+
+### Tier 5: Customer Trust &amp; Legal
+- [ ] `ProjectAssistant/customers/01-privacy-notice.md` — Enterprise Zero-Exfiltration Privacy Notice
+- [ ] `ProjectAssistant/customers/02-terms.md` — Open-Core &amp; Commercial Terms of Service
+- [ ] `docs/open_core_v1_release_notes.md` — Version 1.0.0 Release Notes
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

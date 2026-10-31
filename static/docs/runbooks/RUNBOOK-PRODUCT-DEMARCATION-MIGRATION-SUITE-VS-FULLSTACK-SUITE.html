@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-PRODUCT-DEMARCATION-MIGRATION-SUITE-VS-FULLSTACK-SUITE.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-PRODUCT-DEMARCATION-MIGRATION-SUITE-VS-FULLSTACK-SUITE.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-PRODUCT-DEMARCATION-MIGRATION-SUITE-VS-FULLSTACK-SUITE.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="operations-packaging-runbook-dcouplr-product-demarcation">Operations &amp; Packaging Runbook: <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Product Demarcation</h1>
+<h2 id="dcouplr-migration-suite-vs-dcouplr-full-stack-suite-enterprise-complete"><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Migration Suite vs. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Full-Stack Suite &amp; Enterprise Complete</h2>
+<p><strong>Document ID:</strong> <code>VA-RUNBOOK-PKG-001</code><br />
+<strong>Classification:</strong> Enterprise Architecture &amp; Commercial Governance<br />
+<strong>Audience:</strong> Enterprise Buyers, Procurement Teams, Cloud Architects, SRE Directors, and Systems Integrators<br />
+<strong>Applies To:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Enterprise Platform v1.0.0+<br />
+<strong>Canonical Documentation:</strong> <a href="/docs/runbooks/RUNBOOK-PRODUCT-DEMARCATION-MIGRATION-SUITE-VS-FULLSTACK-SUITE.html"><code>/docs/runbooks/RUNBOOK-PRODUCT-DEMARCATION-MIGRATION-SUITE-VS-FULLSTACK-SUITE.html</code></a> • Enterprise Governance Console</p>
+<hr />
+<h2 id="1-executive-context-the-version-trap-migration-churn-trap">1. Executive Context: The &quot;Version Trap&quot; &amp; &quot;Migration Churn Trap&quot;</h2>
+<p>In enterprise software procurement, referring to product tiers as <strong>&quot;Edition 1&quot;</strong> and <strong>&quot;Edition 2&quot;</strong> introduces severe ambiguity for buyers, procurement teams, and engineering leadership:</p>
+<h3 id="11-the-version-trap">1.1 The &quot;Version Trap&quot;</h3>
+<p>In software procurement, &quot;Edition 1&quot; inherently sounds like Version 1.0 (outdated, legacy, or soon-to-be-deprecated). Enterprise buyers immediately ask: <em>&quot;Why would I buy Edition 1 if Edition 2 is already out?&quot;</em> In reality, both suites share the identical modern codebase and AST engine, but address fundamentally different operational phases.</p>
+<h3 id="12-obscured-value-proposition">1.2 Obscured Value Proposition</h3>
+<p>&quot;Edition 1&quot; and &quot;Edition 2&quot; reveal nothing about the actual business problem being solved. They fail to communicate whether the software is an active migration compiler or an ongoing 24x7 production monitoring platform.</p>
+<h3 id="13-the-migration-churn-trap">1.3 The &quot;Migration Churn Trap&quot;</h3>
+<p>If an enterprise customer assumes <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> is purely a migration utility, they categorize it as a transient, one-time project expense (CapEx) and cancel the contract as soon as the infrastructure cutover completes.</p>
+<hr />
+<h2 id="2-the-clear-line-of-demarcation">2. The Clear Line of Demarcation</h2>
+<p>Transitioning to <strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Migration Suite</strong> and <strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Full-Stack Suite</strong> establishes an unmistakable line of demarcation, aligning product packaging directly with the customer's operational lifecycle:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">                                  <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> ENTERPRISE PLATFORM
+                                                 │
+                   ┌─────────────────────────────┴─────────────────────────────┐
+                   ▼                                                           ▼
+       <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Migration Suite                                   <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Full-Stack Suite
+     &quot;Day-0 to Day-1 Project Engine&quot;                            &quot;Day-2 Permanent Operational Backbone&quot;
+  Active Migration &amp; Infrastructure Refactoring                 24x7 In-VPC Monitoring, Invariants &amp; NOC
+</code></pre></div>
+<hr />
+<h2 id="3-suite-1-dcouplr-migration-suite-the-active-project-engine">3. Suite 1: <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Migration Suite (The Active Project Engine)</h2>
+<ul>
+<li><strong>Core Purpose:</strong> Risk-free, deterministic cloud migration, schema transpilation, and zero-downtime cutover.</li>
+<li><strong>Operational Mode:</strong> Transactional, project-driven, and active during infrastructure refactoring and cutover windows.</li>
+<li><strong>Key Capabilities &amp; Modules:</strong>
+<ul>
+<li><strong>Living AST Compiler Studio (<code>/compiler</code>):</strong> Instant cross-compilation of Terraform, CloudFormation, Bicep, Helm, and raw SQL/SPL into target VPC constructs.</li>
+<li><strong>In-Memory Sanitizer:</strong> Strips hardcoded secrets, IAM credentials, and PII from IaC templates before transpilation.</li>
+<li><strong>CDC State Relocation Engine:</strong> Continuous data replication with zero downtime and binary checksum verification.</li>
+<li><strong>Staged Cutover Enabler (<code>/stage-migration</code> &amp; <code>/liftnshift</code>):</strong> Pre-flight synchronization, canary routing, and rollback mechanisms.</li>
+</ul>
+</li>
+<li><strong>Buyer Persona:</strong> Migration Architects, Lead DevOps Engineers, Systems Integrators (SIs), and Cloud Modernization Taskforces.</li>
+<li><strong>Procurement Budget:</strong> Project CapEx, Cloud Migration Initiatives, or Dedicated Professional Services Allocations.</li>
+</ul>
+<hr />
+<h2 id="4-suite-2-dcouplr-full-stack-suite-the-permanent-operational-platform">4. Suite 2: <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Full-Stack Suite (The Permanent Operational Platform)</h2>
+<ul>
+<li><strong>Core Purpose:</strong> Permanent 24x7 in-VPC monitoring, zero-egress telemetry, distributed consensus, and incident response.</li>
+<li><strong>Operational Mode:</strong> Permanent, continuous, running in volatile memory ring buffers across all VPCs with $0 WAN egress.</li>
+<li><strong>Key Capabilities &amp; Modules:</strong>
+<ul>
+<li><strong>7-Tier Full-Stack Monitoring Matrix (<code>/matrix</code>):</strong> 122 invariant checks spanning Physical Infrastructure, In-Guest OS, Ingress/Mesh, Consensus, App Runtime, Database, and Audit/SIEM.</li>
+<li><strong>Operational Command Centers:</strong> Live SRE Dashboard (<code>/dashboard</code>), 24x7 NOC Wallboard (<code>/wallboard</code>), Air-Gapped Kiosk (<code>/kiosk</code>), 2-Way NOC Desk (<code>/NOCDesk</code>), and SRE Incident Desk (<code>/SREDesk</code>).</li>
+<li><strong>Distributed Raft Consensus Engine:</strong> Multi-node leader election, dynamic quorum membership, and automated split-brain prevention.</li>
+<li><strong>In-VPC OpenTelemetry &amp; Observability:</strong> High-throughput in-guest Log Search (<code>/logs</code>) and Distributed APM Tracing (<code>/traces</code>) with zero cloud egress surcharges.</li>
+<li><strong>Enterprise Observability Co-Existence:</strong> Enriched multi-sink dual-dispatch to Splunk HEC, Syslog SIEM relays, PagerDuty, and ServiceNow.</li>
+</ul>
+</li>
+<li><strong>Buyer Persona:</strong> VP of Engineering, VP of Infrastructure &amp; Operations, SRE Directors, and Chief Information Security Officers (CISOs).</li>
+<li><strong>Procurement Budget:</strong> Permanent Annual OpEx (slashing Datadog, New Relic, and Splunk Cloud ingestion bills by 70%–85%).</li>
+</ul>
+<hr />
+<h2 id="5-side-by-side-comparison-matrix">5. Side-by-Side Comparison Matrix</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Architectural Dimension</th>
+<th style="text-align:left"><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Migration Suite</th>
+<th style="text-align:left"><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Full-Stack Suite</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Primary Mission</strong></td>
+<td style="text-align:left">High-velocity cloud migration &amp; schema cutover</td>
+<td style="text-align:left">Continuous, zero-egress production telemetry &amp; SLA protection</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Primary UIs</strong></td>
+<td style="text-align:left"><code>/compiler</code>, CLI Transpiler (<code>dcouplr migrate</code>), <code>/liftnshift</code>, <code>/stage-migration</code></td>
+<td style="text-align:left"><code>/dashboard</code>, <code>/NOCDesk</code>, <code>/SREDesk</code>, <code>/wallboard</code>, <code>/kiosk</code>, <code>/matrix</code>, <code>/traces</code>, <code>/logs</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Consensus Architecture</strong></td>
+<td style="text-align:left">Lightweight single-node or transient migration bridge</td>
+<td style="text-align:left">Distributed 3–5 node Raft consensus cluster with automated quorum failover</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Invariant Checking</strong></td>
+<td style="text-align:left">Pre-cutover schema checks &amp; replication lag verification</td>
+<td style="text-align:left">Complete 122-invariant 7-tier continuous verification engine</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>In-VPC Logging &amp; Tracing</strong></td>
+<td style="text-align:left">Migration cutover logs &amp; state diffs</td>
+<td style="text-align:left">Full OpenTelemetry OTLP ingestion, Jaeger Flamegraphs, and local Log Search</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SIEM &amp; Alert Dispatch</strong></td>
+<td style="text-align:left">Migration milestone events</td>
+<td style="text-align:left">Real-time enriched incident dual-dispatch to Splunk HEC, Syslog, and PagerDuty</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Commercial Value Prop</strong></td>
+<td style="text-align:left">Cut cloud migration timelines from 18 months to 6 weeks</td>
+<td style="text-align:left">Eliminate $150k+ in Datadog/Splunk ingestion and cloud WAN egress penalties</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Contract Longevity</strong></td>
+<td style="text-align:left">Project-based (3 to 12 months)</td>
+<td style="text-align:left">Multi-year recurring subscription (Permanent core infrastructure)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-the-combined-offering-dcouplr-enterprise-complete">6. The Combined Offering: <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Enterprise Complete</h2>
+<p>For enterprise customers undergoing comprehensive multi-cloud transformation, both suites are packaged into the <strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Enterprise Complete Platform</strong>:</p>
+<ol>
+<li><strong>Phase 1 (Crawl/Walk):</strong> Use the <strong>Migration Suite</strong> to audit, transpile IaC, relocate state, and execute zero-downtime VPC cutovers.</li>
+<li><strong>Phase 2 (Run):</strong> Seamlessly transition into the <strong>Full-Stack Suite</strong> to monitor the newly migrated environments permanently with zero egress fees, automated 7-tier invariant checking, and outside-VPC wallboards.</li>
+</ol>
+<h3 id="61-strategic-procurement-advantages">6.1 Strategic Procurement Advantages</h3>
+<ul>
+<li><strong>Total Clarity:</strong> Eliminates all confusion over versioning, obsolescence, and feature overlap.</li>
+<li><strong>Clear Upsell Path:</strong> Customers entering for a targeted migration easily expand into permanent Full-Stack operational monitoring before the project ends.</li>
+<li><strong>Enterprise Credibility:</strong> Directly mirrors enterprise packaging patterns used by modern cloud platforms (e.g. HashiCorp, Palo Alto Networks, GitLab).</li>
+</ul>
+<hr />
+<h2 id="7-verification-related-operational-runbooks">7. Verification &amp; Related Operational Runbooks</h2>
+<ul>
+<li><a href="/docs/runbooks/RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.html"><code>RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.html</code></a>: Complete 7-tier operational metric specifications and sliding windows.</li>
+<li><a href="/docs/runbooks/RUNBOOK-IN-VPC-LOGS-AND-TRACES-OBSERVABILITY.html"><code>RUNBOOK-IN-VPC-LOGS-AND-TRACES-OBSERVABILITY.html</code></a>: In-VPC OpenTelemetry traces and high-throughput log search architecture.</li>
+<li><a href="/docs/runbooks/RUNBOOK-OUTSIDE-VPC-HUBS-DEPLOYMENT-AND-CLOUDFLARE-TUNNELS.html"><code>RUNBOOK-OUTSIDE-VPC-HUBS-DEPLOYMENT-AND-CLOUDFLARE-TUNNELS.html</code></a>: Turnkey installation of <code>/NOCDesk</code>, <code>/SREDesk</code>, <code>/wallboard</code>, and <code>/kiosk</code>.</li>
+<li><a href="/docs/runbooks/RUNBOOK-LIFTNSHIFT-REGRESSION-AND-HISTORICAL-AUDIT-LEDGER.html"><code>RUNBOOK-LIFTNSHIFT-REGRESSION-AND-HISTORICAL-AUDIT-LEDGER.html</code></a>: Side-by-side object comparison and cutover verification ledger.</li>
+</ul>
+</div>
+      <pre id="raw-view"><code># Operations &amp; Packaging Runbook: `&lt;dcouplr/&gt;` Product Demarcation
+## `&lt;dcouplr/&gt;` Migration Suite vs. `&lt;dcouplr/&gt;` Full-Stack Suite &amp; Enterprise Complete
+
+**Document ID:** `VA-RUNBOOK-PKG-001`  
+**Classification:** Enterprise Architecture &amp; Commercial Governance  
+**Audience:** Enterprise Buyers, Procurement Teams, Cloud Architects, SRE Directors, and Systems Integrators  
+**Applies To:** `&lt;dcouplr/&gt;` Enterprise Platform v1.0.0+  
+**Canonical Documentation:** [`/docs/runbooks/RUNBOOK-PRODUCT-DEMARCATION-MIGRATION-SUITE-VS-FULLSTACK-SUITE.html`](/docs/runbooks/RUNBOOK-PRODUCT-DEMARCATION-MIGRATION-SUITE-VS-FULLSTACK-SUITE.html) &amp;bull; Enterprise Governance Console
+
+---
+
+## 1. Executive Context: The &quot;Version Trap&quot; &amp; &quot;Migration Churn Trap&quot;
+
+In enterprise software procurement, referring to product tiers as **&quot;Edition 1&quot;** and **&quot;Edition 2&quot;** introduces severe ambiguity for buyers, procurement teams, and engineering leadership:
+
+### 1.1 The &quot;Version Trap&quot;
+In software procurement, &quot;Edition 1&quot; inherently sounds like Version 1.0 (outdated, legacy, or soon-to-be-deprecated). Enterprise buyers immediately ask: *&quot;Why would I buy Edition 1 if Edition 2 is already out?&quot;* In reality, both suites share the identical modern codebase and AST engine, but address fundamentally different operational phases.
+
+### 1.2 Obscured Value Proposition
+&quot;Edition 1&quot; and &quot;Edition 2&quot; reveal nothing about the actual business problem being solved. They fail to communicate whether the software is an active migration compiler or an ongoing 24x7 production monitoring platform.
+
+### 1.3 The &quot;Migration Churn Trap&quot;
+If an enterprise customer assumes `&lt;dcouplr/&gt;` is purely a migration utility, they categorize it as a transient, one-time project expense (CapEx) and cancel the contract as soon as the infrastructure cutover completes.
+
+---
+
+## 2. The Clear Line of Demarcation
+
+Transitioning to **`&lt;dcouplr/&gt;` Migration Suite** and **`&lt;dcouplr/&gt;` Full-Stack Suite** establishes an unmistakable line of demarcation, aligning product packaging directly with the customer&#x27;s operational lifecycle:
+
+```
+                                  &lt;dcouplr/&gt; ENTERPRISE PLATFORM
+                                                 │
+                   ┌─────────────────────────────┴─────────────────────────────┐
+                   ▼                                                           ▼
+       &lt;dcouplr/&gt; Migration Suite                                   &lt;dcouplr/&gt; Full-Stack Suite
+     &quot;Day-0 to Day-1 Project Engine&quot;                            &quot;Day-2 Permanent Operational Backbone&quot;
+  Active Migration &amp; Infrastructure Refactoring                 24x7 In-VPC Monitoring, Invariants &amp; NOC
+```
+
+---
+
+## 3. Suite 1: `&lt;dcouplr/&gt;` Migration Suite (The Active Project Engine)
+
+* **Core Purpose:** Risk-free, deterministic cloud migration, schema transpilation, and zero-downtime cutover.
+* **Operational Mode:** Transactional, project-driven, and active during infrastructure refactoring and cutover windows.
+* **Key Capabilities &amp; Modules:**
+  * **Living AST Compiler Studio (`/compiler`):** Instant cross-compilation of Terraform, CloudFormation, Bicep, Helm, and raw SQL/SPL into target VPC constructs.
+  * **In-Memory Sanitizer:** Strips hardcoded secrets, IAM credentials, and PII from IaC templates before transpilation.
+  * **CDC State Relocation Engine:** Continuous data replication with zero downtime and binary checksum verification.
+  * **Staged Cutover Enabler (`/stage-migration` &amp; `/liftnshift`):** Pre-flight synchronization, canary routing, and rollback mechanisms.
+* **Buyer Persona:** Migration Architects, Lead DevOps Engineers, Systems Integrators (SIs), and Cloud Modernization Taskforces.
+* **Procurement Budget:** Project CapEx, Cloud Migration Initiatives, or Dedicated Professional Services Allocations.
+
+---
+
+## 4. Suite 2: `&lt;dcouplr/&gt;` Full-Stack Suite (The Permanent Operational Platform)
+
+* **Core Purpose:** Permanent 24x7 in-VPC monitoring, zero-egress telemetry, distributed consensus, and incident response.
+* **Operational Mode:** Permanent, continuous, running in volatile memory ring buffers across all VPCs with $0 WAN egress.
+* **Key Capabilities &amp; Modules:**
+  * **7-Tier Full-Stack Monitoring Matrix (`/matrix`):** 122 invariant checks spanning Physical Infrastructure, In-Guest OS, Ingress/Mesh, Consensus, App Runtime, Database, and Audit/SIEM.
+  * **Operational Command Centers:** Live SRE Dashboard (`/dashboard`), 24x7 NOC Wallboard (`/wallboard`), Air-Gapped Kiosk (`/kiosk`), 2-Way NOC Desk (`/NOCDesk`), and SRE Incident Desk (`/SREDesk`).
+  * **Distributed Raft Consensus Engine:** Multi-node leader election, dynamic quorum membership, and automated split-brain prevention.
+  * **In-VPC OpenTelemetry &amp; Observability:** High-throughput in-guest Log Search (`/logs`) and Distributed APM Tracing (`/traces`) with zero cloud egress surcharges.
+  * **Enterprise Observability Co-Existence:** Enriched multi-sink dual-dispatch to Splunk HEC, Syslog SIEM relays, PagerDuty, and ServiceNow.
+* **Buyer Persona:** VP of Engineering, VP of Infrastructure &amp; Operations, SRE Directors, and Chief Information Security Officers (CISOs).
+* **Procurement Budget:** Permanent Annual OpEx (slashing Datadog, New Relic, and Splunk Cloud ingestion bills by 70%–85%).
+
+---
+
+## 5. Side-by-Side Comparison Matrix
+
+| Architectural Dimension | `&lt;dcouplr/&gt;` Migration Suite | `&lt;dcouplr/&gt;` Full-Stack Suite |
+| :--- | :--- | :--- |
+| **Primary Mission** | High-velocity cloud migration &amp; schema cutover | Continuous, zero-egress production telemetry &amp; SLA protection |
+| **Primary UIs** | `/compiler`, CLI Transpiler (`dcouplr migrate`), `/liftnshift`, `/stage-migration` | `/dashboard`, `/NOCDesk`, `/SREDesk`, `/wallboard`, `/kiosk`, `/matrix`, `/traces`, `/logs` |
+| **Consensus Architecture** | Lightweight single-node or transient migration bridge | Distributed 3–5 node Raft consensus cluster with automated quorum failover |
+| **Invariant Checking** | Pre-cutover schema checks &amp; replication lag verification | Complete 122-invariant 7-tier continuous verification engine |
+| **In-VPC Logging &amp; Tracing** | Migration cutover logs &amp; state diffs | Full OpenTelemetry OTLP ingestion, Jaeger Flamegraphs, and local Log Search |
+| **SIEM &amp; Alert Dispatch** | Migration milestone events | Real-time enriched incident dual-dispatch to Splunk HEC, Syslog, and PagerDuty |
+| **Commercial Value Prop** | Cut cloud migration timelines from 18 months to 6 weeks | Eliminate $150k+ in Datadog/Splunk ingestion and cloud WAN egress penalties |
+| **Contract Longevity** | Project-based (3 to 12 months) | Multi-year recurring subscription (Permanent core infrastructure) |
+
+---
+
+## 6. The Combined Offering: `&lt;dcouplr/&gt;` Enterprise Complete
+
+For enterprise customers undergoing comprehensive multi-cloud transformation, both suites are packaged into the **`&lt;dcouplr/&gt;` Enterprise Complete Platform**:
+
+1. **Phase 1 (Crawl/Walk):** Use the **Migration Suite** to audit, transpile IaC, relocate state, and execute zero-downtime VPC cutovers.
+2. **Phase 2 (Run):** Seamlessly transition into the **Full-Stack Suite** to monitor the newly migrated environments permanently with zero egress fees, automated 7-tier invariant checking, and outside-VPC wallboards.
+
+### 6.1 Strategic Procurement Advantages
+* **Total Clarity:** Eliminates all confusion over versioning, obsolescence, and feature overlap.
+* **Clear Upsell Path:** Customers entering for a targeted migration easily expand into permanent Full-Stack operational monitoring before the project ends.
+* **Enterprise Credibility:** Directly mirrors enterprise packaging patterns used by modern cloud platforms (e.g. HashiCorp, Palo Alto Networks, GitLab).
+
+---
+
+## 7. Verification &amp; Related Operational Runbooks
+* [`RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.html`](/docs/runbooks/RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.html): Complete 7-tier operational metric specifications and sliding windows.
+* [`RUNBOOK-IN-VPC-LOGS-AND-TRACES-OBSERVABILITY.html`](/docs/runbooks/RUNBOOK-IN-VPC-LOGS-AND-TRACES-OBSERVABILITY.html): In-VPC OpenTelemetry traces and high-throughput log search architecture.
+* [`RUNBOOK-OUTSIDE-VPC-HUBS-DEPLOYMENT-AND-CLOUDFLARE-TUNNELS.html`](/docs/runbooks/RUNBOOK-OUTSIDE-VPC-HUBS-DEPLOYMENT-AND-CLOUDFLARE-TUNNELS.html): Turnkey installation of `/NOCDesk`, `/SREDesk`, `/wallboard`, and `/kiosk`.
+* [`RUNBOOK-LIFTNSHIFT-REGRESSION-AND-HISTORICAL-AUDIT-LEDGER.html`](/docs/runbooks/RUNBOOK-LIFTNSHIFT-REGRESSION-AND-HISTORICAL-AUDIT-LEDGER.html): Side-by-side object comparison and cutover verification ledger.
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># Operations &amp; Packaging Runbook: `&lt;dcouplr/&gt;` Product Demarcation
+## `&lt;dcouplr/&gt;` Migration Suite vs. `&lt;dcouplr/&gt;` Full-Stack Suite &amp; Enterprise Complete
+
+**Document ID:** `VA-RUNBOOK-PKG-001`  
+**Classification:** Enterprise Architecture &amp; Commercial Governance  
+**Audience:** Enterprise Buyers, Procurement Teams, Cloud Architects, SRE Directors, and Systems Integrators  
+**Applies To:** `&lt;dcouplr/&gt;` Enterprise Platform v1.0.0+  
+**Canonical Documentation:** [`/docs/runbooks/RUNBOOK-PRODUCT-DEMARCATION-MIGRATION-SUITE-VS-FULLSTACK-SUITE.html`](/docs/runbooks/RUNBOOK-PRODUCT-DEMARCATION-MIGRATION-SUITE-VS-FULLSTACK-SUITE.html) &amp;bull; Enterprise Governance Console
+
+---
+
+## 1. Executive Context: The &quot;Version Trap&quot; &amp; &quot;Migration Churn Trap&quot;
+
+In enterprise software procurement, referring to product tiers as **&quot;Edition 1&quot;** and **&quot;Edition 2&quot;** introduces severe ambiguity for buyers, procurement teams, and engineering leadership:
+
+### 1.1 The &quot;Version Trap&quot;
+In software procurement, &quot;Edition 1&quot; inherently sounds like Version 1.0 (outdated, legacy, or soon-to-be-deprecated). Enterprise buyers immediately ask: *&quot;Why would I buy Edition 1 if Edition 2 is already out?&quot;* In reality, both suites share the identical modern codebase and AST engine, but address fundamentally different operational phases.
+
+### 1.2 Obscured Value Proposition
+&quot;Edition 1&quot; and &quot;Edition 2&quot; reveal nothing about the actual business problem being solved. They fail to communicate whether the software is an active migration compiler or an ongoing 24x7 production monitoring platform.
+
+### 1.3 The &quot;Migration Churn Trap&quot;
+If an enterprise customer assumes `&lt;dcouplr/&gt;` is purely a migration utility, they categorize it as a transient, one-time project expense (CapEx) and cancel the contract as soon as the infrastructure cutover completes.
+
+---
+
+## 2. The Clear Line of Demarcation
+
+Transitioning to **`&lt;dcouplr/&gt;` Migration Suite** and **`&lt;dcouplr/&gt;` Full-Stack Suite** establishes an unmistakable line of demarcation, aligning product packaging directly with the customer&#x27;s operational lifecycle:
+
+```
+                                  &lt;dcouplr/&gt; ENTERPRISE PLATFORM
+                                                 │
+                   ┌─────────────────────────────┴─────────────────────────────┐
+                   ▼                                                           ▼
+       &lt;dcouplr/&gt; Migration Suite                                   &lt;dcouplr/&gt; Full-Stack Suite
+     &quot;Day-0 to Day-1 Project Engine&quot;                            &quot;Day-2 Permanent Operational Backbone&quot;
+  Active Migration &amp; Infrastructure Refactoring                 24x7 In-VPC Monitoring, Invariants &amp; NOC
+```
+
+---
+
+## 3. Suite 1: `&lt;dcouplr/&gt;` Migration Suite (The Active Project Engine)
+
+* **Core Purpose:** Risk-free, deterministic cloud migration, schema transpilation, and zero-downtime cutover.
+* **Operational Mode:** Transactional, project-driven, and active during infrastructure refactoring and cutover windows.
+* **Key Capabilities &amp; Modules:**
+  * **Living AST Compiler Studio (`/compiler`):** Instant cross-compilation of Terraform, CloudFormation, Bicep, Helm, and raw SQL/SPL into target VPC constructs.
+  * **In-Memory Sanitizer:** Strips hardcoded secrets, IAM credentials, and PII from IaC templates before transpilation.
+  * **CDC State Relocation Engine:** Continuous data replication with zero downtime and binary checksum verification.
+  * **Staged Cutover Enabler (`/stage-migration` &amp; `/liftnshift`):** Pre-flight synchronization, canary routing, and rollback mechanisms.
+* **Buyer Persona:** Migration Architects, Lead DevOps Engineers, Systems Integrators (SIs), and Cloud Modernization Taskforces.
+* **Procurement Budget:** Project CapEx, Cloud Migration Initiatives, or Dedicated Professional Services Allocations.
+
+---
+
+## 4. Suite 2: `&lt;dcouplr/&gt;` Full-Stack Suite (The Permanent Operational Platform)
+
+* **Core Purpose:** Permanent 24x7 in-VPC monitoring, zero-egress telemetry, distributed consensus, and incident response.
+* **Operational Mode:** Permanent, continuous, running in volatile memory ring buffers across all VPCs with $0 WAN egress.
+* **Key Capabilities &amp; Modules:**
+  * **7-Tier Full-Stack Monitoring Matrix (`/matrix`):** 122 invariant checks spanning Physical Infrastructure, In-Guest OS, Ingress/Mesh, Consensus, App Runtime, Database, and Audit/SIEM.
+  * **Operational Command Centers:** Live SRE Dashboard (`/dashboard`), 24x7 NOC Wallboard (`/wallboard`), Air-Gapped Kiosk (`/kiosk`), 2-Way NOC Desk (`/NOCDesk`), and SRE Incident Desk (`/SREDesk`).
+  * **Distributed Raft Consensus Engine:** Multi-node leader election, dynamic quorum membership, and automated split-brain prevention.
+  * **In-VPC OpenTelemetry &amp; Observability:** High-throughput in-guest Log Search (`/logs`) and Distributed APM Tracing (`/traces`) with zero cloud egress surcharges.
+  * **Enterprise Observability Co-Existence:** Enriched multi-sink dual-dispatch to Splunk HEC, Syslog SIEM relays, PagerDuty, and ServiceNow.
+* **Buyer Persona:** VP of Engineering, VP of Infrastructure &amp; Operations, SRE Directors, and Chief Information Security Officers (CISOs).
+* **Procurement Budget:** Permanent Annual OpEx (slashing Datadog, New Relic, and Splunk Cloud ingestion bills by 70%–85%).
+
+---
+
+## 5. Side-by-Side Comparison Matrix
+
+| Architectural Dimension | `&lt;dcouplr/&gt;` Migration Suite | `&lt;dcouplr/&gt;` Full-Stack Suite |
+| :--- | :--- | :--- |
+| **Primary Mission** | High-velocity cloud migration &amp; schema cutover | Continuous, zero-egress production telemetry &amp; SLA protection |
+| **Primary UIs** | `/compiler`, CLI Transpiler (`dcouplr migrate`), `/liftnshift`, `/stage-migration` | `/dashboard`, `/NOCDesk`, `/SREDesk`, `/wallboard`, `/kiosk`, `/matrix`, `/traces`, `/logs` |
+| **Consensus Architecture** | Lightweight single-node or transient migration bridge | Distributed 3–5 node Raft consensus cluster with automated quorum failover |
+| **Invariant Checking** | Pre-cutover schema checks &amp; replication lag verification | Complete 122-invariant 7-tier continuous verification engine |
+| **In-VPC Logging &amp; Tracing** | Migration cutover logs &amp; state diffs | Full OpenTelemetry OTLP ingestion, Jaeger Flamegraphs, and local Log Search |
+| **SIEM &amp; Alert Dispatch** | Migration milestone events | Real-time enriched incident dual-dispatch to Splunk HEC, Syslog, and PagerDuty |
+| **Commercial Value Prop** | Cut cloud migration timelines from 18 months to 6 weeks | Eliminate $150k+ in Datadog/Splunk ingestion and cloud WAN egress penalties |
+| **Contract Longevity** | Project-based (3 to 12 months) | Multi-year recurring subscription (Permanent core infrastructure) |
+
+---
+
+## 6. The Combined Offering: `&lt;dcouplr/&gt;` Enterprise Complete
+
+For enterprise customers undergoing comprehensive multi-cloud transformation, both suites are packaged into the **`&lt;dcouplr/&gt;` Enterprise Complete Platform**:
+
+1. **Phase 1 (Crawl/Walk):** Use the **Migration Suite** to audit, transpile IaC, relocate state, and execute zero-downtime VPC cutovers.
+2. **Phase 2 (Run):** Seamlessly transition into the **Full-Stack Suite** to monitor the newly migrated environments permanently with zero egress fees, automated 7-tier invariant checking, and outside-VPC wallboards.
+
+### 6.1 Strategic Procurement Advantages
+* **Total Clarity:** Eliminates all confusion over versioning, obsolescence, and feature overlap.
+* **Clear Upsell Path:** Customers entering for a targeted migration easily expand into permanent Full-Stack operational monitoring before the project ends.
+* **Enterprise Credibility:** Directly mirrors enterprise packaging patterns used by modern cloud platforms (e.g. HashiCorp, Palo Alto Networks, GitLab).
+
+---
+
+## 7. Verification &amp; Related Operational Runbooks
+* [`RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.html`](/docs/runbooks/RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.html): Complete 7-tier operational metric specifications and sliding windows.
+* [`RUNBOOK-IN-VPC-LOGS-AND-TRACES-OBSERVABILITY.html`](/docs/runbooks/RUNBOOK-IN-VPC-LOGS-AND-TRACES-OBSERVABILITY.html): In-VPC OpenTelemetry traces and high-throughput log search architecture.
+* [`RUNBOOK-OUTSIDE-VPC-HUBS-DEPLOYMENT-AND-CLOUDFLARE-TUNNELS.html`](/docs/runbooks/RUNBOOK-OUTSIDE-VPC-HUBS-DEPLOYMENT-AND-CLOUDFLARE-TUNNELS.html): Turnkey installation of `/NOCDesk`, `/SREDesk`, `/wallboard`, and `/kiosk`.
+* [`RUNBOOK-LIFTNSHIFT-REGRESSION-AND-HISTORICAL-AUDIT-LEDGER.html`](/docs/runbooks/RUNBOOK-LIFTNSHIFT-REGRESSION-AND-HISTORICAL-AUDIT-LEDGER.html): Side-by-side object comparison and cutover verification ledger.
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

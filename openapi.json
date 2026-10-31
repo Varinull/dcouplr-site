@@ -1,0 +1,6234 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "<dcouplr/> API",
+    "description": "<dcouplr/>: Zero-Egress In-VPC Observability & IaC Transpiler - Vendor-Agnostic IaC, Policy & Observability Engine",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v1/auth/sso/providers": {
+      "get": {
+        "tags": [
+          "Enterprise SSO & OIDC"
+        ],
+        "summary": "List configured SSO identity providers",
+        "description": "Returns list of enabled and active enterprise SSO identity providers.",
+        "operationId": "list_sso_providers_v1_auth_sso_providers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/sso/{provider_id}/login": {
+      "get": {
+        "tags": [
+          "Enterprise SSO & OIDC"
+        ],
+        "summary": "Initiate OAuth2 / OIDC authorization redirect",
+        "description": "Redirects user to federated IdP authorization endpoint (or mock consent in test mode).",
+        "operationId": "sso_login_v1_auth_sso__provider_id__login_get",
+        "parameters": [
+          {
+            "name": "provider_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Provider Id"
+            }
+          },
+          {
+            "name": "redirect_target",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "/admin",
+              "title": "Redirect Target"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/sso/{provider_id}/callback": {
+      "get": {
+        "tags": [
+          "Enterprise SSO & OIDC"
+        ],
+        "summary": "Handle OAuth2 / OIDC callback and issue session token",
+        "description": "Exchanges authorization code for tokens, resolves RBAC role, and establishes session.",
+        "operationId": "sso_callback_v1_auth_sso__provider_id__callback_get",
+        "parameters": [
+          {
+            "name": "provider_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Provider Id"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Code"
+            }
+          },
+          {
+            "name": "error",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Error"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Format"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/sso/me": {
+      "get": {
+        "tags": [
+          "Enterprise SSO & OIDC"
+        ],
+        "summary": "Get authenticated identity from session or token",
+        "description": "Returns details for the currently authenticated caller.",
+        "operationId": "get_current_identity_v1_auth_sso_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sso/saml/metadata": {
+      "get": {
+        "tags": [
+          "SAML 2.0 SSO"
+        ],
+        "summary": "Get Sp Metadata",
+        "description": "Generates standard SAML 2.0 SP EntityDescriptor XML for enterprise IdP configuration.",
+        "operationId": "get_sp_metadata_v1_sso_saml_metadata_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/v1/sso/saml/login": {
+      "get": {
+        "tags": [
+          "SAML 2.0 SSO"
+        ],
+        "summary": "Initiate Saml Login",
+        "description": "Initiates SAML 2.0 SP-initiated SSO flow.",
+        "operationId": "initiate_saml_login_v1_sso_saml_login_get",
+        "parameters": [
+          {
+            "name": "idp_url",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idp Url"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sso/saml/acs": {
+      "post": {
+        "tags": [
+          "SAML 2.0 SSO"
+        ],
+        "summary": "Assertion Consumer Service",
+        "description": "Handles incoming signed SAMLResponse POST requests from enterprise IdPs.",
+        "operationId": "assertion_consumer_service_v1_sso_saml_acs_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Health & Status"
+        ],
+        "summary": "Get Health Status",
+        "description": "Liveness and readiness probe endpoint with zero-egress guarantee.",
+        "operationId": "get_health_status_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health": {
+      "get": {
+        "tags": [
+          "Health & Status"
+        ],
+        "summary": "Get Health Status",
+        "description": "Liveness and readiness probe endpoint with zero-egress guarantee.",
+        "operationId": "get_health_status_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/hubs/status": {
+      "get": {
+        "tags": [
+          "Outside-VPC Hubs"
+        ],
+        "summary": "Outside-VPC Hubs Availability & Tunnel Health",
+        "description": "Retrieve live availability, modes, endpoints, and tunnel health for all 4 Outside-VPC Hubs.",
+        "operationId": "get_hubs_status_v1_hubs_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/community/register": {
+      "post": {
+        "tags": [
+          "Community"
+        ],
+        "summary": "Register Community Download",
+        "description": "Registers an interested user/engineer before downloading the Free Community Core installer.",
+        "operationId": "register_community_download_v1_community_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommunityRegistrationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/community/stats": {
+      "get": {
+        "tags": [
+          "Community"
+        ],
+        "summary": "Get Community Stats",
+        "description": "Returns aggregated census statistics of developers and organizations interested in Community Core.",
+        "operationId": "get_community_stats_v1_community_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/metrics": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Get Telemetry Metrics",
+        "description": "Returns point-in-time snapshot of system, engine, and Raft metrics.",
+        "operationId": "get_telemetry_metrics_v1_telemetry_metrics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/stream": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Stream Telemetry Metrics",
+        "description": "Server-Sent Events (SSE) stream pushing sub-second live telemetry ticks to the dashboard.",
+        "operationId": "stream_telemetry_metrics_v1_telemetry_stream_get",
+        "parameters": [
+          {
+            "name": "interval",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 1.0,
+              "title": "Interval"
+            }
+          },
+          {
+            "name": "delta_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Delta Only"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/topology": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Get Telemetry Topology",
+        "description": "Returns the synthesized Multi-VPC and cross-cloud network architecture topology.",
+        "operationId": "get_telemetry_topology_v1_telemetry_topology_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/simulation": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Get Telemetry Simulation",
+        "description": "Returns the cluster-wide simulation scenario and active incident telemetry.",
+        "operationId": "get_telemetry_simulation_v1_telemetry_simulation_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Set Telemetry Simulation",
+        "description": "Updates the cluster-wide simulation scenario across all monitored VPCs and nodes.",
+        "operationId": "set_telemetry_simulation_v1_telemetry_simulation_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulationScenarioPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/topology-pulse.json": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Get Telemetry Topology Pulse",
+        "description": "Returns an ultra-lean (<2 KB) sanitized topology and consensus pulse for 24x7 NOC wallboards.",
+        "operationId": "get_telemetry_topology_pulse_topology_pulse_json_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/topology-pulse": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Get Telemetry Topology Pulse",
+        "description": "Returns an ultra-lean (<2 KB) sanitized topology and consensus pulse for 24x7 NOC wallboards.",
+        "operationId": "get_telemetry_topology_pulse_v1_telemetry_topology_pulse_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/topology/vpcs": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Register Telemetry Vpc",
+        "description": "Registers a new company VPC into the in-app telemetry topology mesh.",
+        "operationId": "register_telemetry_vpc_v1_telemetry_topology_vpcs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VPCRegistrationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/telemetry/topology/suggest-vpc-config": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Suggest Telemetry Vpc Config",
+        "description": "Suggests collision-free /16 CIDR supernet, workload-sized active instances, and region for VPC registration.",
+        "operationId": "suggest_telemetry_vpc_config_v1_telemetry_topology_suggest_vpc_config_get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Name"
+            }
+          },
+          {
+            "name": "cloud",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "AWS",
+              "title": "Cloud"
+            }
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Region"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/topology/lift-and-shift": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Plan Lift And Shift",
+        "description": "Generates a complete, turnkey Lift & Shift migration bundle (OpenTofu HCL, Subnets, DNS, Alerts, Cutover) for a VPC or legacy system.",
+        "operationId": "plan_lift_and_shift_v1_telemetry_topology_lift_and_shift_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LiftAndShiftRequest",
+                "default": {
+                  "source_vpc_id": "dc-onprem-core-01",
+                  "target_cloud": "GCP",
+                  "target_region": "us-central1",
+                  "target_cidr": "10.200.0.0/16"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/topology/replication-plan": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology",
+          "Lift & Shift"
+        ],
+        "summary": "Plan Replication Orchestration",
+        "description": "Generates cloud-native replication manifests, agent bootstrap scripts, and cutover hooks for AWS MGN, GCP Migrate, or Azure Migrate.",
+        "operationId": "plan_replication_orchestration_v1_telemetry_topology_replication_plan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplicationPlanRequest",
+                "default": {
+                  "source_vpc_id": "dc-onprem-core-01",
+                  "target_cloud": "GCP",
+                  "target_region": "us-central1",
+                  "target_cidr": "10.200.0.0/16"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/simulate-alert": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Simulate Telemetry Alert",
+        "description": "Evaluates threshold parameters against live/historical metric curves and outputs PromQL/Grafana YAML.",
+        "operationId": "simulate_telemetry_alert_v1_telemetry_simulate_alert_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertSimulationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/actions/diagnostics-triage": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Api Telemetry Diagnostics Triage",
+        "description": "Sweeps all 8 Observer core subsystems and returns health status according to 5-color matrix.",
+        "operationId": "api_telemetry_diagnostics_triage_v1_telemetry_actions_diagnostics_triage_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Api Telemetry Diagnostics Triage",
+        "description": "Sweeps all 8 Observer core subsystems and returns health status according to 5-color matrix.",
+        "operationId": "api_telemetry_diagnostics_triage_v1_telemetry_actions_diagnostics_triage_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/actions/wal-compaction": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Api Telemetry Wal Compaction",
+        "description": "Triggers immediate WAL log compaction, trimming unapplied delta to 0 and reclaiming headroom.",
+        "operationId": "api_telemetry_wal_compaction_v1_telemetry_actions_wal_compaction_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/actions/recalculate-invariants": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Api Telemetry Recalculate Invariants",
+        "description": "Recalculates and proves Kirchhoff Theorem 2 flux conservation across all staged VPCs.",
+        "operationId": "api_telemetry_recalculate_invariants_v1_telemetry_actions_recalculate_invariants_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/actions/verify-zero-egress": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Api Telemetry Verify Zero Egress",
+        "description": "Audits kernel eBPF XDP socket drop counters and verifies SPIFFE SVID mTLS client certificates.",
+        "operationId": "api_telemetry_verify_zero_egress_v1_telemetry_actions_verify_zero_egress_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/actions/generate-ticket": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Api Telemetry Generate Ticket",
+        "description": "Generates a pre-populated diagnostic bundle and Markdown incident ticket for SRE escalation.",
+        "operationId": "api_telemetry_generate_ticket_v1_telemetry_actions_generate_ticket_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Api Telemetry Generate Ticket",
+        "description": "Generates a pre-populated diagnostic bundle and Markdown incident ticket for SRE escalation.",
+        "operationId": "api_telemetry_generate_ticket_v1_telemetry_actions_generate_ticket_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/cost-analysis": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Get Telemetry Cost Analysis",
+        "description": "Returns in-VPC financial cost breakdown, bandwidth consumption math, and SaaS TCO comparison.",
+        "operationId": "get_telemetry_cost_analysis_v1_telemetry_cost_analysis_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/nodes/capacity": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology",
+          "License & Node Capacity"
+        ],
+        "summary": "Get License And Node Capacity Status",
+        "description": "Returns active license entitlements, installation seat lease, cluster node census, and 3-zone quota evaluation.",
+        "operationId": "get_license_and_node_capacity_status_v1_nodes_capacity_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/license/status": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology",
+          "License & Node Capacity"
+        ],
+        "summary": "Get License And Node Capacity Status",
+        "description": "Returns active license entitlements, installation seat lease, cluster node census, and 3-zone quota evaluation.",
+        "operationId": "get_license_and_node_capacity_status_v1_license_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/license/activate": {
+      "post": {
+        "tags": [
+          "License & Node Capacity"
+        ],
+        "summary": "Activate Or Upgrade License",
+        "description": "Activates or upgrades an in-VPC license tier or purchases additional overage capacity with zero WAN egress.",
+        "operationId": "activate_or_upgrade_license_v1_license_activate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LicenseActivationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/metering/status": {
+      "get": {
+        "tags": [
+          "Metering & Hyperscaler Playbook"
+        ],
+        "summary": "Get Metering Status",
+        "description": "Returns current in-VPC hyperscaler private metering status, active overage dimension, and zero-WAN-egress verification across AWS Marketplace, GCP Marketplace, and Direct PO.",
+        "operationId": "get_metering_status_v1_metering_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/metering/trueup": {
+      "get": {
+        "tags": [
+          "Metering & Hyperscaler Playbook"
+        ],
+        "summary": "Get Offline Trueup Report",
+        "description": "Exports cryptographic SLSA-attested utilization token for Direct PO / MSA finance reconciliation.",
+        "operationId": "get_offline_trueup_report_v1_metering_trueup_get",
+        "parameters": [
+          {
+            "name": "nodes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Target monitored node count to evaluate for true-up",
+              "title": "Nodes"
+            },
+            "description": "Target monitored node count to evaluate for true-up"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/finops/cost-comparison": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Compare Finops Costs",
+        "description": "Compares baseline source costs against future target cloud costs (AWS, GCP, Azure) across compute, storage, egress, and observability.",
+        "operationId": "compare_finops_costs_v1_telemetry_finops_cost_comparison_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinOpsCostComparisonRequest",
+                "default": {
+                  "source_vpc_id": "dc-onprem-core-01",
+                  "target_cloud": "GCP",
+                  "target_region": "us-central1"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Get Finops Cost Comparison",
+        "description": "Returns multi-cloud FinOps migration cost comparison for a specified source VPC.",
+        "operationId": "get_finops_cost_comparison_v1_telemetry_finops_cost_comparison_get",
+        "parameters": [
+          {
+            "name": "source_vpc_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Source VPC or Legacy DC ID",
+              "default": "dc-onprem-core-01",
+              "title": "Source Vpc Id"
+            },
+            "description": "Source VPC or Legacy DC ID"
+          },
+          {
+            "name": "target_cloud",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Target cloud (GCP, AWS, Azure)",
+              "default": "GCP",
+              "title": "Target Cloud"
+            },
+            "description": "Target cloud (GCP, AWS, Azure)"
+          },
+          {
+            "name": "target_region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Target cloud region",
+              "default": "us-central1",
+              "title": "Target Region"
+            },
+            "description": "Target cloud region"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/rules": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Apply Telemetry Rules",
+        "description": "Deploys and activates synthesized <dcouplr/> AST or alert rules into the in-VPC telemetry engine.",
+        "operationId": "apply_telemetry_rules_v1_telemetry_rules_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "payload",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "title": "Payload"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Get Active Telemetry Rules",
+        "description": "Retrieves all active in-VPC telemetry rules currently armed in volatile memory.",
+        "operationId": "get_active_telemetry_rules_v1_telemetry_rules_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/vpcs/{vpc_id}/monitoring-bundle": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Capture Vpc Monitoring Bundle",
+        "description": "Captures all active monitoring, alerts, metrics, and topology definitions configured for a specific VPC.",
+        "operationId": "capture_vpc_monitoring_bundle_v1_telemetry_vpcs__vpc_id__monitoring_bundle_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vpc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Vpc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/vpcs": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "List Registered Vpcs",
+        "description": "Lists all registered VPCs in the in-app telemetry mesh with topology and peering metrics.",
+        "operationId": "list_registered_vpcs_v1_telemetry_vpcs_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/telemetry/vpcs/{vpc_id}/egress-attestation": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology"
+        ],
+        "summary": "Get Vpc Zero Egress Attestation",
+        "description": "Produces a cryptographic SHA-256 zero-egress proof for a VPC to support FinOps billing dispute audits.",
+        "operationId": "get_vpc_zero_egress_attestation_v1_telemetry_vpcs__vpc_id__egress_attestation_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vpc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Vpc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/remote-write/status": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology",
+          "Prometheus Remote-Write"
+        ],
+        "summary": "Get Remote Write Status",
+        "description": "Retrieves operational status, health metrics, and circuit breaker state of the TSDB remote_write exporter.",
+        "operationId": "get_remote_write_status_v1_telemetry_remote_write_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/telemetry/monitoring/matrix": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology",
+          "7-Tier Monitoring Matrix"
+        ],
+        "summary": "Get Monitoring Matrix",
+        "description": "Returns the full 7-tier monitoring matrix covering bare metal, networking, cloud VPC,\nhypervisors, middleware/DBs, APM, and SIEM with live metric evaluations, thresholds, and NOC routes.",
+        "operationId": "get_monitoring_matrix_v1_telemetry_monitoring_matrix_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/monitoring/matrix/configure": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology",
+          "7-Tier Monitoring Matrix"
+        ],
+        "summary": "Configure Monitoring Matrix",
+        "description": "Dynamically updates thresholds, alerting levels (P1-P4), evaluation windows, and notification routing.",
+        "operationId": "configure_monitoring_matrix_v1_telemetry_monitoring_matrix_configure_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MonitoringMatrixConfigureRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/monitoring/matrix/test-notification": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology",
+          "7-Tier Monitoring Matrix"
+        ],
+        "summary": "Dispatch Test Monitoring Notification",
+        "description": "Dispatches a synthetic test notification across configured NOC, Support, Email, or SIEM channels.",
+        "operationId": "dispatch_test_monitoring_notification_v1_telemetry_monitoring_matrix_test_notification_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MonitoringMatrixTestNotificationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/monitoring/matrix/history": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology",
+          "7-Tier Monitoring Matrix"
+        ],
+        "summary": "Get Monitoring Matrix History",
+        "description": "Returns the circular history of dispatched test notifications and alert audit trails.",
+        "operationId": "get_monitoring_matrix_history_v1_telemetry_monitoring_matrix_history_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/collectors/sweep": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology",
+          "7-Tier Monitoring Matrix"
+        ],
+        "summary": "Execute Collector Sweep",
+        "description": "Executes an on-demand full-stack telemetry sweep across requested layers with Zero-Egress verification.",
+        "operationId": "execute_collector_sweep_v1_telemetry_collectors_sweep_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/CollectorSweepRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/erp/technologies": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology",
+          "Enterprise ERP & CRM"
+        ],
+        "summary": "Get Erp Technologies",
+        "description": "Returns catalog of supported version-agnostic enterprise ERP and CRM technologies\n(SAP S/4HANA, Oracle EBS, Microsoft Dynamics 365, Salesforce CRM, Workday HCM, ServiceNow CSM)\nalong with currently active customer fleet selection.",
+        "operationId": "get_erp_technologies_v1_telemetry_erp_technologies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/erp/technologies/select": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology",
+          "Enterprise ERP & CRM"
+        ],
+        "summary": "Select Erp Technologies",
+        "description": "Saves and applies customer active ERP and CRM technologies fleet-wide (Tier 6).\nOptional suite: unselected or empty engine selection disables and silences the Tier 6 ERP component,\npreventing operational noise for cloud-native or non-ERP architectures.",
+        "operationId": "select_erp_technologies_v1_telemetry_erp_technologies_select_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ErpTechnologiesSelectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/database/technologies": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology",
+          "Database Technologies"
+        ],
+        "summary": "Get Database Technologies",
+        "description": "Returns catalog of supported version-agnostic enterprise database technologies\n(PostgreSQL, Oracle, MS SQL Server, MySQL, Redis, Cassandra, TiDB, SAP HANA)\nalong with currently active customer fleet selection.",
+        "operationId": "get_database_technologies_v1_telemetry_database_technologies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/database/technologies/select": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology",
+          "Database Technologies"
+        ],
+        "summary": "Select Database Technologies",
+        "description": "Saves and applies customer active database technologies fleet-wide.\nUnselected database engines are disabled across the 7-tier matrix and all 71 node installations,\npreventing operational noise and eliminating alerts for technologies not deployed in the fleet.",
+        "operationId": "select_database_technologies_v1_telemetry_database_technologies_select_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatabaseTechnologiesSelectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/nodes/technologies": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology",
+          "Node Technologies"
+        ],
+        "summary": "Get Node Technologies",
+        "description": "Returns the live census and health status of installed technologies across physical datacenter\nand cloud VPC nodes (Oracle, Postgres, MySQL, Kafka, Redis, Nginx, JVM, SAP HANA, Ceph, Kubelet).",
+        "operationId": "get_node_technologies_v1_telemetry_nodes_technologies_get",
+        "parameters": [
+          {
+            "name": "node_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Node Id"
+            }
+          },
+          {
+            "name": "network_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Network Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/nodes/{node_id}/technologies/scan": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology",
+          "Node Technologies"
+        ],
+        "summary": "Scan Node Technologies",
+        "description": "Triggers an autonomous process, socket, and container census scan on a specific node.",
+        "operationId": "scan_node_technologies_v1_telemetry_nodes__node_id__technologies_scan_post",
+        "parameters": [
+          {
+            "name": "node_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Node Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/nodes/{node_id}/technologies/configure": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology",
+          "Node Technologies"
+        ],
+        "summary": "Configure Node Technology",
+        "description": "Configures thresholds, alert levels (P1-P4), evaluation windows, and notification channels\nfor a specific technology installation on a node.",
+        "operationId": "configure_node_technology_v1_telemetry_nodes__node_id__technologies_configure_post",
+        "parameters": [
+          {
+            "name": "node_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Node Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NodeTechnologyConfigureRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/alerting/connectors": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology",
+          "Alert Routing & Connectors"
+        ],
+        "summary": "Get Alert Connectors",
+        "description": "Returns all configured Alerting, Routing, and Ticketing connectors, including the native\nVARINULL Operations Engine (VOE) support platform integration.",
+        "operationId": "get_alert_connectors_v1_telemetry_alerting_connectors_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/alerting/connectors/configure": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology",
+          "Alert Routing & Connectors"
+        ],
+        "summary": "Configure Alert Connector",
+        "description": "Configures endpoint settings, minimal-connectivity profiles, or thresholds for an alert connector.",
+        "operationId": "configure_alert_connector_v1_telemetry_alerting_connectors_configure_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertConnectorConfigureRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/alerting/connectors/test": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology",
+          "Alert Routing & Connectors"
+        ],
+        "summary": "Test Alert Connector",
+        "description": "Dispatches an authenticated synthetic test event or verification probe through an alert connector.",
+        "operationId": "test_alert_connector_v1_telemetry_alerting_connectors_test_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertConnectorTestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/alerting/connectors/voe/sync": {
+      "post": {
+        "tags": [
+          "Telemetry & Topology",
+          "VARINULL Operations Engine (VOE)"
+        ],
+        "summary": "Sync Varinull Operations Engine",
+        "description": "Dispatches an incident or alert directly into the VARINULL Operations Engine (VOE) support queue\nat http://127.0.0.1:9000/v1/support/receiver/ingest using minimal-connectivity zero-WAN protocol\nwith automatic fail-safe air-gapped local spooling.",
+        "operationId": "sync_varinull_operations_engine_v1_telemetry_alerting_connectors_voe_sync_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/VOEIncidentSyncRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/telemetry/alerting/connectors/voe/tickets": {
+      "get": {
+        "tags": [
+          "Telemetry & Topology",
+          "VARINULL Operations Engine (VOE)"
+        ],
+        "summary": "Get Voe Tickets",
+        "description": "Returns the circular history of support tickets dispatched to VARINULL Operations Engine.",
+        "operationId": "get_voe_tickets_v1_telemetry_alerting_connectors_voe_tickets_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/compiler/transpile-alert-rules": {
+      "post": {
+        "tags": [
+          "Core Transpilation"
+        ],
+        "summary": "Transpile Alert Rules",
+        "description": "Transpiles and recalibrates alert rules for downscaled compute/database resources into Grafana, Prometheus, and OpenTelemetry YAML for cloaudit (Cloud Audit).",
+        "operationId": "transpile_alert_rules_v1_compiler_transpile_alert_rules_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertRuleAdjustmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/compiler/custom-presets": {
+      "get": {
+        "tags": [
+          "Core Transpilation"
+        ],
+        "summary": "List Custom Presets",
+        "description": "Lists saved custom user presets from server storage.",
+        "operationId": "list_custom_presets_v1_compiler_custom_presets_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Core Transpilation"
+        ],
+        "summary": "Save Custom Preset",
+        "description": "Saves or updates a custom user preset in server storage.",
+        "operationId": "save_custom_preset_v1_compiler_custom_presets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomPresetModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/compiler/custom-presets/{preset_id}": {
+      "delete": {
+        "tags": [
+          "Core Transpilation"
+        ],
+        "summary": "Delete Custom Preset",
+        "description": "Deletes a custom user preset from server storage.",
+        "operationId": "delete_custom_preset_v1_compiler_custom_presets__preset_id__delete",
+        "parameters": [
+          {
+            "name": "preset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Preset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/healthz": {
+      "get": {
+        "tags": [
+          "System Health"
+        ],
+        "summary": "Healthz",
+        "operationId": "healthz_healthz_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/system/doctor": {
+      "get": {
+        "tags": [
+          "System Health"
+        ],
+        "summary": "Run System Doctor",
+        "description": "Runs deep environmental, memory, and zero-egress preflight diagnostics.",
+        "operationId": "run_system_doctor_v1_system_doctor_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/system/lint": {
+      "post": {
+        "tags": [
+          "System Health"
+        ],
+        "summary": "Run System Lint",
+        "description": "Lints legacy configurations for syntax anomalies and unmapped metrics with auto-fix guidance.",
+        "operationId": "run_system_lint_v1_system_lint_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LintRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/supported-matrix": {
+      "get": {
+        "tags": [
+          "Core Transpilation"
+        ],
+        "summary": "Supported Matrix",
+        "operationId": "supported_matrix_v1_supported_matrix_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/parse": {
+      "post": {
+        "tags": [
+          "Core Transpilation"
+        ],
+        "summary": "Parse Source",
+        "operationId": "parse_source_v1_parse_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UITGraph"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/generate": {
+      "post": {
+        "tags": [
+          "Core Transpilation"
+        ],
+        "summary": "Generate Target",
+        "operationId": "generate_target_v1_generate_post",
+        "parameters": [
+          {
+            "name": "target_platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "grafana",
+              "title": "Target Platform"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "unified_alerting_yaml",
+              "title": "Format"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UITGraph"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/translate": {
+      "post": {
+        "tags": [
+          "Core Transpilation"
+        ],
+        "summary": "Translate End To End",
+        "operationId": "translate_end_to_end_v1_translate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TranslationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/iac/state-migration": {
+      "post": {
+        "tags": [
+          "Core Transpilation"
+        ],
+        "summary": "Generate State Migration",
+        "description": "Generates automated OpenTofu state relocation and import scripts from Terraform HCL.",
+        "operationId": "generate_state_migration_v1_iac_state_migration_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StateMigrationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateMigrationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/invariant/evaluate": {
+      "post": {
+        "tags": [
+          "Invariant Calculus"
+        ],
+        "summary": "Evaluate Invariants",
+        "description": "Evaluates Canonical Invariant Query Calculus (Q_DCL) over a private VPC topology graph.\nPerforms formal algebraic verification of Theorem 2 (Kirchhoff Telemetric Conservation),\nnode saturation predicates, and edge latency invariants with 100% mathematical determinism\nand zero cloud WAN egress.",
+        "operationId": "evaluate_invariants_v1_invariant_evaluate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvariantEvaluateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/invariant/proof/{vpc_id}": {
+      "get": {
+        "tags": [
+          "Invariant Calculus"
+        ],
+        "summary": "Get Invariant Proof",
+        "description": "Returns cryptographic SHA-256 certificate proving 100% zero-egress ($0.00)\nand Kirchhoff conservation across the target VPC topology.",
+        "operationId": "get_invariant_proof_v1_invariant_proof__vpc_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vpc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Vpc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/invariant/topology/{vpc_id}": {
+      "get": {
+        "tags": [
+          "Invariant Calculus"
+        ],
+        "summary": "Get Invariant Topology",
+        "description": "Returns the complete G_VPC topological graph representation with node URNs\nand flux tracking edges.",
+        "operationId": "get_invariant_topology_v1_invariant_topology__vpc_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vpc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Vpc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/traces": {
+      "post": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Observability"
+        ],
+        "summary": "Ingest Otlp Traces",
+        "description": "OpenTelemetry OTLP/HTTP Trace Receiver.\nIngests standard W3C / OTel JSON trace spans directly into volatile memory.",
+        "operationId": "ingest_otlp_traces_v1_traces_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Observability"
+        ],
+        "summary": "Search Traces",
+        "description": "Queries stored distributed APM trace spans with sub-millisecond filtering across multi-VPC topologies.",
+        "operationId": "search_traces_v1_traces_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "service_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Service Name"
+            }
+          },
+          {
+            "name": "operation",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Operation"
+            }
+          },
+          {
+            "name": "min_duration_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Min Duration Ms"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "vpc_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vpc Id"
+            }
+          },
+          {
+            "name": "node_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Node Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/traces/{trace_id}": {
+      "get": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Observability"
+        ],
+        "summary": "Get Trace Flamegraph",
+        "description": "Reconstructs the hierarchical flamegraph call tree for a specific trace ID.",
+        "operationId": "get_trace_flamegraph_v1_traces__trace_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "trace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Trace Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/logs": {
+      "post": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Observability"
+        ],
+        "summary": "Ingest Otlp Logs",
+        "description": "OpenTelemetry OTLP/HTTP & Syslog High-Throughput Log Receiver.\nIngests standard OTLP JSON logs into bounded circular ring buffer.",
+        "operationId": "ingest_otlp_logs_v1_logs_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Observability"
+        ],
+        "summary": "Search Logs",
+        "description": "High-speed regex and substring log search across private multi-VPC log lines.",
+        "operationId": "search_logs_v1_logs_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Query"
+            }
+          },
+          {
+            "name": "service_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Service Name"
+            }
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Severity"
+            }
+          },
+          {
+            "name": "vpc_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vpc Id"
+            }
+          },
+          {
+            "name": "node_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Node Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/logs/patterns": {
+      "get": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Observability"
+        ],
+        "summary": "Get Log Patterns",
+        "description": "Discovers recurring error clusters and 5xx exception bursts.",
+        "operationId": "get_log_patterns_v1_logs_patterns_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/vpc-database": {
+      "get": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Unified VPC Database"
+        ],
+        "summary": "Get Vpc Database Summary",
+        "description": "Returns the unified multi-VPC metadata database summary and active telemetry inventory.",
+        "operationId": "get_vpc_database_summary_v1_vpc_database_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/vpc-database/info": {
+      "get": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Unified VPC Database"
+        ],
+        "summary": "Get Vpc Database Info",
+        "description": "Returns technical metadata for the in-VPC Single Source of Truth SQLite engine.",
+        "operationId": "get_vpc_database_info_v1_vpc_database_info_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/vpc-database/vpcs": {
+      "get": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Unified VPC Database"
+        ],
+        "summary": "List Vpc Database Vpcs",
+        "description": "Lists all 4 staged network VPCs with live node census counts and agent health status.",
+        "operationId": "list_vpc_database_vpcs_v1_vpc_database_vpcs_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/vpc-database/vpcs/{vpc_id}": {
+      "get": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Unified VPC Database"
+        ],
+        "summary": "Get Vpc Database Vpc",
+        "description": "Returns detailed network topology, subnets, gateways, and accelerators for a specific VPC.",
+        "operationId": "get_vpc_database_vpc_v1_vpc_database_vpcs__vpc_id__get",
+        "parameters": [
+          {
+            "name": "vpc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Vpc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/vpc-database/nodes": {
+      "get": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Unified VPC Database"
+        ],
+        "summary": "List Vpc Database Nodes",
+        "description": "Queries the 71 monitored census nodes across all 4 VPCs with optional filtering.",
+        "operationId": "list_vpc_database_nodes_v1_vpc_database_nodes_get",
+        "parameters": [
+          {
+            "name": "vpc_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vpc Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Role"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/vpc-database/nodes/{node_id}": {
+      "get": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Unified VPC Database"
+        ],
+        "summary": "Get Vpc Database Node",
+        "description": "Returns full metadata, technology stacks, IP address, and role for a specific monitored node.",
+        "operationId": "get_vpc_database_node_v1_vpc_database_nodes__node_id__get",
+        "parameters": [
+          {
+            "name": "node_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Node Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/vpc-database/synergy": {
+      "get": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Unified VPC Database"
+        ],
+        "summary": "Get Vpc Database Synergy",
+        "description": "Returns cross-cutting synergy map proving single source of truth across all 8 surfaces.",
+        "operationId": "get_vpc_database_synergy_v1_vpc_database_synergy_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/vpc-database/alert-engine": {
+      "get": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Unified VPC Database"
+        ],
+        "summary": "Get Vpc Database Alert Engine",
+        "description": "Returns the unified 6-hub Alert & Triage Engine model with live dispatch status.",
+        "operationId": "get_vpc_database_alert_engine_v1_vpc_database_alert_engine_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/database/dual-architecture": {
+      "get": {
+        "tags": [
+          "Enterprise Architecture: Dual Database"
+        ],
+        "summary": "Get Dual Database Architecture",
+        "description": "Returns technical architecture, engine recommendations, and roles for the two <dcouplr/> databases.",
+        "operationId": "get_dual_database_architecture_v1_database_dual_architecture_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/database/central/summary": {
+      "get": {
+        "tags": [
+          "Enterprise Architecture: Dual Database"
+        ],
+        "summary": "Get Central Database Summary",
+        "description": "Returns status, engine recommendations, and health of the <dcouplr/> Central DB.",
+        "operationId": "get_central_database_summary_v1_database_central_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/database/central/customers": {
+      "get": {
+        "tags": [
+          "Enterprise Architecture: Dual Database"
+        ],
+        "summary": "List Central Database Customers",
+        "description": "Returns enterprise customer directory, contracts, and active licenses from Central DB.",
+        "operationId": "list_central_database_customers_v1_database_central_customers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/database/central/catalog": {
+      "get": {
+        "tags": [
+          "Enterprise Architecture: Dual Database"
+        ],
+        "summary": "Get Central Database Catalog",
+        "description": "Returns official product catalog and SKUs from Central DB.",
+        "operationId": "get_central_database_catalog_v1_database_central_catalog_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/database/customer/ssot": {
+      "get": {
+        "tags": [
+          "Enterprise Architecture: Dual Database"
+        ],
+        "summary": "Get Customer Database Ssot",
+        "description": "Returns exhaustive SSoT inventory report confirming all 127 metrics, 71 nodes, and 4 VPCs are in the customer DB.",
+        "operationId": "get_customer_database_ssot_v1_database_customer_ssot_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/database/customer/matrix": {
+      "get": {
+        "tags": [
+          "Enterprise Architecture: Dual Database"
+        ],
+        "summary": "Get Customer Database Matrix",
+        "description": "Queries the 7-Tier Full-Stack Monitoring Matrix directly from the In-VPC SQLite SSoT.",
+        "operationId": "get_customer_database_matrix_v1_database_customer_matrix_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/database/customer/metrics/{metric_id}": {
+      "put": {
+        "tags": [
+          "Enterprise Architecture: Dual Database"
+        ],
+        "summary": "Update Customer Database Metric",
+        "description": "Updates threshold or evaluation parameters in the In-VPC SQLite SSoT.",
+        "operationId": "update_customer_database_metric_v1_database_customer_metrics__metric_id__put",
+        "parameters": [
+          {
+            "name": "metric_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Metric Id"
+            }
+          },
+          {
+            "name": "tier_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Target tier ID, e.g. 'tier_1_physical_dc'",
+              "title": "Tier Id"
+            },
+            "description": "Target tier ID, e.g. 'tier_1_physical_dc'"
+          },
+          {
+            "name": "component_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Target component ID, e.g. 'compute_bare_metal'",
+              "title": "Component Id"
+            },
+            "description": "Target component ID, e.g. 'compute_bare_metal'"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/database/customer/telemetry": {
+      "get": {
+        "tags": [
+          "Enterprise Architecture: Dual Database"
+        ],
+        "summary": "Get Customer Database Telemetry",
+        "description": "Queries Core Engine Telemetry & Observer Performance Indicators from the In-VPC SQLite SSoT.",
+        "operationId": "get_customer_database_telemetry_v1_database_customer_telemetry_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/database/customer/license": {
+      "get": {
+        "tags": [
+          "Enterprise Architecture: Dual Database"
+        ],
+        "summary": "Get Customer Database License",
+        "description": "Queries customer licensing capabilities and node quota from the In-VPC SQLite SSoT.",
+        "operationId": "get_customer_database_license_v1_database_customer_license_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/database/profile": {
+      "get": {
+        "tags": [
+          "Enterprise Architecture: Dual Database"
+        ],
+        "summary": "Get Database Profile Status",
+        "description": "Returns active database profile ('demo' or 'production'), file paths, live node/VPC counts, and table statistics.",
+        "operationId": "get_database_profile_status_v1_database_profile_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/database/profile/switch": {
+      "post": {
+        "tags": [
+          "Enterprise Architecture: Dual Database"
+        ],
+        "summary": "Switch Database Profile",
+        "description": "Switches the active database between 'demo' (75 simulated nodes) and 'production' (blank-slate Day-0).",
+        "operationId": "switch_database_profile_v1_database_profile_switch_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatabaseProfileSwitchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/database/profile/reset-demo": {
+      "post": {
+        "tags": [
+          "Enterprise Architecture: Dual Database"
+        ],
+        "summary": "Reset Demo Database State",
+        "description": "Resets the demo database to factory defaults with 75 simulated nodes across 5 VPCs.",
+        "operationId": "reset_demo_database_state_v1_database_profile_reset_demo_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/database/profile/reset-production": {
+      "post": {
+        "tags": [
+          "Enterprise Architecture: Dual Database"
+        ],
+        "summary": "Reset Production Database State",
+        "description": "Purges all customer nodes and VPCs from production database, leaving a clean Day-0 blank slate while preserving reference tables.",
+        "operationId": "reset_production_database_state_v1_database_profile_reset_production_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/alerts/dispatch": {
+      "post": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Observability"
+        ],
+        "summary": "Dispatch Alert",
+        "description": "Native Outbound Alert Dispatcher (OBS-203).\nDelivers notifications directly to Slack, PagerDuty Events API v2, or generic webhooks.",
+        "operationId": "dispatch_alert_v1_alerts_dispatch_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OutboundAlertRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/setup/systemd": {
+      "get": {
+        "tags": [
+          "<dcouplr/> Full-Stack Suite: Observability"
+        ],
+        "summary": "Get Systemd Units",
+        "description": "Generates hardened Linux systemd service units for bare-metal & VM installations (OBS-204).",
+        "operationId": "get_systemd_units_v1_setup_systemd_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "bin_path",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "/usr/local/bin/dcouplr",
+              "title": "Bin Path"
+            }
+          },
+          {
+            "name": "user",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "dcouplr",
+              "title": "User"
+            }
+          },
+          {
+            "name": "port",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 8000,
+              "title": "Port"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/patent/download": {
+      "get": {
+        "tags": [
+          "Provisional Patent Filing"
+        ],
+        "summary": "Download Uspto Patent Package",
+        "description": "Downloads the Ready-to-File USPTO Provisional Patent Application Packet (USPTO-PROV-DCL-2026-001).\nContains Theorems 1-3, 20 formal claims, FIGS 1-5 drawings, and step-by-step USPTO Patent Center filing guide.",
+        "operationId": "download_uspto_patent_package_v1_patent_download_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/recipes": {
+      "get": {
+        "tags": [
+          "Migration Recipes"
+        ],
+        "summary": "List Migration Recipes",
+        "description": "Lists turnkey migration recipes available in the <dcouplr/> repository.\n\nDynamically scans the recipes/ directory on disk, automatically discovering\nboth built-in and dynamically registered custom migration recipes.",
+        "operationId": "list_migration_recipes_v1_recipes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/recipes/{recipe_id}/run": {
+      "post": {
+        "tags": [
+          "Migration Recipes"
+        ],
+        "summary": "Run Migration Recipe",
+        "description": "Executes a specified turnkey migration recipe and returns the synthesized artifact with execution statistics.",
+        "operationId": "run_migration_recipe_v1_recipes__recipe_id__run_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recipe_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Recipe Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AggregationFunction": {
+        "type": "string",
+        "enum": [
+          "avg",
+          "sum",
+          "min",
+          "max",
+          "count",
+          "rate"
+        ],
+        "title": "AggregationFunction"
+      },
+      "AlertConnectorConfigureRequest": {
+        "properties": {
+          "connector_id": {
+            "type": "string",
+            "title": "Connector Id"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "endpoint_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endpoint Url"
+          },
+          "app_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "App Id"
+          },
+          "company_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Name"
+          },
+          "api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Api Key"
+          },
+          "timeout_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timeout Seconds"
+          },
+          "auto_ticket_severities": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auto Ticket Severities"
+          },
+          "spool_fallback_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spool Fallback Enabled"
+          },
+          "spool_directory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spool Directory"
+          },
+          "headers": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Headers"
+          },
+          "http_method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Http Method"
+          },
+          "payload_template": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payload Template"
+          },
+          "assignment_group": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assignment Group"
+          },
+          "project_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Key"
+          },
+          "routing_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Routing Key"
+          },
+          "channel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Channel"
+          },
+          "host": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Host"
+          },
+          "port": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Port"
+          },
+          "tool_directory": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Directory"
+          },
+          "saas_portal_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Saas Portal Url"
+          },
+          "tenant_domain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tenant Domain"
+          },
+          "incident_queues": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Incident Queues"
+          }
+        },
+        "type": "object",
+        "required": [
+          "connector_id"
+        ],
+        "title": "AlertConnectorConfigureRequest"
+      },
+      "AlertConnectorTestRequest": {
+        "properties": {
+          "connector_id": {
+            "type": "string",
+            "title": "Connector Id"
+          },
+          "test_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Test Level",
+            "default": "P1"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "node_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Id"
+          },
+          "tier_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tier Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "connector_id"
+        ],
+        "title": "AlertConnectorTestRequest"
+      },
+      "AlertRuleAdjustmentRequest": {
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "title": "Resource Id"
+          },
+          "original_tier": {
+            "type": "string",
+            "title": "Original Tier"
+          },
+          "target_tier": {
+            "type": "string",
+            "title": "Target Tier"
+          },
+          "existing_rules": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Existing Rules",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "resource_id",
+          "original_tier",
+          "target_tier"
+        ],
+        "title": "AlertRuleAdjustmentRequest"
+      },
+      "AlertSimulationRequest": {
+        "properties": {
+          "metric_name": {
+            "type": "string",
+            "title": "Metric Name",
+            "description": "Metric to simulate: latency_p99, latency_p90, latency_p50, cpu_percent, memory_rss, throughput",
+            "default": "latency_p99"
+          },
+          "threshold": {
+            "type": "number",
+            "title": "Threshold",
+            "description": "Alert threshold value",
+            "default": 10.0
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "title": "Duration Minutes",
+            "description": "Evaluation window in minutes",
+            "default": 60
+          }
+        },
+        "type": "object",
+        "title": "AlertSimulationRequest"
+      },
+      "CollectorSweepRequest": {
+        "properties": {
+          "layers": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Layers"
+          },
+          "spool_to_voe": {
+            "type": "boolean",
+            "title": "Spool To Voe",
+            "default": true
+          },
+          "node_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Id",
+            "default": "node-dc1-bm-01"
+          }
+        },
+        "type": "object",
+        "title": "CollectorSweepRequest"
+      },
+      "CommunityRegistrationRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Name"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 5,
+            "title": "Email"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 2,
+            "title": "Company"
+          },
+          "cloud_stack": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "Cloud Stack",
+            "default": "AWS"
+          },
+          "interest": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interest",
+            "default": "general-evaluation"
+          },
+          "platform": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Platform",
+            "default": "unknown"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "company"
+        ],
+        "title": "CommunityRegistrationRequest"
+      },
+      "ComparisonOperator": {
+        "type": "string",
+        "enum": [
+          "gt",
+          "gte",
+          "lt",
+          "lte",
+          "eq",
+          "neq"
+        ],
+        "title": "ComparisonOperator"
+      },
+      "CustomPresetModel": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category",
+            "default": "Custom User Presets"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "source",
+          "target",
+          "content"
+        ],
+        "title": "CustomPresetModel"
+      },
+      "DatabaseProfileSwitchRequest": {
+        "properties": {
+          "profile": {
+            "type": "string",
+            "title": "Profile",
+            "description": "Target database profile: 'demo' or 'production'"
+          }
+        },
+        "type": "object",
+        "required": [
+          "profile"
+        ],
+        "title": "DatabaseProfileSwitchRequest"
+      },
+      "DatabaseTechnologiesSelectionRequest": {
+        "properties": {
+          "selected_engines": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Selected Engines",
+            "default": [
+              "postgres",
+              "redis"
+            ]
+          }
+        },
+        "type": "object",
+        "title": "DatabaseTechnologiesSelectionRequest"
+      },
+      "Edge": {
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          },
+          "target_id": {
+            "type": "string",
+            "title": "Target Id"
+          },
+          "relationship": {
+            "type": "string",
+            "title": "Relationship",
+            "description": "'MONITORS', 'SECURES', 'DEPENDS_ON'"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_id",
+          "target_id",
+          "relationship"
+        ],
+        "title": "Edge",
+        "description": "Relationship edge connecting entities in the dependency graph."
+      },
+      "ErpTechnologiesSelectionRequest": {
+        "properties": {
+          "selected_engines": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Selected Engines",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "ErpTechnologiesSelectionRequest"
+      },
+      "FinOpsCostComparisonRequest": {
+        "properties": {
+          "source_vpc_id": {
+            "type": "string",
+            "title": "Source Vpc Id",
+            "description": "Source VPC or Legacy Datacenter ID",
+            "default": "dc-onprem-core-01"
+          },
+          "target_cloud": {
+            "type": "string",
+            "title": "Target Cloud",
+            "description": "Target destination cloud (GCP, AWS, Azure)",
+            "default": "GCP"
+          },
+          "target_region": {
+            "type": "string",
+            "title": "Target Region",
+            "description": "Destination region",
+            "default": "us-central1"
+          }
+        },
+        "type": "object",
+        "title": "FinOpsCostComparisonRequest"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InvariantEvaluateRequest": {
+        "properties": {
+          "vpc_id": {
+            "type": "string",
+            "title": "Vpc Id",
+            "description": "Target VPC network identifier",
+            "default": "dc-onprem-core-01"
+          },
+          "tenant_id": {
+            "type": "string",
+            "title": "Tenant Id",
+            "description": "Tenant organization scope",
+            "default": "default"
+          },
+          "cpu_ceiling": {
+            "type": "number",
+            "title": "Cpu Ceiling",
+            "description": "Max permissible CPU utilization percentage",
+            "default": 85.0
+          },
+          "mem_ceiling": {
+            "type": "number",
+            "title": "Mem Ceiling",
+            "description": "Max permissible Memory utilization percentage",
+            "default": 90.0
+          },
+          "max_rtt_ms": {
+            "type": "number",
+            "title": "Max Rtt Ms",
+            "description": "Max permissible network round-trip time in milliseconds",
+            "default": 150.0
+          },
+          "flux_tolerance_bytes": {
+            "type": "number",
+            "title": "Flux Tolerance Bytes",
+            "description": "Kirchhoff conservation residual tolerance in bytes",
+            "default": 1.0
+          },
+          "custom_nodes": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Nodes"
+          },
+          "custom_edges": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Edges"
+          }
+        },
+        "type": "object",
+        "title": "InvariantEvaluateRequest"
+      },
+      "LicenseActivationRequest": {
+        "properties": {
+          "license_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Key"
+          },
+          "tier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tier"
+          },
+          "organization": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Organization",
+            "default": "Acme Corp"
+          },
+          "purchasing_channel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purchasing Channel",
+            "default": "DIRECT_PO_OFFLINE"
+          },
+          "purchased_overage_nodes": {
+            "type": "integer",
+            "title": "Purchased Overage Nodes",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "LicenseActivationRequest"
+      },
+      "LiftAndShiftRequest": {
+        "properties": {
+          "source_vpc_id": {
+            "type": "string",
+            "title": "Source Vpc Id",
+            "description": "Source VPC or Legacy Datacenter ID",
+            "default": "dc-onprem-core-01"
+          },
+          "target_cloud": {
+            "type": "string",
+            "title": "Target Cloud",
+            "description": "Target destination cloud (GCP, AWS, Azure)",
+            "default": "GCP"
+          },
+          "target_region": {
+            "type": "string",
+            "title": "Target Region",
+            "description": "Destination region",
+            "default": "us-central1"
+          },
+          "target_cidr": {
+            "type": "string",
+            "title": "Target Cidr",
+            "description": "Destination VPC CIDR block",
+            "default": "10.200.0.0/16"
+          }
+        },
+        "type": "object",
+        "title": "LiftAndShiftRequest"
+      },
+      "LintRequest": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "Raw configuration text (JSON/YAML) to lint"
+          },
+          "source_vendor": {
+            "type": "string",
+            "title": "Source Vendor",
+            "description": "Vendor syntax, e.g. datadog, new_relic, cloudwatch",
+            "default": "datadog"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "LintRequest"
+      },
+      "MetricTarget": {
+        "properties": {
+          "raw_query": {
+            "type": "string",
+            "title": "Raw Query",
+            "description": "Original raw query string from source vendor"
+          },
+          "metric_name": {
+            "type": "string",
+            "title": "Metric Name",
+            "description": "Canonical metric identifier, e.g. system.cpu.user"
+          },
+          "filters": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Filters",
+            "description": "Key-value tag or dimension filters"
+          },
+          "group_by": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Group By",
+            "description": "Dimensions to group by, e.g. ['host', 'env']"
+          },
+          "aggregation": {
+            "$ref": "#/components/schemas/AggregationFunction",
+            "description": "Aggregation function",
+            "default": "avg"
+          },
+          "time_window": {
+            "type": "string",
+            "title": "Time Window",
+            "description": "Evaluation time window, e.g. '5m', '15m'",
+            "default": "5m"
+          },
+          "metric_modifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric Modifier",
+            "description": "Optional modifier like .as_count(), .rollup()"
+          },
+          "is_anomaly_fallback": {
+            "type": "boolean",
+            "title": "Is Anomaly Fallback",
+            "description": "Flag indicating statistical fallback approximation",
+            "default": false
+          },
+          "anomaly_bounds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anomaly Bounds",
+            "description": "StdDev bounds for anomaly approximation"
+          },
+          "anomaly_algorithm": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anomaly Algorithm",
+            "description": "Source algorithm, e.g. 'basic', 'agile'"
+          },
+          "anomaly_window": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anomaly Window",
+            "description": "Historical window for StdDev evaluation",
+            "default": "1d"
+          },
+          "math_wrapper": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Math Wrapper",
+            "description": "Math or functional wrapper, e.g. abs, log10, clamp_min, clamp_max"
+          },
+          "math_parameter": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Math Parameter",
+            "description": "Optional parameter for math wrapper"
+          },
+          "temporal_offset": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temporal Offset",
+            "description": "Time shift offset, e.g. 1h, 1d, 7d, 30d"
+          },
+          "is_outlier_fallback": {
+            "type": "boolean",
+            "title": "Is Outlier Fallback",
+            "description": "Flag indicating outlier detection approximation",
+            "default": false
+          },
+          "outlier_bounds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outlier Bounds",
+            "description": "Tolerance threshold for outlier detection"
+          },
+          "unmapped_tokens": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unmapped Tokens",
+            "description": "Tokens or functions not strictly mapped"
+          },
+          "diagnostics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Diagnostics",
+            "description": "Compiler diagnostic notes on grammar transformation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "raw_query",
+          "metric_name"
+        ],
+        "title": "MetricTarget",
+        "description": "Normalized query definition for observability metrics."
+      },
+      "MonitorNode": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier for the monitor"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Human-readable title/name of the monitor"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Alert description or playbook message"
+          },
+          "source_vendor": {
+            "type": "string",
+            "title": "Source Vendor",
+            "description": "Source vendor, e.g. 'datadog', 'newrelic'",
+            "default": "datadog"
+          },
+          "monitor_type": {
+            "$ref": "#/components/schemas/MonitorType",
+            "default": "metric_threshold"
+          },
+          "target_metric": {
+            "$ref": "#/components/schemas/MetricTarget"
+          },
+          "condition": {
+            "$ref": "#/components/schemas/ComparisonOperator",
+            "default": "gt"
+          },
+          "critical_threshold": {
+            "type": "number",
+            "title": "Critical Threshold",
+            "description": "Critical alert trigger threshold"
+          },
+          "warning_threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warning Threshold",
+            "description": "Optional warning threshold"
+          },
+          "evaluation_window": {
+            "type": "string",
+            "title": "Evaluation Window",
+            "description": "Duration condition must hold before firing",
+            "default": "5m"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags",
+            "description": "Categorization tags, e.g. ['team:sre', 'tier:1']"
+          },
+          "notification_channels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notification Channels",
+            "description": "Alert recipients, e.g. ['slack-sre', 'pagerduty']"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata",
+            "description": "Raw source-specific metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "target_metric",
+          "critical_threshold"
+        ],
+        "title": "MonitorNode",
+        "description": "Normalized alert/monitor node in the UIT-IR graph."
+      },
+      "MonitorType": {
+        "type": "string",
+        "enum": [
+          "metric_threshold",
+          "log_alert",
+          "composite",
+          "service_check"
+        ],
+        "title": "MonitorType"
+      },
+      "MonitoringMatrixConfigureRequest": {
+        "properties": {
+          "tier_id": {
+            "type": "string",
+            "title": "Tier Id"
+          },
+          "component_id": {
+            "type": "string",
+            "title": "Component Id"
+          },
+          "alert_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alert Level"
+          },
+          "evaluation_window": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluation Window"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "notification_channels": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notification Channels"
+          },
+          "metrics": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metrics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tier_id",
+          "component_id"
+        ],
+        "title": "MonitoringMatrixConfigureRequest"
+      },
+      "MonitoringMatrixTestNotificationRequest": {
+        "properties": {
+          "tier_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tier Id",
+            "default": "tier_1_physical_dc"
+          },
+          "component_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Id",
+            "default": "compute_bare_metal"
+          },
+          "test_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Test Level",
+            "default": "P1"
+          },
+          "channels": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Channels"
+          },
+          "custom_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Message"
+          }
+        },
+        "type": "object",
+        "title": "MonitoringMatrixTestNotificationRequest"
+      },
+      "NodeTechnologyConfigureRequest": {
+        "properties": {
+          "tech_id": {
+            "type": "string",
+            "title": "Tech Id"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "alert_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alert Level"
+          },
+          "evaluation_window": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluation Window"
+          },
+          "notification_channels": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notification Channels"
+          },
+          "metrics": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metrics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tech_id"
+        ],
+        "title": "NodeTechnologyConfigureRequest"
+      },
+      "OutboundAlertRequest": {
+        "properties": {
+          "channel": {
+            "type": "string",
+            "title": "Channel",
+            "description": "Destination channel: slack, pagerduty, generic",
+            "default": "slack"
+          },
+          "webhook_url_or_key": {
+            "type": "string",
+            "title": "Webhook Url Or Key",
+            "description": "Target webhook URL or PagerDuty routing key"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Incident or alert headline"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Detailed alert body or diagnostic trace"
+          },
+          "severity": {
+            "type": "string",
+            "title": "Severity",
+            "description": "Severity level: info, warning, critical",
+            "default": "warning"
+          },
+          "source_service": {
+            "type": "string",
+            "title": "Source Service",
+            "description": "Reporting service or container",
+            "default": "dcouplr-core"
+          },
+          "vpc_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vpc Id",
+            "description": "Source VPC context",
+            "default": "local-vpc"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "webhook_url_or_key",
+          "title",
+          "message"
+        ],
+        "title": "OutboundAlertRequest"
+      },
+      "ParseRequest": {
+        "properties": {
+          "source_vendor": {
+            "type": "string",
+            "title": "Source Vendor",
+            "description": "e.g. 'datadog', 'terraform_hcl'",
+            "default": "datadog"
+          },
+          "payload": {
+            "title": "Payload",
+            "description": "Source JSON/YAML/HCL payload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payload"
+        ],
+        "title": "ParseRequest"
+      },
+      "PolicyNode": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "policy_type": {
+            "type": "string",
+            "title": "Policy Type",
+            "description": "e.g. 'iam.role', 'network.firewall_rule'"
+          },
+          "source_provider": {
+            "type": "string",
+            "title": "Source Provider"
+          },
+          "rules": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Rules"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "policy_type",
+          "source_provider"
+        ],
+        "title": "PolicyNode",
+        "description": "Normalized security policy or access control node."
+      },
+      "ReplicationPlanRequest": {
+        "properties": {
+          "source_vpc_id": {
+            "type": "string",
+            "title": "Source Vpc Id",
+            "description": "Source VPC or Legacy Datacenter ID",
+            "default": "dc-onprem-core-01"
+          },
+          "target_cloud": {
+            "type": "string",
+            "title": "Target Cloud",
+            "description": "Target destination cloud (GCP, AWS, Azure)",
+            "default": "GCP"
+          },
+          "target_region": {
+            "type": "string",
+            "title": "Target Region",
+            "description": "Destination region",
+            "default": "us-central1"
+          },
+          "target_cidr": {
+            "type": "string",
+            "title": "Target Cidr",
+            "description": "Destination VPC CIDR block",
+            "default": "10.200.0.0/16"
+          },
+          "engine": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Engine",
+            "description": "Optional explicit replication engine (AWS_MGN, GCP_MIGRATE, AZURE_MIGRATE)"
+          }
+        },
+        "type": "object",
+        "title": "ReplicationPlanRequest"
+      },
+      "ResourceNode": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "resource_type": {
+            "type": "string",
+            "title": "Resource Type",
+            "description": "Standard type, e.g. 'compute.instance', 'database.postgres'"
+          },
+          "source_provider": {
+            "type": "string",
+            "title": "Source Provider",
+            "description": "Source cloud or hypervisor provider",
+            "default": "aws"
+          },
+          "properties": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Properties"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "resource_type"
+        ],
+        "title": "ResourceNode",
+        "description": "Normalized infrastructure resource node (e.g. compute, storage, network)."
+      },
+      "SimulationScenarioPayload": {
+        "properties": {
+          "scenario": {
+            "type": "string",
+            "title": "Scenario",
+            "default": "HEALTHY"
+          }
+        },
+        "type": "object",
+        "title": "SimulationScenarioPayload"
+      },
+      "StateMigrationRequest": {
+        "properties": {
+          "hcl_content": {
+            "type": "string",
+            "title": "Hcl Content",
+            "description": "Raw Terraform HCL content"
+          },
+          "target_provider": {
+            "type": "string",
+            "title": "Target Provider",
+            "description": "Target cloud provider, e.g. gcp",
+            "default": "gcp"
+          },
+          "project_id": {
+            "type": "string",
+            "title": "Project Id",
+            "description": "Target cloud project ID",
+            "default": "my-cloud-project"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region",
+            "description": "Target cloud region",
+            "default": "us-central1"
+          },
+          "zone": {
+            "type": "string",
+            "title": "Zone",
+            "description": "Target cloud zone",
+            "default": "us-central1-a"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hcl_content"
+        ],
+        "title": "StateMigrationRequest"
+      },
+      "StateMigrationResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "success"
+          },
+          "source_system": {
+            "type": "string",
+            "title": "Source System"
+          },
+          "target_provider": {
+            "type": "string",
+            "title": "Target Provider"
+          },
+          "total_entities": {
+            "type": "integer",
+            "title": "Total Entities"
+          },
+          "resource_mappings": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Resource Mappings"
+          },
+          "state_mv_commands": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "State Mv Commands"
+          },
+          "import_commands": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Import Commands"
+          },
+          "migration_script": {
+            "type": "string",
+            "title": "Migration Script"
+          },
+          "backup_command": {
+            "type": "string",
+            "title": "Backup Command"
+          },
+          "verification_command": {
+            "type": "string",
+            "title": "Verification Command"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_system",
+          "target_provider",
+          "total_entities",
+          "resource_mappings",
+          "state_mv_commands",
+          "import_commands",
+          "migration_script",
+          "backup_command",
+          "verification_command"
+        ],
+        "title": "StateMigrationResponse"
+      },
+      "TranslatedQueryPreview": {
+        "properties": {
+          "monitor_id": {
+            "type": "string",
+            "title": "Monitor Id"
+          },
+          "monitor_name": {
+            "type": "string",
+            "title": "Monitor Name"
+          },
+          "original_query": {
+            "type": "string",
+            "title": "Original Query"
+          },
+          "translated_promql": {
+            "type": "string",
+            "title": "Translated Promql"
+          },
+          "unmapped_tokens": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unmapped Tokens"
+          },
+          "diagnostics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Diagnostics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "monitor_id",
+          "monitor_name",
+          "original_query",
+          "translated_promql"
+        ],
+        "title": "TranslatedQueryPreview"
+      },
+      "TranslationRequest": {
+        "properties": {
+          "source_vendor": {
+            "type": "string",
+            "title": "Source Vendor",
+            "description": "e.g. 'datadog', 'terraform_hcl'"
+          },
+          "target_platform": {
+            "type": "string",
+            "title": "Target Platform",
+            "description": "e.g. 'grafana', 'prometheus', 'opentofu_gcp'"
+          },
+          "payload": {
+            "title": "Payload",
+            "description": "Source JSON/HCL/YAML payload"
+          },
+          "options": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Options"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_vendor",
+          "target_platform",
+          "payload"
+        ],
+        "title": "TranslationRequest"
+      },
+      "TranslationResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "source_vendor": {
+            "type": "string",
+            "title": "Source Vendor"
+          },
+          "target_platform": {
+            "type": "string",
+            "title": "Target Platform"
+          },
+          "total_monitors": {
+            "type": "integer",
+            "title": "Total Monitors"
+          },
+          "fidelity_score": {
+            "type": "number",
+            "title": "Fidelity Score"
+          },
+          "tokens_scrubbed": {
+            "type": "integer",
+            "title": "Tokens Scrubbed",
+            "default": 0
+          },
+          "unmapped_tokens": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unmapped Tokens"
+          },
+          "diagnostics": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Diagnostics"
+          },
+          "validation_report": {
+            "$ref": "#/components/schemas/ValidationReport"
+          },
+          "query_previews": {
+            "items": {
+              "$ref": "#/components/schemas/TranslatedQueryPreview"
+            },
+            "type": "array",
+            "title": "Query Previews"
+          },
+          "generated_artifact": {
+            "type": "string",
+            "title": "Generated Artifact"
+          },
+          "uit_graph": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UITGraph"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "quota_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quota Status"
+          },
+          "crossover_tip": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crossover Tip"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "source_vendor",
+          "target_platform",
+          "total_monitors",
+          "fidelity_score",
+          "validation_report",
+          "query_previews",
+          "generated_artifact"
+        ],
+        "title": "TranslationResponse"
+      },
+      "UITGraph": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "title": "Schema Version",
+            "default": "1.0.0"
+          },
+          "source_system": {
+            "type": "string",
+            "title": "Source System",
+            "description": "Origin system or vendor"
+          },
+          "monitors": {
+            "items": {
+              "$ref": "#/components/schemas/MonitorNode"
+            },
+            "type": "array",
+            "title": "Monitors"
+          },
+          "resources": {
+            "items": {
+              "$ref": "#/components/schemas/ResourceNode"
+            },
+            "type": "array",
+            "title": "Resources"
+          },
+          "policies": {
+            "items": {
+              "$ref": "#/components/schemas/PolicyNode"
+            },
+            "type": "array",
+            "title": "Policies"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/Edge"
+            },
+            "type": "array",
+            "title": "Edges"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_system"
+        ],
+        "title": "UITGraph",
+        "description": "Universal Infrastructure & Telemetry Intermediate Representation graph."
+      },
+      "VOEIncidentSyncRequest": {
+        "properties": {
+          "node_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Id",
+            "default": "node-dc1-bm-01"
+          },
+          "tier_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tier Id",
+            "default": "tier_1_physical_dc"
+          },
+          "component_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Id",
+            "default": "compute_bare_metal"
+          },
+          "tech_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tech Id",
+            "default": "oracle_db"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority",
+            "default": "P1 - Critical"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category",
+            "default": "Infrastructure Incident / Tier Breach"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "affected_nodes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Affected Nodes",
+            "default": 1
+          },
+          "metric_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric Key",
+            "default": "sga_buffer_cache_hit_ratio"
+          },
+          "metric_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric Value",
+            "default": 88.4
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold",
+            "default": 90.0
+          },
+          "operator_runbook_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operator Runbook Url",
+            "default": "/docs/RUNBOOK-TECHNOLOGY-SPECIFIC-NODE-MONITORING-AND-ALERT-ROUTING.html#oracle_db"
+          },
+          "cli_remediation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cli Remediation",
+            "default": "dcouplr node tech check --node node-dc1-bm-01 --tech oracle_db"
+          }
+        },
+        "type": "object",
+        "title": "VOEIncidentSyncRequest"
+      },
+      "VPCRegistrationRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "VPC resource name (e.g. production_vpc, pci_dss_mesh)"
+          },
+          "cloud": {
+            "type": "string",
+            "title": "Cloud",
+            "description": "Cloud provider: AWS, GCP, Azure, or OnPrem",
+            "default": "AWS"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region",
+            "description": "Cloud region",
+            "default": "us-east-1"
+          },
+          "cidr_block": {
+            "type": "string",
+            "title": "Cidr Block",
+            "description": "VPC CIDR IPv4 block",
+            "default": "10.150.0.0/16"
+          },
+          "subnets": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subnets",
+            "description": "Subnet configurations"
+          },
+          "peering": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Peering",
+            "description": "Cross-VPC peerings"
+          },
+          "target_equivalent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Equivalent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "VPCRegistrationRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "ValidationIssue": {
+        "properties": {
+          "level": {
+            "type": "string",
+            "title": "Level",
+            "description": "'error', 'warning', or 'info'"
+          },
+          "entity_id": {
+            "type": "string",
+            "title": "Entity Id"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "entity_id",
+          "message"
+        ],
+        "title": "ValidationIssue"
+      },
+      "ValidationReport": {
+        "properties": {
+          "is_valid": {
+            "type": "boolean",
+            "title": "Is Valid"
+          },
+          "fidelity_score": {
+            "type": "number",
+            "title": "Fidelity Score",
+            "description": "Estimated translation fidelity percentage (0 - 100)"
+          },
+          "total_entities": {
+            "type": "integer",
+            "title": "Total Entities"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationIssue"
+            },
+            "type": "array",
+            "title": "Issues"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "is_valid",
+          "fidelity_score",
+          "total_entities",
+          "summary"
+        ],
+        "title": "ValidationReport"
+      }
+    },
+    "securitySchemes": {
+      "APIKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      },
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Core Transpilation",
+      "description": "Zero-Egress AST Transpiler & Bi-Directional IaC Synthesis Engine (Public & Developer API)"
+    },
+    {
+      "name": "Migration Recipes",
+      "description": "Turnkey Enterprise Observability & Multi-Cloud Migration Pipelines"
+    },
+    {
+      "name": "Telemetry & Topology",
+      "description": "In-VPC Telemetry Mesh, Multi-VPC Topologies, and FinOps Footprint Analysis"
+    },
+    {
+      "name": "System Health",
+      "description": "Liveness Probes, Air-Gap Diagnostics, and Preflight Configuration Linters"
+    }
+  ]
+}

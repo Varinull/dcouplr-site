@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; &bull; In-VPC High-Throughput Log Search (<dcouplr/> Full-Stack Suite)</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <style>
+
+/* ==========================================================================
+   <dcouplr/> Canonical Brand, Logo & Wordmark System (VA-BRAND-001)
+   ========================================================================== */
+
+.dcouplr-logo {
+  display: inline-flex;
+  align-items: center;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0;
+  margin: 0;
+  user-select: none;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.dcouplr-logo .dcouplr-bracket,
+.dcouplr-bracket,
+.dcouplr-logo .tag-bracket {
+  color: #39ff14 !important; /* Electric Neon-Lime Green */
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace !important;
+  font-weight: 800 !important;
+  font-size: 1.55rem;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+  letter-spacing: -1px;
+  display: inline-block;
+}
+
+.dcouplr-logo .dcouplr-text,
+.dcouplr-text,
+.dcouplr-logo .tag-name {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 1.4rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin: 0 1.5px;
+  color: #ffffff !important;
+  text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+  display: inline-block;
+  transition: color 0.15s ease;
+}
+
+.dcouplr-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  user-select: none;
+  line-height: inherit;
+  text-decoration: none;
+  font-family: inherit;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+
+.dcouplr-wordmark .dcouplr-bracket,
+.dcouplr-wordmark .tag-bracket {
+  color: #39ff14 !important;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace !important;
+  font-weight: 800 !important;
+  font-size: 1.05em;
+  line-height: inherit;
+  text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+  letter-spacing: -1px;
+}
+
+.dcouplr-wordmark .dcouplr-text,
+.dcouplr-wordmark .tag-name {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 1em;
+  line-height: inherit;
+  letter-spacing: -0.04em;
+  margin: 0 1.5px;
+  color: #ffffff !important;
+  text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+}
+
+.dcouplr-brand-tag {
+  display: inline-flex;
+  align-items: baseline;
+  font-size: 0.9em;
+  background: rgba(57, 255, 20, 0.08);
+  border: 1px solid rgba(57, 255, 20, 0.25);
+  border-radius: 4px;
+  padding: 0.08em 0.42em;
+  margin: 0 0.15em;
+  vertical-align: baseline;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.dcouplr-brand-tag .tag-bracket,
+.dcouplr-brand-tag .dcouplr-bracket {
+  color: #39ff14 !important;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace !important;
+  font-weight: 800 !important;
+  font-size: 1.05em;
+  text-shadow: 0 0 6px rgba(57, 255, 20, 0.4);
+  letter-spacing: -0.5px;
+}
+
+.dcouplr-brand-tag .tag-name,
+.dcouplr-brand-tag .dcouplr-text {
+  color: #ffffff !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 0.98em;
+  letter-spacing: -0.04em;
+  margin: 0 1.5px;
+}
+
+@media print, (prefers-color-scheme: light) {
+  .dcouplr-logo .dcouplr-bracket,
+  .dcouplr-wordmark .dcouplr-bracket,
+  .dcouplr-brand-tag .tag-bracket {
+    color: #16a34a !important;
+    text-shadow: none !important;
+  }
+  .dcouplr-logo .dcouplr-text,
+  .dcouplr-wordmark .dcouplr-text,
+  .dcouplr-brand-tag .tag-name,
+  .dcouplr-brand-tag .dcouplr-text {
+    color: #000000 !important;
+    text-shadow: none !important;
+  }
+}
+
+    :root {
+      --bg: #060911;
+      --card-bg: #0b1120;
+      --card-border: #1e293b;
+      --text: #f8fafc;
+      --text-dim: #94a3b8;
+      --accent: #39ff14;
+      --cyan: #38bdf8;
+      --purple: #a855f7;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      contain: layout style;
+    }
+    header {
+      background: #0b1120;
+      border-bottom: 1px solid var(--card-border);
+      padding: 0.85rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transform: translateZ(0);
+    }
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .brand {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .brand span { color: #ffffff; }
+    .edition-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--purple);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+    nav.nav-links {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .nav-link {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: color 0.15s ease, background 0.15s ease;
+    }
+    .nav-link:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+    .nav-link.active {
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .status-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: rgba(57, 255, 20, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(57, 255, 20, 0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    main {
+      flex: 1;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+      width: 100%;
+    }
+    .control-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .filters-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .filter-group label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+    input, select {
+      background: #070a12;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #fff;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-family: var(--font-sans);
+      outline: none;
+    }
+    input:focus, select:focus {
+      border-color: var(--cyan);
+    }
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-sans);
+    }
+    .btn-primary { background: var(--cyan); color: #000; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-demo { background: rgba(57, 255, 20, 0.15); color: var(--accent); border: 1px solid rgba(57, 255, 20, 0.35); }
+    .btn-demo:hover { background: rgba(57, 255, 20, 0.25); }
+    .btn-secondary { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); }
+    
+    .tab-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .tab-btn.active {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      font-weight: 700;
+    }
+    .table-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+      text-align: left;
+    }
+    thead tr {
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--card-border);
+    }
+    th {
+      padding: 10px 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-family: var(--font-mono);
+    }
+    tbody tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-family: var(--font-mono);
+    }
+    tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
+    td {
+      padding: 9px 14px;
+      color: #cbd5e1;
+    }
+    .sev-pill {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      display: inline-block;
+      text-align: center;
+      min-width: 55px;
+    }
+    .sev-info { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    .sev-warn { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .sev-error { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+    .sev-crit { background: rgba(168, 85, 247, 0.2); color: #c084fc; font-weight: 800; }
+    .timestamp {
+      color: var(--text-dim);
+      font-size: 0.76rem;
+      white-space: nowrap;
+    }
+    .service-tag {
+      color: #fff;
+      font-weight: 600;
+    }
+    .log-body {
+      color: #e2e8f0;
+      word-break: break-all;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 3.5rem 1rem;
+      color: var(--text-dim);
+    }
+    .empty-state h3 { font-size: 1.1rem; color: #fff; margin-bottom: 0.5rem; }
+
+    /* Pattern Card */
+    .pattern-card {
+      background: rgba(17, 24, 39, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 1.1rem;
+      margin-bottom: 0.85rem;
+    }
+    .pattern-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .pattern-count {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 800;
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .pattern-template {
+      font-family: var(--font-mono);
+      color: #fff;
+      font-size: 0.86rem;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 6px 10px;
+      border-radius: 4px;
+      border-left: 3px solid var(--purple);
+    }
+    .pattern-sample {
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+      font-size: 0.76rem;
+      margin-top: 0.4rem;
+    }
+    .meta-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-top: 1px solid var(--card-border);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand-area">
+      <a href="/dashboard" class="brand" aria-label="Return to Dashboard">
+        <div class="dcouplr-logo" title="<dcouplr/>">
+          <span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span>
+        </div>
+      </a>
+      <span class="edition-badge">FULL-STACK SUITE: HIGH-THROUGHPUT LOGS</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/compiler" class="nav-link" id="nav-compiler">⚡ Compiler Studio</a>
+      <a href="/matrix" class="nav-link" id="nav-matrix" style="color: #39ff14; font-weight: 700;">🛡️ 7-Tier Live Hub</a>
+      <a href="/dashboard" class="nav-link" id="nav-dashboard">📊 Dashboard</a>
+      <a href="/configuration" class="nav-link" id="nav-configuration" style="color: #38bdf8;">⚙️ Configuration</a>
+      <a href="/wallboard" class="nav-link" id="nav-wallboard" title="Outside-VPC Hubs">📺 Outside VPC Hubs</a>
+      <a href="/traces" class="nav-link" id="nav-traces">⚡ APM Traces</a>
+      <a href="/logs" class="nav-link active" id="nav-logs">📜 Logs</a>
+      <a href="/docs" class="nav-link" id="nav-docs">📑 Docs</a>
+    </nav>
+    <div class="header-status">
+      <a href="/matrix" id="logs-matrix-status-chip" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; font-family: var(--font-mono, monospace); font-size: 0.72rem; font-weight: 700; border: 1px solid rgba(57, 255, 20, 0.4); background: rgba(57, 255, 20, 0.12); color: #86efac;" title="View Live 7-Tier Monitoring Matrix Hub">
+        <span class="pulse-dot" id="logs-matrix-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #39ff14; box-shadow: 0 0 8px #39ff14;"></span>
+        <span id="logs-matrix-status-text">7-TIER MATRIX: 100% HEALTHY</span>
+      </a>
+      <div class="status-pill">
+        <span class="pulse-dot"></span>
+        <span>VictoriaLogs In-VPC Ring Buffer ($0 Egress)</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Unified 7-Tier Cluster Simulation & Incident Banner -->
+    <div id="logs-incident-banner" style="display: none; margin-bottom: 1.25rem; padding: 12px 18px; border-radius: 8px; font-family: var(--font-mono, monospace); font-size: 0.82rem; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+      <div id="logs-incident-text" style="display: flex; align-items: center; gap: 10px; font-weight: 700; flex-wrap: wrap;"></div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button type="button" id="btn-logs-filter-incident" class="btn btn-primary" style="padding: 5px 12px; font-size: 0.74rem;">
+          🔍 Filter Incident Node Logs
+        </button>
+        <a href="/matrix" target="_blank" class="btn btn-secondary" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 5px 12px; border-radius: 5px; text-decoration: none; font-size: 0.74rem; font-weight: 700;">
+          🛡️ View in 7-Tier Matrix ↗
+        </a>
+        <button type="button" id="btn-logs-reset-sim" class="btn btn-secondary" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #cbd5e1; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.74rem;">
+          Reset to Nominal (Healthy)
+        </button>
+      </div>
+    </div>
+    <div class="control-card">
+      <div class="filters-row">
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
+          <div class="filter-group">
+            <label for="filter-vpc">VPC Topology:</label>
+            <select id="filter-vpc" style="min-width: 175px;">
+              <option value="">All Monitored VPCs (4 Networks)</option>
+              <option value="vpc-aws-prod-01">vpc-aws-prod-01 (AWS Prod)</option>
+              <option value="vpc-aws-stage-02">vpc-aws-stage-02 (AWS Stage)</option>
+              <option value="vpc-gcp-analytics-03">vpc-gcp-analytics-03 (GCP Analytics)</option>
+              <option value="dc-onprem-core-01">dc-onprem-core-01 (Chicago DC1)</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-node">Target Node:</label>
+            <select id="filter-node" style="min-width: 200px;">
+              <option value="">All 71 Monitored Nodes</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-query">Query / Regex:</label>
+            <input type="text" id="filter-query" placeholder="e.g. error|exception|timeout" style="width: 200px;">
+          </div>
+          <div class="filter-group">
+            <label for="filter-service">Service:</label>
+            <input type="text" id="filter-service" placeholder="e.g. order-worker" style="width: 150px;">
+          </div>
+          <div class="filter-group">
+            <label for="filter-severity">Severity:</label>
+            <select id="filter-severity">
+              <option value="">All Severities</option>
+              <option value="INFO">INFO</option>
+              <option value="WARN">WARN</option>
+              <option value="ERROR">ERROR</option>
+              <option value="CRITICAL">CRITICAL</option>
+            </select>
+          </div>
+          <button id="btn-search" class="btn btn-primary">Search Logs</button>
+        </div>
+        <div style="display: flex; gap: 0.6rem; align-items: center;">
+          <a href="/docs/runbooks/RUNBOOK-IN-VPC-LOGS-AND-TRACES-OBSERVABILITY.html" target="_blank" class="btn btn-secondary" style="text-decoration: none;">
+            📖 Architecture Runbook ↗
+          </a>
+          <button id="btn-demo-logs" class="btn btn-demo" title="Inject simulated high-volume log burst into in-memory ring buffer">
+            <span>⚡ Inject Demo Log Burst</span>
+          </button>
+          <button id="btn-refresh" class="btn btn-secondary">Refresh</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <button id="tab-stream-btn" class="tab-btn active">Live Log Stream</button>
+      <button id="tab-patterns-btn" class="tab-btn">Pattern Clusters (Anomaly Discovery)</button>
+    </div>
+
+    <!-- View 1: Stream Table -->
+    <div id="view-stream" class="table-card">
+      <table id="logs-table">
+        <thead>
+          <tr>
+            <th style="width: 160px;">Timestamp</th>
+            <th style="width: 75px;">Severity</th>
+            <th style="width: 140px;">VPC Context</th>
+            <th style="width: 170px;">Target Node / IP</th>
+            <th style="width: 140px;">Service</th>
+            <th>Log Message Body</th>
+          </tr>
+        </thead>
+        <tbody id="logs-body">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+      <div id="empty-state" class="empty-state" style="display: none;">
+        <h3>No log entries matched your filter</h3>
+        <p>Logs ingested via <code>POST /v1/logs</code> or <code>:9428/insert/jsonline</code> appear here in real-time.</p>
+        <button id="btn-empty-demo" class="btn btn-demo" style="margin-top: 1rem;">Inject Sample Log Stream</button>
+      </div>
+      <div class="meta-bar">
+        <span id="log-count-indicator">Loaded: 0 logs in volatile RAM</span>
+        <span>Zero Egress &bull; In-VPC Ring Buffer</span>
+      </div>
+    </div>
+
+    <!-- View 2: Pattern Clustering -->
+    <div id="view-patterns" style="display: none;">
+      <div id="patterns-container">
+        <!-- Rendered pattern clusters -->
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentTab = 'stream';
+    let activeAbortController = null;
+
+    async function fetchLogs() {
+      if (activeAbortController) {
+        activeAbortController.abort();
+      }
+      activeAbortController = new AbortController();
+
+      const q = document.getElementById('filter-query').value.trim();
+      const service = document.getElementById('filter-service').value.trim();
+      const severity = document.getElementById('filter-severity').value;
+      const vpc = document.getElementById('filter-vpc') ? document.getElementById('filter-vpc').value : '';
+      const node = document.getElementById('filter-node') ? document.getElementById('filter-node').value : '';
+
+      const params = new URLSearchParams();
+      if (q) params.set('query', q);
+      if (service) params.set('service_name', service);
+      if (severity) params.set('severity', severity);
+      if (vpc) params.set('vpc_id', vpc);
+      if (node) params.set('node_id', node);
+      params.set('limit', '50');
+
+      try {
+        const res = await fetch(`/v1/logs?${params.toString()}`, {
+          signal: activeAbortController.signal,
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        renderLogsTable(data.logs || []);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('Failed to fetch logs:', err);
+        }
+      }
+    }
+
+    function renderLogsTable(logs) {
+      const tbody = document.getElementById('logs-body');
+      const emptyState = document.getElementById('empty-state');
+      const counter = document.getElementById('log-count-indicator');
+      tbody.innerHTML = '';
+
+      if (!logs || logs.length === 0) {
+        emptyState.style.display = 'block';
+        counter.textContent = 'Loaded: 0 logs in volatile RAM';
+        return;
+      }
+      emptyState.style.display = 'none';
+      counter.textContent = `Showing ${logs.length} most recent log lines in volatile RAM`;
+
+      const fragment = document.createDocumentFragment();
+      logs.forEach(l => {
+        const tr = document.createElement('tr');
+        const rawSev = l.severity_text || l.severity || 'INFO';
+        const sevClass = getSeverityClass(rawSev);
+        const ts = l.time_iso || l.timestamp || '';
+        const service = l.service_name || 'unknown-service';
+        const bodyText = l.body || '';
+
+        const vpcId = l.vpc_id || 'vpc-aws-prod-01';
+        const nodeId = l.node_id || 'node-vpc-app-01';
+        const nodeIp = l.node_ip || '10.100.1.50';
+        const vpcColor = vpcId === 'dc-onprem-core-01' ? '#86efac' : vpcId === 'vpc-gcp-analytics-03' ? '#fcd34d' : '#7dd3fc';
+
+        tr.innerHTML = `
+          <td class="timestamp">${escapeHtml(ts)}</td>
+          <td><span class="sev-pill ${sevClass}">${escapeHtml(rawSev.toUpperCase())}</span></td>
+          <td><span class="net-pill" style="font-size: 0.68rem; color: ${vpcColor}; border-color: rgba(255,255,255,0.15);">${escapeHtml(vpcId)}</span></td>
+          <td>
+            <div style="font-size: 0.74rem; font-family: var(--font-mono); color: #cbd5e1; font-weight: 600;">${escapeHtml(nodeId)}</div>
+            <div style="font-size: 0.68rem; color: #94a3b8; font-family: var(--font-mono);">${escapeHtml(nodeIp)}</div>
+          </td>
+          <td class="service-tag">${escapeHtml(service)}</td>
+          <td class="log-body">${escapeHtml(bodyText)}</td>
+        `;
+        fragment.appendChild(tr);
+      });
+      tbody.appendChild(fragment);
+    }
+
+    function getSeverityClass(sev) {
+      const s = (sev || '').toUpperCase();
+      if (s === 'CRITICAL' || s === 'FATAL') return 'sev-crit';
+      if (s === 'ERROR' || s === 'ERR') return 'sev-error';
+      if (s === 'WARN' || s === 'WARNING') return 'sev-warn';
+      return 'sev-info';
+    }
+
+    async function fetchPatterns() {
+      if (activeAbortController) {
+        activeAbortController.abort();
+      }
+      activeAbortController = new AbortController();
+
+      const container = document.getElementById('patterns-container');
+      container.innerHTML = '<div style="color: var(--text-dim); padding: 2rem; text-align: center;">Analyzing log recurrence clusters in memory...</div>';
+
+      try {
+        const res = await fetch('/v1/logs/patterns', {
+          signal: activeAbortController.signal,
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        renderPatterns(data.patterns || []);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          container.innerHTML = `<div style="color: var(--red); padding: 2rem;">Failed to cluster patterns: ${err.message}</div>`;
+        }
+      }
+    }
+
+    function renderPatterns(patterns) {
+      const container = document.getElementById('patterns-container');
+      container.innerHTML = '';
+
+      if (!patterns || patterns.length === 0) {
+        container.innerHTML = '<div class="empty-state"><h3>No recurring error patterns detected</h3><p>Inject logs with repeated error messages to observe real-time regex template clustering.</p></div>';
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      patterns.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'pattern-card';
+        const templateStr = p.pattern_template || p.pattern || 'Unknown template';
+        const sampleStr = p.sample || templateStr;
+        card.innerHTML = `
+          <div class="pattern-card-header">
+            <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Template Fingerprint</span>
+            <span class="pattern-count">${p.count} Occurrences</span>
+          </div>
+          <div class="pattern-template">${escapeHtml(templateStr)}</div>
+          <div class="pattern-sample"><strong>Raw Example:</strong> ${escapeHtml(sampleStr)}</div>
+        `;
+        fragment.appendChild(card);
+      });
+      container.appendChild(fragment);
+    }
+
+    async function injectDemoLogs() {
+      const now = new Date().toISOString();
+      const demoLogs = [
+        {
+          timestamp: now,
+          service_name: 'payment-service',
+          severity: 'INFO',
+          body: 'Started processing batch reconciliation for customer 10842'
+        },
+        {
+          timestamp: now,
+          service_name: 'database-proxy',
+          severity: 'WARN',
+          body: 'PostgreSQL connection pool utilization reached 84% on master node'
+        },
+        {
+          timestamp: now,
+          service_name: 'auth-service',
+          severity: 'ERROR',
+          body: 'Token validation timeout: upstream LDAP endpoint unverified within 1500ms'
+        },
+        {
+          timestamp: now,
+          service_name: 'auth-service',
+          severity: 'ERROR',
+          body: 'Token validation timeout: upstream LDAP endpoint unverified within 1500ms'
+        },
+        {
+          timestamp: now,
+          service_name: 'core-worker-01',
+          severity: 'CRITICAL',
+          body: 'OutOfMemoryError: JVM heap exhausted while processing payload chunk 9182'
+        }
+      ];
+
+      const otlpPayload = {
+        resourceLogs: [
+          {
+            resource: { attributes: [{ key: 'service.name', value: { stringValue: 'in-vpc-cluster' } }] },
+            scopeLogs: [{
+              logRecords: demoLogs.map(l => ({
+                timeUnixNano: Date.now() * 1e6,
+                severityText: l.severity,
+                body: { stringValue: l.body },
+                attributes: [{ key: 'service.name', value: { stringValue: l.service_name } }]
+              }))
+            }]
+          }
+        ]
+      };
+
+      try {
+        const res = await fetch('/v1/logs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(otlpPayload)
+        });
+        if (res.ok) {
+          if (currentTab === 'stream') await fetchLogs();
+          else await fetchPatterns();
+        }
+      } catch (err) {
+        console.error('Failed to inject demo logs:', err);
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+    }
+
+    // Tabs
+    const tabStreamBtn = document.getElementById('tab-stream-btn');
+    const tabPatternsBtn = document.getElementById('tab-patterns-btn');
+    const viewStream = document.getElementById('view-stream');
+    const viewPatterns = document.getElementById('view-patterns');
+
+    tabStreamBtn.addEventListener('click', () => {
+      currentTab = 'stream';
+      tabStreamBtn.classList.add('active');
+      tabPatternsBtn.classList.remove('active');
+      viewStream.style.display = 'block';
+      viewPatterns.style.display = 'none';
+      fetchLogs();
+    });
+
+    tabPatternsBtn.addEventListener('click', () => {
+      currentTab = 'patterns';
+      tabPatternsBtn.classList.add('active');
+      tabStreamBtn.classList.remove('active');
+      viewStream.style.display = 'none';
+      viewPatterns.style.display = 'block';
+      fetchPatterns();
+    });
+
+    document.getElementById('btn-search').addEventListener('click', fetchLogs);
+    document.getElementById('btn-refresh').addEventListener('click', () => {
+      if (currentTab === 'stream') fetchLogs();
+      else fetchPatterns();
+    });
+    document.getElementById('btn-demo-logs').addEventListener('click', injectDemoLogs);
+    document.getElementById('btn-empty-demo').addEventListener('click', injectDemoLogs);
+
+    // Initial load
+    fetchLogs();
+  </script>
+
+    // Node Census Loader & Multi-VPC Simulation Synchronizer
+    let allCensusNodes = [];
+
+    async function loadCensusNodes() {
+      try {
+        const res = await fetch('/v1/vpc-database/nodes');
+        if (res.ok) {
+          const data = await res.json();
+          allCensusNodes = data.nodes || [];
+          populateNodeDropdown();
+        }
+      } catch (e) {}
+    }
+
+    function populateNodeDropdown() {
+      const vpcSelect = document.getElementById('filter-vpc');
+      const nodeSelect = document.getElementById('filter-node');
+      if (!nodeSelect) return;
+
+      const selectedVpc = vpcSelect ? vpcSelect.value : '';
+      nodeSelect.innerHTML = '<option value="">All 71 Monitored Nodes</option>';
+
+      const filtered = selectedVpc ? allCensusNodes.filter(n => n.network_id === selectedVpc) : allCensusNodes;
+      filtered.forEach(n => {
+        const opt = document.createElement('option');
+        opt.value = n.node_id;
+        opt.textContent = `${n.node_id} (${n.ip} • ${n.role ? n.role.substring(0, 30) : ''})`;
+        nodeSelect.appendChild(opt);
+      });
+    }
+
+    const vpcFilterEl = document.getElementById('filter-vpc');
+    if (vpcFilterEl) {
+      vpcFilterEl.addEventListener('change', () => {
+        populateNodeDropdown();
+        fetchLogs();
+      });
+    }
+    const nodeFilterEl = document.getElementById('filter-node');
+    if (nodeFilterEl) {
+      nodeFilterEl.addEventListener('change', fetchLogs);
+    }
+
+    // Unified Cluster Simulation Synchronizer for Logs
+    (function initLogsSimSync() {
+      const banner = document.getElementById('logs-incident-banner');
+      const textEl = document.getElementById('logs-incident-text');
+      const resetBtn = document.getElementById('btn-logs-reset-sim');
+      const filterIncBtn = document.getElementById('btn-logs-filter-incident');
+      const chip = document.getElementById('logs-matrix-status-chip');
+      const chipText = document.getElementById('logs-matrix-status-text');
+      const chipDot = document.getElementById('logs-matrix-dot');
+
+      let currentScenario = 'HEALTHY';
+
+      async function syncSim() {
+        let scenario = 'HEALTHY';
+        try {
+          const res = await fetch('/v1/telemetry/simulation');
+          if (res.ok) {
+            const data = await res.json();
+            scenario = data.scenario || 'HEALTHY';
+          }
+        } catch (e) {
+          scenario = localStorage.getItem('dcouplr_active_scenario') || 'HEALTHY';
+        }
+
+        if (scenario === currentScenario) return;
+        currentScenario = scenario;
+
+        if (scenario === 'P1_CRITICAL') {
+          if (banner) {
+            banner.style.display = 'flex';
+            banner.style.border = '2px solid #ef4444';
+            banner.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(15, 23, 42, 0.98) 100%)';
+            banner.style.boxShadow = '0 0 25px rgba(239, 68, 68, 0.5)';
+          }
+          if (textEl) {
+            textEl.innerHTML = `
+              <span style="background: #ef4444; color: #fff; padding: 2px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 800;">🚨 P1 CRITICAL BREACH</span>
+              <span style="color: #fff;">PostgreSQL Deadlock on Target Node: <code style="color: #67e8f9; font-weight: 700;">node-vpc-db-01 (10.100.20.44)</code> in <strong style="color: #fca5a5;">AWS Production VPC</strong> &bull; Correlated error logs streaming</span>
+            `;
+          }
+          if (chipText) chipText.textContent = '7-TIER MATRIX: 🚨 P1 CRITICAL';
+          if (chipDot) { chipDot.style.background = '#ef4444'; chipDot.style.boxShadow = '0 0 8px #ef4444'; }
+          if (chip) { chip.style.borderColor = '#ef4444'; chip.style.background = 'rgba(239, 68, 68, 0.2)'; chip.style.color = '#fca5a5'; }
+          fetchLogs();
+        } else if (scenario === 'P2_WARNING') {
+          if (banner) {
+            banner.style.display = 'flex';
+            banner.style.border = '2px solid #f59e0b';
+            banner.style.background = 'linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(15, 23, 42, 0.98) 100%)';
+            banner.style.boxShadow = '0 0 25px rgba(245, 158, 11, 0.5)';
+          }
+          if (textEl) {
+            textEl.innerHTML = `
+              <span style="background: #f59e0b; color: #000; padding: 2px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 800;">⚠️ P2 WARNING DETECTED</span>
+              <span style="color: #fff;">ASIC Buffer Drops on: <code style="color: #67e8f9; font-weight: 700;">node-dc1-bm-08 (172.16.1.18)</code> in <strong style="color: #fde047;">Legacy Datacenter Chicago (DC1)</strong> &bull; Correlated buffer logs streaming</span>
+            `;
+          }
+          if (chipText) chipText.textContent = '7-TIER MATRIX: ⚠️ P2 WARNING';
+          if (chipDot) { chipDot.style.background = '#f59e0b'; chipDot.style.boxShadow = '0 0 8px #f59e0b'; }
+          if (chip) { chip.style.borderColor = '#f59e0b'; chip.style.background = 'rgba(245, 158, 11, 0.2)'; chip.style.color = '#fde047'; }
+          fetchLogs();
+        } else if (scenario === 'DUAL_CASCADE') {
+          if (banner) {
+            banner.style.display = 'flex';
+            banner.style.border = '2px solid #ef4444';
+            banner.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(15, 23, 42, 0.98) 100%)';
+            banner.style.boxShadow = '0 0 25px rgba(239, 68, 68, 0.5)';
+          }
+          if (textEl) {
+            textEl.innerHTML = `
+              <span style="background: #ef4444; color: #fff; padding: 2px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 800;">🚨 MULTI-INCIDENT CASCADE (P1+P2)</span>
+              <span style="color: #fff;">Simultaneous Breaches on <code style="color: #67e8f9; font-weight: 700;">node-vpc-db-01 (10.100.20.44)</code> &amp; <code style="color: #67e8f9; font-weight: 700;">node-dc1-bm-08 (172.16.1.18)</code></span>
+            `;
+          }
+          if (chipText) chipText.textContent = '7-TIER MATRIX: 🚨 DUAL CASCADE';
+          if (chipDot) { chipDot.style.background = '#ef4444'; chipDot.style.boxShadow = '0 0 8px #ef4444'; }
+          if (chip) { chip.style.borderColor = '#ef4444'; chip.style.background = 'rgba(239, 68, 68, 0.2)'; chip.style.color = '#fca5a5'; }
+          fetchLogs();
+        } else {
+          if (banner) banner.style.display = 'none';
+          if (chipText) chipText.textContent = '7-TIER MATRIX: 100% HEALTHY';
+          if (chipDot) { chipDot.style.background = '#39ff14'; chipDot.style.boxShadow = '0 0 8px #39ff14'; }
+          if (chip) { chip.style.borderColor = 'rgba(57, 255, 20, 0.4)'; chip.style.background = 'rgba(57, 255, 20, 0.12)'; chip.style.color = '#86efac'; }
+          fetchLogs();
+        }
+      }
+
+      if (filterIncBtn) {
+        filterIncBtn.addEventListener('click', () => {
+          if (currentScenario === 'P1_CRITICAL' || currentScenario === 'DUAL_CASCADE') {
+            if (vpcFilterEl) vpcFilterEl.value = 'vpc-aws-prod-01';
+            populateNodeDropdown();
+            if (nodeFilterEl) nodeFilterEl.value = 'node-vpc-db-01';
+          } else if (currentScenario === 'P2_WARNING') {
+            if (vpcFilterEl) vpcFilterEl.value = 'dc-onprem-core-01';
+            populateNodeDropdown();
+            if (nodeFilterEl) nodeFilterEl.value = 'node-dc1-bm-08';
+          }
+          fetchLogs();
+        });
+      }
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', async () => {
+          localStorage.setItem('dcouplr_active_scenario', 'HEALTHY');
+          try {
+            await fetch('/v1/telemetry/simulation', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ scenario: 'HEALTHY' })
+            });
+          } catch (e) {}
+          syncSim();
+        });
+      }
+
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'dcouplr_active_scenario') syncSim();
+      });
+
+      loadCensusNodes();
+      syncSim();
+      setInterval(syncSim, 2500);
+    })();
+
+</body>
+</html>

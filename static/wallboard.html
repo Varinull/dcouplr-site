@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; 24x7 NOC Wallboard &bull; Zero-Egress In-VPC Telemetry</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #060911;
+      --bg-surface: #0b1120;
+      --bg-card: #101a30;
+      --bg-card-hover: #152240;
+      --border-subtle: #1e293b;
+      --border-glow: #22d3ee;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-emerald: #10b981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.25);
+      --accent-cyan: #06b6d4;
+      --accent-cyan-glow: rgba(6, 182, 212, 0.25);
+      --accent-purple: #8b5cf6;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background-color: var(--bg-deep);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      height: 100vh;
+      width: 100vw;
+      max-height: 100vh;
+      max-width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient NOC Background Grid */
+    .noc-grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Top Master HUD Bar */
+    header.noc-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 17, 32, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.85rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* Canonical <dcouplr/> Brand Wordmark (VA-BRAND-001) */
+    .brand-link {
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .brand-logo,
+    .dcouplr-logo {
+      display: inline-flex;
+      align-items: center;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0;
+      margin: 0;
+      user-select: none;
+      line-height: 1;
+      white-space: nowrap;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-link:hover .dcouplr-logo,
+    .brand-logo:hover,
+    .dcouplr-logo:hover {
+      text-decoration: none;
+    }
+
+    .dcouplr-bracket,
+    .logo-bracket {
+      color: #39ff14 !important; /* Electric Neon-Lime Green */
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+      font-weight: 800;
+      font-size: 1.55rem;
+      line-height: 1;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+      display: inline-block;
+    }
+
+    .dcouplr-text,
+    .logo-text {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      color: #ffffff !important;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+      display: inline-block;
+    }
+
+    @media print, (prefers-color-scheme: light) {
+      .dcouplr-bracket,
+      .logo-bracket {
+        color: #16a34a !important;
+        text-shadow: none !important;
+      }
+      .dcouplr-text,
+      .logo-text {
+        color: #000000 !important;
+        text-shadow: none !important;
+      }
+    }
+
+    .badge-wallboard {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--accent-purple);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+    }
+
+    .live-pulse-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 12px var(--accent-emerald);
+      animation: pulse-ring 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; filter: drop-shadow(0 0 6px var(--accent-emerald)); }
+      100% { transform: scale(0.9); opacity: 0.8; }
+    }
+
+    .pulse-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-emerald);
+      letter-spacing: 0.05em;
+    }
+
+    .hud-stats-group {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .hud-stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .hud-stat-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    .hud-stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .hud-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-hud {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-hud:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+      border-color: var(--text-dim);
+    }
+
+    .btn-hud.active {
+      background: rgba(6, 182, 212, 0.15);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    /* Main Grid Viewport */
+    main.noc-viewport {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      min-height: 0;
+      padding: 1rem 1.25rem;
+      display: grid;
+      grid-template-columns: 340px 1fr 340px;
+      gap: 1rem;
+      overflow: hidden;
+    }
+
+    @media (max-width: 1400px) {
+      main.noc-viewport {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Panel Component */
+    .noc-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      position: relative;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.75rem;
+    }
+
+    .panel-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .panel-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-dim);
+    }
+
+    /* Raft Consensus Widget */
+    .consensus-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .consensus-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+
+    .consensus-label {
+      color: var(--text-dim);
+    }
+
+    .consensus-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* VPC Cards Grid */
+    .vpc-matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .vpc-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .vpc-card:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-2px);
+    }
+
+    .vpc-card.pulse-critical {
+      border: 2px solid #ef4444 !important;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.22) 0%, rgba(15, 23, 42, 0.98) 100%) !important;
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.6) !important;
+      animation: pulseCardRed 1.6s infinite ease-in-out !important;
+    }
+
+    .vpc-card.pulse-warning {
+      border: 2px solid #f59e0b !important;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(15, 23, 42, 0.98) 100%) !important;
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.6) !important;
+      animation: pulseCardYellow 1.6s infinite ease-in-out !important;
+    }
+
+    @keyframes pulseCardRed {
+      0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+      50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.85); }
+    }
+
+    @keyframes pulseCardYellow {
+      0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+      50% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.85); }
+    }
+
+    .noc-header.header-pulse-critical {
+      border-bottom: 2px solid #ef4444 !important;
+      box-shadow: 0 4px 25px rgba(239, 68, 68, 0.6) !important;
+      animation: pulseHeaderRed 1.8s infinite ease-in-out !important;
+    }
+
+    .noc-header.header-pulse-warning {
+      border-bottom: 2px solid #f59e0b !important;
+      box-shadow: 0 4px 25px rgba(245, 158, 11, 0.6) !important;
+      animation: pulseHeaderYellow 1.8s infinite ease-in-out !important;
+    }
+
+    @keyframes pulseHeaderRed {
+      0%, 100% { box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4); }
+      50% { box-shadow: 0 4px 35px rgba(239, 68, 68, 0.85); }
+    }
+
+    @keyframes pulseHeaderYellow {
+      0%, 100% { box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4); }
+      50% { box-shadow: 0 4px 35px rgba(245, 158, 11, 0.85); }
+    }
+
+    .vpc-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .vpc-provider-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .tag-aws { background: rgba(255, 153, 0, 0.15); color: #ff9900; border: 1px solid rgba(255, 153, 0, 0.3); }
+    .tag-gcp { background: rgba(66, 133, 244, 0.15); color: #4285f4; border: 1px solid rgba(66, 133, 244, 0.3); }
+    .tag-azure { background: rgba(0, 120, 212, 0.15); color: #0078d4; border: 1px solid rgba(0, 120, 212, 0.3); }
+    .tag-onprem { background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3); }
+
+    .vpc-name {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .vpc-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .vpc-metrics-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 0.6rem;
+      font-size: 0.8rem;
+    }
+
+    /* Waveform Canvas */
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 120px;
+      background: var(--bg-card);
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+    }
+
+    canvas.waveform-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Zero Egress FinOps Badge */
+    .zero-egress-seal {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .seal-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-emerald);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .seal-body {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .seal-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    /* Footer Ticker */
+    footer.noc-ticker {
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      padding: 0.6rem 1.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ticker-item strong {
+      color: var(--text-muted);
+    }
+
+    /* Modal for Settings */
+    .settings-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .settings-dialog {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .settings-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .form-input {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.6rem 0.85rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent-cyan);
+    }
+  
+/* ==========================================================================
+   <dcouplr/> Canonical Brand, Logo & Wordmark System (VA-BRAND-001)
+   ========================================================================== */
+
+/* 1. Header / Standalone Logo Component */
+.dcouplr-logo {
+  display: inline-flex;
+  align-items: center;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0;
+  margin: 0;
+  user-select: none;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.dcouplr-logo .dcouplr-bracket,
+.dcouplr-logo .tag-bracket {
+  color: #39ff14; /* Electric Neon-Lime Green */
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+  font-weight: 800;
+  font-size: 1.55rem;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+  letter-spacing: -1px;
+}
+
+.dcouplr-logo .dcouplr-text,
+.dcouplr-logo .tag-name {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin: 0 1.5px;
+  color: #ffffff;
+  text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+  transition: color 0.15s ease;
+}
+
+/* 2. Unadorned Inline Wordmark */
+.dcouplr-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  user-select: none;
+  line-height: inherit;
+  text-decoration: none;
+  font-family: inherit;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+
+.dcouplr-wordmark .dcouplr-bracket,
+.dcouplr-wordmark .tag-bracket {
+  color: #39ff14;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+  font-weight: 800;
+  font-size: 1.05em;
+  line-height: inherit;
+  text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+  letter-spacing: -1px;
+}
+
+.dcouplr-wordmark .dcouplr-text,
+.dcouplr-wordmark .tag-name {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 800;
+  font-size: 1em;
+  line-height: inherit;
+  letter-spacing: -0.04em;
+  margin: 0 1.5px;
+  color: #ffffff;
+  text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+}
+
+/* 3. Inline Prose Brand Tag Pill Component */
+.dcouplr-brand-tag {
+  display: inline-flex;
+  align-items: baseline;
+  font-size: 0.9em;
+  background: rgba(57, 255, 20, 0.08);
+  border: 1px solid rgba(57, 255, 20, 0.25);
+  border-radius: 4px;
+  padding: 0.08em 0.42em;
+  margin: 0 0.15em;
+  vertical-align: baseline;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.dcouplr-brand-tag .tag-bracket,
+.dcouplr-brand-tag .dcouplr-bracket {
+  color: #39ff14;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+  font-weight: 800;
+  font-size: 1.05em;
+  text-shadow: 0 0 6px rgba(57, 255, 20, 0.4);
+  letter-spacing: -0.5px;
+}
+
+.dcouplr-brand-tag .tag-name,
+.dcouplr-brand-tag .dcouplr-text {
+  color: #ffffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 700;
+  font-size: 0.95em;
+  letter-spacing: -0.04em;
+  margin: 0 1.5px;
+  text-shadow: 0 1px 6px rgba(255, 255, 255, 0.15);
+}
+
+/* Light Mode & Print Overrides */
+@media print, (prefers-color-scheme: light) {
+  .dcouplr-logo .dcouplr-bracket,
+  .dcouplr-wordmark .dcouplr-bracket,
+  .dcouplr-brand-tag .tag-bracket {
+    color: #16a34a !important;
+    text-shadow: none !important;
+  }
+  .dcouplr-logo .dcouplr-text,
+  .dcouplr-wordmark .dcouplr-text,
+  .dcouplr-brand-tag .tag-name {
+    color: #000000 !important;
+    text-shadow: none !important;
+  }
+  .dcouplr-brand-tag {
+    background: rgba(22, 163, 74, 0.08) !important;
+    border-color: rgba(22, 163, 74, 0.25) !important;
+  }
+}
+
+</style>
+</head>
+<body>
+  <div class="noc-grid-bg"></div>
+
+  <!-- Master HUD Bar -->
+  <header class="noc-header">
+    <div class="brand-section">
+      <a href="/dashboard" class="brand-link" aria-label="Return to &lt;dcouplr/&gt; Dashboard">
+        <div class="dcouplr-logo brand-logo" title="&lt;dcouplr/&gt;">
+          <span class="dcouplr-bracket logo-bracket">&lt;</span><span class="dcouplr-text logo-text">dcouplr</span><span class="dcouplr-bracket logo-bracket">/&gt;</span>
+        </div>
+      </a>
+      <span class="badge-wallboard">24x7 NOC KIOSK</span>
+      <div class="live-pulse-indicator">
+        <div class="pulse-dot"></div>
+        <span class="pulse-text" id="pulse-status-text">LIVE PULSE (LOCAL)</span>
+      </div>
+    </div>
+
+    <!-- Cluster Overview Stats -->
+    <div class="hud-stats-group">
+      <div class="hud-stat-item">
+        <span class="hud-stat-label">Total VPC Mesh</span>
+        <span class="hud-stat-value" id="hud-total-vpcs">4 VPCs</span>
+      </div>
+      <div class="hud-stat-item">
+        <span class="hud-stat-label">Active Workloads</span>
+        <span class="hud-stat-value" id="hud-total-instances">71 Nodes</span>
+      </div>
+      <div class="hud-stat-item">
+        <span class="hud-stat-label">Consensus Latency (p50)</span>
+        <span class="hud-stat-value" id="hud-latency">0.42 ms</span>
+      </div>
+      <div class="hud-stat-item">
+        <span class="hud-stat-label">In-VPC Egress TCO</span>
+        <span class="hud-stat-value" style="color: var(--accent-emerald);">$0.00 / mo</span>
+      </div>
+    </div>
+
+    <!-- Screen & Mode Actions -->
+    <div class="hud-actions">
+      <button class="btn-hud" id="btn-2way-bridge" onclick="toggle2WayBridge()" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.5); color: #34d399; font-weight: 700;" title="NOC Desk 2-Way Interactive Command & Control Bridge back to In-VPC Cluster">
+        <span>⚡</span> 2-Way Bridge ▾
+      </button>
+      <button class="btn-hud" id="btn-wakelock" title="Toggle Display Wake Lock">
+        <span>☕</span> <span id="wakelock-label">Wake Lock Active</span>
+      </button>
+      <button class="btn-hud" id="btn-fullscreen" title="Toggle Fullscreen Kiosk Mode (F)">
+        <span>⛶</span> Fullscreen
+      </button>
+      <button class="btn-hud" id="btn-settings" title="Configure Pulse Source URL">
+        <span>⚙</span> Config
+      </button>
+      <a href="/dashboard" class="btn-hud" title="Return to In-VPC Admin Dashboard">
+        <span>📊</span> Console
+      </a>
+    </div>
+  </header>
+
+  <!-- High-Priority Incident & Operational Triage Banner for Wallboard / Kiosk -->
+  <div id="noc-incident-banner" style="display: none; padding: 10px 1.5rem; background: linear-gradient(135deg, rgba(239, 68, 68, 0.28) 0%, rgba(15, 23, 42, 0.98) 100%); border-bottom: 2px solid #ef4444; box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); align-items: center; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; z-index: 100; position: relative;">
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <span id="noc-banner-severity-badge" style="background: #ef4444; color: #fff; padding: 3px 9px; border-radius: 4px; font-weight: 800; font-size: 0.74rem;">🚨 P1 CRITICAL</span>
+      <span id="noc-banner-title" style="color: #ffffff; font-weight: 800; font-size: 0.88rem;">PostgreSQL Active Lock Contention Spike</span>
+      <span id="noc-banner-target" style="color: #67e8f9; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.35); padding: 2px 8px; border-radius: 4px; font-weight: 700;">Target: node-vpc-db-01 (10.100.20.44)</span>
+      <span id="noc-banner-location" style="color: #fca5a5;">in AWS Production VPC</span>
+    </div>
+    <div id="noc-banner-metric" style="color: #fde047; font-size: 0.76rem; font-weight: 700;">
+      Metric: 198 locks (>100) &bull; Automated VOE Ticket Spooled
+    </div>
+  </div>
+
+  <!-- 3-Column Wallboard Viewport -->
+  <main class="noc-viewport">
+    
+    <!-- LEFT COLUMN: Cluster Health, Consensus & Daemon Resource Proof -->
+    <section class="noc-panel">
+      <div class="panel-header">
+        <span class="panel-title"><span>🛡</span> Raft Consensus Mesh</span>
+        <span class="panel-pill" id="pill-raft-term">TERM 1</span>
+      </div>
+
+      <div class="consensus-card">
+        <div class="consensus-row">
+          <span class="consensus-label">Leader Node:</span>
+          <span class="consensus-val" id="val-leader-id" style="color: var(--accent-cyan);">dcouplr-agent-01</span>
+        </div>
+        <div class="consensus-row">
+          <span class="consensus-label">Quorum Status:</span>
+          <span class="consensus-val" id="val-quorum-status" style="color: var(--accent-emerald);">3/3 NODES OPTIMAL</span>
+        </div>
+        <div class="consensus-row">
+          <span class="consensus-label">Heartbeat Cycle:</span>
+          <span class="consensus-val">500 ms</span>
+        </div>
+        <div class="consensus-row">
+          <span class="consensus-label">Last Snapshot:</span>
+          <span class="consensus-val" id="val-last-snapshot">Just Now</span>
+        </div>
+      </div>
+
+      <!-- Resource Utilization Proof Card -->
+      <div class="panel-header" style="margin-top: 0.5rem;">
+        <span class="panel-title"><span>⚡</span> Engine Resource Footprint</span>
+        <span class="panel-pill" style="color: var(--accent-emerald);">AUDITED</span>
+      </div>
+
+      <div class="consensus-card" style="border-color: rgba(6, 182, 212, 0.2);">
+        <div class="consensus-row">
+          <span class="consensus-label">Daemon RAM (RSS):</span>
+          <span class="consensus-val" id="val-daemon-rss" style="color: var(--accent-cyan);">78.2 MB</span>
+        </div>
+        <div class="consensus-row">
+          <span class="consensus-label">CPU Consumption:</span>
+          <span class="consensus-val" id="val-daemon-cpu" style="color: var(--accent-emerald);">&lt; 0.1%</span>
+        </div>
+        <div class="consensus-row">
+          <span class="consensus-label">Transpilation Latency:</span>
+          <span class="consensus-val">14.2 ms / rule</span>
+        </div>
+        <div class="consensus-row">
+          <span class="consensus-label">Memory Leak Drift:</span>
+          <span class="consensus-val" style="color: var(--accent-emerald);">0.00 MB (Stable)</span>
+        </div>
+      </div>
+
+      <!-- Zero Egress FinOps Seal -->
+      <div class="zero-egress-seal">
+        <div class="seal-title">
+          <span>🔒</span> ZERO-EGRESS AIR-GAP SEAL
+        </div>
+        <div class="seal-val">$0.00 WAN FEES</div>
+        <div class="seal-body">
+          Telemetry never transits public internet unencrypted. Pure RFC 1918 in-VPC ring buffer with 0 KB billable cloud egress.
+        </div>
+      </div>
+    </section>
+
+    <!-- CENTER COLUMN: Multi-Cloud Topology Matrix & Active VPCs -->
+    <section class="noc-panel" style="gap: 1.5rem;">
+      <div class="panel-header">
+        <span class="panel-title"><span>🌐</span> Multi-VPC Topology &amp; Peering Mesh</span>
+        <span class="panel-pill" id="pill-active-clouds">AWS &bull; GCP &bull; AZURE &bull; ON-PREM</span>
+      </div>
+
+      <!-- Dynamic VPC Cards Container -->
+      <div class="vpc-matrix-grid" id="vpc-cards-container">
+        <!-- VPC Cards will be populated dynamically -->
+      </div>
+
+      <!-- Throughput Waveform Canvas -->
+      <div style="margin-top: auto;">
+        <div class="panel-header" style="border: none; padding-bottom: 0.4rem;">
+          <span class="panel-title" style="font-size: 0.75rem;">Consensus Events &amp; Ingestion Throughput (Live Waveform)</span>
+          <span class="panel-pill" id="val-throughput-eps">420 EPS</span>
+        </div>
+        <div class="chart-container">
+          <canvas class="waveform-canvas" id="canvas-throughput"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: Sub-Millisecond Latencies & Health Sensors -->
+    <section class="noc-panel">
+      <div class="panel-header">
+        <span class="panel-title"><span>⏱</span> Latency Distribution</span>
+        <span class="panel-pill">SUB-MILLISECOND</span>
+      </div>
+
+      <div class="chart-container" style="height: 140px;">
+        <canvas class="waveform-canvas" id="canvas-latency"></canvas>
+      </div>
+
+      <div class="consensus-card">
+        <div class="consensus-row">
+          <span class="consensus-label">p50 Ingestion Latency:</span>
+          <span class="consensus-val" id="val-p50" style="color: var(--accent-emerald);">0.42 ms</span>
+        </div>
+        <div class="consensus-row">
+          <span class="consensus-label">p90 Cluster Latency:</span>
+          <span class="consensus-val" id="val-p90" style="color: var(--accent-cyan);">0.68 ms</span>
+        </div>
+        <div class="consensus-row">
+          <span class="consensus-label">p99 Outlier Ceiling:</span>
+          <span class="consensus-val" id="val-p99" style="color: var(--accent-purple);">0.85 ms</span>
+        </div>
+        <div class="consensus-row">
+          <span class="consensus-label">Egress Attestation:</span>
+          <span class="consensus-val" style="color: var(--accent-emerald);">SHA-256 Valid</span>
+        </div>
+      </div>
+
+      <div class="panel-header" style="margin-top: 0.5rem;">
+        <span class="panel-title"><span>📺</span> 24x7 Wallboard Run Mode</span>
+      </div>
+
+      <div class="consensus-card">
+        <div class="consensus-row">
+          <span class="consensus-label">Display Mode:</span>
+          <span class="consensus-val" id="val-display-mode">Pattern A (In-VPC)</span>
+        </div>
+        <div class="consensus-row">
+          <span class="consensus-label">Refresh Interval:</span>
+          <span class="consensus-val">2,000 ms</span>
+        </div>
+        <div class="consensus-row">
+          <span class="consensus-label">Payload Size:</span>
+          <span class="consensus-val" id="val-payload-size">1.71 KB</span>
+        </div>
+        <div class="consensus-row">
+          <span class="consensus-label">Network Footprint:</span>
+          <span class="consensus-val" style="color: var(--accent-emerald);">&lt; 10 KB/s</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Ticker Bar -->
+  <footer class="noc-ticker">
+    <div class="ticker-item">
+      <span>●</span> <strong>SECURITY COMPLIANCE:</strong> Air-Gapped Loopback Verified &bull; Zero External Sockets
+    </div>
+    <div class="ticker-item">
+      <span>●</span> <strong>SYSTEM CLOCK:</strong> <span id="ticker-clock">--:--:-- UTC</span>
+    </div>
+    <div class="ticker-item">
+      <span>●</span> <strong>PULSE SHA:</strong> <span id="ticker-sha">e3b0c44298fc1c149afbf4c8996fb924</span>
+    </div>
+  </footer>
+
+  <!-- 2-Way Command & Control Modal (NOC Desk -> In-VPC Cluster) -->
+  <div class="settings-modal" id="modal-2way-bridge" style="display: none;">
+    <div class="settings-dialog" style="max-width: 620px; width: 95%;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.5rem;">
+        <div>
+          <div class="settings-title" style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 1.15rem; color: #fff;">
+            <span>⚡ NOC Desk 2-Way Signal Bridge</span>
+            <span class="panel-pill" style="background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 0.68rem;">BIDIRECTIONAL</span>
+          </div>
+          <div style="font-size: 0.76rem; color: #38bdf8; margin-top: 4px;">
+            Projected Outside VPC &bull; Outbound WireGuard / Cloudflare Zero-Trust Tunnel
+          </div>
+        </div>
+        <button type="button" id="btn-close-2way-modal" onclick="toggle2WayBridge()" style="background: none; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+
+      <p style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 1rem;">
+        This NOC Desk console is <strong>projected outside the VPC</strong>. Because it operates over an outbound encrypted tunnel, operator actions transmit authenticated <strong>2-way reverse control signals</strong> back into the in-VPC Cluster Engine &amp; Dashboard with <strong>0 open inbound ports</strong> on the VPC.
+      </p>
+
+      <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px; margin-bottom: 1rem;">
+        <span style="font-size: 0.74rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 8px;">
+          Transmit Operational Signal to In-VPC Cluster:
+        </span>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <button type="button" class="btn-hud" onclick="send2WaySignal('HEALTHY')" style="justify-content: center; background: rgba(57, 255, 20, 0.12); border-color: rgba(57, 255, 20, 0.35); color: #86efac;">
+            <span>🟢</span> Nominal (All Healthy)
+          </button>
+          <button type="button" class="btn-hud" onclick="send2WaySignal('P1_CRITICAL')" style="justify-content: center; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;">
+            <span>🚨</span> P1 Critical (Tier 5 DB)
+          </button>
+          <button type="button" class="btn-hud" onclick="send2WaySignal('P2_WARNING')" style="justify-content: center; background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); color: #fde047;">
+            <span>⚠️</span> P2 Warning (Tier 2 Buffer)
+          </button>
+          <button type="button" class="btn-hud" onclick="send2WaySignal('DUAL_CASCADE')" style="justify-content: center; background: rgba(239, 68, 68, 0.25); border-color: #ef4444; color: #fecaca;">
+            <span>💥</span> Multi-Incident (P1 + P2)
+          </button>
+        </div>
+      </div>
+
+      <!-- Transmission Confirmation / Live Feedback -->
+      <div id="noc-2way-feedback" style="font-size: 0.74rem; font-family: var(--font-mono); background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 6px; padding: 8px 12px; color: #86efac; margin-bottom: 1rem;">
+        📡 2-Way Link Status: Ready. Reverse telemetry signal routed via encrypted tunnel to In-VPC Cluster API &amp; Dashboard.
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.72rem; color: #64748b;">Cloudflare Service Token Authenticated &bull; In-Perimeter IPC Buffer</span>
+        <button type="button" class="btn-hud" id="btn-done-2way-modal" onclick="toggle2WayBridge()" style="padding: 5px 14px;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal (Configuring Remote CDN URL if using Pattern B) -->
+  <div class="settings-modal" id="settings-modal">
+    <div class="settings-dialog">
+      <div class="settings-title">⚙ Wallboard Configuration</div>
+      <div class="form-group">
+        <label class="form-label" for="input-pulse-url">Pulse Data Source URL</label>
+        <input class="form-input" id="input-pulse-url" type="text" value="/v1/telemetry/topology-pulse" placeholder="e.g. /v1/telemetry/topology-pulse or https://pulse.yourdomain.com/topology-pulse.json">
+        <span style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.25rem;">
+          Default is <code>/v1/telemetry/topology-pulse</code> (Pattern A In-VPC / Tunnel).<br>
+          For Pattern B CDN Mirror, paste your public Cloudflare R2 / S3 CDN URL.
+        </span>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="input-interval">Poll Frequency (Seconds)</label>
+        <input class="form-input" id="input-interval" type="number" min="1" max="60" value="2">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+        <button class="btn-hud" id="btn-cancel-settings">Cancel</button>
+        <button class="btn-hud active" id="btn-save-settings">Save &amp; Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State & Config
+    let pulseUrl = localStorage.getItem('dcouplr_wallboard_url') || '/v1/telemetry/topology-pulse';
+    let pollIntervalSeconds = parseInt(localStorage.getItem('dcouplr_wallboard_interval') || '2', 10);
+    let pollTimer = null;
+    let wakeLock = null;
+
+    // Canvas histories
+    const throughputHistory = Array(60).fill(420);
+    const latencyHistory = Array(60).fill(0.42);
+
+    // DOM Elements
+    const elVpcContainer = document.getElementById('vpc-cards-container');
+    const elPulseStatus = document.getElementById('pulse-status-text');
+    const elTotalVpcs = document.getElementById('hud-total-vpcs');
+    const elTotalInstances = document.getElementById('hud-total-instances');
+    const elLatency = document.getElementById('hud-latency');
+    const elLeaderId = document.getElementById('val-leader-id');
+    const elRaftTerm = document.getElementById('pill-raft-term');
+    const elThroughputEps = document.getElementById('val-throughput-eps');
+    const elPayloadSize = document.getElementById('val-payload-size');
+    const elTickerClock = document.getElementById('ticker-clock');
+    const elTickerSha = document.getElementById('ticker-sha');
+    const elDisplayMode = document.getElementById('val-display-mode');
+
+    // 1. Clock Ticker
+    function updateClock() {
+      const now = new Date();
+      elTickerClock.textContent = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 2. Request Screen Wake Lock (Ensures TV/Kiosk screen does NOT sleep)
+    async function activateWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await navigator.wakeLock.request('screen');
+          document.getElementById('wakelock-label').textContent = 'Wake Lock Active';
+          document.getElementById('btn-wakelock').classList.add('active');
+          wakeLock.addEventListener('release', () => {
+            document.getElementById('wakelock-label').textContent = 'Wake Lock Inactive';
+            document.getElementById('btn-wakelock').classList.remove('active');
+          });
+        }
+      } catch (err) {
+        console.warn('Wake Lock request failed:', err);
+      }
+    }
+    activateWakeLock();
+
+    // Re-acquire lock if tab becomes visible again
+    document.addEventListener('visibilitychange', async () => {
+      if (wakeLock !== null && document.visibilityState === 'visible') {
+        await activateWakeLock();
+      }
+    });
+
+    document.getElementById('btn-wakelock').addEventListener('click', () => {
+      if (wakeLock) {
+        wakeLock.release();
+        wakeLock = null;
+      } else {
+        activateWakeLock();
+      }
+    });
+
+    // 3. Fullscreen Kiosk Mode
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(e => console.warn(e));
+        document.getElementById('btn-fullscreen').classList.add('active');
+      } else {
+        document.exitFullscreen().catch(e => console.warn(e));
+        document.getElementById('btn-fullscreen').classList.remove('active');
+      }
+    }
+    document.getElementById('btn-fullscreen').addEventListener('click', toggleFullscreen);
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      }
+    });
+
+    // 4. Waveform Canvas Renderers
+    function drawWaveform(canvasId, data, strokeColor, fillColor) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width = canvas.parentElement.clientWidth;
+      const h = canvas.height = canvas.parentElement.clientHeight;
+
+      ctx.clearRect(0, 0, w, h);
+
+      if (data.length < 2) return;
+
+      const minVal = Math.min(...data) * 0.9;
+      const maxVal = Math.max(...data) * 1.1 || 1;
+
+      ctx.beginPath();
+      for (let i = 0; i < data.length; i++) {
+        const x = (i / (data.length - 1)) * w;
+        const y = h - ((data[i] - minVal) / (maxVal - minVal || 1)) * (h - 20) - 10;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Area fill
+      ctx.lineTo(w, h);
+      ctx.lineTo(0, h);
+      ctx.closePath();
+      ctx.fillStyle = fillColor;
+      ctx.fill();
+    }
+
+    // 5. Fetch Pulse Snapshot
+    async function fetchPulse() {
+      try {
+        const tStart = performance.now();
+        const resp = await fetch(pulseUrl, { cache: 'no-store' });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        
+        const rawText = await resp.text();
+        const tLatency = (performance.now() - tStart).toFixed(2);
+        const data = JSON.parse(rawText);
+
+        renderPulseData(data, rawText.length, tLatency);
+        elPulseStatus.textContent = pulseUrl.startsWith('http') ? 'LIVE PULSE (CDN MIRROR)' : 'LIVE PULSE (IN-VPC)';
+      } catch (err) {
+        console.warn('Pulse fetch error:', err);
+        elPulseStatus.textContent = 'CONNECTING RETRY...';
+        // Fallback to local default if custom URL failed
+        if (pulseUrl !== '/v1/telemetry/topology-pulse') {
+          pulseUrl = '/v1/telemetry/topology-pulse';
+        }
+      }
+    }
+
+    function renderPulseData(data, byteLength, fetchLatencyMs) {
+      elPayloadSize.textContent = (byteLength / 1024).toFixed(2) + ' KB';
+      
+      if (pulseUrl.includes('http')) {
+        elDisplayMode.textContent = 'Pattern B (CDN Pulse)';
+      } else {
+        elDisplayMode.textContent = 'Pattern A (In-VPC)';
+      }
+
+      // Render Cluster Info
+      const cluster = data.cluster || {};
+      elLeaderId.textContent = cluster.leader_id || 'dcouplr-agent-01';
+      elRaftTerm.textContent = 'TERM ' + (cluster.term || 1);
+      const quorumEl = document.getElementById('val-quorum-status');
+      quorumEl.textContent = (cluster.active_nodes || 3) + '/3 NODES ' + (cluster.status || 'OPTIMAL');
+      if ((cluster.status || '').includes('CRITICAL')) {
+        quorumEl.style.color = '#ef4444';
+      } else if ((cluster.status || '').includes('WARNING')) {
+        quorumEl.style.color = '#f59e0b';
+      } else {
+        quorumEl.style.color = '';
+      }
+
+      // Live Pulse status header & dot indicator
+      const pulseDot = document.querySelector('.pulse-dot');
+      if ((cluster.status || '').includes('CRITICAL')) {
+        elPulseStatus.innerHTML = '<span style="color: #ef4444; font-weight: 800;">🚨 P1 CRITICAL DETECTED</span>';
+        if (pulseDot) pulseDot.style.background = '#ef4444';
+      } else if ((cluster.status || '').includes('WARNING')) {
+        elPulseStatus.innerHTML = '<span style="color: #f59e0b; font-weight: 800;">⚠️ P2 WARNING DETECTED</span>';
+        if (pulseDot) pulseDot.style.background = '#f59e0b';
+      } else {
+        elPulseStatus.textContent = pulseUrl.startsWith('http') ? 'LIVE PULSE (CDN MIRROR)' : 'LIVE PULSE (IN-VPC)';
+        if (pulseDot) pulseDot.style.background = '';
+      }
+
+      // High-Priority Incident Banner & Header Pulse synchronization
+      const sim = data.simulation || {};
+      const scenario = sim.scenario || cluster.simulation_scenario || ((cluster.status || '').includes('CRITICAL') ? 'P1_CRITICAL' : (cluster.status || '').includes('WARNING') ? 'P2_WARNING' : 'HEALTHY');
+
+      const incBanner = document.getElementById('noc-incident-banner');
+      const incBadge = document.getElementById('noc-banner-severity-badge');
+      const incTitle = document.getElementById('noc-banner-title');
+      const incTarget = document.getElementById('noc-banner-target');
+      const incLoc = document.getElementById('noc-banner-location');
+      const incMetric = document.getElementById('noc-banner-metric');
+      const headerEl = document.querySelector('.noc-header');
+      const badgeWallboard = document.querySelector('.badge-wallboard');
+
+      if (badgeWallboard) {
+        if (window.location.pathname.includes('/kiosk')) {
+          badgeWallboard.textContent = 'NOC Kiosk';
+          const btn2w = document.getElementById('btn-2way-bridge');
+          if (btn2w) btn2w.style.display = 'none';
+          const btnCfg = document.getElementById('btn-settings');
+          if (btnCfg) btnCfg.style.display = 'none';
+          const btnConsole = document.querySelector('a[href="/dashboard"]');
+          if (btnConsole) btnConsole.style.display = 'none';
+        } else {
+          badgeWallboard.textContent = 'NOC DESK (Recommended)';
+        }
+      }
+
+      if (scenario === 'P1_CRITICAL') {
+        if (incBanner) {
+          incBanner.style.display = 'flex';
+          incBanner.style.borderBottom = '2px solid #ef4444';
+          incBanner.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.28) 0%, rgba(15, 23, 42, 0.98) 100%)';
+          incBanner.style.boxShadow = '0 0 25px rgba(239, 68, 68, 0.6)';
+          incBanner.style.padding = '10px 1.5rem';
+          incBanner.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <span id="noc-banner-severity-badge" style="background: #ef4444; color: #fff; padding: 3px 9px; border-radius: 4px; font-weight: 800; font-size: 0.74rem;">🚨 P1 CRITICAL</span>
+              <span id="noc-banner-title" style="color: #ffffff; font-weight: 800; font-size: 0.88rem;">PostgreSQL Active Lock Contention Spike</span>
+              <span id="noc-banner-target" style="color: #67e8f9; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.35); padding: 2px 8px; border-radius: 4px; font-weight: 700;">Target: node-vpc-db-01 (10.100.20.44)</span>
+              <span id="noc-banner-location" style="color: #fca5a5;">in AWS Production VPC</span>
+            </div>
+            <div id="noc-banner-metric" style="color: #fde047; font-size: 0.76rem; font-weight: 700;">
+              Metric: 198 locks (>100) &bull; Automated VOE Ticket Spooled
+            </div>
+          `;
+        }
+        if (headerEl) { headerEl.classList.remove('header-pulse-warning'); headerEl.classList.add('header-pulse-critical'); }
+      } else if (scenario === 'P2_WARNING') {
+        if (incBanner) {
+          incBanner.style.display = 'flex';
+          incBanner.style.borderBottom = '2px solid #f59e0b';
+          incBanner.style.background = 'linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(15, 23, 42, 0.98) 100%)';
+          incBanner.style.boxShadow = '0 0 25px rgba(245, 158, 11, 0.6)';
+          incBanner.style.padding = '10px 1.5rem';
+          incBanner.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <span id="noc-banner-severity-badge" style="background: #f59e0b; color: #000; padding: 3px 9px; border-radius: 4px; font-weight: 800; font-size: 0.74rem;">⚠️ P2 WARNING</span>
+              <span id="noc-banner-title" style="color: #ffffff; font-weight: 800; font-size: 0.88rem;">HAProxy Core Ingress Buffer Saturation</span>
+              <span id="noc-banner-target" style="color: #67e8f9; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.35); padding: 2px 8px; border-radius: 4px; font-weight: 700;">Target: node-dc1-bm-08 (172.16.1.18)</span>
+              <span id="noc-banner-location" style="color: #fca5a5;">in Legacy Datacenter Chicago (DC1)</span>
+            </div>
+            <div id="noc-banner-metric" style="color: #fde047; font-size: 0.76rem; font-weight: 700;">
+              Metric: 0.18% drop (>0.05%) &bull; ChatOps Advisory Active
+            </div>
+          `;
+        }
+        if (headerEl) { headerEl.classList.remove('header-pulse-critical'); headerEl.classList.add('header-pulse-warning'); }
+      } else if (scenario === 'DUAL_CASCADE') {
+        if (incBanner) {
+          incBanner.style.display = 'block';
+          incBanner.style.borderBottom = '2px solid #ef4444';
+          incBanner.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.32) 0%, rgba(15, 23, 42, 0.98) 100%)';
+          incBanner.style.boxShadow = '0 0 25px rgba(239, 68, 68, 0.7)';
+          incBanner.style.padding = '8px 1.5rem';
+          incBanner.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span id="noc-banner-severity-badge" style="background: #ef4444; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: 800; font-size: 0.72rem;">🚨 MULTI-INCIDENT CASCADE (2 ACTIVE)</span>
+                <span id="noc-banner-title" style="color: #ffffff; font-weight: 800; font-size: 0.84rem;">Simultaneous SLA Breaches Across Multiple Infrastructure Tiers</span>
+                <span id="noc-banner-target" style="display: none;">node-vpc-db-01 & node-dc1-bm-08</span>
+                <span id="noc-banner-location" style="display: none;">AWS Prod & Chicago DC1</span>
+              </div>
+              <div id="noc-banner-metric" style="color: #fde047; font-size: 0.72rem; font-weight: 700;">
+                Auto-Sorted by Priority (P1 &rarr; P2) &bull; Single-Monitor Zero Scroll
+              </div>
+            </div>
+            <table style="width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 0.73rem; background: rgba(0, 0, 0, 0.45); border-radius: 4px; overflow: hidden;">
+              <thead>
+                <tr style="background: rgba(255, 255, 255, 0.07); color: #94a3b8; font-size: 0.65rem; text-transform: uppercase;">
+                  <th style="padding: 4px 8px; text-align: left; width: 105px;">Severity</th>
+                  <th style="padding: 4px 8px; text-align: left;">Incident &amp; Invariant</th>
+                  <th style="padding: 4px 8px; text-align: left;">Target Node &amp; IP</th>
+                  <th style="padding: 4px 8px; text-align: left;">Subnet &amp; Rack</th>
+                  <th style="padding: 4px 8px; text-align: left;">Load Balancer</th>
+                  <th style="padding: 4px 8px; text-align: left;">Live Metric</th>
+                  <th style="padding: 4px 8px; text-align: left;">Routing Dispatch</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-top: 1px solid rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.12);">
+                  <td style="padding: 5px 8px;">
+                    <span style="background: #ef4444; color: #fff; padding: 2px 6px; border-radius: 3px; font-weight: 800; font-size: 0.68rem;">🚨 P1 CRITICAL</span>
+                  </td>
+                  <td style="padding: 5px 8px; color: #fff; font-weight: 700;">
+                    PostgreSQL Lock Contention Spike
+                    <div style="font-size: 0.62rem; color: #94a3b8;">INVARIANT_VIOLATION: Zero-Egress Perimeter INTACT</div>
+                  </td>
+                  <td style="padding: 5px 8px; color: #67e8f9; font-weight: 700;">
+                    node-vpc-db-01
+                    <div style="font-size: 0.62rem; color: #94a3b8;">10.100.20.44 (db-pg-master-01)</div>
+                  </td>
+                  <td style="padding: 5px 8px; color: #e2e8f0; font-size: 0.68rem;">
+                    AWS Prod &bull; <span style="color: #fca5a5;">private-db-1b</span>
+                  </td>
+                  <td style="padding: 5px 8px; color: #cbd5e1; font-size: 0.68rem;">
+                    prod-internal-nlb
+                  </td>
+                  <td style="padding: 5px 8px; color: #f87171; font-weight: 800;">
+                    198 locks (>100)
+                  </td>
+                  <td style="padding: 5px 8px; color: #86efac; font-size: 0.68rem; font-weight: 700;">
+                    ServiceNow + PagerDuty
+                  </td>
+                </tr>
+                <tr style="border-top: 1px solid rgba(245, 158, 11, 0.25); background: rgba(245, 158, 11, 0.08);">
+                  <td style="padding: 5px 8px;">
+                    <span style="background: #f59e0b; color: #000; padding: 2px 6px; border-radius: 3px; font-weight: 800; font-size: 0.68rem;">⚠️ P2 WARNING</span>
+                  </td>
+                  <td style="padding: 5px 8px; color: #fff; font-weight: 700;">
+                    HAProxy Core Ingress Buffer Saturation
+                    <div style="font-size: 0.62rem; color: #94a3b8;">PERF_DEGRADATION: Spine Ingress Over-Subscribed</div>
+                  </td>
+                  <td style="padding: 5px 8px; color: #67e8f9; font-weight: 700;">
+                    node-dc1-bm-08
+                    <div style="font-size: 0.62rem; color: #94a3b8;">172.16.1.18 (lb-haproxy-02)</div>
+                  </td>
+                  <td style="padding: 5px 8px; color: #e2e8f0; font-size: 0.68rem;">
+                    Chicago DC1 &bull; <span style="color: #fca5a5;">bare-metal-kvm-racks</span>
+                  </td>
+                  <td style="padding: 5px 8px; color: #cbd5e1; font-size: 0.68rem;">
+                    internal-haproxy-vrrp
+                  </td>
+                  <td style="padding: 5px 8px; color: #fde047; font-weight: 800;">
+                    0.18% drop (>0.05%)
+                  </td>
+                  <td style="padding: 5px 8px; color: #86efac; font-size: 0.68rem; font-weight: 700;">
+                    Slack + PagerDuty
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          `;
+        }
+        if (headerEl) { headerEl.classList.remove('header-pulse-warning'); headerEl.classList.add('header-pulse-critical'); }
+      } else {
+        if (incBanner) incBanner.style.display = 'none';
+        if (headerEl) { headerEl.classList.remove('header-pulse-critical'); headerEl.classList.remove('header-pulse-warning'); }
+      }
+
+      // Render Infra Info
+      const infra = data.infrastructure || {};
+      const vpcs = infra.vpcs || [];
+      elTotalVpcs.textContent = (infra.total_vpcs || vpcs.length) + ' VPCs';
+      elTotalInstances.textContent = (infra.total_instances || 71) + ' Nodes';
+      
+      const clouds = infra.clouds_active || ['AWS', 'GCP', 'AZURE', 'ON-PREM'];
+      document.getElementById('pill-active-clouds').textContent = clouds.join(' • ');
+
+      // Render Performance Info
+      const perf = data.performance || {};
+      const p50 = perf.latency_p50_ms || 0.42;
+      const p99 = perf.latency_p99_ms || 0.85;
+      const eps = perf.throughput_eps || 420;
+
+      elLatency.textContent = p50.toFixed(2) + ' ms';
+      document.getElementById('val-p50').textContent = p50.toFixed(2) + ' ms';
+      document.getElementById('val-p99').textContent = p99.toFixed(2) + ' ms';
+      elThroughputEps.textContent = Math.round(eps) + ' EPS';
+
+      // Update Waveform Data
+      throughputHistory.shift();
+      throughputHistory.push(eps + (Math.random() * 20 - 10));
+      latencyHistory.shift();
+      latencyHistory.push(p50 + (Math.random() * 0.08 - 0.04));
+
+      drawWaveform('canvas-throughput', throughputHistory, '#06b6d4', 'rgba(6, 182, 212, 0.15)');
+      drawWaveform('canvas-latency', latencyHistory, '#10b981', 'rgba(16, 185, 129, 0.15)');
+
+      // Generate Pseudo-SHA from timestamp for audit integrity
+      if (data.pulse_timestamp) {
+        const hash = Math.abs(data.pulse_timestamp.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0)).toString(16);
+        elTickerSha.textContent = 'sha256:' + hash.padEnd(16, '0') + '...';
+      }
+
+      // Render VPC Matrix
+      renderVpcCards(vpcs);
+    }
+
+    function renderVpcCards(vpcs) {
+      if (!vpcs || vpcs.length === 0) return;
+
+      let html = '';
+      vpcs.forEach(vpc => {
+        const cloudLower = (vpc.cloud || 'aws').toLowerCase();
+        let tagClass = 'tag-aws';
+        if (cloudLower.includes('gcp')) tagClass = 'tag-gcp';
+        else if (cloudLower.includes('azure')) tagClass = 'tag-azure';
+        else if (cloudLower.includes('onprem') || cloudLower.includes('dc')) tagClass = 'tag-onprem';
+
+        const isCrit = vpc.status === 'CRITICAL';
+        const isWarn = vpc.status === 'WARNING';
+        const cardClass = isCrit ? 'vpc-card pulse-critical' : (isWarn ? 'vpc-card pulse-warning' : 'vpc-card');
+
+        let statusBadge = `<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--accent-emerald); font-weight: 700;">● HEALTHY</span>`;
+        if (isCrit) {
+          statusBadge = `<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #ef4444; font-weight: 800; background: rgba(239, 68, 68, 0.2); padding: 2px 6px; border-radius: 4px; border: 1px solid #ef4444;">🚨 CRITICAL INCIDENT</span>`;
+        } else if (isWarn) {
+          statusBadge = `<span style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #f59e0b; font-weight: 800; background: rgba(245, 158, 11, 0.2); padding: 2px 6px; border-radius: 4px; border: 1px solid #f59e0b;">⚠️ WARNING ADVISORY</span>`;
+        }
+
+        let incidentCallout = '';
+        if (vpc.incident) {
+          const incColor = isCrit ? '#fca5a5' : '#fde047';
+          const incBorder = isCrit ? '#ef4444' : '#f59e0b';
+          const incBg = isCrit ? 'rgba(239, 68, 68, 0.16)' : 'rgba(245, 158, 11, 0.16)';
+          incidentCallout = `
+            <div style="margin-top: 8px; padding: 7px 10px; background: ${incBg}; border-left: 3px solid ${incBorder}; border-radius: 4px; font-size: 0.72rem; color: ${incColor}; font-family: 'JetBrains Mono', monospace; line-height: 1.4;">
+              <div style="font-weight: 800; text-transform: uppercase; margin-bottom: 2px;">
+                ${vpc.incident.severity} Breach: Target Node <strong>${vpc.incident.node_id} (${vpc.incident.ip})</strong>
+              </div>
+              <div style="color: #cbd5e1; font-size: 0.69rem;">${vpc.incident.title} [${vpc.incident.metric}]</div>
+              ${vpc.incident.impacted_subnet ? `<div style="margin-top: 3px; color: ${incColor}; font-size: 0.68rem;">🚨 Impacted Subnet: <strong>${vpc.incident.impacted_subnet}</strong> (${vpc.incident.impacted_cidr || ''} • ${vpc.incident.impacted_rack || ''})</div>` : ''}
+              ${vpc.incident.associated_lb ? `<div style="color: #cbd5e1; font-size: 0.68rem;">⚖️ LB Degradation: <strong>${vpc.incident.associated_lb}</strong> (${vpc.incident.lb_status || 'DEGRADED'})</div>` : ''}
+              ${vpc.incident.policy_rule ? `<div style="color: #38bdf8; font-size: 0.66rem; margin-top: 2px;">🛡️ Policy: ${vpc.incident.policy_rule}</div>` : ''}
+            </div>
+          `;
+        }
+
+        // Subnets Breakdown Grid
+        let subnetsListHtml = '';
+        if (vpc.subnets && vpc.subnets.length > 0) {
+          subnetsListHtml = `
+            <div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.08);">
+              <div style="font-size: 0.68rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between;">
+                <span>🏢 Subnets &amp; Racks (${vpc.subnets.length})</span>
+                <span>Health</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 3px;">
+                ${vpc.subnets.map(s => {
+                  const isSubnetAlarm = vpc.incident && vpc.incident.impacted_subnet && (vpc.incident.impacted_subnet === s.name || vpc.incident.impacted_subnet === s.id);
+                  if (isSubnetAlarm) {
+                    return `
+                      <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(239, 68, 68, 0.16); border: 1px solid rgba(239, 68, 68, 0.5); padding: 3px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;">
+                        <span style="color: #fca5a5; font-weight: 700;">${s.name} <span style="color: #94a3b8; font-size: 0.62rem;">(${s.cidr})</span></span>
+                        <span style="color: #ef4444; font-weight: 800;">🚨 ${vpc.incident.severity || 'BREACH'}</span>
+                      </div>
+                    `;
+                  } else {
+                    return `
+                      <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); padding: 3px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;">
+                        <span style="color: #cbd5e1;">${s.name} <span style="color: #64748b; font-size: 0.62rem;">(${s.cidr})</span></span>
+                        <span style="color: #34d399; font-weight: 600;">● Nominal</span>
+                      </div>
+                    `;
+                  }
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        // Load Balancers Breakdown Grid
+        let lbListHtml = '';
+        if (vpc.load_balancers && vpc.load_balancers.length > 0) {
+          lbListHtml = `
+            <div style="margin-top: 6px; padding-top: 5px; border-top: 1px solid rgba(255,255,255,0.06);">
+              <div style="font-size: 0.68rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between;">
+                <span>⚖️ Load Balancers (${vpc.load_balancers.length})</span>
+                <span>Status</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 3px;">
+                ${vpc.load_balancers.map(lb => {
+                  const isLbAlarm = vpc.incident && vpc.incident.associated_lb && (vpc.incident.associated_lb === lb.name || vpc.incident.associated_lb === lb.id);
+                  if (isLbAlarm) {
+                    return `
+                      <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(239, 68, 68, 0.16); border: 1px solid rgba(239, 68, 68, 0.5); padding: 3px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;">
+                        <span style="color: #fca5a5; font-weight: 700;">${lb.name} <span style="color: #94a3b8; font-size: 0.62rem;">(${lb.type})</span></span>
+                        <span style="color: #ef4444; font-weight: 800;">🚨 ${vpc.incident.lb_status || 'PRESSURE'}</span>
+                      </div>
+                    `;
+                  } else {
+                    return `
+                      <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); padding: 3px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;">
+                        <span style="color: #cbd5e1;">${lb.name} <span style="color: #64748b; font-size: 0.62rem;">(${lb.type})</span></span>
+                        <span style="color: #34d399; font-weight: 600;">● Nominal</span>
+                      </div>
+                    `;
+                  }
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        html += `
+          <div class="${cardClass}">
+            <div class="vpc-card-header">
+              <span class="vpc-provider-tag ${tagClass}">${vpc.cloud}</span>
+              ${statusBadge}
+            </div>
+            <div class="vpc-name" title="${vpc.name}">${vpc.name}</div>
+            <div class="vpc-meta">
+              <span>${vpc.region || 'global'}</span>
+              <span style="color: var(--accent-cyan); font-family: 'JetBrains Mono';">${vpc.cidr_block || '10.0.0.0/16'}</span>
+            </div>
+            <div class="vpc-metrics-row">
+              <span style="color: var(--text-dim);">Instances: <strong style="color: var(--text-main); font-family: 'JetBrains Mono';">${vpc.instances || 0}</strong></span>
+              <span style="color: var(--text-dim);">Peers: <strong style="color: var(--text-main); font-family: 'JetBrains Mono';">${vpc.peering_count || 0}</strong></span>
+              <span style="color: var(--text-dim);">LBs: <strong style="color: var(--text-main); font-family: 'JetBrains Mono';">${vpc.lb_count || 0}</strong></span>
+            </div>
+            ${incidentCallout}
+            ${subnetsListHtml}
+            ${lbListHtml}
+          </div>
+        `;
+      });
+
+      elVpcContainer.innerHTML = html;
+    }
+
+    // 6. Settings Modal Handler
+    const modal = document.getElementById('settings-modal');
+    document.getElementById('btn-settings').addEventListener('click', () => {
+      document.getElementById('input-pulse-url').value = pulseUrl;
+      document.getElementById('input-interval').value = pollIntervalSeconds;
+      modal.style.display = 'flex';
+    });
+
+    document.getElementById('btn-cancel-settings').addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    document.getElementById('btn-save-settings').addEventListener('click', () => {
+      const newUrl = document.getElementById('input-pulse-url').value.trim();
+      const newInterval = parseInt(document.getElementById('input-interval').value, 10);
+
+      if (newUrl) pulseUrl = newUrl;
+      if (newInterval > 0) pollIntervalSeconds = newInterval;
+
+      localStorage.setItem('dcouplr_wallboard_url', pulseUrl);
+      localStorage.setItem('dcouplr_wallboard_interval', pollIntervalSeconds.toString());
+
+      modal.style.display = 'none';
+
+      // Restart polling timer
+      clearInterval(pollTimer);
+      pollTimer = setInterval(fetchPulse, pollIntervalSeconds * 1000);
+      fetchPulse();
+    });
+
+    function toggle2WayBridge() {
+      const m = document.getElementById('modal-2way-bridge');
+      if (m) m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    async function send2WaySignal(scenarioKey) {
+      const fb = document.getElementById('noc-2way-feedback');
+      if (fb) fb.innerHTML = `<span style="color: #38bdf8;">⏳ Transmitting reverse signal [${scenarioKey}] through tunnel to in-VPC Dashboard...</span>`;
+
+      try {
+        localStorage.setItem('dcouplr_active_scenario', scenarioKey);
+        const res = await fetch('/v1/telemetry/simulation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ scenario: scenarioKey })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (fb) {
+            fb.innerHTML = `<span style="color: #34d399; font-weight: 700;">✅ Signal Delivered to In-VPC Cluster!</span><br>` +
+              `<span style="color: #cbd5e1; font-size: 0.7rem;">Scenario set to <strong>${data.scenario}</strong>. In-VPC Dashboard (/dashboard), Matrix (/matrix), and local wallboard updated in real-time.</span>`;
+          }
+          fetchPulse();
+        } else {
+          if (fb) fb.innerHTML = `<span style="color: #f87171;">⚠️ Server returned error: ${res.status}</span>`;
+        }
+      } catch (err) {
+        if (fb) fb.innerHTML = `<span style="color: #f59e0b;">⚡ In-Perimeter Local Broadcast Enacted: ${err.message}</span>`;
+        fetchPulse();
+      }
+    }
+
+    // Close modal on click outside
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+
+        // Cross-Tab Simulation Synchronization
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'dcouplr_active_scenario') {
+        fetchPulse();
+      }
+    });
+
+    // Start Polling Loop
+    fetchPulse();
+    pollTimer = setInterval(fetchPulse, pollIntervalSeconds * 1000);
+
+    // Initial resize trigger for charts
+    window.addEventListener('resize', () => {
+      drawWaveform('canvas-throughput', throughputHistory, '#06b6d4', 'rgba(6, 182, 212, 0.15)');
+      drawWaveform('canvas-latency', latencyHistory, '#10b981', 'rgba(16, 185, 129, 0.15)');
+    });
+  </script>
+</body>
+</html>

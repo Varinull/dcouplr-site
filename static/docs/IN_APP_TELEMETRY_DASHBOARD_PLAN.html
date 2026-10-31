@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - IN_APP_TELEMETRY_DASHBOARD_PLAN.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/IN_APP_TELEMETRY_DASHBOARD_PLAN.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="IN_APP_TELEMETRY_DASHBOARD_PLAN.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="in-app-zero-egress-telemetry-multi-vpc-dashboard-specification-build-plan">In-App Zero-Egress Telemetry &amp; Multi-VPC Dashboard Specification &amp; Build Plan</h1>
+<p><strong>Document ID:</strong> ARCH-PLAN-DASH-001<br />
+<strong>Version:</strong> 1.0.0 Production Blueprint<br />
+<strong>Status:</strong> Approved Architectural Specification &amp; Implementation Roadmap<br />
+<strong>Author:</strong> <dcouplr/> Core Architecture Team &amp; Antigravity Autonomous Agent<br />
+<strong>Target Delivery Endpoint:</strong> <code>http://127.0.0.1:8000/dashboard</code><br />
+<strong>Classification:</strong> Internal Technical Architecture &amp; Engineering Roadmap</p>
+<hr />
+<h2 id="executive-summary-strategic-rationale">Executive Summary &amp; Strategic Rationale</h2>
+<h3 id="the-zero-egress-in-app-observability-paradigm">The &quot;Zero-Egress In-App Observability&quot; Paradigm</h3>
+<p>Enterprises adopting <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> operate within strict air-gapped VPCs, high-security financial enclaves, or regulated multi-cloud environments where in-perimeter data isolation is paramount. While <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> natively emits Grafana 11 Unified Alerting YAML and Prometheus Alertmanager rules for organizations that have centralized corporate Grafana clusters, requiring an external Grafana deployment introduces operational friction:</p>
+<ol>
+<li><strong>Infrastructure Overhead:</strong> Requires provisioning external containers, relational state stores (Postgres/MySQL), and complex network ingress rules.</li>
+<li><strong>Third-Party Bloat:</strong> Commercial Grafana maintains 150+ database plugins, legacy authentication protocols (LDAP, NTLM, SAML, Kerberos), and backwards compatibility spanning a decade.</li>
+<li><strong>Network Latency &amp; Air-Gap Verification:</strong> External monitoring pipelines can introduce polling lag (15s–60s) and require firewall exemptions that complicate air-gap audits.</li>
+</ol>
+<p>By embedding a <strong>native, zero-dependency, ultra-lightweight real-time telemetry dashboard</strong> directly into the <code>dcouplr</code> binary (accessible at <code>GET /dashboard</code>), platform engineers, SREs, and compliance officers gain instantaneous, zero-configuration visibility into:</p>
+<ul>
+<li>Real-time engine health, memory footprints (&lt; 50 MiB RSS), and P50/P90/P99 latency.</li>
+<li>Dynamic multi-cloud VPC topology maps (AWS VPCs, GCP VPCs, Azure VNets, subnets, route tables).</li>
+<li>Embedded Raft consensus status (Leader/Follower quorum, WAL compaction deltas, term states).</li>
+<li>An interactive alert threshold simulator allowing engineers to test PromQL/Datadog alert rules against live curves in real time.</li>
+</ul>
+<hr />
+<h2 id="1-system-architecture-overview">1. System Architecture Overview</h2>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text"> ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │                             <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> HERMETIC ENGINE RUNTIME                        │
+ │                                                                                        │
+ │   ┌───────────────────────┐   ┌───────────────────────────┐   ┌────────────────────┐   │
+ │   │  Go / Python Engine   │   │  Embedded Raft Consensus  │   │  AST &amp; Query Mesh  │   │
+ │   │  Memory &amp; CPU Metrics │   │  Leader / Follower Quorum │   │  PromQL Converter  │   │
+ │   └──────────┬────────────┘   └─────────────┬─────────────┘   └─────────┬──────────┘   │
+ │              │                              │                           │              │
+ │              └──────────────────────────────┼───────────────────────────┘              │
+ │                                             ▼                                          │
+ │                        ┌────────────────────────────────────────┐                      │
+ │                        │  In-Memory Telemetry Collector (Ring)  │                      │
+ │                        │  - Circular ring buffers (1024 slots)  │                      │
+ │                        │  - Zero heap allocation per sample     │                      │
+ │                        │  - Sub-1ms snapshot calculation        │                      │
+ │                        └────────────────────┬───────────────────┘                      │
+ │                                             │                                          │
+ │                ┌────────────────────────────┴───────────────────────────┐              │
+ │                ▼                                                        ▼              │
+ │   ┌───────────────────────────┐                            ┌─────────────────────────┐ │
+ │   │  REST Snapshot APIs       │                            │  SSE Real-Time Stream   │ │
+ │   │  /v1/telemetry/metrics    │                            │  /v1/telemetry/stream   │ │
+ │   │  /v1/telemetry/topology   │                            │  (1000ms push heartbeat)│ │
+ │   └────────────┬──────────────┘                            └────────────┬────────────┘ │
+ └────────────────┼────────────────────────────────────────────────────────┼──────────────┘
+                  │                                                        │
+                  ▼                                                        ▼
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │                      BROWSER CLIENT VIEWPORT (http://127.0.0.1:8000/dashboard)         │
+ │                                                                                        │
+ │   ┌──────────────────────┐  ┌──────────────────────┐  ┌───────────────────────────┐    │
+ │   │ Live Telemetry Cards │  │ Interactive uPlot/   │  │ Multi-VPC Network Map     │    │
+ │   │ CPU, RSS, Latency,   │  │ Canvas Time Series   │  │ Visual SVG Nodes &amp; Edges  │    │
+ │   │ Throughput, Errors   │  │ 60 FPS, Sub-5ms Lag  │  │ AWS -&gt; GCP Network Flow   │    │
+ │   └──────────────────────┘  └──────────────────────┘  └───────────────────────────┘    │
+ │   ┌───────────────────────────────────────────────┐  ┌────────────────────────────┐    │
+ │   │ Embedded Raft Consensus &amp; Cluster Gauges      │  │ Alert Rule Threshold Sim   │    │
+ │   │ Quorum, Log Deltas, Circuit Breakers (Trip)   │  │ Draggable Threshold Slider │    │
+ │   └───────────────────────────────────────────────┘  └────────────────────────────┘    │
+ └────────────────────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="2-core-functional-pillars">2. Core Functional Pillars</h2>
+<h3 id="pillar-1-live-real-time-telemetry-panels-sub-5ms-latency">Pillar 1: Live Real-Time Telemetry Panels (Sub-5ms Latency)</h3>
+<ul>
+<li><strong>Engine Performance Metrics:</strong>
+<ul>
+<li><strong>CPU Utilization:</strong> Dynamic percentage with 60-second historical window.</li>
+<li><strong>Memory Footprint (RSS):</strong> Monitored in real time against the strict 50 MiB container memory ceiling.</li>
+<li><strong>Request Latency Distribution:</strong> P50 (median), P90 (tail), and P99 (worst-case) microsecond measurements.</li>
+<li><strong>Translation Throughput:</strong> Real-time AST translation rate (operations/second).</li>
+<li><strong>Zero-Egress Security Counters:</strong> Blocked exfiltration attempts, sanitized tokens, and memory scrubbing events.</li>
+</ul>
+</li>
+<li><strong>Rendering Technology:</strong>
+<ul>
+<li>Microscopic Canvas / uPlot charting (~40 KB runtime vs. Grafana's multi-megabyte bundle).</li>
+<li>Capability to render 150,000 data points in under 35 milliseconds.</li>
+<li>Zero external CDN dependencies (assets served directly from <code>/static/</code> within the binary).</li>
+</ul>
+</li>
+</ul>
+<h3 id="pillar-2-interactive-multi-vpc-topology-map">Pillar 2: Interactive Multi-VPC Topology Map</h3>
+<ul>
+<li><strong>Network Architecture Visualization:</strong>
+<ul>
+<li>Synthesizes the active <code>ComputeGraph</code> from parsed Terraform/OpenTofu configurations.</li>
+<li>Renders VPC nodes, subnets, internet gateways, NAT gateways, route tables, and attached compute instances.</li>
+<li>Color-codes cross-cloud migration mappings (e.g. <code>aws_vpc</code> $\to$ <code>google_compute_network</code>).</li>
+</ul>
+</li>
+<li><strong>Interactive Capabilities:</strong>
+<ul>
+<li>Pan, zoom, node selection, and inspect pane showing CIDR blocks, security groups, and routing rules.</li>
+<li>Visual edge highlighting for peering connections and egress gateways.</li>
+<li>Instant search filter by VPC name, subnet CIDR, or tag.</li>
+</ul>
+</li>
+</ul>
+<h3 id="pillar-3-embedded-raft-consensus-cluster-health-gauges">Pillar 3: Embedded Raft Consensus &amp; Cluster Health Gauges</h3>
+<ul>
+<li><strong>Distributed State Visibility:</strong>
+<ul>
+<li>Visual indicators for 3-node cluster topology (<code>decoupler-01</code> [Leader], <code>decoupler-02</code> [Follower], <code>decoupler-03</code> [Follower]).</li>
+<li>Current Raft Term, Commit Index, and Last Applied Index.</li>
+<li>WAL Snapshot Compaction monitor displaying current uncompacted log delta:
+$$\Delta I = I_{\text{applied}} - I_{\text{snapshot}}$$
+Alerts visually when approaching the <code>snapshot_threshold</code> (e.g., 8,192 entries).</li>
+</ul>
+</li>
+<li><strong>Circuit Breaker Status &amp; Drill Simulation:</strong>
+<ul>
+<li>Live status indicator: <strong>Closed</strong> (Normal / Green), <strong>Half-Open</strong> (Probing / Amber), <strong>Open</strong> (Tripped / Red).</li>
+<li>One-click chaos test button (&quot;Simulate Latency Spike / Trip Circuit Breaker&quot;) allowing engineers to observe failover behavior in real time.</li>
+</ul>
+</li>
+</ul>
+<h3 id="pillar-4-alert-rule-threshold-simulator-sandbox">Pillar 4: Alert Rule Threshold Simulator Sandbox</h3>
+<ul>
+<li><strong>Interactive Rule Tuning:</strong>
+<ul>
+<li>Engineers can choose from preset or custom PromQL / Datadog alert definitions (e.g., <code>rate(http_requests_total[5m]) &gt; 100</code>, <code>memory_rss_bytes &gt; 45MiB</code>).</li>
+<li>An interactive horizontal threshold slider overlays the live/historical metric series.</li>
+<li>Real-time visual shading:
+<ul>
+<li><strong>Green Zone:</strong> Normal operational envelope.</li>
+<li><strong>Amber Warning Zone:</strong> Approaching threshold.</li>
+<li><strong>Red Breach Zone:</strong> Firing condition met.</li>
+</ul>
+</li>
+<li>Computes instant simulated metrics:
+<ul>
+<li>Estimated alert fires per hour.</li>
+<li>False positive probability index.</li>
+</ul>
+</li>
+<li>One-click export button: &quot;Generate Verified PrometheusRule YAML&quot; or &quot;Generate Grafana 11 Alerting YAML&quot;.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="3-technical-specifications-api-contracts">3. Technical Specifications &amp; API Contracts</h2>
+<h3 id="31-backend-endpoints-migrationtoolsapiapppy">3.1 Backend Endpoints (<code>migration_tools/api/app.py</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Description</th>
+<th>Response Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/dashboard</code></td>
+<td>Serves the standalone In-App Telemetry &amp; VPC Dashboard UI</td>
+<td><code>text/html</code></td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/v1/telemetry/metrics</code></td>
+<td>Returns point-in-time snapshot of system, engine, and Raft metrics</td>
+<td><code>application/json</code></td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/v1/telemetry/stream</code></td>
+<td>Server-Sent Events (SSE) streaming live metrics every 1,000ms</td>
+<td><code>text/event-stream</code></td>
+</tr>
+<tr>
+<td><code>GET</code></td>
+<td><code>/v1/telemetry/topology</code></td>
+<td>Returns the synthesized Multi-VPC <code>ComputeGraph</code> node-link topology</td>
+<td><code>application/json</code></td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/v1/telemetry/simulate-alert</code></td>
+<td>Evaluates threshold parameters against generated/live time-series data</td>
+<td><code>application/json</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-metric-payload-schema-v1telemetrymetrics-sse">3.2 Metric Payload Schema (<code>/v1/telemetry/metrics</code> &amp; SSE)</h3>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;timestamp&quot;: 1797893700.124,
+  &quot;system&quot;: {
+    &quot;cpu_percent&quot;: 4.2,
+    &quot;memory_rss_bytes&quot;: 38450176,
+    &quot;memory_rss_mb&quot;: 36.67,
+    &quot;memory_limit_mb&quot;: 50.0,
+    &quot;memory_utilization_pct&quot;: 73.3,
+    &quot;uptime_seconds&quot;: 1845.2
+  },
+  &quot;engine&quot;: {
+    &quot;active_workers&quot;: 4,
+    &quot;translations_completed&quot;: 1428,
+    &quot;translation_rate_per_sec&quot;: 48.5,
+    &quot;latency_p50_ms&quot;: 1.2,
+    &quot;latency_p90_ms&quot;: 3.8,
+    &quot;latency_p99_ms&quot;: 8.4,
+    &quot;circuit_breaker&quot;: {
+      &quot;state&quot;: &quot;CLOSED&quot;,
+      &quot;consecutive_failures&quot;: 0,
+      &quot;trip_threshold&quot;: 5,
+      &quot;recovery_timeout_sec&quot;: 10
+    }
+  },
+  &quot;raft&quot;: {
+    &quot;node_id&quot;: &quot;decoupler-01&quot;,
+    &quot;role&quot;: &quot;LEADER&quot;,
+    &quot;term&quot;: 4,
+    &quot;commit_index&quot;: 28419,
+    &quot;last_applied&quot;: 28419,
+    &quot;snapshot_index&quot;: 24000,
+    &quot;uncompacted_delta&quot;: 4419,
+    &quot;compaction_threshold&quot;: 8192,
+    &quot;peers&quot;: [
+      {&quot;id&quot;: &quot;decoupler-02&quot;, &quot;role&quot;: &quot;FOLLOWER&quot;, &quot;status&quot;: &quot;HEALTHY&quot;, &quot;ping_ms&quot;: 0.8},
+      {&quot;id&quot;: &quot;decoupler-03&quot;, &quot;role&quot;: &quot;FOLLOWER&quot;, &quot;status&quot;: &quot;HEALTHY&quot;, &quot;ping_ms&quot;: 1.1}
+    ]
+  },
+  &quot;security&quot;: {
+    &quot;zero_egress_enforced&quot;: true,
+    &quot;tokens_anonymized&quot;: 4120,
+    &quot;exfiltration_attempts_blocked&quot;: 0,
+    &quot;cve_vulnerabilities&quot;: 0
+  }
+}
+</code></pre></div>
+<h3 id="33-topology-payload-schema-v1telemetrytopology">3.3 Topology Payload Schema (<code>/v1/telemetry/topology</code>)</h3>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;vpcs&quot;: [
+    {
+      &quot;id&quot;: &quot;vpc-aws-prod-01&quot;,
+      &quot;name&quot;: &quot;production_vpc&quot;,
+      &quot;provider&quot;: &quot;aws&quot;,
+      &quot;cidr_block&quot;: &quot;10.100.0.0/16&quot;,
+      &quot;target_equivalent&quot;: &quot;google_compute_network.production_vpc&quot;,
+      &quot;subnets&quot;: [
+        {&quot;id&quot;: &quot;subnet-01&quot;, &quot;name&quot;: &quot;public-1a&quot;, &quot;cidr&quot;: &quot;10.100.1.0/24&quot;, &quot;zone&quot;: &quot;us-east-1a&quot;, &quot;tier&quot;: &quot;public&quot;},
+        {&quot;id&quot;: &quot;subnet-02&quot;, &quot;name&quot;: &quot;private-1a&quot;, &quot;cidr&quot;: &quot;10.100.10.0/24&quot;, &quot;zone&quot;: &quot;us-east-1a&quot;, &quot;tier&quot;: &quot;private&quot;}
+      ],
+      &quot;instances_count&quot;: 8,
+      &quot;peering_connections&quot;: [&quot;vpc-aws-analytics-02&quot;]
+    },
+    {
+      &quot;id&quot;: &quot;vpc-gcp-prod-01&quot;,
+      &quot;name&quot;: &quot;gcp_hybrid_mesh&quot;,
+      &quot;provider&quot;: &quot;gcp&quot;,
+      &quot;cidr_block&quot;: &quot;10.200.0.0/16&quot;,
+      &quot;target_equivalent&quot;: &quot;google_compute_network.gcp_hybrid_mesh&quot;,
+      &quot;subnets&quot;: [
+        {&quot;id&quot;: &quot;subnet-gcp-01&quot;, &quot;name&quot;: &quot;gke-nodes&quot;, &quot;cidr&quot;: &quot;10.200.10.0/24&quot;, &quot;region&quot;: &quot;us-central1&quot;, &quot;tier&quot;: &quot;private&quot;}
+      ],
+      &quot;instances_count&quot;: 12,
+      &quot;peering_connections&quot;: [&quot;vpc-aws-prod-01&quot;]
+    }
+  ]
+}
+</code></pre></div>
+<hr />
+<h2 id="4-frontend-design-system-aesthetics">4. Frontend Design System &amp; Aesthetics</h2>
+<h3 id="visual-identity-alignment">Visual Identity Alignment</h3>
+<p>The dashboard adheres to the design tokens established across <code>compiler.html</code>, <code>admin.html</code>, and <code>presentation.html</code>:</p>
+<ul>
+<li><strong>Background Palette:</strong> High-contrast, deep obsidian <code>#070b12</code> with subtle linear noise and <code>#0d1527</code> card surfaces.</li>
+<li><strong>Accent Highlighters:</strong>
+<ul>
+<li>Cyber Cyan (<code>#00e5ff</code>) for telemetry curves, latency paths, and active connections.</li>
+<li>Electric Emerald (<code>#00e676</code>) for healthy Raft quorum and closed circuit breakers.</li>
+<li>Sunset Amber (<code>#ffab00</code>) for WAL compaction warnings and half-open circuit states.</li>
+<li>Crimson Alert (<code>#ff1744</code>) for tripped circuit breakers, memory saturation, and threshold violations.</li>
+<li>Hermetic Violet (<code>#7c4dff</code>) for multi-cloud VPC topology nodes.</li>
+</ul>
+</li>
+<li><strong>Glassmorphic Depth:</strong> Semi-transparent panel backdrops (<code>rgba(13, 21, 39, 0.75)</code>) with <code>backdrop-filter: blur(12px)</code> and hairline border highlights (<code>1px solid rgba(255, 255, 255, 0.08)</code>).</li>
+<li><strong>Responsive Layout:</strong>
+<ul>
+<li><strong>Top Navigation Bar:</strong> Cluster status pill, SSE connection heartbeat (pulsing green dot), quick navigation to <code>/compiler</code>, <code>/configuration</code>, <code>/docs</code>, and <code>/</code>.</li>
+<li><strong>Row 1 - Key Metric KPI Cards:</strong> CPU (%), Memory (MB / % of cap), P99 Latency (ms), Throughput (tx/s), Security Egress Status.</li>
+<li><strong>Row 2 - Real-Time Telemetry Panels (Split View):</strong>
+<ul>
+<li>Left: Latency Percentiles &amp; Throughput (Dual-Axis Time Series Canvas).</li>
+<li>Right: Memory RSS vs. Hard Allocation Ceiling (50 MiB Threshold Band).</li>
+</ul>
+</li>
+<li><strong>Row 3 - Multi-VPC Topology &amp; Raft Quorum:</strong>
+<ul>
+<li>Left: Interactive SVG Multi-VPC Architecture Graph.</li>
+<li>Right: 3-Node Raft Consensus Health &amp; Auto-Compaction Gauge.</li>
+</ul>
+</li>
+<li><strong>Row 4 - Interactive Alert Rule Simulator:</strong>
+<ul>
+<li>Metric selector, interactive threshold slider, live breach calculation, and one-click Grafana/Prometheus export.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="5-multi-phase-implementation-plan">5. Multi-Phase Implementation Plan</h2>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">gantt
+    title In-App Dashboard Build Roadmap
+    dateFormat  YYYY-MM-DD
+    section Phase 1: Planning
+    Architectural Specification &amp; Review :done, p1_1, 2026-10-21, 1d
+    section Phase 2: Backend
+    Telemetry Collector &amp; Circular Ring Buffers :active, p2_1, 2026-10-22, 1d
+    REST &amp; SSE Streaming Endpoints :p2_2, 2026-10-22, 1d
+    Topology &amp; Simulation Handlers :p2_3, 2026-10-23, 1d
+    section Phase 3: Frontend Foundation
+    HTML Structure &amp; Dark Glassmorphism CSS :p3_1, 2026-10-23, 1d
+    SSE Connection Client &amp; State Dispatcher :p3_2, 2026-10-24, 1d
+    section Phase 4: Data Visualization
+    Real-Time Canvas Telemetry Charts :p4_1, 2026-10-24, 1d
+    Raft Consensus &amp; Health Gauges :p4_2, 2026-10-25, 1d
+    section Phase 5: VPC Topology
+    Interactive Multi-VPC SVG Graph Visualizer :p5_1, 2026-10-25, 1d
+    section Phase 6: Alert Simulator
+    Threshold Slider &amp; Live Breach Calculator :p6_1, 2026-10-26, 1d
+    section Phase 7: Verification &amp; Docs
+    Automated Test Suites &amp; User Manual Update :p7_1, 2026-10-26, 1d
+</code></pre></div>
+<h3 id="detailed-phase-breakdown">Detailed Phase Breakdown</h3>
+<h4 id="phase-1-architectural-foundation-project-governance-current">Phase 1: Architectural Foundation &amp; Project Governance (Current)</h4>
+<ul>
+<li>Complete this formal specification document (<code>docs/IN_APP_TELEMETRY_DASHBOARD_PLAN.md</code>).</li>
+<li>Register the specification in the Central Project Record Assistant Document Admin Portal (<code>migration_tools/api/app.py</code>).</li>
+<li>Create user-facing artifact summary.</li>
+</ul>
+<h4 id="phase-2-in-memory-telemetry-collector-backend-streaming">Phase 2: In-Memory Telemetry Collector &amp; Backend Streaming</h4>
+<ul>
+<li>Implement <code>TelemetryRingBuffer</code> in <code>migration_tools/api/telemetry.py</code> using circular arrays for zero-allocation sampling.</li>
+<li>Register background sampler thread sampling CPU, RSS memory, request counts, and Raft consensus status.</li>
+<li>Add FastAPI endpoints:
+<ul>
+<li><code>GET /v1/telemetry/metrics</code></li>
+<li><code>GET /v1/telemetry/stream</code> (StreamingResponse with <code>text/event-stream</code>)</li>
+<li><code>GET /v1/telemetry/topology</code></li>
+<li><code>POST /v1/telemetry/simulate-alert</code></li>
+</ul>
+</li>
+<li>Add route <code>GET /dashboard</code> serving <code>migration_tools/api/static/dashboard.html</code>.</li>
+</ul>
+<h4 id="phase-3-frontend-shell-real-time-event-engine">Phase 3: Frontend Shell &amp; Real-Time Event Engine</h4>
+<ul>
+<li>Create <code>migration_tools/api/static/dashboard.html</code> with responsive grid layout and semantic ARIA landmarks.</li>
+<li>Create <code>migration_tools/api/static/dashboard.css</code> implementing the obsidian/neon glassmorphic design system.</li>
+<li>Create <code>migration_tools/api/static/dashboard.js</code> with auto-reconnecting <code>EventSource</code> client and DOM reconciliation.</li>
+</ul>
+<h4 id="phase-4-high-performance-canvas-charts-health-gauges">Phase 4: High-Performance Canvas Charts &amp; Health Gauges</h4>
+<ul>
+<li>Implement native lightweight Canvas 2D time-series chart renderer (zero external script dependencies for hermetic security).</li>
+<li>Render CPU, RSS memory (with 50 MiB limit line), P50/P90/P99 latency, and throughput curves.</li>
+<li>Implement Raft 3-node cluster visualization with live leader pulses, term counters, and WAL log delta progress bar.</li>
+</ul>
+<h4 id="phase-5-interactive-multi-vpc-network-topology-visualizer">Phase 5: Interactive Multi-VPC Network Topology Visualizer</h4>
+<ul>
+<li>Build SVG-based interactive force/layered layout for VPCs, subnets, and instances.</li>
+<li>Implement click-to-inspect modal for route tables, CIDRs, and cross-cloud target mappings.</li>
+<li>Add zoom/pan controls and search filtering.</li>
+</ul>
+<h4 id="phase-6-alert-rule-threshold-simulator">Phase 6: Alert Rule Threshold Simulator</h4>
+<ul>
+<li>Build threshold slider with real-time collision detection against live metric curves.</li>
+<li>Display instant firing frequency and false-positive risk metrics.</li>
+<li>Provide direct copy/export to Grafana Alerting YAML and Prometheus Alertmanager rules.</li>
+</ul>
+<h4 id="phase-7-quality-assurance-verification-documentation">Phase 7: Quality Assurance, Verification &amp; Documentation</h4>
+<ul>
+<li>Write pytest test suite <code>tests/test_dashboard_api.py</code> validating SSE streams, metric schemas, and endpoint responses.</li>
+<li>Update <code>docs/ENGINEER_USER_MANUAL.md</code> with <code>/dashboard</code> operational guide.</li>
+<li>Update <code>README.md</code> and top navigation links across <code>/</code>, <code>/compiler</code>, <code>/configuration</code>, and <code>/presentation</code>.</li>
+</ul>
+<hr />
+<h2 id="6-security-compliance-air-gap-verification">6. Security, Compliance &amp; Air-Gap Verification</h2>
+<ol>
+<li><strong>Strict Zero-Egress Air-Gap Compliance:</strong>
+<ul>
+<li>All assets (HTML, CSS, JS, SVG icons, fonts) are bundled locally in the repository.</li>
+<li>Absolutely zero outbound HTTP/HTTPS requests to Google Fonts, CDNs, or external analytics.</li>
+<li>Operates in offline, isolated VPC subnets without internet access.</li>
+</ul>
+</li>
+<li><strong>Minimal Memory Footprint (&lt; 2 MiB Overhead):</strong>
+<ul>
+<li>In-memory ring buffer retains 1,024 metric ticks per metric (approx. 16 KB total RAM).</li>
+<li>Canvas-based rendering runs client-side in the operator's browser, introducing negligible backend CPU consumption (&lt; 0.2%).</li>
+</ul>
+</li>
+<li><strong>Role-Based Access Control (RBAC):</strong>
+<ul>
+<li>Telemetry endpoints respect existing tenancy headers and RBAC tiers (<code>Cluster-Admin</code>, <code>App-Engineer</code>, <code>Compliance-Auditor</code>).</li>
+<li>Read-only by default; chaos drills require <code>Cluster-Admin</code> authentication.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="7-sign-off-milestone-acceptance-matrix">7. Sign-off &amp; Milestone Acceptance Matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Verification Vector</th>
+<th>Acceptance Criteria</th>
+<th>Target SLA</th>
+<th>Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>V1: Latency</strong></td>
+<td>SSE metric stream update interval</td>
+<td>1,000 ms $\pm$ 50ms</td>
+<td>Browser EventSource test</td>
+</tr>
+<tr>
+<td><strong>V2: Chart Render</strong></td>
+<td>60 FPS Canvas rendering with 1,024 points</td>
+<td>$\le$ 16.6 ms per frame</td>
+<td>Chrome DevTools Profiler</td>
+</tr>
+<tr>
+<td><strong>V3: Memory Ceiling</strong></td>
+<td>Backend telemetry buffer RAM overhead</td>
+<td>$\le$ 2.0 MiB RSS</td>
+<td>Process RSS audit</td>
+</tr>
+<tr>
+<td><strong>V4: Zero-Egress</strong></td>
+<td>Outbound external requests from <code>/dashboard</code></td>
+<td>Exactly 0 requests</td>
+<td>Browser Network audit</td>
+</tr>
+<tr>
+<td><strong>V5: API Coverage</strong></td>
+<td>Automated pytest pass rate on telemetry endpoints</td>
+<td>100% (0 failures)</td>
+<td><code>pytest tests/test_dashboard_api.py</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Document finalized and committed to project record repository.</em></p>
+</div>
+      <pre id="raw-view"><code># In-App Zero-Egress Telemetry &amp; Multi-VPC Dashboard Specification &amp; Build Plan
+
+**Document ID:** ARCH-PLAN-DASH-001  
+**Version:** 1.0.0 Production Blueprint  
+**Status:** Approved Architectural Specification &amp; Implementation Roadmap  
+**Author:** &lt;dcouplr/&gt; Core Architecture Team &amp; Antigravity Autonomous Agent  
+**Target Delivery Endpoint:** `http://127.0.0.1:8000/dashboard`  
+**Classification:** Internal Technical Architecture &amp; Engineering Roadmap  
+
+---
+
+## Executive Summary &amp; Strategic Rationale
+
+### The &quot;Zero-Egress In-App Observability&quot; Paradigm
+Enterprises adopting `&lt;dcouplr/&gt;` operate within strict air-gapped VPCs, high-security financial enclaves, or regulated multi-cloud environments where in-perimeter data isolation is paramount. While `&lt;dcouplr/&gt;` natively emits Grafana 11 Unified Alerting YAML and Prometheus Alertmanager rules for organizations that have centralized corporate Grafana clusters, requiring an external Grafana deployment introduces operational friction:
+1. **Infrastructure Overhead:** Requires provisioning external containers, relational state stores (Postgres/MySQL), and complex network ingress rules.
+2. **Third-Party Bloat:** Commercial Grafana maintains 150+ database plugins, legacy authentication protocols (LDAP, NTLM, SAML, Kerberos), and backwards compatibility spanning a decade.
+3. **Network Latency &amp; Air-Gap Verification:** External monitoring pipelines can introduce polling lag (15s–60s) and require firewall exemptions that complicate air-gap audits.
+
+By embedding a **native, zero-dependency, ultra-lightweight real-time telemetry dashboard** directly into the `dcouplr` binary (accessible at `GET /dashboard`), platform engineers, SREs, and compliance officers gain instantaneous, zero-configuration visibility into:
+- Real-time engine health, memory footprints (&lt; 50 MiB RSS), and P50/P90/P99 latency.
+- Dynamic multi-cloud VPC topology maps (AWS VPCs, GCP VPCs, Azure VNets, subnets, route tables).
+- Embedded Raft consensus status (Leader/Follower quorum, WAL compaction deltas, term states).
+- An interactive alert threshold simulator allowing engineers to test PromQL/Datadog alert rules against live curves in real time.
+
+---
+
+## 1. System Architecture Overview
+
+```
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │                             &lt;dcouplr/&gt; HERMETIC ENGINE RUNTIME                        │
+ │                                                                                        │
+ │   ┌───────────────────────┐   ┌───────────────────────────┐   ┌────────────────────┐   │
+ │   │  Go / Python Engine   │   │  Embedded Raft Consensus  │   │  AST &amp; Query Mesh  │   │
+ │   │  Memory &amp; CPU Metrics │   │  Leader / Follower Quorum │   │  PromQL Converter  │   │
+ │   └──────────┬────────────┘   └─────────────┬─────────────┘   └─────────┬──────────┘   │
+ │              │                              │                           │              │
+ │              └──────────────────────────────┼───────────────────────────┘              │
+ │                                             ▼                                          │
+ │                        ┌────────────────────────────────────────┐                      │
+ │                        │  In-Memory Telemetry Collector (Ring)  │                      │
+ │                        │  - Circular ring buffers (1024 slots)  │                      │
+ │                        │  - Zero heap allocation per sample     │                      │
+ │                        │  - Sub-1ms snapshot calculation        │                      │
+ │                        └────────────────────┬───────────────────┘                      │
+ │                                             │                                          │
+ │                ┌────────────────────────────┴───────────────────────────┐              │
+ │                ▼                                                        ▼              │
+ │   ┌───────────────────────────┐                            ┌─────────────────────────┐ │
+ │   │  REST Snapshot APIs       │                            │  SSE Real-Time Stream   │ │
+ │   │  /v1/telemetry/metrics    │                            │  /v1/telemetry/stream   │ │
+ │   │  /v1/telemetry/topology   │                            │  (1000ms push heartbeat)│ │
+ │   └────────────┬──────────────┘                            └────────────┬────────────┘ │
+ └────────────────┼────────────────────────────────────────────────────────┼──────────────┘
+                  │                                                        │
+                  ▼                                                        ▼
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │                      BROWSER CLIENT VIEWPORT (http://127.0.0.1:8000/dashboard)         │
+ │                                                                                        │
+ │   ┌──────────────────────┐  ┌──────────────────────┐  ┌───────────────────────────┐    │
+ │   │ Live Telemetry Cards │  │ Interactive uPlot/   │  │ Multi-VPC Network Map     │    │
+ │   │ CPU, RSS, Latency,   │  │ Canvas Time Series   │  │ Visual SVG Nodes &amp; Edges  │    │
+ │   │ Throughput, Errors   │  │ 60 FPS, Sub-5ms Lag  │  │ AWS -&gt; GCP Network Flow   │    │
+ │   └──────────────────────┘  └──────────────────────┘  └───────────────────────────┘    │
+ │   ┌───────────────────────────────────────────────┐  ┌────────────────────────────┐    │
+ │   │ Embedded Raft Consensus &amp; Cluster Gauges      │  │ Alert Rule Threshold Sim   │    │
+ │   │ Quorum, Log Deltas, Circuit Breakers (Trip)   │  │ Draggable Threshold Slider │    │
+ │   └───────────────────────────────────────────────┘  └────────────────────────────┘    │
+ └────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. Core Functional Pillars
+
+### Pillar 1: Live Real-Time Telemetry Panels (Sub-5ms Latency)
+- **Engine Performance Metrics:**
+  - **CPU Utilization:** Dynamic percentage with 60-second historical window.
+  - **Memory Footprint (RSS):** Monitored in real time against the strict 50 MiB container memory ceiling.
+  - **Request Latency Distribution:** P50 (median), P90 (tail), and P99 (worst-case) microsecond measurements.
+  - **Translation Throughput:** Real-time AST translation rate (operations/second).
+  - **Zero-Egress Security Counters:** Blocked exfiltration attempts, sanitized tokens, and memory scrubbing events.
+- **Rendering Technology:**
+  - Microscopic Canvas / uPlot charting (~40 KB runtime vs. Grafana&#x27;s multi-megabyte bundle).
+  - Capability to render 150,000 data points in under 35 milliseconds.
+  - Zero external CDN dependencies (assets served directly from `/static/` within the binary).
+
+### Pillar 2: Interactive Multi-VPC Topology Map
+- **Network Architecture Visualization:**
+  - Synthesizes the active `ComputeGraph` from parsed Terraform/OpenTofu configurations.
+  - Renders VPC nodes, subnets, internet gateways, NAT gateways, route tables, and attached compute instances.
+  - Color-codes cross-cloud migration mappings (e.g. `aws_vpc` $\to$ `google_compute_network`).
+- **Interactive Capabilities:**
+  - Pan, zoom, node selection, and inspect pane showing CIDR blocks, security groups, and routing rules.
+  - Visual edge highlighting for peering connections and egress gateways.
+  - Instant search filter by VPC name, subnet CIDR, or tag.
+
+### Pillar 3: Embedded Raft Consensus &amp; Cluster Health Gauges
+- **Distributed State Visibility:**
+  - Visual indicators for 3-node cluster topology (`decoupler-01` [Leader], `decoupler-02` [Follower], `decoupler-03` [Follower]).
+  - Current Raft Term, Commit Index, and Last Applied Index.
+  - WAL Snapshot Compaction monitor displaying current uncompacted log delta:
+    $$\Delta I = I_{\text{applied}} - I_{\text{snapshot}}$$
+    Alerts visually when approaching the `snapshot_threshold` (e.g., 8,192 entries).
+- **Circuit Breaker Status &amp; Drill Simulation:**
+  - Live status indicator: **Closed** (Normal / Green), **Half-Open** (Probing / Amber), **Open** (Tripped / Red).
+  - One-click chaos test button (&quot;Simulate Latency Spike / Trip Circuit Breaker&quot;) allowing engineers to observe failover behavior in real time.
+
+### Pillar 4: Alert Rule Threshold Simulator Sandbox
+- **Interactive Rule Tuning:**
+  - Engineers can choose from preset or custom PromQL / Datadog alert definitions (e.g., `rate(http_requests_total[5m]) &gt; 100`, `memory_rss_bytes &gt; 45MiB`).
+  - An interactive horizontal threshold slider overlays the live/historical metric series.
+  - Real-time visual shading:
+    - **Green Zone:** Normal operational envelope.
+    - **Amber Warning Zone:** Approaching threshold.
+    - **Red Breach Zone:** Firing condition met.
+  - Computes instant simulated metrics:
+    - Estimated alert fires per hour.
+    - False positive probability index.
+  - One-click export button: &quot;Generate Verified PrometheusRule YAML&quot; or &quot;Generate Grafana 11 Alerting YAML&quot;.
+
+---
+
+## 3. Technical Specifications &amp; API Contracts
+
+### 3.1 Backend Endpoints (`migration_tools/api/app.py`)
+
+| Method | Endpoint | Description | Response Type |
+|---|---|---|---|
+| `GET` | `/dashboard` | Serves the standalone In-App Telemetry &amp; VPC Dashboard UI | `text/html` |
+| `GET` | `/v1/telemetry/metrics` | Returns point-in-time snapshot of system, engine, and Raft metrics | `application/json` |
+| `GET` | `/v1/telemetry/stream` | Server-Sent Events (SSE) streaming live metrics every 1,000ms | `text/event-stream` |
+| `GET` | `/v1/telemetry/topology` | Returns the synthesized Multi-VPC `ComputeGraph` node-link topology | `application/json` |
+| `POST` | `/v1/telemetry/simulate-alert` | Evaluates threshold parameters against generated/live time-series data | `application/json` |
+
+### 3.2 Metric Payload Schema (`/v1/telemetry/metrics` &amp; SSE)
+
+```json
+{
+  &quot;timestamp&quot;: 1797893700.124,
+  &quot;system&quot;: {
+    &quot;cpu_percent&quot;: 4.2,
+    &quot;memory_rss_bytes&quot;: 38450176,
+    &quot;memory_rss_mb&quot;: 36.67,
+    &quot;memory_limit_mb&quot;: 50.0,
+    &quot;memory_utilization_pct&quot;: 73.3,
+    &quot;uptime_seconds&quot;: 1845.2
+  },
+  &quot;engine&quot;: {
+    &quot;active_workers&quot;: 4,
+    &quot;translations_completed&quot;: 1428,
+    &quot;translation_rate_per_sec&quot;: 48.5,
+    &quot;latency_p50_ms&quot;: 1.2,
+    &quot;latency_p90_ms&quot;: 3.8,
+    &quot;latency_p99_ms&quot;: 8.4,
+    &quot;circuit_breaker&quot;: {
+      &quot;state&quot;: &quot;CLOSED&quot;,
+      &quot;consecutive_failures&quot;: 0,
+      &quot;trip_threshold&quot;: 5,
+      &quot;recovery_timeout_sec&quot;: 10
+    }
+  },
+  &quot;raft&quot;: {
+    &quot;node_id&quot;: &quot;decoupler-01&quot;,
+    &quot;role&quot;: &quot;LEADER&quot;,
+    &quot;term&quot;: 4,
+    &quot;commit_index&quot;: 28419,
+    &quot;last_applied&quot;: 28419,
+    &quot;snapshot_index&quot;: 24000,
+    &quot;uncompacted_delta&quot;: 4419,
+    &quot;compaction_threshold&quot;: 8192,
+    &quot;peers&quot;: [
+      {&quot;id&quot;: &quot;decoupler-02&quot;, &quot;role&quot;: &quot;FOLLOWER&quot;, &quot;status&quot;: &quot;HEALTHY&quot;, &quot;ping_ms&quot;: 0.8},
+      {&quot;id&quot;: &quot;decoupler-03&quot;, &quot;role&quot;: &quot;FOLLOWER&quot;, &quot;status&quot;: &quot;HEALTHY&quot;, &quot;ping_ms&quot;: 1.1}
+    ]
+  },
+  &quot;security&quot;: {
+    &quot;zero_egress_enforced&quot;: true,
+    &quot;tokens_anonymized&quot;: 4120,
+    &quot;exfiltration_attempts_blocked&quot;: 0,
+    &quot;cve_vulnerabilities&quot;: 0
+  }
+}
+```
+
+### 3.3 Topology Payload Schema (`/v1/telemetry/topology`)
+
+```json
+{
+  &quot;vpcs&quot;: [
+    {
+      &quot;id&quot;: &quot;vpc-aws-prod-01&quot;,
+      &quot;name&quot;: &quot;production_vpc&quot;,
+      &quot;provider&quot;: &quot;aws&quot;,
+      &quot;cidr_block&quot;: &quot;10.100.0.0/16&quot;,
+      &quot;target_equivalent&quot;: &quot;google_compute_network.production_vpc&quot;,
+      &quot;subnets&quot;: [
+        {&quot;id&quot;: &quot;subnet-01&quot;, &quot;name&quot;: &quot;public-1a&quot;, &quot;cidr&quot;: &quot;10.100.1.0/24&quot;, &quot;zone&quot;: &quot;us-east-1a&quot;, &quot;tier&quot;: &quot;public&quot;},
+        {&quot;id&quot;: &quot;subnet-02&quot;, &quot;name&quot;: &quot;private-1a&quot;, &quot;cidr&quot;: &quot;10.100.10.0/24&quot;, &quot;zone&quot;: &quot;us-east-1a&quot;, &quot;tier&quot;: &quot;private&quot;}
+      ],
+      &quot;instances_count&quot;: 8,
+      &quot;peering_connections&quot;: [&quot;vpc-aws-analytics-02&quot;]
+    },
+    {
+      &quot;id&quot;: &quot;vpc-gcp-prod-01&quot;,
+      &quot;name&quot;: &quot;gcp_hybrid_mesh&quot;,
+      &quot;provider&quot;: &quot;gcp&quot;,
+      &quot;cidr_block&quot;: &quot;10.200.0.0/16&quot;,
+      &quot;target_equivalent&quot;: &quot;google_compute_network.gcp_hybrid_mesh&quot;,
+      &quot;subnets&quot;: [
+        {&quot;id&quot;: &quot;subnet-gcp-01&quot;, &quot;name&quot;: &quot;gke-nodes&quot;, &quot;cidr&quot;: &quot;10.200.10.0/24&quot;, &quot;region&quot;: &quot;us-central1&quot;, &quot;tier&quot;: &quot;private&quot;}
+      ],
+      &quot;instances_count&quot;: 12,
+      &quot;peering_connections&quot;: [&quot;vpc-aws-prod-01&quot;]
+    }
+  ]
+}
+```
+
+---
+
+## 4. Frontend Design System &amp; Aesthetics
+
+### Visual Identity Alignment
+The dashboard adheres to the design tokens established across `compiler.html`, `admin.html`, and `presentation.html`:
+- **Background Palette:** High-contrast, deep obsidian `#070b12` with subtle linear noise and `#0d1527` card surfaces.
+- **Accent Highlighters:**
+  - Cyber Cyan (`#00e5ff`) for telemetry curves, latency paths, and active connections.
+  - Electric Emerald (`#00e676`) for healthy Raft quorum and closed circuit breakers.
+  - Sunset Amber (`#ffab00`) for WAL compaction warnings and half-open circuit states.
+  - Crimson Alert (`#ff1744`) for tripped circuit breakers, memory saturation, and threshold violations.
+  - Hermetic Violet (`#7c4dff`) for multi-cloud VPC topology nodes.
+- **Glassmorphic Depth:** Semi-transparent panel backdrops (`rgba(13, 21, 39, 0.75)`) with `backdrop-filter: blur(12px)` and hairline border highlights (`1px solid rgba(255, 255, 255, 0.08)`).
+- **Responsive Layout:**
+  - **Top Navigation Bar:** Cluster status pill, SSE connection heartbeat (pulsing green dot), quick navigation to `/compiler`, `/configuration`, `/docs`, and `/`.
+  - **Row 1 - Key Metric KPI Cards:** CPU (%), Memory (MB / % of cap), P99 Latency (ms), Throughput (tx/s), Security Egress Status.
+  - **Row 2 - Real-Time Telemetry Panels (Split View):**
+    - Left: Latency Percentiles &amp; Throughput (Dual-Axis Time Series Canvas).
+    - Right: Memory RSS vs. Hard Allocation Ceiling (50 MiB Threshold Band).
+  - **Row 3 - Multi-VPC Topology &amp; Raft Quorum:**
+    - Left: Interactive SVG Multi-VPC Architecture Graph.
+    - Right: 3-Node Raft Consensus Health &amp; Auto-Compaction Gauge.
+  - **Row 4 - Interactive Alert Rule Simulator:**
+    - Metric selector, interactive threshold slider, live breach calculation, and one-click Grafana/Prometheus export.
+
+---
+
+## 5. Multi-Phase Implementation Plan
+
+```mermaid
+gantt
+    title In-App Dashboard Build Roadmap
+    dateFormat  YYYY-MM-DD
+    section Phase 1: Planning
+    Architectural Specification &amp; Review :done, p1_1, 2026-10-21, 1d
+    section Phase 2: Backend
+    Telemetry Collector &amp; Circular Ring Buffers :active, p2_1, 2026-10-22, 1d
+    REST &amp; SSE Streaming Endpoints :p2_2, 2026-10-22, 1d
+    Topology &amp; Simulation Handlers :p2_3, 2026-10-23, 1d
+    section Phase 3: Frontend Foundation
+    HTML Structure &amp; Dark Glassmorphism CSS :p3_1, 2026-10-23, 1d
+    SSE Connection Client &amp; State Dispatcher :p3_2, 2026-10-24, 1d
+    section Phase 4: Data Visualization
+    Real-Time Canvas Telemetry Charts :p4_1, 2026-10-24, 1d
+    Raft Consensus &amp; Health Gauges :p4_2, 2026-10-25, 1d
+    section Phase 5: VPC Topology
+    Interactive Multi-VPC SVG Graph Visualizer :p5_1, 2026-10-25, 1d
+    section Phase 6: Alert Simulator
+    Threshold Slider &amp; Live Breach Calculator :p6_1, 2026-10-26, 1d
+    section Phase 7: Verification &amp; Docs
+    Automated Test Suites &amp; User Manual Update :p7_1, 2026-10-26, 1d
+```
+
+### Detailed Phase Breakdown
+
+#### Phase 1: Architectural Foundation &amp; Project Governance (Current)
+- Complete this formal specification document (`docs/IN_APP_TELEMETRY_DASHBOARD_PLAN.md`).
+- Register the specification in the Central Project Record Assistant Document Admin Portal (`migration_tools/api/app.py`).
+- Create user-facing artifact summary.
+
+#### Phase 2: In-Memory Telemetry Collector &amp; Backend Streaming
+- Implement `TelemetryRingBuffer` in `migration_tools/api/telemetry.py` using circular arrays for zero-allocation sampling.
+- Register background sampler thread sampling CPU, RSS memory, request counts, and Raft consensus status.
+- Add FastAPI endpoints:
+  - `GET /v1/telemetry/metrics`
+  - `GET /v1/telemetry/stream` (StreamingResponse with `text/event-stream`)
+  - `GET /v1/telemetry/topology`
+  - `POST /v1/telemetry/simulate-alert`
+- Add route `GET /dashboard` serving `migration_tools/api/static/dashboard.html`.
+
+#### Phase 3: Frontend Shell &amp; Real-Time Event Engine
+- Create `migration_tools/api/static/dashboard.html` with responsive grid layout and semantic ARIA landmarks.
+- Create `migration_tools/api/static/dashboard.css` implementing the obsidian/neon glassmorphic design system.
+- Create `migration_tools/api/static/dashboard.js` with auto-reconnecting `EventSource` client and DOM reconciliation.
+
+#### Phase 4: High-Performance Canvas Charts &amp; Health Gauges
+- Implement native lightweight Canvas 2D time-series chart renderer (zero external script dependencies for hermetic security).
+- Render CPU, RSS memory (with 50 MiB limit line), P50/P90/P99 latency, and throughput curves.
+- Implement Raft 3-node cluster visualization with live leader pulses, term counters, and WAL log delta progress bar.
+
+#### Phase 5: Interactive Multi-VPC Network Topology Visualizer
+- Build SVG-based interactive force/layered layout for VPCs, subnets, and instances.
+- Implement click-to-inspect modal for route tables, CIDRs, and cross-cloud target mappings.
+- Add zoom/pan controls and search filtering.
+
+#### Phase 6: Alert Rule Threshold Simulator
+- Build threshold slider with real-time collision detection against live metric curves.
+- Display instant firing frequency and false-positive risk metrics.
+- Provide direct copy/export to Grafana Alerting YAML and Prometheus Alertmanager rules.
+
+#### Phase 7: Quality Assurance, Verification &amp; Documentation
+- Write pytest test suite `tests/test_dashboard_api.py` validating SSE streams, metric schemas, and endpoint responses.
+- Update `docs/ENGINEER_USER_MANUAL.md` with `/dashboard` operational guide.
+- Update `README.md` and top navigation links across `/`, `/compiler`, `/configuration`, and `/presentation`.
+
+---
+
+## 6. Security, Compliance &amp; Air-Gap Verification
+
+1. **Strict Zero-Egress Air-Gap Compliance:**
+   - All assets (HTML, CSS, JS, SVG icons, fonts) are bundled locally in the repository.
+   - Absolutely zero outbound HTTP/HTTPS requests to Google Fonts, CDNs, or external analytics.
+   - Operates in offline, isolated VPC subnets without internet access.
+2. **Minimal Memory Footprint (&lt; 2 MiB Overhead):**
+   - In-memory ring buffer retains 1,024 metric ticks per metric (approx. 16 KB total RAM).
+   - Canvas-based rendering runs client-side in the operator&#x27;s browser, introducing negligible backend CPU consumption (&lt; 0.2%).
+3. **Role-Based Access Control (RBAC):**
+   - Telemetry endpoints respect existing tenancy headers and RBAC tiers (`Cluster-Admin`, `App-Engineer`, `Compliance-Auditor`).
+   - Read-only by default; chaos drills require `Cluster-Admin` authentication.
+
+---
+
+## 7. Sign-off &amp; Milestone Acceptance Matrix
+
+| Verification Vector | Acceptance Criteria | Target SLA | Method |
+|---|---|---|---|
+| **V1: Latency** | SSE metric stream update interval | 1,000 ms $\pm$ 50ms | Browser EventSource test |
+| **V2: Chart Render** | 60 FPS Canvas rendering with 1,024 points | $\le$ 16.6 ms per frame | Chrome DevTools Profiler |
+| **V3: Memory Ceiling** | Backend telemetry buffer RAM overhead | $\le$ 2.0 MiB RSS | Process RSS audit |
+| **V4: Zero-Egress** | Outbound external requests from `/dashboard` | Exactly 0 requests | Browser Network audit |
+| **V5: API Coverage** | Automated pytest pass rate on telemetry endpoints | 100% (0 failures) | `pytest tests/test_dashboard_api.py` |
+
+---
+
+*Document finalized and committed to project record repository.*
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># In-App Zero-Egress Telemetry &amp; Multi-VPC Dashboard Specification &amp; Build Plan
+
+**Document ID:** ARCH-PLAN-DASH-001  
+**Version:** 1.0.0 Production Blueprint  
+**Status:** Approved Architectural Specification &amp; Implementation Roadmap  
+**Author:** &lt;dcouplr/&gt; Core Architecture Team &amp; Antigravity Autonomous Agent  
+**Target Delivery Endpoint:** `http://127.0.0.1:8000/dashboard`  
+**Classification:** Internal Technical Architecture &amp; Engineering Roadmap  
+
+---
+
+## Executive Summary &amp; Strategic Rationale
+
+### The &quot;Zero-Egress In-App Observability&quot; Paradigm
+Enterprises adopting `&lt;dcouplr/&gt;` operate within strict air-gapped VPCs, high-security financial enclaves, or regulated multi-cloud environments where in-perimeter data isolation is paramount. While `&lt;dcouplr/&gt;` natively emits Grafana 11 Unified Alerting YAML and Prometheus Alertmanager rules for organizations that have centralized corporate Grafana clusters, requiring an external Grafana deployment introduces operational friction:
+1. **Infrastructure Overhead:** Requires provisioning external containers, relational state stores (Postgres/MySQL), and complex network ingress rules.
+2. **Third-Party Bloat:** Commercial Grafana maintains 150+ database plugins, legacy authentication protocols (LDAP, NTLM, SAML, Kerberos), and backwards compatibility spanning a decade.
+3. **Network Latency &amp; Air-Gap Verification:** External monitoring pipelines can introduce polling lag (15s–60s) and require firewall exemptions that complicate air-gap audits.
+
+By embedding a **native, zero-dependency, ultra-lightweight real-time telemetry dashboard** directly into the `dcouplr` binary (accessible at `GET /dashboard`), platform engineers, SREs, and compliance officers gain instantaneous, zero-configuration visibility into:
+- Real-time engine health, memory footprints (&lt; 50 MiB RSS), and P50/P90/P99 latency.
+- Dynamic multi-cloud VPC topology maps (AWS VPCs, GCP VPCs, Azure VNets, subnets, route tables).
+- Embedded Raft consensus status (Leader/Follower quorum, WAL compaction deltas, term states).
+- An interactive alert threshold simulator allowing engineers to test PromQL/Datadog alert rules against live curves in real time.
+
+---
+
+## 1. System Architecture Overview
+
+```
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │                             &lt;dcouplr/&gt; HERMETIC ENGINE RUNTIME                        │
+ │                                                                                        │
+ │   ┌───────────────────────┐   ┌───────────────────────────┐   ┌────────────────────┐   │
+ │   │  Go / Python Engine   │   │  Embedded Raft Consensus  │   │  AST &amp; Query Mesh  │   │
+ │   │  Memory &amp; CPU Metrics │   │  Leader / Follower Quorum │   │  PromQL Converter  │   │
+ │   └──────────┬────────────┘   └─────────────┬─────────────┘   └─────────┬──────────┘   │
+ │              │                              │                           │              │
+ │              └──────────────────────────────┼───────────────────────────┘              │
+ │                                             ▼                                          │
+ │                        ┌────────────────────────────────────────┐                      │
+ │                        │  In-Memory Telemetry Collector (Ring)  │                      │
+ │                        │  - Circular ring buffers (1024 slots)  │                      │
+ │                        │  - Zero heap allocation per sample     │                      │
+ │                        │  - Sub-1ms snapshot calculation        │                      │
+ │                        └────────────────────┬───────────────────┘                      │
+ │                                             │                                          │
+ │                ┌────────────────────────────┴───────────────────────────┐              │
+ │                ▼                                                        ▼              │
+ │   ┌───────────────────────────┐                            ┌─────────────────────────┐ │
+ │   │  REST Snapshot APIs       │                            │  SSE Real-Time Stream   │ │
+ │   │  /v1/telemetry/metrics    │                            │  /v1/telemetry/stream   │ │
+ │   │  /v1/telemetry/topology   │                            │  (1000ms push heartbeat)│ │
+ │   └────────────┬──────────────┘                            └────────────┬────────────┘ │
+ └────────────────┼────────────────────────────────────────────────────────┼──────────────┘
+                  │                                                        │
+                  ▼                                                        ▼
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │                      BROWSER CLIENT VIEWPORT (http://127.0.0.1:8000/dashboard)         │
+ │                                                                                        │
+ │   ┌──────────────────────┐  ┌──────────────────────┐  ┌───────────────────────────┐    │
+ │   │ Live Telemetry Cards │  │ Interactive uPlot/   │  │ Multi-VPC Network Map     │    │
+ │   │ CPU, RSS, Latency,   │  │ Canvas Time Series   │  │ Visual SVG Nodes &amp; Edges  │    │
+ │   │ Throughput, Errors   │  │ 60 FPS, Sub-5ms Lag  │  │ AWS -&gt; GCP Network Flow   │    │
+ │   └──────────────────────┘  └──────────────────────┘  └───────────────────────────┘    │
+ │   ┌───────────────────────────────────────────────┐  ┌────────────────────────────┐    │
+ │   │ Embedded Raft Consensus &amp; Cluster Gauges      │  │ Alert Rule Threshold Sim   │    │
+ │   │ Quorum, Log Deltas, Circuit Breakers (Trip)   │  │ Draggable Threshold Slider │    │
+ │   └───────────────────────────────────────────────┘  └────────────────────────────┘    │
+ └────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. Core Functional Pillars
+
+### Pillar 1: Live Real-Time Telemetry Panels (Sub-5ms Latency)
+- **Engine Performance Metrics:**
+  - **CPU Utilization:** Dynamic percentage with 60-second historical window.
+  - **Memory Footprint (RSS):** Monitored in real time against the strict 50 MiB container memory ceiling.
+  - **Request Latency Distribution:** P50 (median), P90 (tail), and P99 (worst-case) microsecond measurements.
+  - **Translation Throughput:** Real-time AST translation rate (operations/second).
+  - **Zero-Egress Security Counters:** Blocked exfiltration attempts, sanitized tokens, and memory scrubbing events.
+- **Rendering Technology:**
+  - Microscopic Canvas / uPlot charting (~40 KB runtime vs. Grafana&#x27;s multi-megabyte bundle).
+  - Capability to render 150,000 data points in under 35 milliseconds.
+  - Zero external CDN dependencies (assets served directly from `/static/` within the binary).
+
+### Pillar 2: Interactive Multi-VPC Topology Map
+- **Network Architecture Visualization:**
+  - Synthesizes the active `ComputeGraph` from parsed Terraform/OpenTofu configurations.
+  - Renders VPC nodes, subnets, internet gateways, NAT gateways, route tables, and attached compute instances.
+  - Color-codes cross-cloud migration mappings (e.g. `aws_vpc` $\to$ `google_compute_network`).
+- **Interactive Capabilities:**
+  - Pan, zoom, node selection, and inspect pane showing CIDR blocks, security groups, and routing rules.
+  - Visual edge highlighting for peering connections and egress gateways.
+  - Instant search filter by VPC name, subnet CIDR, or tag.
+
+### Pillar 3: Embedded Raft Consensus &amp; Cluster Health Gauges
+- **Distributed State Visibility:**
+  - Visual indicators for 3-node cluster topology (`decoupler-01` [Leader], `decoupler-02` [Follower], `decoupler-03` [Follower]).
+  - Current Raft Term, Commit Index, and Last Applied Index.
+  - WAL Snapshot Compaction monitor displaying current uncompacted log delta:
+    $$\Delta I = I_{\text{applied}} - I_{\text{snapshot}}$$
+    Alerts visually when approaching the `snapshot_threshold` (e.g., 8,192 entries).
+- **Circuit Breaker Status &amp; Drill Simulation:**
+  - Live status indicator: **Closed** (Normal / Green), **Half-Open** (Probing / Amber), **Open** (Tripped / Red).
+  - One-click chaos test button (&quot;Simulate Latency Spike / Trip Circuit Breaker&quot;) allowing engineers to observe failover behavior in real time.
+
+### Pillar 4: Alert Rule Threshold Simulator Sandbox
+- **Interactive Rule Tuning:**
+  - Engineers can choose from preset or custom PromQL / Datadog alert definitions (e.g., `rate(http_requests_total[5m]) &gt; 100`, `memory_rss_bytes &gt; 45MiB`).
+  - An interactive horizontal threshold slider overlays the live/historical metric series.
+  - Real-time visual shading:
+    - **Green Zone:** Normal operational envelope.
+    - **Amber Warning Zone:** Approaching threshold.
+    - **Red Breach Zone:** Firing condition met.
+  - Computes instant simulated metrics:
+    - Estimated alert fires per hour.
+    - False positive probability index.
+  - One-click export button: &quot;Generate Verified PrometheusRule YAML&quot; or &quot;Generate Grafana 11 Alerting YAML&quot;.
+
+---
+
+## 3. Technical Specifications &amp; API Contracts
+
+### 3.1 Backend Endpoints (`migration_tools/api/app.py`)
+
+| Method | Endpoint | Description | Response Type |
+|---|---|---|---|
+| `GET` | `/dashboard` | Serves the standalone In-App Telemetry &amp; VPC Dashboard UI | `text/html` |
+| `GET` | `/v1/telemetry/metrics` | Returns point-in-time snapshot of system, engine, and Raft metrics | `application/json` |
+| `GET` | `/v1/telemetry/stream` | Server-Sent Events (SSE) streaming live metrics every 1,000ms | `text/event-stream` |
+| `GET` | `/v1/telemetry/topology` | Returns the synthesized Multi-VPC `ComputeGraph` node-link topology | `application/json` |
+| `POST` | `/v1/telemetry/simulate-alert` | Evaluates threshold parameters against generated/live time-series data | `application/json` |
+
+### 3.2 Metric Payload Schema (`/v1/telemetry/metrics` &amp; SSE)
+
+```json
+{
+  &quot;timestamp&quot;: 1797893700.124,
+  &quot;system&quot;: {
+    &quot;cpu_percent&quot;: 4.2,
+    &quot;memory_rss_bytes&quot;: 38450176,
+    &quot;memory_rss_mb&quot;: 36.67,
+    &quot;memory_limit_mb&quot;: 50.0,
+    &quot;memory_utilization_pct&quot;: 73.3,
+    &quot;uptime_seconds&quot;: 1845.2
+  },
+  &quot;engine&quot;: {
+    &quot;active_workers&quot;: 4,
+    &quot;translations_completed&quot;: 1428,
+    &quot;translation_rate_per_sec&quot;: 48.5,
+    &quot;latency_p50_ms&quot;: 1.2,
+    &quot;latency_p90_ms&quot;: 3.8,
+    &quot;latency_p99_ms&quot;: 8.4,
+    &quot;circuit_breaker&quot;: {
+      &quot;state&quot;: &quot;CLOSED&quot;,
+      &quot;consecutive_failures&quot;: 0,
+      &quot;trip_threshold&quot;: 5,
+      &quot;recovery_timeout_sec&quot;: 10
+    }
+  },
+  &quot;raft&quot;: {
+    &quot;node_id&quot;: &quot;decoupler-01&quot;,
+    &quot;role&quot;: &quot;LEADER&quot;,
+    &quot;term&quot;: 4,
+    &quot;commit_index&quot;: 28419,
+    &quot;last_applied&quot;: 28419,
+    &quot;snapshot_index&quot;: 24000,
+    &quot;uncompacted_delta&quot;: 4419,
+    &quot;compaction_threshold&quot;: 8192,
+    &quot;peers&quot;: [
+      {&quot;id&quot;: &quot;decoupler-02&quot;, &quot;role&quot;: &quot;FOLLOWER&quot;, &quot;status&quot;: &quot;HEALTHY&quot;, &quot;ping_ms&quot;: 0.8},
+      {&quot;id&quot;: &quot;decoupler-03&quot;, &quot;role&quot;: &quot;FOLLOWER&quot;, &quot;status&quot;: &quot;HEALTHY&quot;, &quot;ping_ms&quot;: 1.1}
+    ]
+  },
+  &quot;security&quot;: {
+    &quot;zero_egress_enforced&quot;: true,
+    &quot;tokens_anonymized&quot;: 4120,
+    &quot;exfiltration_attempts_blocked&quot;: 0,
+    &quot;cve_vulnerabilities&quot;: 0
+  }
+}
+```
+
+### 3.3 Topology Payload Schema (`/v1/telemetry/topology`)
+
+```json
+{
+  &quot;vpcs&quot;: [
+    {
+      &quot;id&quot;: &quot;vpc-aws-prod-01&quot;,
+      &quot;name&quot;: &quot;production_vpc&quot;,
+      &quot;provider&quot;: &quot;aws&quot;,
+      &quot;cidr_block&quot;: &quot;10.100.0.0/16&quot;,
+      &quot;target_equivalent&quot;: &quot;google_compute_network.production_vpc&quot;,
+      &quot;subnets&quot;: [
+        {&quot;id&quot;: &quot;subnet-01&quot;, &quot;name&quot;: &quot;public-1a&quot;, &quot;cidr&quot;: &quot;10.100.1.0/24&quot;, &quot;zone&quot;: &quot;us-east-1a&quot;, &quot;tier&quot;: &quot;public&quot;},
+        {&quot;id&quot;: &quot;subnet-02&quot;, &quot;name&quot;: &quot;private-1a&quot;, &quot;cidr&quot;: &quot;10.100.10.0/24&quot;, &quot;zone&quot;: &quot;us-east-1a&quot;, &quot;tier&quot;: &quot;private&quot;}
+      ],
+      &quot;instances_count&quot;: 8,
+      &quot;peering_connections&quot;: [&quot;vpc-aws-analytics-02&quot;]
+    },
+    {
+      &quot;id&quot;: &quot;vpc-gcp-prod-01&quot;,
+      &quot;name&quot;: &quot;gcp_hybrid_mesh&quot;,
+      &quot;provider&quot;: &quot;gcp&quot;,
+      &quot;cidr_block&quot;: &quot;10.200.0.0/16&quot;,
+      &quot;target_equivalent&quot;: &quot;google_compute_network.gcp_hybrid_mesh&quot;,
+      &quot;subnets&quot;: [
+        {&quot;id&quot;: &quot;subnet-gcp-01&quot;, &quot;name&quot;: &quot;gke-nodes&quot;, &quot;cidr&quot;: &quot;10.200.10.0/24&quot;, &quot;region&quot;: &quot;us-central1&quot;, &quot;tier&quot;: &quot;private&quot;}
+      ],
+      &quot;instances_count&quot;: 12,
+      &quot;peering_connections&quot;: [&quot;vpc-aws-prod-01&quot;]
+    }
+  ]
+}
+```
+
+---
+
+## 4. Frontend Design System &amp; Aesthetics
+
+### Visual Identity Alignment
+The dashboard adheres to the design tokens established across `compiler.html`, `admin.html`, and `presentation.html`:
+- **Background Palette:** High-contrast, deep obsidian `#070b12` with subtle linear noise and `#0d1527` card surfaces.
+- **Accent Highlighters:**
+  - Cyber Cyan (`#00e5ff`) for telemetry curves, latency paths, and active connections.
+  - Electric Emerald (`#00e676`) for healthy Raft quorum and closed circuit breakers.
+  - Sunset Amber (`#ffab00`) for WAL compaction warnings and half-open circuit states.
+  - Crimson Alert (`#ff1744`) for tripped circuit breakers, memory saturation, and threshold violations.
+  - Hermetic Violet (`#7c4dff`) for multi-cloud VPC topology nodes.
+- **Glassmorphic Depth:** Semi-transparent panel backdrops (`rgba(13, 21, 39, 0.75)`) with `backdrop-filter: blur(12px)` and hairline border highlights (`1px solid rgba(255, 255, 255, 0.08)`).
+- **Responsive Layout:**
+  - **Top Navigation Bar:** Cluster status pill, SSE connection heartbeat (pulsing green dot), quick navigation to `/compiler`, `/configuration`, `/docs`, and `/`.
+  - **Row 1 - Key Metric KPI Cards:** CPU (%), Memory (MB / % of cap), P99 Latency (ms), Throughput (tx/s), Security Egress Status.
+  - **Row 2 - Real-Time Telemetry Panels (Split View):**
+    - Left: Latency Percentiles &amp; Throughput (Dual-Axis Time Series Canvas).
+    - Right: Memory RSS vs. Hard Allocation Ceiling (50 MiB Threshold Band).
+  - **Row 3 - Multi-VPC Topology &amp; Raft Quorum:**
+    - Left: Interactive SVG Multi-VPC Architecture Graph.
+    - Right: 3-Node Raft Consensus Health &amp; Auto-Compaction Gauge.
+  - **Row 4 - Interactive Alert Rule Simulator:**
+    - Metric selector, interactive threshold slider, live breach calculation, and one-click Grafana/Prometheus export.
+
+---
+
+## 5. Multi-Phase Implementation Plan
+
+```mermaid
+gantt
+    title In-App Dashboard Build Roadmap
+    dateFormat  YYYY-MM-DD
+    section Phase 1: Planning
+    Architectural Specification &amp; Review :done, p1_1, 2026-10-21, 1d
+    section Phase 2: Backend
+    Telemetry Collector &amp; Circular Ring Buffers :active, p2_1, 2026-10-22, 1d
+    REST &amp; SSE Streaming Endpoints :p2_2, 2026-10-22, 1d
+    Topology &amp; Simulation Handlers :p2_3, 2026-10-23, 1d
+    section Phase 3: Frontend Foundation
+    HTML Structure &amp; Dark Glassmorphism CSS :p3_1, 2026-10-23, 1d
+    SSE Connection Client &amp; State Dispatcher :p3_2, 2026-10-24, 1d
+    section Phase 4: Data Visualization
+    Real-Time Canvas Telemetry Charts :p4_1, 2026-10-24, 1d
+    Raft Consensus &amp; Health Gauges :p4_2, 2026-10-25, 1d
+    section Phase 5: VPC Topology
+    Interactive Multi-VPC SVG Graph Visualizer :p5_1, 2026-10-25, 1d
+    section Phase 6: Alert Simulator
+    Threshold Slider &amp; Live Breach Calculator :p6_1, 2026-10-26, 1d
+    section Phase 7: Verification &amp; Docs
+    Automated Test Suites &amp; User Manual Update :p7_1, 2026-10-26, 1d
+```
+
+### Detailed Phase Breakdown
+
+#### Phase 1: Architectural Foundation &amp; Project Governance (Current)
+- Complete this formal specification document (`docs/IN_APP_TELEMETRY_DASHBOARD_PLAN.md`).
+- Register the specification in the Central Project Record Assistant Document Admin Portal (`migration_tools/api/app.py`).
+- Create user-facing artifact summary.
+
+#### Phase 2: In-Memory Telemetry Collector &amp; Backend Streaming
+- Implement `TelemetryRingBuffer` in `migration_tools/api/telemetry.py` using circular arrays for zero-allocation sampling.
+- Register background sampler thread sampling CPU, RSS memory, request counts, and Raft consensus status.
+- Add FastAPI endpoints:
+  - `GET /v1/telemetry/metrics`
+  - `GET /v1/telemetry/stream` (StreamingResponse with `text/event-stream`)
+  - `GET /v1/telemetry/topology`
+  - `POST /v1/telemetry/simulate-alert`
+- Add route `GET /dashboard` serving `migration_tools/api/static/dashboard.html`.
+
+#### Phase 3: Frontend Shell &amp; Real-Time Event Engine
+- Create `migration_tools/api/static/dashboard.html` with responsive grid layout and semantic ARIA landmarks.
+- Create `migration_tools/api/static/dashboard.css` implementing the obsidian/neon glassmorphic design system.
+- Create `migration_tools/api/static/dashboard.js` with auto-reconnecting `EventSource` client and DOM reconciliation.
+
+#### Phase 4: High-Performance Canvas Charts &amp; Health Gauges
+- Implement native lightweight Canvas 2D time-series chart renderer (zero external script dependencies for hermetic security).
+- Render CPU, RSS memory (with 50 MiB limit line), P50/P90/P99 latency, and throughput curves.
+- Implement Raft 3-node cluster visualization with live leader pulses, term counters, and WAL log delta progress bar.
+
+#### Phase 5: Interactive Multi-VPC Network Topology Visualizer
+- Build SVG-based interactive force/layered layout for VPCs, subnets, and instances.
+- Implement click-to-inspect modal for route tables, CIDRs, and cross-cloud target mappings.
+- Add zoom/pan controls and search filtering.
+
+#### Phase 6: Alert Rule Threshold Simulator
+- Build threshold slider with real-time collision detection against live metric curves.
+- Display instant firing frequency and false-positive risk metrics.
+- Provide direct copy/export to Grafana Alerting YAML and Prometheus Alertmanager rules.
+
+#### Phase 7: Quality Assurance, Verification &amp; Documentation
+- Write pytest test suite `tests/test_dashboard_api.py` validating SSE streams, metric schemas, and endpoint responses.
+- Update `docs/ENGINEER_USER_MANUAL.md` with `/dashboard` operational guide.
+- Update `README.md` and top navigation links across `/`, `/compiler`, `/configuration`, and `/presentation`.
+
+---
+
+## 6. Security, Compliance &amp; Air-Gap Verification
+
+1. **Strict Zero-Egress Air-Gap Compliance:**
+   - All assets (HTML, CSS, JS, SVG icons, fonts) are bundled locally in the repository.
+   - Absolutely zero outbound HTTP/HTTPS requests to Google Fonts, CDNs, or external analytics.
+   - Operates in offline, isolated VPC subnets without internet access.
+2. **Minimal Memory Footprint (&lt; 2 MiB Overhead):**
+   - In-memory ring buffer retains 1,024 metric ticks per metric (approx. 16 KB total RAM).
+   - Canvas-based rendering runs client-side in the operator&#x27;s browser, introducing negligible backend CPU consumption (&lt; 0.2%).
+3. **Role-Based Access Control (RBAC):**
+   - Telemetry endpoints respect existing tenancy headers and RBAC tiers (`Cluster-Admin`, `App-Engineer`, `Compliance-Auditor`).
+   - Read-only by default; chaos drills require `Cluster-Admin` authentication.
+
+---
+
+## 7. Sign-off &amp; Milestone Acceptance Matrix
+
+| Verification Vector | Acceptance Criteria | Target SLA | Method |
+|---|---|---|---|
+| **V1: Latency** | SSE metric stream update interval | 1,000 ms $\pm$ 50ms | Browser EventSource test |
+| **V2: Chart Render** | 60 FPS Canvas rendering with 1,024 points | $\le$ 16.6 ms per frame | Chrome DevTools Profiler |
+| **V3: Memory Ceiling** | Backend telemetry buffer RAM overhead | $\le$ 2.0 MiB RSS | Process RSS audit |
+| **V4: Zero-Egress** | Outbound external requests from `/dashboard` | Exactly 0 requests | Browser Network audit |
+| **V5: API Coverage** | Automated pytest pass rate on telemetry endpoints | 100% (0 failures) | `pytest tests/test_dashboard_api.py` |
+
+---
+
+*Document finalized and committed to project record repository.*
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

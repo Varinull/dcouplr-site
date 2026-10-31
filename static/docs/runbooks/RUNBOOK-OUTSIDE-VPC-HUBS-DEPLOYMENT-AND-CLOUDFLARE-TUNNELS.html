@@ -1,0 +1,2002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-OUTSIDE-VPC-HUBS-DEPLOYMENT-AND-CLOUDFLARE-TUNNELS.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-OUTSIDE-VPC-HUBS-DEPLOYMENT-AND-CLOUDFLARE-TUNNELS.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-OUTSIDE-VPC-HUBS-DEPLOYMENT-AND-CLOUDFLARE-TUNNELS.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="engineering-runbook-outside-vpc-hubs-deployment-cloudflare-zero-trust-ingress-tunnels">Engineering Runbook: Outside-VPC Hubs Deployment &amp; Cloudflare Zero Trust Ingress Tunnels</h1>
+<p><strong>Document Identifier:</strong> <code>VA-RUNBOOK-ENG-HUBS-001</code><br />
+<strong>Classification:</strong> SRE &amp; DevOps Implementation Guide &amp; Operational Specification<br />
+<strong>Target Audience:</strong> Site Reliability Engineers (SRE), Network Operations Center (NOC) Engineers, Cloud Security Architects, Systems Administrators<br />
+<strong>Supported Platforms:</strong> Linux (Ubuntu 20.04/22.04/24.04, Debian 11/12, RHEL 8/9, Rocky Linux 8/9, Amazon Linux 2023), Windows Server 2019/2022/2025, Docker, Kubernetes<br />
+<strong>Network Perimeter Policy:</strong> Strictly Inbound-Dark (<code>0.0.0.0/0:ANY</code> Ingress Blocked on VPC Security Groups)<br />
+<strong>Transport Security:</strong> Outbound-Only QUIC (UDP 7844) / TLS 1.3 (TCP 443)</p>
+<hr />
+<h2 id="1-architecture-overview-how-outside-vpc-projection-works">1. Architecture Overview: How Outside-VPC Projection Works</h2>
+<p>Enterprise infrastructure monitoring requires visual, real-time displays across remote Network Operations Centers (NOC), Site Reliability Engineering (SRE) war-rooms, office TV walls, and executive kiosks. However, internal Virtual Private Clouds (VPCs) must remain isolated with zero public IPs and zero open inbound firewall ports.</p>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> solves this through <strong>Outside-VPC Hubs Architecture</strong>: four operational endpoints projected securely outside the VPC using <strong>Cloudflare Zero Trust Tunnels (<code>cloudflared</code>)</strong> without compromising VPC network boundaries.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                IN-VPC PROTECTED SUBNET (10.100.0.0/16)                           │
+│                                                                                                  │
+│   ┌────────────────────────────────────────┐         ┌───────────────────────────────────────┐   │
+│   │     <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Core Engine Daemon      │         │       cloudflared Ingress Daemon      │   │
+│   │        127.0.0.1:8000 (Internal)       │◄───────┤         (Outbound Tunnel Client)      │   │
+│   └────────────────────────────────────────┘         └───────────────────┬───────────────────┘   │
+│                                                                          │                       │
+│   AWS Security Group / GCP Firewall Policy:                              │ Outbound-Only         │
+│   • Inbound:  DENY ALL (0.0.0.0/0:* = BLOCKED)                           │ QUIC (UDP 7844) /     │
+│   • Outbound: ALLOW UDP 7844 / TCP 443 to Cloudflare Edge                │ TLS 1.3 (TCP 443)     │
+└──────────────────────────────────────────────────────────────────────────┼───────────────────────┘
+                                                                           │
+                                                                           ▼
+                                                    ┌──────────────────────────────────────────────┐
+                                                    │         Cloudflare Global Edge Network       │
+                                                    │         (Anycast Ingress &amp; DDoS Shield)      │
+                                                    └──────────────────────┬───────────────────────┘
+                                                                           │
+                                 ┌─────────────────────────────────────────┴─────────────────────────────────────────┐
+                                 │                                                                                    │
+                                 ▼                                                                                    ▼
+                  [ PATTERN A: 2-WAY INTERACTIVE ]                                                     [ PATTERN B: 1-WAY AIR-GAPPED ]
+                  Cloudflare Access (SSO / IdP / MFA)                                                  Edge Token / IP Allowlist / CDN Cache
+                                 │                                                                                    │
+                 ┌───────────────┴───────────────┐                                                    ┌───────────────┴───────────────┐
+                 ▼                               ▼                                                    ▼                               ▼
+     ┌───────────────────────┐       ┌───────────────────────┐                            ┌───────────────────────┐       ┌───────────────────────┐
+     │       /NOCDesk        │       │       /SREDesk        │                            │      /wallboard       │       │        /kiosk         │
+     │  2-Way NOC Command    │       │  2-Way SRE / DBA      │                            │  1-Way Passive Wall   │       │  1-Way Topology Map   │
+     │  Replica of /dashboard│       │  Console of /matrix   │                            │  Fluid Zero-Scroll    │       │  Lobby Kiosk Display  │
+     └───────────────────────┘       └───────────────────────┘                            └───────────────────────┘       └───────────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="2-the-4-outside-vpc-displays-component-breakdown-invariants">2. The 4 Outside-VPC Displays: Component Breakdown &amp; Invariants</h2>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌────────────────────┬───────────┬───────────────────────────────┬─────────────────────────────────┐
+│ Operational Hub    │ Mode      │ In-VPC Projection Source      │ Target Audience                 │
+├────────────────────┼───────────┼───────────────────────────────┼─────────────────────────────────┤
+│ 1. /NOCDesk        │ 2-Way     │ Exact Replica of /dashboard   │ 24x7 NOC Operators &amp; Commanders │
+│ 2. /SREDesk        │ 2-Way     │ Specialized Console of /matrix│ DBAs, SREs, Network, SecOps     │
+│ 3. /wallboard      │ 1-Way     │ Fluid Matrix of /matrix       │ Operations Center TV Walls      │
+│ 4. /kiosk          │ 1-Way     │ Topology Map of /dashboard    │ Lobbies &amp; Overhead Kiosks       │
+└────────────────────┴───────────┴───────────────────────────────┴─────────────────────────────────┘
+</code></pre></div>
+<h3 id="display-1-nocdesk-2-way-interactive-noc-command-center">Display 1: <code>/NOCDesk</code> — 2-Way Interactive NOC Command Center</h3>
+<ul>
+<li><strong>Projection Source:</strong> Exact replica of the in-VPC <code>/dashboard</code>.</li>
+<li><strong>Communication Model:</strong> <strong>Bidirectional (2-Way Interactive)</strong>.</li>
+<li><strong>Component Inventory:</strong>
+<ol>
+<li><strong>Interactive Multi-VPC Topology Map:</strong> Full SVG visualization of AWS Production (<code>vpc-aws-prod-01</code>), AWS Staging (<code>vpc-aws-stage-02</code>), GCP Analytics (<code>vpc-gcp-anal-03</code>), and Chicago Datacenter (<code>dc-onprem-core-01</code>).</li>
+<li><strong>Live SSE Telemetry Stream:</strong> Continuous 1-second Server-Sent Events stream updating node states, packet rates, and network drops without polling.</li>
+<li><strong>Cluster Census Table:</strong> Real-time status of all 71 monitored nodes across physical bare-metal, virtualized hypervisors, and cloud instances.</li>
+<li><strong>Granular Subnet &amp; Load Balancer Inspection:</strong> Dedicated alarm tags indicating impacted subnets (e.g. <code>private-db-1b</code>) and degraded load balancers (e.g. <code>prod-internal-nlb</code>).</li>
+<li><strong>Disaster Simulation Triggers:</strong> In-browser scenario toggles for P1 Critical, P2 Warning, and Multi-Cascade drills.</li>
+<li><strong><code>Reset to Nominal (Healthy)</code> Global Action:</strong> Allows NOC commanders to acknowledge and clear cluster alarms with a single click, transmitting an authenticated POST signal back to the in-VPC daemon (<code>/v1/telemetry/simulation</code>).</li>
+</ol>
+</li>
+<li><strong>Target Path:</strong> <code>http://127.0.0.1:8000/NOCDesk</code> (routed via tunnel to <code>https://noc.yourcompany.com/NOCDesk</code>).</li>
+<li><strong>Access Control:</strong> Cloudflare Access (IdP Group: <code>NOC-Engineers</code> + FIDO2 / WebAuthn MFA).</li>
+</ul>
+<hr />
+<h3 id="display-2-sredesk-2-way-specialized-engineering-dba-console">Display 2: <code>/SREDesk</code> — 2-Way Specialized Engineering &amp; DBA Console</h3>
+<ul>
+<li><strong>Projection Source:</strong> Specialized operational console derived from <code>/matrix</code>.</li>
+<li><strong>Communication Model:</strong> <strong>Bidirectional (2-Way Interactive)</strong>.</li>
+<li><strong>Component Inventory:</strong>
+<ol>
+<li><strong>7-Tier Full-Stack Operational Health Matrix:</strong> Real-time visibility into all 7 layers:
+<ul>
+<li>Tier 1: Physical Datacenter (Bare Metal, DCIM, SAN)</li>
+<li>Tier 2: Networking (Core Spines, BGP, Optics, Leaf Switches)</li>
+<li>Tier 3: Cloud &amp; VPC (VPC Flow Logs, Subnets, Gateways, Load Balancers)</li>
+<li>Tier 4: Compute &amp; Hypervisors (Kubernetes, KVM, Pods, Runtimes)</li>
+<li>Tier 5: Middleware &amp; Databases (PostgreSQL, Redis, Kafka, Replication)</li>
+<li>Tier 6: Application Logic (APM Traces, REST APIs, Microservices)</li>
+<li>Tier 7: Governance &amp; SIEM (Audit Logs, OPA Invariants, SOC 2 Proofs)</li>
+</ul>
+</li>
+<li><strong>High-Priority Incident &amp; Operational Triage Board:</strong> Real-time incident list prioritized by severity (<code>P1 &gt; P2 &gt; P3 &gt; P4</code>) with exact invariant breach rules (e.g. <code>INV-05 Database Transaction Lock Duration</code>).</li>
+<li><strong>Deep Node Diagnostics Table:</strong> Detailed inventory of failing or suspect nodes:
+<ul>
+<li><code>HostName &amp; Node ID</code>: e.g. <code>node-vpc-db-01</code> (<code>ip-10-100-20-44.ec2.internal</code>)</li>
+<li><code>Private IP Address</code>: e.g. <code>10.100.20.44</code></li>
+<li><code>Role / Workload</code>: e.g. <code>PostgreSQL Master Database</code></li>
+<li><code>Network &amp; Subnet CIDR</code>: e.g. <code>vpc-aws-prod-01</code> • <code>private-db-1b (10.100.20.0/24)</code></li>
+<li><code>Operating System &amp; Kernel</code>: e.g. <code>Amazon Linux 2023 (Linux 6.1.72-96.166.amzn2023.x86_64)</code></li>
+<li><code>Software Stacks</code>: e.g. <code>PostgreSQL 16.2, PgBouncer 1.22, eBPF Observer</code></li>
+<li><code>Direct Observability Deep-Links</code>: Instant 1-click links to in-VPC <code>/logs?node_id=...</code> and <code>/traces?node_id=...</code></li>
+</ul>
+</li>
+<li><strong>Bidirectional Reset &amp; Invariant Calibration:</strong> Allows engineers to acknowledge root-cause clearing and calibrate alert thresholds directly from the outside console.</li>
+</ol>
+</li>
+<li><strong>Target Path:</strong> <code>http://127.0.0.1:8000/SREDesk</code> (routed via tunnel to <code>https://sre.yourcompany.com/SREDesk</code>).</li>
+<li><strong>Access Control:</strong> Cloudflare Access (IdP Group: <code>SRE-DBA-Core</code> + Hardware MFA).</li>
+</ul>
+<hr />
+<h3 id="display-3-wallboard-1-way-fluid-operations-center-projection">Display 3: <code>/wallboard</code> — 1-Way Fluid Operations Center Projection</h3>
+<ul>
+<li><strong>Projection Source:</strong> Fluid 1-way out-VPC projection of <code>/matrix</code>.</li>
+<li><strong>Communication Model:</strong> <strong>Unidirectional (1-Way Passive Wallboard)</strong>.</li>
+<li><strong>Component Inventory:</strong>
+<ol>
+<li><strong>Fluid Zero-Scroll Layout (<code>100vw × 100vh</code>):</strong> Engineered specifically for 1080p, 1440p, and 4K wall-mounted TV monitors with <code>overflow: hidden;</code> to eliminate vertical and horizontal page scrollbars under all incident conditions.</li>
+<li><strong>Glance Health Banner:</strong> Prominent high-contrast status banner displaying <code>ALL 7 TIERS FULLY OPERATIONAL</code> (in green) or active incident alerts with pulsating red/amber borders during outages.</li>
+<li><strong>7-Tier Small Surface Area Strip:</strong> Compact 60px horizontal strip showing live KPI metrics (CPU %, Packet Drops %, Pod Health %, DB Connections, Latency p50, SIEM Compliance) across all 7 infrastructure tiers.</li>
+<li><strong>Side-by-Side Main Split (2-Column Grid):</strong>
+<ul>
+<li><strong>Left Column:</strong> High-Priority Incident Triage Board with self-contained overflow scrolling, impacted subnets, and load balancers.</li>
+<li><strong>Right Column:</strong> Architectural Alert &amp; Triage Engine Blueprint featuring the centered dispatch root node, stepped bus wiring, and a 3×2 grid of 6 alert hubs (ITSM, ChatOps, On-Call Paging, Out-of-Band &amp; Voice, Event Store &amp; MQ, Wallboards &amp; Sinks).</li>
+</ul>
+</li>
+<li><strong>Compatibility Strip:</strong> Continuous verification of monitored subnets (<code>public-1a</code>, <code>private-app-1a</code>, <code>private-db-1b</code>, <code>bare-metal-kvm-racks</code>) and load balancers (<code>prod-public-alb</code>, <code>prod-internal-nlb</code>, <code>internal-haproxy-vrrp</code>).</li>
+<li><strong>Self-Healing Reconnect Loop:</strong> Automatically re-establishes streaming connection if local network drops occur, requiring zero manual keyboard or mouse intervention.</li>
+</ol>
+</li>
+<li><strong>Target Path:</strong> <code>http://127.0.0.1:8000/wallboard</code> (routed via tunnel to <code>https://wallboard.yourcompany.com/wallboard</code>).</li>
+<li><strong>Access Control:</strong> Edge Token, IP Allowlist, or Read-Only Cloudflare Edge Access rule.</li>
+</ul>
+<hr />
+<h3 id="display-4-kiosk-1-way-air-gapped-multi-vpc-topology-kiosk">Display 4: <code>/kiosk</code> — 1-Way Air-Gapped Multi-VPC Topology Kiosk</h3>
+<ul>
+<li><strong>Projection Source:</strong> Standalone topology kiosk of <code>/dashboard</code>.</li>
+<li><strong>Communication Model:</strong> <strong>Unidirectional (1-Way Air-Gapped)</strong>.</li>
+<li><strong>Component Inventory:</strong>
+<ol>
+<li><strong>Animated Multi-VPC Topology Visualizer:</strong> High-level topology diagram of cross-cloud VPC clusters with live health pulses.</li>
+<li><strong>1.14 KB Sanitized Pulse Consumption:</strong> Fetches state exclusively from the lightweight sanitized endpoint (<code>/v1/telemetry/topology-pulse</code>).</li>
+<li><strong>Zero Sensitive Data Exposure:</strong> Emits no database credentials, raw log lines, internal routing tables, or customer data. Safe for public reception areas.</li>
+<li><strong>Pure Client-Side Rendering:</strong> Uses lightweight browser SVG rendering with sub-1% CPU consumption on low-power display appliances (Raspberry Pi, Intel NUC, Smart TV browser).</li>
+</ol>
+</li>
+<li><strong>Target Path:</strong> <code>http://127.0.0.1:8000/kiosk</code> (routed via tunnel to <code>https://kiosk.yourcompany.com/kiosk</code>).</li>
+<li><strong>Access Control:</strong> Public Edge CDN or Read-Only Kiosk Token.</li>
+</ul>
+<hr />
+<h2 id="3-why-outside-the-vpc-why-cloudflare-zero-trust-tunnels">3. Why Outside the VPC &amp; Why Cloudflare Zero Trust Tunnels?</h2>
+<h3 id="technical-security-rationale">Technical &amp; Security Rationale</h3>
+<ol>
+<li>
+<p><strong>Perimeter Ingress Elimination (Zero Open Inbound Ports):</strong></p>
+<ul>
+<li>Traditional reverse proxies (NGINX, HAProxy, AWS ALB) require allocating public IPs and opening ports 80/443 in VPC Security Groups (<code>0.0.0.0/0:80</code> and <code>0.0.0.0/0:443</code>).</li>
+<li>Cloudflare Tunnel (<code>cloudflared</code>) makes <strong>outbound-only connections</strong> to Cloudflare Edge over UDP 7844 (QUIC) or TCP 443 (TLS 1.3).</li>
+<li>Inbound firewall rules remain strictly set to <strong>DENY ALL</strong>. External port scanners (Shodan, Censys) see a completely dark IP address.</li>
+</ul>
+</li>
+<li>
+<p><strong>Why Client VPNs Fail on Wallboards and Kiosks:</strong></p>
+<ul>
+<li>VPN software (OpenVPN, WireGuard, Cisco AnyConnect) on physical TV wall controllers frequently drops on sleep, network re-keying, or DHCP renewal.</li>
+<li>VPN profiles expire and require interactive password/MFA prompts, breaking 24x7 unattended operation at 3:00 AM.</li>
+<li>Granting VPN access to a lobby kiosk mini-PC creates an unacceptable lateral movement vector into the internal VPC network.</li>
+</ul>
+</li>
+<li>
+<p><strong>Edge-Terminated Identity &amp; Access Management (Cloudflare Access):</strong></p>
+<ul>
+<li>Ingress requests for 2-way consoles (<code>/NOCDesk</code> and <code>/SREDesk</code>) terminate at the Cloudflare Edge before traffic enters the tunnel.</li>
+<li>Authentication is validated against your corporate Identity Provider (Okta, Microsoft Entra ID, Google Workspace) with mandatory hardware MFA.</li>
+<li>Unauthenticated requests are dropped at the edge; zero unauthenticated packets ever touch the in-VPC daemon.</li>
+</ul>
+</li>
+<li>
+<p><strong>Zero Billable Cloud Network Egress:</strong></p>
+<ul>
+<li>Streaming raw metrics or logs to external SaaS platforms across AWS NAT Gateways incurs high hourly and bandwidth charges ($0.045/GB NAT + $0.09/GB egress).</li>
+<li>Cloudflare Zero Trust Tunnels provide unmetered data transfer, and <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> evaluates invariants inside VPC volatile memory, keeping WAN egress strictly at zero billable bytes.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="4-automated-1-command-turnkey-installers">4. Automated 1-Command Turnkey Installers</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> includes production-ready automated deployment scripts for both Linux and Windows environments that provision the complete Outside-VPC Hubs tunnel architecture in under 60 seconds.</p>
+<h3 id="linux-automated-deployment-bash">Linux Automated Deployment (Bash)</h3>
+<p>Execute directly on the in-VPC <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> controller host:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -sSL http://127.0.0.1:8000/install-outside-vpc-hubs.sh | sudo bash -s -- \
+  --token &quot;&lt;YOUR-CLOUDFLARE-TUNNEL-TOKEN&gt;&quot; \
+  --domain &quot;noc.yourcompany.com&quot;
+</code></pre></div>
+<h4 id="available-command-line-arguments">Available Command-Line Arguments:</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Flag</th>
+<th style="text-align:left">Description</th>
+<th style="text-align:left">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>--token</code>, <code>-t</code></td>
+<td style="text-align:left">Cloudflare Tunnel Secret Token</td>
+<td style="text-align:left"><code>&quot;&quot;</code> (Prompts interactively if omitted)</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>--domain</code>, <code>-d</code></td>
+<td style="text-align:left">Base domain name for hub endpoints</td>
+<td style="text-align:left"><code>noc.yourcompany.com</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>--port</code>, <code>-p</code></td>
+<td style="text-align:left">Local <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> API port</td>
+<td style="text-align:left"><code>8000</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>--help</code>, <code>-h</code></td>
+<td style="text-align:left">Display help message and exit</td>
+<td style="text-align:left">—</td>
+</tr>
+</tbody>
+</table>
+<h4 id="automated-actions-performed-by-linux-installer">Automated Actions Performed by Linux Installer:</h4>
+<ol>
+<li>Detects OS package manager (<code>apt</code>, <code>dnf</code>, <code>yum</code>, or <code>apk</code>) and system architecture (<code>amd64</code>, <code>arm64</code>).</li>
+<li>Installs verified <code>cloudflared</code> binary from official repositories.</li>
+<li>Generates <code>/etc/cloudflared/config.yml</code> with path routing for all 4 hubs.</li>
+<li>Generates and registers <code>/etc/systemd/system/dcouplr-hubs-tunnel.service</code>.</li>
+<li>Enables and starts the systemd unit (<code>systemctl enable --now dcouplr-hubs-tunnel</code>).</li>
+<li>Runs local pre-flight checks against <code>http://127.0.0.1:8000/v1/hubs/status</code>.</li>
+</ol>
+<hr />
+<h3 id="windows-server-automated-deployment-powershell">Windows Server Automated Deployment (PowerShell)</h3>
+<p>Open an elevated PowerShell prompt (<strong>Run as Administrator</strong>) and execute:</p>
+<div class="code-box"><div class="code-box-header"><span>powershell</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-powershell">&amp; ([scriptblock]::Create((irm http://127.0.0.1:8000/install-outside-vpc-hubs.ps1))) `
+  -TunnelToken &quot;&lt;YOUR-CLOUDFLARE-TUNNEL-TOKEN&gt;&quot; `
+  -Domain &quot;noc.yourcompany.com&quot; `
+  -InstallService $true
+</code></pre></div>
+<h4 id="available-parameters">Available Parameters:</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Parameter</th>
+<th style="text-align:left">Type</th>
+<th style="text-align:left">Description</th>
+<th style="text-align:left">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>-TunnelToken</code></td>
+<td style="text-align:left">String</td>
+<td style="text-align:left">Cloudflare Tunnel Secret Token</td>
+<td style="text-align:left"><code>&quot;&quot;</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>-Domain</code></td>
+<td style="text-align:left">String</td>
+<td style="text-align:left">Base domain name for hub endpoints</td>
+<td style="text-align:left"><code>noc.yourcompany.com</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>-LocalPort</code></td>
+<td style="text-align:left">Integer</td>
+<td style="text-align:left">Local <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> API port</td>
+<td style="text-align:left"><code>8000</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>-InstallService</code></td>
+<td style="text-align:left">Switch</td>
+<td style="text-align:left">Register as a Windows Service</td>
+<td style="text-align:left"><code>$true</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="automated-actions-performed-by-windows-installer">Automated Actions Performed by Windows Installer:</h4>
+<ol>
+<li>Verifies elevated Administrator privileges.</li>
+<li>Creates installation directories: <code>C:\Program Files\dcouplr\hubs\</code> and <code>C:\Program Files\cloudflared\</code>.</li>
+<li>Downloads the official <code>cloudflared-windows-amd64.exe</code> binary.</li>
+<li>Adds the installation directory to the Machine <code>PATH</code> environment variable.</li>
+<li>Generates <code>config.yml</code> with path matching for <code>/NOCDesk</code>, <code>/SREDesk</code>, <code>/wallboard</code>, and <code>/kiosk</code>.</li>
+<li>Registers and starts <code>cloudflared</code> as a native Windows Service with automatic restart recovery.</li>
+</ol>
+<hr />
+<h3 id="offline-air-gapped-package-execution">Offline / Air-Gapped Package Execution</h3>
+<p>For air-gapped environments where direct internet access is restricted on the in-VPC controller:</p>
+<ol>
+<li>Download the enterprise tarball on a connected machine:<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -sSL -O http://&lt;controller-ip&gt;:8000/dcouplr-enterprise-v1.0.0.tar.gz
+</code></pre></div>
+</li>
+<li>Verify integrity against <code>SHA256SUMS</code>:<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">sha256sum -c &lt;(grep dcouplr-enterprise-v1.0.0.tar.gz SHA256SUMS)
+</code></pre></div>
+</li>
+<li>Transfer the tarball via approved jump host to the target in-VPC node.</li>
+<li>Extract and run the installer offline:<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">tar -xzf dcouplr-enterprise-v1.0.0.tar.gz
+cd dcouplr-enterprise/
+sudo ./install-outside-vpc-hubs.sh --token &quot;&lt;TOKEN&gt;&quot; --domain &quot;noc.yourcompany.com&quot;
+</code></pre></div>
+</li>
+</ol>
+<hr />
+<h2 id="5-step-by-step-manual-implementation-guide">5. Step-by-Step Manual Implementation Guide</h2>
+<p>If your infrastructure enforces manual change control, Ansible playbooks, or Terraform automation, follow these sequential steps:</p>
+<h3 id="step-1-create-the-tunnel-in-cloudflare-zero-trust">Step 1: Create the Tunnel in Cloudflare Zero Trust</h3>
+<ol>
+<li>Log in to the <a href="https://one.dash.cloudflare.com/">Cloudflare One Dashboard</a>.</li>
+<li>Navigate to <strong>Networks</strong> → <strong>Tunnels</strong> → <strong>Create a Tunnel</strong>.</li>
+<li>Choose <strong>Cloudflare Tunnel (cloudflared)</strong> → Name the tunnel: <code>dcouplr-outside-vpc-hubs</code>.</li>
+<li>Copy the generated Tunnel Token (a base64 string starting with <code>eyJ...</code>).</li>
+</ol>
+<p>Alternatively, create the tunnel using the <code>cloudflared</code> CLI on an authorized workstation:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">cloudflared tunnel login
+cloudflared tunnel create dcouplr-outside-vpc-hubs
+</code></pre></div>
+<hr />
+<h3 id="step-2-install-the-cloudflared-binary">Step 2: Install the <code>cloudflared</code> Binary</h3>
+<h4 id="on-ubuntu-debian">On Ubuntu / Debian:</h4>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">sudo mkdir -p --mode=0755 /usr/share/keyrings
+curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg &gt;/dev/null
+echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared bookworm main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
+sudo apt-get update &amp;&amp; sudo apt-get install -y cloudflared
+</code></pre></div>
+<h4 id="on-rhel-89-rocky-linux-or-amazon-linux-2023">On RHEL 8/9, Rocky Linux, or Amazon Linux 2023:</h4>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">sudo dnf install -y https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-x86_64.rpm
+</code></pre></div>
+<h4 id="on-windows-server">On Windows Server:</h4>
+<div class="code-box"><div class="code-box-header"><span>powershell</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-powershell">$cfPath = &quot;C:\Program Files\cloudflared&quot;
+New-Item -ItemType Directory -Force -Path $cfPath
+Invoke-WebRequest -Uri &quot;https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe&quot; -OutFile &quot;$cfPath\cloudflared.exe&quot;
+</code></pre></div>
+<hr />
+<h3 id="step-3-multi-ingress-configuration-configyml">Step 3: Multi-Ingress Configuration (<code>config.yml</code>)</h3>
+<p>Create the configuration file at <code>/etc/cloudflared/config.yml</code> (Linux) or <code>C:\Program Files\cloudflared\config.yml</code> (Windows):</p>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml"># ==============================================================================
+# <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Outside-VPC Hubs: Cloudflare Tunnel Multi-Ingress Configuration
+# ==============================================================================
+tunnel: &lt;YOUR-TUNNEL-UUID-OR-TOKEN&gt;
+credentials-file: /etc/cloudflared/&lt;YOUR-TUNNEL-UUID&gt;.json
+
+ingress:
+  # 1. NOC Desk (2-Way Interactive Command Center)
+  - hostname: noc.yourcompany.com
+    path: ^/NOCDesk.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # 2. SRE Desk (2-Way Specialized Engineering &amp; DBA Console)
+  - hostname: noc.yourcompany.com
+    path: ^/SREDesk.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # 3. 7-Tier Wallboard (1-Way Fluid Matrix Display)
+  - hostname: noc.yourcompany.com
+    path: ^/wallboard.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # 4. Multi-VPC Kiosk (1-Way Air-Gapped Kiosk)
+  - hostname: noc.yourcompany.com
+    path: ^/kiosk.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # Static Assets &amp; API Routes required by Hub Frontends
+  - hostname: noc.yourcompany.com
+    path: ^/(static|v1)/.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # Fallback rule for base domain
+  - hostname: noc.yourcompany.com
+    service: http://127.0.0.1:8000
+
+  # Catch-all rule (Mandatory for Cloudflare Tunnel ingress)
+  - service: http_status:404
+</code></pre></div>
+<hr />
+<h3 id="step-4-systemd-service-unit-installation-linux">Step 4: Systemd Service Unit Installation (Linux)</h3>
+<p>Create <code>/etc/systemd/system/dcouplr-hubs-tunnel.service</code>:</p>
+<div class="code-box"><div class="code-box-header"><span>ini</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-ini">[Unit]
+Description=<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Outside-VPC Hubs Cloudflare Zero Trust Ingress Tunnel
+Documentation=https://github.com/varinull/dcouplr
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+TimeoutStartSec=0
+Restart=always
+RestartSec=5s
+ExecStart=/usr/local/bin/cloudflared --config /etc/cloudflared/config.yml run
+NonBlocking=true
+
+# Security Hardening Directives
+ProtectSystem=full
+ProtectHome=true
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+</code></pre></div>
+<p>Reload and start the systemd daemon:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">sudo systemctl daemon-reload
+sudo systemctl enable --now dcouplr-hubs-tunnel.service
+sudo systemctl status dcouplr-hubs-tunnel.service
+</code></pre></div>
+<hr />
+<h3 id="step-5-windows-service-registration-windows-server">Step 5: Windows Service Registration (Windows Server)</h3>
+<p>Run in an administrative PowerShell prompt:</p>
+<div class="code-box"><div class="code-box-header"><span>powershell</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-powershell">&amp; &quot;C:\Program Files\cloudflared\cloudflared.exe&quot; service install
+Start-Service &quot;cloudflared&quot;
+Get-Service &quot;cloudflared&quot;
+</code></pre></div>
+<hr />
+<h3 id="step-6-docker-compose-alternative-deployment">Step 6: Docker Compose Alternative Deployment</h3>
+<p>For environments utilizing containerized runtimes:</p>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml">version: &quot;3.8&quot;
+
+services:
+  dcouplr-core:
+    image: dcouplr/controller:latest
+    container_name: dcouplr-core
+    restart: unless-stopped
+    ports:
+      - &quot;127.0.0.1:8000:8000&quot;
+    environment:
+      - DCOUPLR_ENV=production
+      - DCOUPLR_PORT=8000
+
+  cloudflared-tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: dcouplr-tunnel
+    restart: unless-stopped
+    network_mode: &quot;host&quot;
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - dcouplr-core
+</code></pre></div>
+<hr />
+<h2 id="6-ingress-routing-path-matching-rules">6. Ingress Routing &amp; Path Matching Rules</h2>
+<p>When configuring DNS and routing rules, use the following mapping structure:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">https://&lt;domain&gt;/NOCDesk    ──► Local: http://127.0.0.1:8000/NOCDesk    (2-Way NOC Command Console)
+https://&lt;domain&gt;/SREDesk    ──► Local: http://127.0.0.1:8000/SREDesk    (2-Way Specialized SRE Console)
+https://&lt;domain&gt;/wallboard  ──► Local: http://127.0.0.1:8000/wallboard  (1-Way Fluid Matrix Wallboard)
+https://&lt;domain&gt;/kiosk      ──► Local: http://127.0.0.1:8000/kiosk      (1-Way Topology Kiosk)
+https://&lt;domain&gt;/static/*   ──► Local: http://127.0.0.1:8000/static/*   (CSS, JS, Fonts, Icons)
+https://&lt;domain&gt;/v1/*       ──► Local: http://127.0.0.1:8000/v1/*       (SSE Stream &amp; Telemetry APIs)
+</code></pre></div>
+<hr />
+<h2 id="7-operational-verification-testing-commands">7. Operational Verification &amp; Testing Commands</h2>
+<p>Execute these verification commands to validate end-to-end functionality:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># 1. Verify Local In-VPC Controller Health
+curl -sI http://127.0.0.1:8000/v1/hubs/status | head -n 1
+# Expected output: HTTP/1.1 200 OK
+
+# 2. Inspect Tunnel Process Status on Linux Host
+sudo systemctl is-active dcouplr-hubs-tunnel.service
+# Expected output: active
+
+# 3. Verify Live Tunnel Connections to Cloudflare Edge
+sudo journalctl -u dcouplr-hubs-tunnel.service -n 20 --no-pager | grep &quot;Registered tunnel connection&quot;
+# Expected: 4 active connections over QUIC to Cloudflare Edge
+
+# 4. Test External Resolution from Outside the VPC
+curl -sI https://noc.yourcompany.com/NOCDesk | head -n 1
+# Expected: HTTP/2 200 (or HTTP/2 302 redirecting to Cloudflare Access login)
+
+# 5. Verify 1.14 KB Topology Pulse JSON Exporter
+curl -s http://127.0.0.1:8000/v1/telemetry/topology-pulse | jq -r .cluster.status
+# Expected: &quot;HEALTHY&quot; (or &quot;CRITICAL&quot; / &quot;WARNING&quot; if an incident is active)
+
+# 6. Verify Server-Sent Events (SSE) Stream Connectivity
+curl -N -H &quot;Accept: text/event-stream&quot; http://127.0.0.1:8000/v1/telemetry/stream | head -n 5
+# Expected: event stream with periodic data: payloads
+</code></pre></div>
+<hr />
+<h2 id="8-operational-troubleshooting-runbook-actions">8. Operational Troubleshooting &amp; Runbook Actions</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Symptom</th>
+<th style="text-align:left">Root Cause</th>
+<th style="text-align:left">Engineering Remediation Step</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong><code>502 Bad Gateway</code> at Cloudflare Edge</strong></td>
+<td style="text-align:left">Local <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> daemon on port 8000 is stopped or listening on incorrect interface.</td>
+<td style="text-align:left">1. Test local port: <code>curl http://127.0.0.1:8000/health</code>.<br>2. Check <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> service: <code>systemctl status dcouplr</code>.<br>3. Verify binding in <code>netstat -tlpn | grep 8000</code>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Tunnel Service Fails to Start (<code>Exit Code 1</code>)</strong></td>
+<td style="text-align:left">Tunnel token is invalid, expired, or DNS route is misconfigured.</td>
+<td style="text-align:left">1. Inspect logs: <code>journalctl -u dcouplr-hubs-tunnel.service -n 50</code>.<br>2. Verify tunnel exists: <code>cloudflared tunnel list</code>.<br>3. Check token validity in Cloudflare Zero Trust Dashboard.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SSE Stream Disconnects on <code>/NOCDesk</code> or <code>/wallboard</code></strong></td>
+<td style="text-align:left">Cloudflare Edge proxy buffer timeout or intermediate corporate proxy drop.</td>
+<td style="text-align:left">1. Ensure <code>originRequest.connectTimeout: 5s</code> and <code>noTLSVerify: true</code> are set in <code>config.yml</code>.<br>2. Cloudflare Tunnel handles HTTP/2 and HTTP/3 multiplexing natively; verify client browser supports modern HTTP/2 streams.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>404 Not Found</code> when loading CSS/JS assets</strong></td>
+<td style="text-align:left">Ingress rules in <code>config.yml</code> lack static asset path routing.</td>
+<td style="text-align:left">1. Verify <code>path: ^/(static|v1)/.*</code> is present in <code>/etc/cloudflared/config.yml</code>.<br>2. Ensure the catch-all <code>http_status:404</code> rule is placed <strong>last</strong> in the ingress list.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SSO Login Redirect Loop on <code>/NOCDesk</code></strong></td>
+<td style="text-align:left">Cloudflare Access session cookie mismatch or domain mismatch.</td>
+<td style="text-align:left">1. Clear browser cookies for <code>*.yourcompany.com</code>.<br>2. Confirm the user's email domain matches the IdP configuration in Cloudflare Zero Trust.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Display Freezes on Physical TV Monitor</strong></td>
+<td style="text-align:left">TV browser memory leak or power management sleep event.</td>
+<td style="text-align:left">1. The <code>/wallboard</code> frontend has built-in auto-recovery and memory cycle safeguards.<br>2. For dedicated kiosk appliances, enable a daily reboot cron (<code>0 4 * * * /sbin/reboot</code>).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-quick-reference-deployment-cheat-sheet">9. Quick-Reference Deployment Cheat Sheet</h2>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># ------------------------------------------------------------------------------
+# LINUX 1-COMMAND DEPLOYMENT
+# ------------------------------------------------------------------------------
+curl -sSL http://127.0.0.1:8000/install-outside-vpc-hubs.sh | sudo bash -s -- \
+  --token &quot;&lt;YOUR-TOKEN&gt;&quot; --domain &quot;noc.yourcompany.com&quot;
+
+# ------------------------------------------------------------------------------
+# WINDOWS 1-COMMAND DEPLOYMENT
+# ------------------------------------------------------------------------------
+&amp; ([scriptblock]::Create((irm http://127.0.0.1:8000/install-outside-vpc-hubs.ps1))) `
+  -TunnelToken &quot;&lt;YOUR-TOKEN&gt;&quot; -Domain &quot;noc.yourcompany.com&quot; -InstallService $true
+
+# ------------------------------------------------------------------------------
+# SERVICE LIFECYCLE COMMANDS (LINUX)
+# ------------------------------------------------------------------------------
+sudo systemctl restart dcouplr-hubs-tunnel.service
+sudo systemctl stop dcouplr-hubs-tunnel.service
+sudo journalctl -u dcouplr-hubs-tunnel.service -f
+</code></pre></div>
+</div>
+      <pre id="raw-view"><code># Engineering Runbook: Outside-VPC Hubs Deployment &amp; Cloudflare Zero Trust Ingress Tunnels
+
+**Document Identifier:** `VA-RUNBOOK-ENG-HUBS-001`  
+**Classification:** SRE &amp; DevOps Implementation Guide &amp; Operational Specification  
+**Target Audience:** Site Reliability Engineers (SRE), Network Operations Center (NOC) Engineers, Cloud Security Architects, Systems Administrators  
+**Supported Platforms:** Linux (Ubuntu 20.04/22.04/24.04, Debian 11/12, RHEL 8/9, Rocky Linux 8/9, Amazon Linux 2023), Windows Server 2019/2022/2025, Docker, Kubernetes  
+**Network Perimeter Policy:** Strictly Inbound-Dark (`0.0.0.0/0:ANY` Ingress Blocked on VPC Security Groups)  
+**Transport Security:** Outbound-Only QUIC (UDP 7844) / TLS 1.3 (TCP 443)  
+
+---
+
+## 1. Architecture Overview: How Outside-VPC Projection Works
+
+Enterprise infrastructure monitoring requires visual, real-time displays across remote Network Operations Centers (NOC), Site Reliability Engineering (SRE) war-rooms, office TV walls, and executive kiosks. However, internal Virtual Private Clouds (VPCs) must remain isolated with zero public IPs and zero open inbound firewall ports.
+
+`&lt;dcouplr/&gt;` solves this through **Outside-VPC Hubs Architecture**: four operational endpoints projected securely outside the VPC using **Cloudflare Zero Trust Tunnels (`cloudflared`)** without compromising VPC network boundaries.
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                IN-VPC PROTECTED SUBNET (10.100.0.0/16)                           │
+│                                                                                                  │
+│   ┌────────────────────────────────────────┐         ┌───────────────────────────────────────┐   │
+│   │     &lt;dcouplr/&gt; Core Engine Daemon      │         │       cloudflared Ingress Daemon      │   │
+│   │        127.0.0.1:8000 (Internal)       │◄───────┤         (Outbound Tunnel Client)      │   │
+│   └────────────────────────────────────────┘         └───────────────────┬───────────────────┘   │
+│                                                                          │                       │
+│   AWS Security Group / GCP Firewall Policy:                              │ Outbound-Only         │
+│   • Inbound:  DENY ALL (0.0.0.0/0:* = BLOCKED)                           │ QUIC (UDP 7844) /     │
+│   • Outbound: ALLOW UDP 7844 / TCP 443 to Cloudflare Edge                │ TLS 1.3 (TCP 443)     │
+└──────────────────────────────────────────────────────────────────────────┼───────────────────────┘
+                                                                           │
+                                                                           ▼
+                                                    ┌──────────────────────────────────────────────┐
+                                                    │         Cloudflare Global Edge Network       │
+                                                    │         (Anycast Ingress &amp; DDoS Shield)      │
+                                                    └──────────────────────┬───────────────────────┘
+                                                                           │
+                                 ┌─────────────────────────────────────────┴─────────────────────────────────────────┐
+                                 │                                                                                    │
+                                 ▼                                                                                    ▼
+                  [ PATTERN A: 2-WAY INTERACTIVE ]                                                     [ PATTERN B: 1-WAY AIR-GAPPED ]
+                  Cloudflare Access (SSO / IdP / MFA)                                                  Edge Token / IP Allowlist / CDN Cache
+                                 │                                                                                    │
+                 ┌───────────────┴───────────────┐                                                    ┌───────────────┴───────────────┐
+                 ▼                               ▼                                                    ▼                               ▼
+     ┌───────────────────────┐       ┌───────────────────────┐                            ┌───────────────────────┐       ┌───────────────────────┐
+     │       /NOCDesk        │       │       /SREDesk        │                            │      /wallboard       │       │        /kiosk         │
+     │  2-Way NOC Command    │       │  2-Way SRE / DBA      │                            │  1-Way Passive Wall   │       │  1-Way Topology Map   │
+     │  Replica of /dashboard│       │  Console of /matrix   │                            │  Fluid Zero-Scroll    │       │  Lobby Kiosk Display  │
+     └───────────────────────┘       └───────────────────────┘                            └───────────────────────┘       └───────────────────────┘
+```
+
+---
+
+## 2. The 4 Outside-VPC Displays: Component Breakdown &amp; Invariants
+
+```
+┌────────────────────┬───────────┬───────────────────────────────┬─────────────────────────────────┐
+│ Operational Hub    │ Mode      │ In-VPC Projection Source      │ Target Audience                 │
+├────────────────────┼───────────┼───────────────────────────────┼─────────────────────────────────┤
+│ 1. /NOCDesk        │ 2-Way     │ Exact Replica of /dashboard   │ 24x7 NOC Operators &amp; Commanders │
+│ 2. /SREDesk        │ 2-Way     │ Specialized Console of /matrix│ DBAs, SREs, Network, SecOps     │
+│ 3. /wallboard      │ 1-Way     │ Fluid Matrix of /matrix       │ Operations Center TV Walls      │
+│ 4. /kiosk          │ 1-Way     │ Topology Map of /dashboard    │ Lobbies &amp; Overhead Kiosks       │
+└────────────────────┴───────────┴───────────────────────────────┴─────────────────────────────────┘
+```
+
+### Display 1: `/NOCDesk` — 2-Way Interactive NOC Command Center
+* **Projection Source:** Exact replica of the in-VPC `/dashboard`.
+* **Communication Model:** **Bidirectional (2-Way Interactive)**.
+* **Component Inventory:**
+  1. **Interactive Multi-VPC Topology Map:** Full SVG visualization of AWS Production (`vpc-aws-prod-01`), AWS Staging (`vpc-aws-stage-02`), GCP Analytics (`vpc-gcp-anal-03`), and Chicago Datacenter (`dc-onprem-core-01`).
+  2. **Live SSE Telemetry Stream:** Continuous 1-second Server-Sent Events stream updating node states, packet rates, and network drops without polling.
+  3. **Cluster Census Table:** Real-time status of all 71 monitored nodes across physical bare-metal, virtualized hypervisors, and cloud instances.
+  4. **Granular Subnet &amp; Load Balancer Inspection:** Dedicated alarm tags indicating impacted subnets (e.g. `private-db-1b`) and degraded load balancers (e.g. `prod-internal-nlb`).
+  5. **Disaster Simulation Triggers:** In-browser scenario toggles for P1 Critical, P2 Warning, and Multi-Cascade drills.
+  6. **`Reset to Nominal (Healthy)` Global Action:** Allows NOC commanders to acknowledge and clear cluster alarms with a single click, transmitting an authenticated POST signal back to the in-VPC daemon (`/v1/telemetry/simulation`).
+* **Target Path:** `http://127.0.0.1:8000/NOCDesk` (routed via tunnel to `https://noc.yourcompany.com/NOCDesk`).
+* **Access Control:** Cloudflare Access (IdP Group: `NOC-Engineers` + FIDO2 / WebAuthn MFA).
+
+---
+
+### Display 2: `/SREDesk` — 2-Way Specialized Engineering &amp; DBA Console
+* **Projection Source:** Specialized operational console derived from `/matrix`.
+* **Communication Model:** **Bidirectional (2-Way Interactive)**.
+* **Component Inventory:**
+  1. **7-Tier Full-Stack Operational Health Matrix:** Real-time visibility into all 7 layers:
+     - Tier 1: Physical Datacenter (Bare Metal, DCIM, SAN)
+     - Tier 2: Networking (Core Spines, BGP, Optics, Leaf Switches)
+     - Tier 3: Cloud &amp; VPC (VPC Flow Logs, Subnets, Gateways, Load Balancers)
+     - Tier 4: Compute &amp; Hypervisors (Kubernetes, KVM, Pods, Runtimes)
+     - Tier 5: Middleware &amp; Databases (PostgreSQL, Redis, Kafka, Replication)
+     - Tier 6: Application Logic (APM Traces, REST APIs, Microservices)
+     - Tier 7: Governance &amp; SIEM (Audit Logs, OPA Invariants, SOC 2 Proofs)
+  2. **High-Priority Incident &amp; Operational Triage Board:** Real-time incident list prioritized by severity (`P1 &gt; P2 &gt; P3 &gt; P4`) with exact invariant breach rules (e.g. `INV-05 Database Transaction Lock Duration`).
+  3. **Deep Node Diagnostics Table:** Detailed inventory of failing or suspect nodes:
+     - `HostName &amp; Node ID`: e.g. `node-vpc-db-01` (`ip-10-100-20-44.ec2.internal`)
+     - `Private IP Address`: e.g. `10.100.20.44`
+     - `Role / Workload`: e.g. `PostgreSQL Master Database`
+     - `Network &amp; Subnet CIDR`: e.g. `vpc-aws-prod-01` &amp;bull; `private-db-1b (10.100.20.0/24)`
+     - `Operating System &amp; Kernel`: e.g. `Amazon Linux 2023 (Linux 6.1.72-96.166.amzn2023.x86_64)`
+     - `Software Stacks`: e.g. `PostgreSQL 16.2, PgBouncer 1.22, eBPF Observer`
+     - `Direct Observability Deep-Links`: Instant 1-click links to in-VPC `/logs?node_id=...` and `/traces?node_id=...`
+  4. **Bidirectional Reset &amp; Invariant Calibration:** Allows engineers to acknowledge root-cause clearing and calibrate alert thresholds directly from the outside console.
+* **Target Path:** `http://127.0.0.1:8000/SREDesk` (routed via tunnel to `https://sre.yourcompany.com/SREDesk`).
+* **Access Control:** Cloudflare Access (IdP Group: `SRE-DBA-Core` + Hardware MFA).
+
+---
+
+### Display 3: `/wallboard` — 1-Way Fluid Operations Center Projection
+* **Projection Source:** Fluid 1-way out-VPC projection of `/matrix`.
+* **Communication Model:** **Unidirectional (1-Way Passive Wallboard)**.
+* **Component Inventory:**
+  1. **Fluid Zero-Scroll Layout (`100vw × 100vh`):** Engineered specifically for 1080p, 1440p, and 4K wall-mounted TV monitors with `overflow: hidden;` to eliminate vertical and horizontal page scrollbars under all incident conditions.
+  2. **Glance Health Banner:** Prominent high-contrast status banner displaying `ALL 7 TIERS FULLY OPERATIONAL` (in green) or active incident alerts with pulsating red/amber borders during outages.
+  3. **7-Tier Small Surface Area Strip:** Compact 60px horizontal strip showing live KPI metrics (CPU %, Packet Drops %, Pod Health %, DB Connections, Latency p50, SIEM Compliance) across all 7 infrastructure tiers.
+  4. **Side-by-Side Main Split (2-Column Grid):**
+     - **Left Column:** High-Priority Incident Triage Board with self-contained overflow scrolling, impacted subnets, and load balancers.
+     - **Right Column:** Architectural Alert &amp; Triage Engine Blueprint featuring the centered dispatch root node, stepped bus wiring, and a 3×2 grid of 6 alert hubs (ITSM, ChatOps, On-Call Paging, Out-of-Band &amp; Voice, Event Store &amp; MQ, Wallboards &amp; Sinks).
+  5. **Compatibility Strip:** Continuous verification of monitored subnets (`public-1a`, `private-app-1a`, `private-db-1b`, `bare-metal-kvm-racks`) and load balancers (`prod-public-alb`, `prod-internal-nlb`, `internal-haproxy-vrrp`).
+  6. **Self-Healing Reconnect Loop:** Automatically re-establishes streaming connection if local network drops occur, requiring zero manual keyboard or mouse intervention.
+* **Target Path:** `http://127.0.0.1:8000/wallboard` (routed via tunnel to `https://wallboard.yourcompany.com/wallboard`).
+* **Access Control:** Edge Token, IP Allowlist, or Read-Only Cloudflare Edge Access rule.
+
+---
+
+### Display 4: `/kiosk` — 1-Way Air-Gapped Multi-VPC Topology Kiosk
+* **Projection Source:** Standalone topology kiosk of `/dashboard`.
+* **Communication Model:** **Unidirectional (1-Way Air-Gapped)**.
+* **Component Inventory:**
+  1. **Animated Multi-VPC Topology Visualizer:** High-level topology diagram of cross-cloud VPC clusters with live health pulses.
+  2. **1.14 KB Sanitized Pulse Consumption:** Fetches state exclusively from the lightweight sanitized endpoint (`/v1/telemetry/topology-pulse`).
+  3. **Zero Sensitive Data Exposure:** Emits no database credentials, raw log lines, internal routing tables, or customer data. Safe for public reception areas.
+  4. **Pure Client-Side Rendering:** Uses lightweight browser SVG rendering with sub-1% CPU consumption on low-power display appliances (Raspberry Pi, Intel NUC, Smart TV browser).
+* **Target Path:** `http://127.0.0.1:8000/kiosk` (routed via tunnel to `https://kiosk.yourcompany.com/kiosk`).
+* **Access Control:** Public Edge CDN or Read-Only Kiosk Token.
+
+---
+
+## 3. Why Outside the VPC &amp; Why Cloudflare Zero Trust Tunnels?
+
+### Technical &amp; Security Rationale
+
+1. **Perimeter Ingress Elimination (Zero Open Inbound Ports):**
+   - Traditional reverse proxies (NGINX, HAProxy, AWS ALB) require allocating public IPs and opening ports 80/443 in VPC Security Groups (`0.0.0.0/0:80` and `0.0.0.0/0:443`).
+   - Cloudflare Tunnel (`cloudflared`) makes **outbound-only connections** to Cloudflare Edge over UDP 7844 (QUIC) or TCP 443 (TLS 1.3).
+   - Inbound firewall rules remain strictly set to **DENY ALL**. External port scanners (Shodan, Censys) see a completely dark IP address.
+
+2. **Why Client VPNs Fail on Wallboards and Kiosks:**
+   - VPN software (OpenVPN, WireGuard, Cisco AnyConnect) on physical TV wall controllers frequently drops on sleep, network re-keying, or DHCP renewal.
+   - VPN profiles expire and require interactive password/MFA prompts, breaking 24x7 unattended operation at 3:00 AM.
+   - Granting VPN access to a lobby kiosk mini-PC creates an unacceptable lateral movement vector into the internal VPC network.
+
+3. **Edge-Terminated Identity &amp; Access Management (Cloudflare Access):**
+   - Ingress requests for 2-way consoles (`/NOCDesk` and `/SREDesk`) terminate at the Cloudflare Edge before traffic enters the tunnel.
+   - Authentication is validated against your corporate Identity Provider (Okta, Microsoft Entra ID, Google Workspace) with mandatory hardware MFA.
+   - Unauthenticated requests are dropped at the edge; zero unauthenticated packets ever touch the in-VPC daemon.
+
+4. **Zero Billable Cloud Network Egress:**
+   - Streaming raw metrics or logs to external SaaS platforms across AWS NAT Gateways incurs high hourly and bandwidth charges ($0.045/GB NAT + $0.09/GB egress).
+   - Cloudflare Zero Trust Tunnels provide unmetered data transfer, and `&lt;dcouplr/&gt;` evaluates invariants inside VPC volatile memory, keeping WAN egress strictly at zero billable bytes.
+
+---
+
+## 4. Automated 1-Command Turnkey Installers
+
+`&lt;dcouplr/&gt;` includes production-ready automated deployment scripts for both Linux and Windows environments that provision the complete Outside-VPC Hubs tunnel architecture in under 60 seconds.
+
+### Linux Automated Deployment (Bash)
+Execute directly on the in-VPC `&lt;dcouplr/&gt;` controller host:
+
+```bash
+curl -sSL http://127.0.0.1:8000/install-outside-vpc-hubs.sh | sudo bash -s -- \
+  --token &quot;&lt;YOUR-CLOUDFLARE-TUNNEL-TOKEN&gt;&quot; \
+  --domain &quot;noc.yourcompany.com&quot;
+```
+
+#### Available Command-Line Arguments:
+| Flag | Description | Default |
+| :--- | :--- | :--- |
+| `--token`, `-t` | Cloudflare Tunnel Secret Token | `&quot;&quot;` (Prompts interactively if omitted) |
+| `--domain`, `-d` | Base domain name for hub endpoints | `noc.yourcompany.com` |
+| `--port`, `-p` | Local `&lt;dcouplr/&gt;` API port | `8000` |
+| `--help`, `-h` | Display help message and exit | — |
+
+#### Automated Actions Performed by Linux Installer:
+1. Detects OS package manager (`apt`, `dnf`, `yum`, or `apk`) and system architecture (`amd64`, `arm64`).
+2. Installs verified `cloudflared` binary from official repositories.
+3. Generates `/etc/cloudflared/config.yml` with path routing for all 4 hubs.
+4. Generates and registers `/etc/systemd/system/dcouplr-hubs-tunnel.service`.
+5. Enables and starts the systemd unit (`systemctl enable --now dcouplr-hubs-tunnel`).
+6. Runs local pre-flight checks against `http://127.0.0.1:8000/v1/hubs/status`.
+
+---
+
+### Windows Server Automated Deployment (PowerShell)
+Open an elevated PowerShell prompt (**Run as Administrator**) and execute:
+
+```powershell
+&amp; ([scriptblock]::Create((irm http://127.0.0.1:8000/install-outside-vpc-hubs.ps1))) `
+  -TunnelToken &quot;&lt;YOUR-CLOUDFLARE-TUNNEL-TOKEN&gt;&quot; `
+  -Domain &quot;noc.yourcompany.com&quot; `
+  -InstallService $true
+```
+
+#### Available Parameters:
+| Parameter | Type | Description | Default |
+| :--- | :--- | :--- | :--- |
+| `-TunnelToken` | String | Cloudflare Tunnel Secret Token | `&quot;&quot;` |
+| `-Domain` | String | Base domain name for hub endpoints | `noc.yourcompany.com` |
+| `-LocalPort` | Integer | Local `&lt;dcouplr/&gt;` API port | `8000` |
+| `-InstallService` | Switch | Register as a Windows Service | `$true` |
+
+#### Automated Actions Performed by Windows Installer:
+1. Verifies elevated Administrator privileges.
+2. Creates installation directories: `C:\Program Files\dcouplr\hubs\` and `C:\Program Files\cloudflared\`.
+3. Downloads the official `cloudflared-windows-amd64.exe` binary.
+4. Adds the installation directory to the Machine `PATH` environment variable.
+5. Generates `config.yml` with path matching for `/NOCDesk`, `/SREDesk`, `/wallboard`, and `/kiosk`.
+6. Registers and starts `cloudflared` as a native Windows Service with automatic restart recovery.
+
+---
+
+### Offline / Air-Gapped Package Execution
+For air-gapped environments where direct internet access is restricted on the in-VPC controller:
+
+1. Download the enterprise tarball on a connected machine:
+   ```bash
+   curl -sSL -O http://&lt;controller-ip&gt;:8000/dcouplr-enterprise-v1.0.0.tar.gz
+   ```
+2. Verify integrity against `SHA256SUMS`:
+   ```bash
+   sha256sum -c &lt;(grep dcouplr-enterprise-v1.0.0.tar.gz SHA256SUMS)
+   ```
+3. Transfer the tarball via approved jump host to the target in-VPC node.
+4. Extract and run the installer offline:
+   ```bash
+   tar -xzf dcouplr-enterprise-v1.0.0.tar.gz
+   cd dcouplr-enterprise/
+   sudo ./install-outside-vpc-hubs.sh --token &quot;&lt;TOKEN&gt;&quot; --domain &quot;noc.yourcompany.com&quot;
+   ```
+
+---
+
+## 5. Step-by-Step Manual Implementation Guide
+
+If your infrastructure enforces manual change control, Ansible playbooks, or Terraform automation, follow these sequential steps:
+
+### Step 1: Create the Tunnel in Cloudflare Zero Trust
+1. Log in to the [Cloudflare One Dashboard](https://one.dash.cloudflare.com/).
+2. Navigate to **Networks** &amp;rarr; **Tunnels** &amp;rarr; **Create a Tunnel**.
+3. Choose **Cloudflare Tunnel (cloudflared)** &amp;rarr; Name the tunnel: `dcouplr-outside-vpc-hubs`.
+4. Copy the generated Tunnel Token (a base64 string starting with `eyJ...`).
+
+Alternatively, create the tunnel using the `cloudflared` CLI on an authorized workstation:
+```bash
+cloudflared tunnel login
+cloudflared tunnel create dcouplr-outside-vpc-hubs
+```
+
+---
+
+### Step 2: Install the `cloudflared` Binary
+#### On Ubuntu / Debian:
+```bash
+sudo mkdir -p --mode=0755 /usr/share/keyrings
+curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg &gt;/dev/null
+echo &#x27;deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared bookworm main&#x27; | sudo tee /etc/apt/sources.list.d/cloudflared.list
+sudo apt-get update &amp;&amp; sudo apt-get install -y cloudflared
+```
+
+#### On RHEL 8/9, Rocky Linux, or Amazon Linux 2023:
+```bash
+sudo dnf install -y https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-x86_64.rpm
+```
+
+#### On Windows Server:
+```powershell
+$cfPath = &quot;C:\Program Files\cloudflared&quot;
+New-Item -ItemType Directory -Force -Path $cfPath
+Invoke-WebRequest -Uri &quot;https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe&quot; -OutFile &quot;$cfPath\cloudflared.exe&quot;
+```
+
+---
+
+### Step 3: Multi-Ingress Configuration (`config.yml`)
+Create the configuration file at `/etc/cloudflared/config.yml` (Linux) or `C:\Program Files\cloudflared\config.yml` (Windows):
+
+```yaml
+# ==============================================================================
+# &lt;dcouplr/&gt; Outside-VPC Hubs: Cloudflare Tunnel Multi-Ingress Configuration
+# ==============================================================================
+tunnel: &lt;YOUR-TUNNEL-UUID-OR-TOKEN&gt;
+credentials-file: /etc/cloudflared/&lt;YOUR-TUNNEL-UUID&gt;.json
+
+ingress:
+  # 1. NOC Desk (2-Way Interactive Command Center)
+  - hostname: noc.yourcompany.com
+    path: ^/NOCDesk.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # 2. SRE Desk (2-Way Specialized Engineering &amp; DBA Console)
+  - hostname: noc.yourcompany.com
+    path: ^/SREDesk.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # 3. 7-Tier Wallboard (1-Way Fluid Matrix Display)
+  - hostname: noc.yourcompany.com
+    path: ^/wallboard.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # 4. Multi-VPC Kiosk (1-Way Air-Gapped Kiosk)
+  - hostname: noc.yourcompany.com
+    path: ^/kiosk.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # Static Assets &amp; API Routes required by Hub Frontends
+  - hostname: noc.yourcompany.com
+    path: ^/(static|v1)/.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # Fallback rule for base domain
+  - hostname: noc.yourcompany.com
+    service: http://127.0.0.1:8000
+
+  # Catch-all rule (Mandatory for Cloudflare Tunnel ingress)
+  - service: http_status:404
+```
+
+---
+
+### Step 4: Systemd Service Unit Installation (Linux)
+Create `/etc/systemd/system/dcouplr-hubs-tunnel.service`:
+
+```ini
+[Unit]
+Description=&lt;dcouplr/&gt; Outside-VPC Hubs Cloudflare Zero Trust Ingress Tunnel
+Documentation=https://github.com/varinull/dcouplr
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+TimeoutStartSec=0
+Restart=always
+RestartSec=5s
+ExecStart=/usr/local/bin/cloudflared --config /etc/cloudflared/config.yml run
+NonBlocking=true
+
+# Security Hardening Directives
+ProtectSystem=full
+ProtectHome=true
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Reload and start the systemd daemon:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now dcouplr-hubs-tunnel.service
+sudo systemctl status dcouplr-hubs-tunnel.service
+```
+
+---
+
+### Step 5: Windows Service Registration (Windows Server)
+Run in an administrative PowerShell prompt:
+
+```powershell
+&amp; &quot;C:\Program Files\cloudflared\cloudflared.exe&quot; service install
+Start-Service &quot;cloudflared&quot;
+Get-Service &quot;cloudflared&quot;
+```
+
+---
+
+### Step 6: Docker Compose Alternative Deployment
+For environments utilizing containerized runtimes:
+
+```yaml
+version: &quot;3.8&quot;
+
+services:
+  dcouplr-core:
+    image: dcouplr/controller:latest
+    container_name: dcouplr-core
+    restart: unless-stopped
+    ports:
+      - &quot;127.0.0.1:8000:8000&quot;
+    environment:
+      - DCOUPLR_ENV=production
+      - DCOUPLR_PORT=8000
+
+  cloudflared-tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: dcouplr-tunnel
+    restart: unless-stopped
+    network_mode: &quot;host&quot;
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - dcouplr-core
+```
+
+---
+
+## 6. Ingress Routing &amp; Path Matching Rules
+
+When configuring DNS and routing rules, use the following mapping structure:
+
+```
+https://&lt;domain&gt;/NOCDesk    ──► Local: http://127.0.0.1:8000/NOCDesk    (2-Way NOC Command Console)
+https://&lt;domain&gt;/SREDesk    ──► Local: http://127.0.0.1:8000/SREDesk    (2-Way Specialized SRE Console)
+https://&lt;domain&gt;/wallboard  ──► Local: http://127.0.0.1:8000/wallboard  (1-Way Fluid Matrix Wallboard)
+https://&lt;domain&gt;/kiosk      ──► Local: http://127.0.0.1:8000/kiosk      (1-Way Topology Kiosk)
+https://&lt;domain&gt;/static/*   ──► Local: http://127.0.0.1:8000/static/*   (CSS, JS, Fonts, Icons)
+https://&lt;domain&gt;/v1/*       ──► Local: http://127.0.0.1:8000/v1/*       (SSE Stream &amp; Telemetry APIs)
+```
+
+---
+
+## 7. Operational Verification &amp; Testing Commands
+
+Execute these verification commands to validate end-to-end functionality:
+
+```bash
+# 1. Verify Local In-VPC Controller Health
+curl -sI http://127.0.0.1:8000/v1/hubs/status | head -n 1
+# Expected output: HTTP/1.1 200 OK
+
+# 2. Inspect Tunnel Process Status on Linux Host
+sudo systemctl is-active dcouplr-hubs-tunnel.service
+# Expected output: active
+
+# 3. Verify Live Tunnel Connections to Cloudflare Edge
+sudo journalctl -u dcouplr-hubs-tunnel.service -n 20 --no-pager | grep &quot;Registered tunnel connection&quot;
+# Expected: 4 active connections over QUIC to Cloudflare Edge
+
+# 4. Test External Resolution from Outside the VPC
+curl -sI https://noc.yourcompany.com/NOCDesk | head -n 1
+# Expected: HTTP/2 200 (or HTTP/2 302 redirecting to Cloudflare Access login)
+
+# 5. Verify 1.14 KB Topology Pulse JSON Exporter
+curl -s http://127.0.0.1:8000/v1/telemetry/topology-pulse | jq -r .cluster.status
+# Expected: &quot;HEALTHY&quot; (or &quot;CRITICAL&quot; / &quot;WARNING&quot; if an incident is active)
+
+# 6. Verify Server-Sent Events (SSE) Stream Connectivity
+curl -N -H &quot;Accept: text/event-stream&quot; http://127.0.0.1:8000/v1/telemetry/stream | head -n 5
+# Expected: event stream with periodic data: payloads
+```
+
+---
+
+## 8. Operational Troubleshooting &amp; Runbook Actions
+
+| Symptom | Root Cause | Engineering Remediation Step |
+| :--- | :--- | :--- |
+| **`502 Bad Gateway` at Cloudflare Edge** | Local `&lt;dcouplr/&gt;` daemon on port 8000 is stopped or listening on incorrect interface. | 1. Test local port: `curl http://127.0.0.1:8000/health`.&lt;br&gt;2. Check `&lt;dcouplr/&gt;` service: `systemctl status dcouplr`.&lt;br&gt;3. Verify binding in `netstat -tlpn \| grep 8000`. |
+| **Tunnel Service Fails to Start (`Exit Code 1`)** | Tunnel token is invalid, expired, or DNS route is misconfigured. | 1. Inspect logs: `journalctl -u dcouplr-hubs-tunnel.service -n 50`.&lt;br&gt;2. Verify tunnel exists: `cloudflared tunnel list`.&lt;br&gt;3. Check token validity in Cloudflare Zero Trust Dashboard. |
+| **SSE Stream Disconnects on `/NOCDesk` or `/wallboard`** | Cloudflare Edge proxy buffer timeout or intermediate corporate proxy drop. | 1. Ensure `originRequest.connectTimeout: 5s` and `noTLSVerify: true` are set in `config.yml`.&lt;br&gt;2. Cloudflare Tunnel handles HTTP/2 and HTTP/3 multiplexing natively; verify client browser supports modern HTTP/2 streams. |
+| **`404 Not Found` when loading CSS/JS assets** | Ingress rules in `config.yml` lack static asset path routing. | 1. Verify `path: ^/(static\|v1)/.*` is present in `/etc/cloudflared/config.yml`.&lt;br&gt;2. Ensure the catch-all `http_status:404` rule is placed **last** in the ingress list. |
+| **SSO Login Redirect Loop on `/NOCDesk`** | Cloudflare Access session cookie mismatch or domain mismatch. | 1. Clear browser cookies for `*.yourcompany.com`.&lt;br&gt;2. Confirm the user&#x27;s email domain matches the IdP configuration in Cloudflare Zero Trust. |
+| **Display Freezes on Physical TV Monitor** | TV browser memory leak or power management sleep event. | 1. The `/wallboard` frontend has built-in auto-recovery and memory cycle safeguards.&lt;br&gt;2. For dedicated kiosk appliances, enable a daily reboot cron (`0 4 * * * /sbin/reboot`). |
+
+---
+
+## 9. Quick-Reference Deployment Cheat Sheet
+
+```bash
+# ------------------------------------------------------------------------------
+# LINUX 1-COMMAND DEPLOYMENT
+# ------------------------------------------------------------------------------
+curl -sSL http://127.0.0.1:8000/install-outside-vpc-hubs.sh | sudo bash -s -- \
+  --token &quot;&lt;YOUR-TOKEN&gt;&quot; --domain &quot;noc.yourcompany.com&quot;
+
+# ------------------------------------------------------------------------------
+# WINDOWS 1-COMMAND DEPLOYMENT
+# ------------------------------------------------------------------------------
+&amp; ([scriptblock]::Create((irm http://127.0.0.1:8000/install-outside-vpc-hubs.ps1))) `
+  -TunnelToken &quot;&lt;YOUR-TOKEN&gt;&quot; -Domain &quot;noc.yourcompany.com&quot; -InstallService $true
+
+# ------------------------------------------------------------------------------
+# SERVICE LIFECYCLE COMMANDS (LINUX)
+# ------------------------------------------------------------------------------
+sudo systemctl restart dcouplr-hubs-tunnel.service
+sudo systemctl stop dcouplr-hubs-tunnel.service
+sudo journalctl -u dcouplr-hubs-tunnel.service -f
+```
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># Engineering Runbook: Outside-VPC Hubs Deployment &amp; Cloudflare Zero Trust Ingress Tunnels
+
+**Document Identifier:** `VA-RUNBOOK-ENG-HUBS-001`  
+**Classification:** SRE &amp; DevOps Implementation Guide &amp; Operational Specification  
+**Target Audience:** Site Reliability Engineers (SRE), Network Operations Center (NOC) Engineers, Cloud Security Architects, Systems Administrators  
+**Supported Platforms:** Linux (Ubuntu 20.04/22.04/24.04, Debian 11/12, RHEL 8/9, Rocky Linux 8/9, Amazon Linux 2023), Windows Server 2019/2022/2025, Docker, Kubernetes  
+**Network Perimeter Policy:** Strictly Inbound-Dark (`0.0.0.0/0:ANY` Ingress Blocked on VPC Security Groups)  
+**Transport Security:** Outbound-Only QUIC (UDP 7844) / TLS 1.3 (TCP 443)  
+
+---
+
+## 1. Architecture Overview: How Outside-VPC Projection Works
+
+Enterprise infrastructure monitoring requires visual, real-time displays across remote Network Operations Centers (NOC), Site Reliability Engineering (SRE) war-rooms, office TV walls, and executive kiosks. However, internal Virtual Private Clouds (VPCs) must remain isolated with zero public IPs and zero open inbound firewall ports.
+
+`&lt;dcouplr/&gt;` solves this through **Outside-VPC Hubs Architecture**: four operational endpoints projected securely outside the VPC using **Cloudflare Zero Trust Tunnels (`cloudflared`)** without compromising VPC network boundaries.
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                IN-VPC PROTECTED SUBNET (10.100.0.0/16)                           │
+│                                                                                                  │
+│   ┌────────────────────────────────────────┐         ┌───────────────────────────────────────┐   │
+│   │     &lt;dcouplr/&gt; Core Engine Daemon      │         │       cloudflared Ingress Daemon      │   │
+│   │        127.0.0.1:8000 (Internal)       │◄───────┤         (Outbound Tunnel Client)      │   │
+│   └────────────────────────────────────────┘         └───────────────────┬───────────────────┘   │
+│                                                                          │                       │
+│   AWS Security Group / GCP Firewall Policy:                              │ Outbound-Only         │
+│   • Inbound:  DENY ALL (0.0.0.0/0:* = BLOCKED)                           │ QUIC (UDP 7844) /     │
+│   • Outbound: ALLOW UDP 7844 / TCP 443 to Cloudflare Edge                │ TLS 1.3 (TCP 443)     │
+└──────────────────────────────────────────────────────────────────────────┼───────────────────────┘
+                                                                           │
+                                                                           ▼
+                                                    ┌──────────────────────────────────────────────┐
+                                                    │         Cloudflare Global Edge Network       │
+                                                    │         (Anycast Ingress &amp; DDoS Shield)      │
+                                                    └──────────────────────┬───────────────────────┘
+                                                                           │
+                                 ┌─────────────────────────────────────────┴─────────────────────────────────────────┐
+                                 │                                                                                    │
+                                 ▼                                                                                    ▼
+                  [ PATTERN A: 2-WAY INTERACTIVE ]                                                     [ PATTERN B: 1-WAY AIR-GAPPED ]
+                  Cloudflare Access (SSO / IdP / MFA)                                                  Edge Token / IP Allowlist / CDN Cache
+                                 │                                                                                    │
+                 ┌───────────────┴───────────────┐                                                    ┌───────────────┴───────────────┐
+                 ▼                               ▼                                                    ▼                               ▼
+     ┌───────────────────────┐       ┌───────────────────────┐                            ┌───────────────────────┐       ┌───────────────────────┐
+     │       /NOCDesk        │       │       /SREDesk        │                            │      /wallboard       │       │        /kiosk         │
+     │  2-Way NOC Command    │       │  2-Way SRE / DBA      │                            │  1-Way Passive Wall   │       │  1-Way Topology Map   │
+     │  Replica of /dashboard│       │  Console of /matrix   │                            │  Fluid Zero-Scroll    │       │  Lobby Kiosk Display  │
+     └───────────────────────┘       └───────────────────────┘                            └───────────────────────┘       └───────────────────────┘
+```
+
+---
+
+## 2. The 4 Outside-VPC Displays: Component Breakdown &amp; Invariants
+
+```
+┌────────────────────┬───────────┬───────────────────────────────┬─────────────────────────────────┐
+│ Operational Hub    │ Mode      │ In-VPC Projection Source      │ Target Audience                 │
+├────────────────────┼───────────┼───────────────────────────────┼─────────────────────────────────┤
+│ 1. /NOCDesk        │ 2-Way     │ Exact Replica of /dashboard   │ 24x7 NOC Operators &amp; Commanders │
+│ 2. /SREDesk        │ 2-Way     │ Specialized Console of /matrix│ DBAs, SREs, Network, SecOps     │
+│ 3. /wallboard      │ 1-Way     │ Fluid Matrix of /matrix       │ Operations Center TV Walls      │
+│ 4. /kiosk          │ 1-Way     │ Topology Map of /dashboard    │ Lobbies &amp; Overhead Kiosks       │
+└────────────────────┴───────────┴───────────────────────────────┴─────────────────────────────────┘
+```
+
+### Display 1: `/NOCDesk` — 2-Way Interactive NOC Command Center
+* **Projection Source:** Exact replica of the in-VPC `/dashboard`.
+* **Communication Model:** **Bidirectional (2-Way Interactive)**.
+* **Component Inventory:**
+  1. **Interactive Multi-VPC Topology Map:** Full SVG visualization of AWS Production (`vpc-aws-prod-01`), AWS Staging (`vpc-aws-stage-02`), GCP Analytics (`vpc-gcp-anal-03`), and Chicago Datacenter (`dc-onprem-core-01`).
+  2. **Live SSE Telemetry Stream:** Continuous 1-second Server-Sent Events stream updating node states, packet rates, and network drops without polling.
+  3. **Cluster Census Table:** Real-time status of all 71 monitored nodes across physical bare-metal, virtualized hypervisors, and cloud instances.
+  4. **Granular Subnet &amp; Load Balancer Inspection:** Dedicated alarm tags indicating impacted subnets (e.g. `private-db-1b`) and degraded load balancers (e.g. `prod-internal-nlb`).
+  5. **Disaster Simulation Triggers:** In-browser scenario toggles for P1 Critical, P2 Warning, and Multi-Cascade drills.
+  6. **`Reset to Nominal (Healthy)` Global Action:** Allows NOC commanders to acknowledge and clear cluster alarms with a single click, transmitting an authenticated POST signal back to the in-VPC daemon (`/v1/telemetry/simulation`).
+* **Target Path:** `http://127.0.0.1:8000/NOCDesk` (routed via tunnel to `https://noc.yourcompany.com/NOCDesk`).
+* **Access Control:** Cloudflare Access (IdP Group: `NOC-Engineers` + FIDO2 / WebAuthn MFA).
+
+---
+
+### Display 2: `/SREDesk` — 2-Way Specialized Engineering &amp; DBA Console
+* **Projection Source:** Specialized operational console derived from `/matrix`.
+* **Communication Model:** **Bidirectional (2-Way Interactive)**.
+* **Component Inventory:**
+  1. **7-Tier Full-Stack Operational Health Matrix:** Real-time visibility into all 7 layers:
+     - Tier 1: Physical Datacenter (Bare Metal, DCIM, SAN)
+     - Tier 2: Networking (Core Spines, BGP, Optics, Leaf Switches)
+     - Tier 3: Cloud &amp; VPC (VPC Flow Logs, Subnets, Gateways, Load Balancers)
+     - Tier 4: Compute &amp; Hypervisors (Kubernetes, KVM, Pods, Runtimes)
+     - Tier 5: Middleware &amp; Databases (PostgreSQL, Redis, Kafka, Replication)
+     - Tier 6: Application Logic (APM Traces, REST APIs, Microservices)
+     - Tier 7: Governance &amp; SIEM (Audit Logs, OPA Invariants, SOC 2 Proofs)
+  2. **High-Priority Incident &amp; Operational Triage Board:** Real-time incident list prioritized by severity (`P1 &gt; P2 &gt; P3 &gt; P4`) with exact invariant breach rules (e.g. `INV-05 Database Transaction Lock Duration`).
+  3. **Deep Node Diagnostics Table:** Detailed inventory of failing or suspect nodes:
+     - `HostName &amp; Node ID`: e.g. `node-vpc-db-01` (`ip-10-100-20-44.ec2.internal`)
+     - `Private IP Address`: e.g. `10.100.20.44`
+     - `Role / Workload`: e.g. `PostgreSQL Master Database`
+     - `Network &amp; Subnet CIDR`: e.g. `vpc-aws-prod-01` &amp;bull; `private-db-1b (10.100.20.0/24)`
+     - `Operating System &amp; Kernel`: e.g. `Amazon Linux 2023 (Linux 6.1.72-96.166.amzn2023.x86_64)`
+     - `Software Stacks`: e.g. `PostgreSQL 16.2, PgBouncer 1.22, eBPF Observer`
+     - `Direct Observability Deep-Links`: Instant 1-click links to in-VPC `/logs?node_id=...` and `/traces?node_id=...`
+  4. **Bidirectional Reset &amp; Invariant Calibration:** Allows engineers to acknowledge root-cause clearing and calibrate alert thresholds directly from the outside console.
+* **Target Path:** `http://127.0.0.1:8000/SREDesk` (routed via tunnel to `https://sre.yourcompany.com/SREDesk`).
+* **Access Control:** Cloudflare Access (IdP Group: `SRE-DBA-Core` + Hardware MFA).
+
+---
+
+### Display 3: `/wallboard` — 1-Way Fluid Operations Center Projection
+* **Projection Source:** Fluid 1-way out-VPC projection of `/matrix`.
+* **Communication Model:** **Unidirectional (1-Way Passive Wallboard)**.
+* **Component Inventory:**
+  1. **Fluid Zero-Scroll Layout (`100vw × 100vh`):** Engineered specifically for 1080p, 1440p, and 4K wall-mounted TV monitors with `overflow: hidden;` to eliminate vertical and horizontal page scrollbars under all incident conditions.
+  2. **Glance Health Banner:** Prominent high-contrast status banner displaying `ALL 7 TIERS FULLY OPERATIONAL` (in green) or active incident alerts with pulsating red/amber borders during outages.
+  3. **7-Tier Small Surface Area Strip:** Compact 60px horizontal strip showing live KPI metrics (CPU %, Packet Drops %, Pod Health %, DB Connections, Latency p50, SIEM Compliance) across all 7 infrastructure tiers.
+  4. **Side-by-Side Main Split (2-Column Grid):**
+     - **Left Column:** High-Priority Incident Triage Board with self-contained overflow scrolling, impacted subnets, and load balancers.
+     - **Right Column:** Architectural Alert &amp; Triage Engine Blueprint featuring the centered dispatch root node, stepped bus wiring, and a 3×2 grid of 6 alert hubs (ITSM, ChatOps, On-Call Paging, Out-of-Band &amp; Voice, Event Store &amp; MQ, Wallboards &amp; Sinks).
+  5. **Compatibility Strip:** Continuous verification of monitored subnets (`public-1a`, `private-app-1a`, `private-db-1b`, `bare-metal-kvm-racks`) and load balancers (`prod-public-alb`, `prod-internal-nlb`, `internal-haproxy-vrrp`).
+  6. **Self-Healing Reconnect Loop:** Automatically re-establishes streaming connection if local network drops occur, requiring zero manual keyboard or mouse intervention.
+* **Target Path:** `http://127.0.0.1:8000/wallboard` (routed via tunnel to `https://wallboard.yourcompany.com/wallboard`).
+* **Access Control:** Edge Token, IP Allowlist, or Read-Only Cloudflare Edge Access rule.
+
+---
+
+### Display 4: `/kiosk` — 1-Way Air-Gapped Multi-VPC Topology Kiosk
+* **Projection Source:** Standalone topology kiosk of `/dashboard`.
+* **Communication Model:** **Unidirectional (1-Way Air-Gapped)**.
+* **Component Inventory:**
+  1. **Animated Multi-VPC Topology Visualizer:** High-level topology diagram of cross-cloud VPC clusters with live health pulses.
+  2. **1.14 KB Sanitized Pulse Consumption:** Fetches state exclusively from the lightweight sanitized endpoint (`/v1/telemetry/topology-pulse`).
+  3. **Zero Sensitive Data Exposure:** Emits no database credentials, raw log lines, internal routing tables, or customer data. Safe for public reception areas.
+  4. **Pure Client-Side Rendering:** Uses lightweight browser SVG rendering with sub-1% CPU consumption on low-power display appliances (Raspberry Pi, Intel NUC, Smart TV browser).
+* **Target Path:** `http://127.0.0.1:8000/kiosk` (routed via tunnel to `https://kiosk.yourcompany.com/kiosk`).
+* **Access Control:** Public Edge CDN or Read-Only Kiosk Token.
+
+---
+
+## 3. Why Outside the VPC &amp; Why Cloudflare Zero Trust Tunnels?
+
+### Technical &amp; Security Rationale
+
+1. **Perimeter Ingress Elimination (Zero Open Inbound Ports):**
+   - Traditional reverse proxies (NGINX, HAProxy, AWS ALB) require allocating public IPs and opening ports 80/443 in VPC Security Groups (`0.0.0.0/0:80` and `0.0.0.0/0:443`).
+   - Cloudflare Tunnel (`cloudflared`) makes **outbound-only connections** to Cloudflare Edge over UDP 7844 (QUIC) or TCP 443 (TLS 1.3).
+   - Inbound firewall rules remain strictly set to **DENY ALL**. External port scanners (Shodan, Censys) see a completely dark IP address.
+
+2. **Why Client VPNs Fail on Wallboards and Kiosks:**
+   - VPN software (OpenVPN, WireGuard, Cisco AnyConnect) on physical TV wall controllers frequently drops on sleep, network re-keying, or DHCP renewal.
+   - VPN profiles expire and require interactive password/MFA prompts, breaking 24x7 unattended operation at 3:00 AM.
+   - Granting VPN access to a lobby kiosk mini-PC creates an unacceptable lateral movement vector into the internal VPC network.
+
+3. **Edge-Terminated Identity &amp; Access Management (Cloudflare Access):**
+   - Ingress requests for 2-way consoles (`/NOCDesk` and `/SREDesk`) terminate at the Cloudflare Edge before traffic enters the tunnel.
+   - Authentication is validated against your corporate Identity Provider (Okta, Microsoft Entra ID, Google Workspace) with mandatory hardware MFA.
+   - Unauthenticated requests are dropped at the edge; zero unauthenticated packets ever touch the in-VPC daemon.
+
+4. **Zero Billable Cloud Network Egress:**
+   - Streaming raw metrics or logs to external SaaS platforms across AWS NAT Gateways incurs high hourly and bandwidth charges ($0.045/GB NAT + $0.09/GB egress).
+   - Cloudflare Zero Trust Tunnels provide unmetered data transfer, and `&lt;dcouplr/&gt;` evaluates invariants inside VPC volatile memory, keeping WAN egress strictly at zero billable bytes.
+
+---
+
+## 4. Automated 1-Command Turnkey Installers
+
+`&lt;dcouplr/&gt;` includes production-ready automated deployment scripts for both Linux and Windows environments that provision the complete Outside-VPC Hubs tunnel architecture in under 60 seconds.
+
+### Linux Automated Deployment (Bash)
+Execute directly on the in-VPC `&lt;dcouplr/&gt;` controller host:
+
+```bash
+curl -sSL http://127.0.0.1:8000/install-outside-vpc-hubs.sh | sudo bash -s -- \
+  --token &quot;&lt;YOUR-CLOUDFLARE-TUNNEL-TOKEN&gt;&quot; \
+  --domain &quot;noc.yourcompany.com&quot;
+```
+
+#### Available Command-Line Arguments:
+| Flag | Description | Default |
+| :--- | :--- | :--- |
+| `--token`, `-t` | Cloudflare Tunnel Secret Token | `&quot;&quot;` (Prompts interactively if omitted) |
+| `--domain`, `-d` | Base domain name for hub endpoints | `noc.yourcompany.com` |
+| `--port`, `-p` | Local `&lt;dcouplr/&gt;` API port | `8000` |
+| `--help`, `-h` | Display help message and exit | — |
+
+#### Automated Actions Performed by Linux Installer:
+1. Detects OS package manager (`apt`, `dnf`, `yum`, or `apk`) and system architecture (`amd64`, `arm64`).
+2. Installs verified `cloudflared` binary from official repositories.
+3. Generates `/etc/cloudflared/config.yml` with path routing for all 4 hubs.
+4. Generates and registers `/etc/systemd/system/dcouplr-hubs-tunnel.service`.
+5. Enables and starts the systemd unit (`systemctl enable --now dcouplr-hubs-tunnel`).
+6. Runs local pre-flight checks against `http://127.0.0.1:8000/v1/hubs/status`.
+
+---
+
+### Windows Server Automated Deployment (PowerShell)
+Open an elevated PowerShell prompt (**Run as Administrator**) and execute:
+
+```powershell
+&amp; ([scriptblock]::Create((irm http://127.0.0.1:8000/install-outside-vpc-hubs.ps1))) `
+  -TunnelToken &quot;&lt;YOUR-CLOUDFLARE-TUNNEL-TOKEN&gt;&quot; `
+  -Domain &quot;noc.yourcompany.com&quot; `
+  -InstallService $true
+```
+
+#### Available Parameters:
+| Parameter | Type | Description | Default |
+| :--- | :--- | :--- | :--- |
+| `-TunnelToken` | String | Cloudflare Tunnel Secret Token | `&quot;&quot;` |
+| `-Domain` | String | Base domain name for hub endpoints | `noc.yourcompany.com` |
+| `-LocalPort` | Integer | Local `&lt;dcouplr/&gt;` API port | `8000` |
+| `-InstallService` | Switch | Register as a Windows Service | `$true` |
+
+#### Automated Actions Performed by Windows Installer:
+1. Verifies elevated Administrator privileges.
+2. Creates installation directories: `C:\Program Files\dcouplr\hubs\` and `C:\Program Files\cloudflared\`.
+3. Downloads the official `cloudflared-windows-amd64.exe` binary.
+4. Adds the installation directory to the Machine `PATH` environment variable.
+5. Generates `config.yml` with path matching for `/NOCDesk`, `/SREDesk`, `/wallboard`, and `/kiosk`.
+6. Registers and starts `cloudflared` as a native Windows Service with automatic restart recovery.
+
+---
+
+### Offline / Air-Gapped Package Execution
+For air-gapped environments where direct internet access is restricted on the in-VPC controller:
+
+1. Download the enterprise tarball on a connected machine:
+   ```bash
+   curl -sSL -O http://&lt;controller-ip&gt;:8000/dcouplr-enterprise-v1.0.0.tar.gz
+   ```
+2. Verify integrity against `SHA256SUMS`:
+   ```bash
+   sha256sum -c &lt;(grep dcouplr-enterprise-v1.0.0.tar.gz SHA256SUMS)
+   ```
+3. Transfer the tarball via approved jump host to the target in-VPC node.
+4. Extract and run the installer offline:
+   ```bash
+   tar -xzf dcouplr-enterprise-v1.0.0.tar.gz
+   cd dcouplr-enterprise/
+   sudo ./install-outside-vpc-hubs.sh --token &quot;&lt;TOKEN&gt;&quot; --domain &quot;noc.yourcompany.com&quot;
+   ```
+
+---
+
+## 5. Step-by-Step Manual Implementation Guide
+
+If your infrastructure enforces manual change control, Ansible playbooks, or Terraform automation, follow these sequential steps:
+
+### Step 1: Create the Tunnel in Cloudflare Zero Trust
+1. Log in to the [Cloudflare One Dashboard](https://one.dash.cloudflare.com/).
+2. Navigate to **Networks** &amp;rarr; **Tunnels** &amp;rarr; **Create a Tunnel**.
+3. Choose **Cloudflare Tunnel (cloudflared)** &amp;rarr; Name the tunnel: `dcouplr-outside-vpc-hubs`.
+4. Copy the generated Tunnel Token (a base64 string starting with `eyJ...`).
+
+Alternatively, create the tunnel using the `cloudflared` CLI on an authorized workstation:
+```bash
+cloudflared tunnel login
+cloudflared tunnel create dcouplr-outside-vpc-hubs
+```
+
+---
+
+### Step 2: Install the `cloudflared` Binary
+#### On Ubuntu / Debian:
+```bash
+sudo mkdir -p --mode=0755 /usr/share/keyrings
+curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg &gt;/dev/null
+echo &#x27;deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared bookworm main&#x27; | sudo tee /etc/apt/sources.list.d/cloudflared.list
+sudo apt-get update &amp;&amp; sudo apt-get install -y cloudflared
+```
+
+#### On RHEL 8/9, Rocky Linux, or Amazon Linux 2023:
+```bash
+sudo dnf install -y https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-x86_64.rpm
+```
+
+#### On Windows Server:
+```powershell
+$cfPath = &quot;C:\Program Files\cloudflared&quot;
+New-Item -ItemType Directory -Force -Path $cfPath
+Invoke-WebRequest -Uri &quot;https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe&quot; -OutFile &quot;$cfPath\cloudflared.exe&quot;
+```
+
+---
+
+### Step 3: Multi-Ingress Configuration (`config.yml`)
+Create the configuration file at `/etc/cloudflared/config.yml` (Linux) or `C:\Program Files\cloudflared\config.yml` (Windows):
+
+```yaml
+# ==============================================================================
+# &lt;dcouplr/&gt; Outside-VPC Hubs: Cloudflare Tunnel Multi-Ingress Configuration
+# ==============================================================================
+tunnel: &lt;YOUR-TUNNEL-UUID-OR-TOKEN&gt;
+credentials-file: /etc/cloudflared/&lt;YOUR-TUNNEL-UUID&gt;.json
+
+ingress:
+  # 1. NOC Desk (2-Way Interactive Command Center)
+  - hostname: noc.yourcompany.com
+    path: ^/NOCDesk.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # 2. SRE Desk (2-Way Specialized Engineering &amp; DBA Console)
+  - hostname: noc.yourcompany.com
+    path: ^/SREDesk.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # 3. 7-Tier Wallboard (1-Way Fluid Matrix Display)
+  - hostname: noc.yourcompany.com
+    path: ^/wallboard.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # 4. Multi-VPC Kiosk (1-Way Air-Gapped Kiosk)
+  - hostname: noc.yourcompany.com
+    path: ^/kiosk.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # Static Assets &amp; API Routes required by Hub Frontends
+  - hostname: noc.yourcompany.com
+    path: ^/(static|v1)/.*
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+
+  # Fallback rule for base domain
+  - hostname: noc.yourcompany.com
+    service: http://127.0.0.1:8000
+
+  # Catch-all rule (Mandatory for Cloudflare Tunnel ingress)
+  - service: http_status:404
+```
+
+---
+
+### Step 4: Systemd Service Unit Installation (Linux)
+Create `/etc/systemd/system/dcouplr-hubs-tunnel.service`:
+
+```ini
+[Unit]
+Description=&lt;dcouplr/&gt; Outside-VPC Hubs Cloudflare Zero Trust Ingress Tunnel
+Documentation=https://github.com/varinull/dcouplr
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+TimeoutStartSec=0
+Restart=always
+RestartSec=5s
+ExecStart=/usr/local/bin/cloudflared --config /etc/cloudflared/config.yml run
+NonBlocking=true
+
+# Security Hardening Directives
+ProtectSystem=full
+ProtectHome=true
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Reload and start the systemd daemon:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now dcouplr-hubs-tunnel.service
+sudo systemctl status dcouplr-hubs-tunnel.service
+```
+
+---
+
+### Step 5: Windows Service Registration (Windows Server)
+Run in an administrative PowerShell prompt:
+
+```powershell
+&amp; &quot;C:\Program Files\cloudflared\cloudflared.exe&quot; service install
+Start-Service &quot;cloudflared&quot;
+Get-Service &quot;cloudflared&quot;
+```
+
+---
+
+### Step 6: Docker Compose Alternative Deployment
+For environments utilizing containerized runtimes:
+
+```yaml
+version: &quot;3.8&quot;
+
+services:
+  dcouplr-core:
+    image: dcouplr/controller:latest
+    container_name: dcouplr-core
+    restart: unless-stopped
+    ports:
+      - &quot;127.0.0.1:8000:8000&quot;
+    environment:
+      - DCOUPLR_ENV=production
+      - DCOUPLR_PORT=8000
+
+  cloudflared-tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: dcouplr-tunnel
+    restart: unless-stopped
+    network_mode: &quot;host&quot;
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - dcouplr-core
+```
+
+---
+
+## 6. Ingress Routing &amp; Path Matching Rules
+
+When configuring DNS and routing rules, use the following mapping structure:
+
+```
+https://&lt;domain&gt;/NOCDesk    ──► Local: http://127.0.0.1:8000/NOCDesk    (2-Way NOC Command Console)
+https://&lt;domain&gt;/SREDesk    ──► Local: http://127.0.0.1:8000/SREDesk    (2-Way Specialized SRE Console)
+https://&lt;domain&gt;/wallboard  ──► Local: http://127.0.0.1:8000/wallboard  (1-Way Fluid Matrix Wallboard)
+https://&lt;domain&gt;/kiosk      ──► Local: http://127.0.0.1:8000/kiosk      (1-Way Topology Kiosk)
+https://&lt;domain&gt;/static/*   ──► Local: http://127.0.0.1:8000/static/*   (CSS, JS, Fonts, Icons)
+https://&lt;domain&gt;/v1/*       ──► Local: http://127.0.0.1:8000/v1/*       (SSE Stream &amp; Telemetry APIs)
+```
+
+---
+
+## 7. Operational Verification &amp; Testing Commands
+
+Execute these verification commands to validate end-to-end functionality:
+
+```bash
+# 1. Verify Local In-VPC Controller Health
+curl -sI http://127.0.0.1:8000/v1/hubs/status | head -n 1
+# Expected output: HTTP/1.1 200 OK
+
+# 2. Inspect Tunnel Process Status on Linux Host
+sudo systemctl is-active dcouplr-hubs-tunnel.service
+# Expected output: active
+
+# 3. Verify Live Tunnel Connections to Cloudflare Edge
+sudo journalctl -u dcouplr-hubs-tunnel.service -n 20 --no-pager | grep &quot;Registered tunnel connection&quot;
+# Expected: 4 active connections over QUIC to Cloudflare Edge
+
+# 4. Test External Resolution from Outside the VPC
+curl -sI https://noc.yourcompany.com/NOCDesk | head -n 1
+# Expected: HTTP/2 200 (or HTTP/2 302 redirecting to Cloudflare Access login)
+
+# 5. Verify 1.14 KB Topology Pulse JSON Exporter
+curl -s http://127.0.0.1:8000/v1/telemetry/topology-pulse | jq -r .cluster.status
+# Expected: &quot;HEALTHY&quot; (or &quot;CRITICAL&quot; / &quot;WARNING&quot; if an incident is active)
+
+# 6. Verify Server-Sent Events (SSE) Stream Connectivity
+curl -N -H &quot;Accept: text/event-stream&quot; http://127.0.0.1:8000/v1/telemetry/stream | head -n 5
+# Expected: event stream with periodic data: payloads
+```
+
+---
+
+## 8. Operational Troubleshooting &amp; Runbook Actions
+
+| Symptom | Root Cause | Engineering Remediation Step |
+| :--- | :--- | :--- |
+| **`502 Bad Gateway` at Cloudflare Edge** | Local `&lt;dcouplr/&gt;` daemon on port 8000 is stopped or listening on incorrect interface. | 1. Test local port: `curl http://127.0.0.1:8000/health`.&lt;br&gt;2. Check `&lt;dcouplr/&gt;` service: `systemctl status dcouplr`.&lt;br&gt;3. Verify binding in `netstat -tlpn \| grep 8000`. |
+| **Tunnel Service Fails to Start (`Exit Code 1`)** | Tunnel token is invalid, expired, or DNS route is misconfigured. | 1. Inspect logs: `journalctl -u dcouplr-hubs-tunnel.service -n 50`.&lt;br&gt;2. Verify tunnel exists: `cloudflared tunnel list`.&lt;br&gt;3. Check token validity in Cloudflare Zero Trust Dashboard. |
+| **SSE Stream Disconnects on `/NOCDesk` or `/wallboard`** | Cloudflare Edge proxy buffer timeout or intermediate corporate proxy drop. | 1. Ensure `originRequest.connectTimeout: 5s` and `noTLSVerify: true` are set in `config.yml`.&lt;br&gt;2. Cloudflare Tunnel handles HTTP/2 and HTTP/3 multiplexing natively; verify client browser supports modern HTTP/2 streams. |
+| **`404 Not Found` when loading CSS/JS assets** | Ingress rules in `config.yml` lack static asset path routing. | 1. Verify `path: ^/(static\|v1)/.*` is present in `/etc/cloudflared/config.yml`.&lt;br&gt;2. Ensure the catch-all `http_status:404` rule is placed **last** in the ingress list. |
+| **SSO Login Redirect Loop on `/NOCDesk`** | Cloudflare Access session cookie mismatch or domain mismatch. | 1. Clear browser cookies for `*.yourcompany.com`.&lt;br&gt;2. Confirm the user&#x27;s email domain matches the IdP configuration in Cloudflare Zero Trust. |
+| **Display Freezes on Physical TV Monitor** | TV browser memory leak or power management sleep event. | 1. The `/wallboard` frontend has built-in auto-recovery and memory cycle safeguards.&lt;br&gt;2. For dedicated kiosk appliances, enable a daily reboot cron (`0 4 * * * /sbin/reboot`). |
+
+---
+
+## 9. Quick-Reference Deployment Cheat Sheet
+
+```bash
+# ------------------------------------------------------------------------------
+# LINUX 1-COMMAND DEPLOYMENT
+# ------------------------------------------------------------------------------
+curl -sSL http://127.0.0.1:8000/install-outside-vpc-hubs.sh | sudo bash -s -- \
+  --token &quot;&lt;YOUR-TOKEN&gt;&quot; --domain &quot;noc.yourcompany.com&quot;
+
+# ------------------------------------------------------------------------------
+# WINDOWS 1-COMMAND DEPLOYMENT
+# ------------------------------------------------------------------------------
+&amp; ([scriptblock]::Create((irm http://127.0.0.1:8000/install-outside-vpc-hubs.ps1))) `
+  -TunnelToken &quot;&lt;YOUR-TOKEN&gt;&quot; -Domain &quot;noc.yourcompany.com&quot; -InstallService $true
+
+# ------------------------------------------------------------------------------
+# SERVICE LIFECYCLE COMMANDS (LINUX)
+# ------------------------------------------------------------------------------
+sudo systemctl restart dcouplr-hubs-tunnel.service
+sudo systemctl stop dcouplr-hubs-tunnel.service
+sudo journalctl -u dcouplr-hubs-tunnel.service -f
+```
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

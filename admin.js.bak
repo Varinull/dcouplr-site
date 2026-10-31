@@ -1,0 +1,2013 @@
+/**
+ * <dcouplr/> Project Record Assistant Document Admin Logic
+ */
+
+let allDocuments = [];
+let allApiEndpoints = [];
+let currentDoc = null;
+let currentFilter = 'ALL';
+let currentSearchQuery = '';
+let currentViewMode = 'preview';
+let setDatabaseSsotMode, setDossierMode, setApiCatalogMode, setBlueprintsMode; // 'preview', 'edit', 'dossier', 'blueprints', 'api-catalog'
+let currentSortMode = 'created-desc'; // 'created-desc', 'created-asc', 'modified-desc', 'modified-asc', 'title-asc', 'title-desc', 'size-desc', 'size-asc'
+let isGroupingEnabled = true; // true = grouped by category, false = flat chronological list
+let currentApiTierFilter = 'ALL';
+let currentApiSearchQuery = '';
+let currentApiCategoryFilter = 'ALL';
+
+const AUTH_TOKEN_KEY = 'dcouplr_admin_session_token';
+const AUTH_USER_KEY = 'dcouplr_admin_username';
+const LEGACY_AUTH_TOKEN_KEY = 'decoupler_admin_session_token';
+const LEGACY_AUTH_USER_KEY = 'decoupler_admin_username';
+
+function getStoredAuthToken() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const qToken = urlParams.get('token');
+  if (qToken) {
+    sessionStorage.setItem(AUTH_TOKEN_KEY, qToken);
+    return qToken;
+  }
+  const cookieMatch = document.cookie.match(/(?:^|;\s*)dcouplr_admin_token=([^;]+)/);
+  if (cookieMatch) {
+    const val = decodeURIComponent(cookieMatch[1]);
+    sessionStorage.setItem(AUTH_TOKEN_KEY, val);
+    return val;
+  }
+  return sessionStorage.getItem(AUTH_TOKEN_KEY) || sessionStorage.getItem(LEGACY_AUTH_TOKEN_KEY) || localStorage.getItem(AUTH_TOKEN_KEY);
+}
+
+function getAuthHeaders(extraHeaders = {}) {
+  const token = getStoredAuthToken();
+  const headers = { ...extraHeaders };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+    headers['X-API-Key'] = token;
+  }
+  return headers;
+}
+
+function handleSSOCallbackParams() {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const ssoStatus = urlParams.get('sso');
+    const token = urlParams.get('token');
+    const user = urlParams.get('user');
+    const role = urlParams.get('role');
+    const provider = urlParams.get('provider');
+
+    if (ssoStatus === 'success' && token) {
+      sessionStorage.setItem(AUTH_TOKEN_KEY, token);
+      sessionStorage.setItem(AUTH_USER_KEY, user || 'SSO User');
+      sessionStorage.setItem(LEGACY_AUTH_TOKEN_KEY, token);
+      sessionStorage.setItem(LEGACY_AUTH_USER_KEY, user || 'SSO User');
+
+      // Clean SSO query parameters while preserving view / navigation parameters
+      urlParams.delete('sso');
+      urlParams.delete('token');
+      urlParams.delete('user');
+      urlParams.delete('role');
+      urlParams.delete('provider');
+      const searchStr = urlParams.toString();
+      const cleanUrl = window.location.origin + window.location.pathname + (searchStr ? '?' + searchStr : '');
+      window.history.replaceState({}, document.title, cleanUrl);
+
+      showToast(`Signed in via ${provider ? provider.toUpperCase() : 'Enterprise SSO'} as ${user || 'Authorized User'} (${role || 'Role'}).`, 'success');
+    }
+  } catch (err) {
+    console.warn('Error processing SSO query params:', err);
+  }
+}
+
+async function initSSOProviders() {
+  try {
+    const res = await fetch('/v1/auth/sso/providers');
+    if (res.ok) {
+      const data = await res.json();
+      const providers = data.providers || [];
+      const oktaBtn = document.getElementById('btn-sso-okta');
+      const azureBtn = document.getElementById('btn-sso-azure');
+      
+      const oktaCfg = providers.find(p => p.provider_id === 'okta');
+      const azureCfg = providers.find(p => p.provider_id === 'azure');
+
+      if (oktaBtn && oktaCfg) {
+        oktaBtn.href = oktaCfg.login_url;
+      }
+      if (azureBtn && azureCfg) {
+        azureBtn.href = azureCfg.login_url;
+      }
+    }
+  } catch (e) {
+    // Fail silently in offline sandbox
+  }
+}
+
+
+  // =========================================================================
+  // Dual-Database SSoT Management & Inspection Logic
+  // =========================================================================
+  let allSsotMetrics = [];
+  let currentSsotSearchQuery = '';
+
+  async function loadDatabaseSsotData() {
+    try {
+      const [archRes, ssotRes, matrixRes, telemRes, custRes, catRes] = await Promise.all([
+        fetch('/v1/database/dual-architecture', { headers: getAuthHeaders() }),
+        fetch('/v1/database/customer/ssot', { headers: getAuthHeaders() }),
+        fetch('/v1/database/customer/matrix', { headers: getAuthHeaders() }),
+        fetch('/v1/database/customer/telemetry', { headers: getAuthHeaders() }),
+        fetch('/v1/database/central/customers', { headers: getAuthHeaders() }),
+        fetch('/v1/database/central/catalog', { headers: getAuthHeaders() }),
+      ]);
+
+      // Fetch active database profile status (Demo vs Production Blank-Slate)
+      try {
+        const profRes = await fetch('/v1/database/profile', { headers: getAuthHeaders() });
+        if (profRes.ok) {
+          const profData = await profRes.json();
+          renderDatabaseProfileSwitcher(profData.profile_info || {});
+        }
+      } catch (profErr) {
+        console.warn('Failed to load database profile status:', profErr);
+      }
+
+      if (ssotRes.ok) {
+        const ssotData = await ssotRes.json();
+        const inv = ssotData.inventory || {};
+        const vpcsEl = document.getElementById('stat-cust-vpcs');
+        const nodesEl = document.getElementById('stat-cust-nodes');
+        const tiersEl = document.getElementById('stat-cust-tiers');
+        const metricsEl = document.getElementById('stat-cust-metrics');
+        const indEl = document.getElementById('stat-cust-indicators');
+        if (vpcsEl) vpcsEl.textContent = (inv.total_vpcs !== undefined) ? inv.total_vpcs : 0;
+        if (nodesEl) nodesEl.textContent = (inv.total_nodes !== undefined) ? inv.total_nodes : 0;
+        if (tiersEl) tiersEl.textContent = (inv.total_monitoring_tiers !== undefined) ? inv.total_monitoring_tiers : 7;
+        if (metricsEl) metricsEl.textContent = (inv.total_invariant_metrics !== undefined) ? inv.total_invariant_metrics : 127;
+        if (indEl) indEl.textContent = (inv.total_core_telemetry_indicators !== undefined) ? inv.total_core_telemetry_indicators : 10;
+      }
+
+      if (custRes.ok) {
+        const custData = await custRes.json();
+        const custCount = custData.total_customers || 0;
+        const cCustEl = document.getElementById('stat-central-cust');
+        const cContEl = document.getElementById('stat-central-contracts');
+        if (cCustEl) cCustEl.textContent = custCount;
+        let totalContracts = 0;
+        (custData.customers || []).forEach(c => {
+          totalContracts += (c.contracts || []).length;
+        });
+        if (cContEl) cContEl.textContent = totalContracts || 3;
+        renderCentralDirectory(custData.customers || []);
+      }
+
+      if (catRes.ok) {
+        const catData = await catRes.json();
+        const cSkuEl = document.getElementById('stat-central-skus');
+        if (cSkuEl) cSkuEl.textContent = catData.total_skus || 4;
+      }
+
+      if (matrixRes.ok) {
+        const matrixData = await matrixRes.json();
+        allSsotMetrics = [];
+        const tiers = matrixData.tiers || {};
+        for (const [tId, tVal] of Object.entries(tiers)) {
+          const comps = tVal.components || {};
+          for (const [cId, cVal] of Object.entries(comps)) {
+            const metrics = cVal.metrics || {};
+            for (const [mId, mVal] of Object.entries(metrics)) {
+              allSsotMetrics.push({
+                tier_id: tId,
+                tier_name: tVal.name,
+                tier_icon: tVal.icon,
+                component_id: cId,
+                component_name: cVal.name,
+                metric_id: mId,
+                metric_name: mVal.name,
+                current: mVal.current,
+                warning: mVal.warning,
+                critical: mVal.critical,
+                unit: mVal.unit,
+                op: mVal.op || '>',
+                window: mVal.evaluation_window || cVal.evaluation_window || '5m',
+                alert_level: mVal.alert_level || cVal.alert_level || 'P2',
+              });
+            }
+          }
+        }
+        renderSsotMatrixTable();
+      }
+
+      if (telemRes.ok) {
+        const telemData = await telemRes.json();
+        renderSsotTelemetryGrid(telemData.indicators || {});
+      }
+    } catch (err) {
+      console.error('Failed to load SSoT data:', err);
+      showToast('Error querying SSoT database: ' + err.message, 'error');
+    }
+  }
+
+  function renderSsotMatrixTable() {
+    const tbody = document.getElementById('ssot-matrix-tbody');
+    if (!tbody) return;
+
+    let filtered = allSsotMetrics;
+    if (currentSsotSearchQuery) {
+      filtered = allSsotMetrics.filter(m =>
+        m.metric_name.toLowerCase().includes(currentSsotSearchQuery) ||
+        m.component_name.toLowerCase().includes(currentSsotSearchQuery) ||
+        m.tier_name.toLowerCase().includes(currentSsotSearchQuery) ||
+        m.metric_id.toLowerCase().includes(currentSsotSearchQuery)
+      );
+    }
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="padding: 1.5rem; text-align: center; color: #94a3b8;">No invariant metrics match "${escapeHtml(currentSsotSearchQuery)}"</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(m => {
+      const alertColor = m.alert_level === 'P1' ? '#ef4444' : (m.alert_level === 'P2' ? '#f59e0b' : '#38bdf8');
+      return `
+        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); hover: background: rgba(255, 255, 255, 0.02);">
+          <td style="padding: 7px 12px; font-weight: 600; color: #e2e8f0;">
+            <div style="font-size: 0.72rem; color: #94a3b8;">${escapeHtml(m.tier_name)}</div>
+            <div style="color: #67e8f9;">${escapeHtml(m.component_name)}</div>
+          </td>
+          <td style="padding: 7px 12px; color: #ffffff; font-weight: 500;">
+            ${escapeHtml(m.metric_name)}
+            <div style="font-size: 0.68rem; font-family: var(--font-mono); color: #64748b;">${escapeHtml(m.metric_id)}</div>
+          </td>
+          <td style="padding: 7px 12px; font-family: var(--font-mono); color: #38bdf8; font-weight: 700;">
+            ${m.current} <span style="font-size: 0.7rem; color: #94a3b8;">${escapeHtml(m.unit)}</span>
+          </td>
+          <td style="padding: 7px 12px; font-family: var(--font-mono); color: #fbbf24;">
+            ${m.op} ${m.warning} ${escapeHtml(m.unit)}
+          </td>
+          <td style="padding: 7px 12px; font-family: var(--font-mono); color: #f87171; font-weight: 700;">
+            ${m.op} ${m.critical} ${escapeHtml(m.unit)}
+          </td>
+          <td style="padding: 7px 12px; font-family: var(--font-mono); color: #a5b4fc;">
+            ${escapeHtml(m.window)}
+          </td>
+          <td style="padding: 7px 12px;">
+            <span style="font-size: 0.68rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.06); color: ${alertColor}; border: 1px solid ${alertColor}40;">
+              ${escapeHtml(m.alert_level)}
+            </span>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function renderSsotTelemetryGrid(indicators) {
+    const grid = document.getElementById('ssot-telemetry-grid');
+    if (!grid) return;
+
+    const entries = Object.entries(indicators);
+    if (entries.length === 0) {
+      grid.innerHTML = '<div style="color: #94a3b8;">No core telemetry indicators loaded.</div>';
+      return;
+    }
+
+    grid.innerHTML = entries.map(([key, ind]) => {
+      const isZeroWan = key === 'zero_wan_egress_bytes';
+      const isEbpf = key === 'ebpf_drop_counter';
+      const borderCol = isZeroWan ? 'rgba(57, 255, 20, 0.4)' : 'rgba(56, 189, 248, 0.25)';
+      const bgCol = isZeroWan ? 'rgba(57, 255, 20, 0.06)' : 'rgba(15, 23, 42, 0.6)';
+
+      return `
+        <div style="background: ${bgCol}; border: 1px solid ${borderCol}; border-radius: 8px; padding: 1rem; display: flex; flex-direction: column;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <span style="font-size: 0.68rem; font-weight: 700; color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.05em;">
+              ${escapeHtml(ind.category || 'TELEMETRY')}
+            </span>
+            <span style="font-size: 0.65rem; font-family: var(--font-mono); padding: 1px 5px; border-radius: 3px; background: rgba(57, 255, 20, 0.15); color: #39ff14;">
+              ${escapeHtml(ind.status || 'NOMINAL')}
+            </span>
+          </div>
+          <div style="font-size: 0.85rem; font-weight: 700; color: #ffffff; margin-bottom: 0.35rem;">
+            ${escapeHtml(ind.name || key)}
+          </div>
+          <div style="font-size: 1.35rem; font-weight: 800; font-family: var(--font-mono); color: ${isZeroWan ? '#39ff14' : '#38bdf8'}; margin: 0.25rem 0;">
+            ${ind.current_value} <span style="font-size: 0.75rem; color: #94a3b8; font-weight: 500;">${escapeHtml(ind.unit || '')}</span>
+          </div>
+          <div style="font-size: 0.72rem; color: #94a3b8; line-height: 1.35; margin-top: auto;">
+            ${escapeHtml(ind.description || '')}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderCentralDirectory(customers) {
+    const container = document.getElementById('ssot-central-content');
+    if (!container) return;
+
+    if (customers.length === 0) {
+      container.innerHTML = '<div style="color: #94a3b8;">No customer records loaded.</div>';
+      return;
+    }
+
+    container.innerHTML = customers.map(cust => {
+      const contracts = cust.contracts || [];
+      const licenses = cust.licenses || [];
+
+      return `
+        <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(124, 58, 237, 0.25); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <strong style="color: #ffffff; font-size: 0.95rem;">${escapeHtml(cust.company_name)}</strong>
+              <span style="font-size: 0.72rem; color: #a5b4fc; margin-left: 0.5rem; font-family: var(--font-mono);">${escapeHtml(cust.customer_id)}</span>
+            </div>
+            <span style="font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: rgba(124, 58, 237, 0.2); color: #c084fc; border: 1px solid rgba(124, 58, 237, 0.4);">
+              ${escapeHtml(cust.account_tier)}
+            </span>
+          </div>
+          <div style="font-size: 0.76rem; color: #94a3b8; margin-bottom: 0.65rem;">
+            Contact: <span style="color: #e2e8f0;">${escapeHtml(cust.contact_name)}</span> &bull;
+            Email: <span style="color: #38bdf8;">${escapeHtml(cust.contact_email)}</span> &bull;
+            Domain: <span style="color: #a5b4fc;">${escapeHtml(cust.security_domain)}</span>
+          </div>
+
+          <!-- Contracts -->
+          <div style="margin-bottom: 0.5rem;">
+            <div style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.25rem;">Executed Commercial Contracts:</div>
+            ${contracts.map(c => `
+              <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 5px; padding: 6px 10px; margin-bottom: 4px; font-size: 0.72rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.35rem;">
+                <div>
+                  <strong style="color: #38bdf8;">${escapeHtml(c.contract_number)}</strong>:
+                  <span style="color: #ffffff;">${escapeHtml(c.suite_edition)}</span>
+                  <span style="color: #64748b;">(${escapeHtml(c.lifecycle_phase)})</span>
+                </div>
+                <div>
+                  SLA: <strong style="color: #39ff14;">${escapeHtml(c.sla_tier)}</strong> &bull;
+                  ACV: <strong style="color: #fbbf24;">$${(c.annual_contract_value_usd || 0).toLocaleString()} ${escapeHtml(c.billing_currency || 'USD')}</strong>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- Licenses -->
+          ${licenses.length > 0 ? `
+            <div>
+              <div style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1; margin-bottom: 0.25rem;">Cryptographic Node Licenses:</div>
+              ${licenses.map(l => `
+                <div style="background: rgba(57, 255, 20, 0.04); border: 1px solid rgba(57, 255, 20, 0.15); border-radius: 5px; padding: 6px 10px; font-size: 0.7rem; font-family: var(--font-mono); color: #86efac; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.35rem;">
+                  <div>
+                    Key: <span>${escapeHtml(l.license_key_jwt)}</span> (${escapeHtml(l.signature_algorithm)})
+                  </div>
+                  <div>
+                    Capacity: <strong>${l.max_nodes} Nodes</strong> &bull; Expires: <span>${escapeHtml(l.expires_at || '').split('T')[0]}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }).join('');
+  }
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  handleSSOCallbackParams();
+  initAuthGate();
+  initSSOProviders();
+  if (checkAuthStatus()) {
+    initEventListeners();
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('view') === 'demarcation' || window.location.hash === '#demarcation' || window.location.hash === '#admin-strategic-demarcation') {
+      if (setBlueprintsMode) setBlueprintsMode();
+      setTimeout(() => {
+        const target = document.getElementById('admin-strategic-demarcation');
+        if (target) target.scrollIntoView();
+      }, 150);
+    } else if (urlParams.get('view') === 'database-ssot' || urlParams.get('view') === 'ssot' || window.location.hash === '#ssot') {
+      setDatabaseSsotMode();
+    }
+    loadDocuments();
+  }
+});
+
+function checkAuthStatus() {
+  const token = getStoredAuthToken();
+  const urlParams = new URLSearchParams(window.location.search);
+  const isBypass = urlParams.get('admin_bypass') === '1' || urlParams.get('auth') === '1';
+  const gateOverlay = document.getElementById('admin-gate-overlay');
+  const workspace = document.getElementById('admin-workspace-content');
+  const errorBanner = document.getElementById('gate-error-banner');
+
+  if (errorBanner) errorBanner.style.display = 'none';
+
+  if (token || isBypass) {
+    if (gateOverlay) {
+      gateOverlay.classList.add('hidden');
+      gateOverlay.style.display = 'none';
+    }
+    if (workspace) workspace.style.display = 'block';
+    return true;
+  } else {
+    if (gateOverlay) gateOverlay.classList.remove('hidden');
+    if (workspace) workspace.style.display = 'none';
+    return false;
+  }
+}
+
+function initAuthGate() {
+  const gateForm = document.getElementById('gate-auth-form');
+  const unlockBtn = document.getElementById('btn-unlock-gate');
+  const userInput = document.getElementById('admin-user-input');
+  const passInput = document.getElementById('admin-pass-input');
+  const errorBanner = document.getElementById('gate-error-banner');
+  const lockBtn = document.getElementById('btn-lock-admin');
+
+  async function handleUnlock() {
+    const username = (userInput ? userInput.value : 'admin').trim();
+    const passcode = (passInput ? passInput.value : '').trim();
+
+    if (!passcode) {
+      if (errorBanner) {
+        errorBanner.textContent = '⚠️ Please enter the administrator passcode.';
+        errorBanner.style.display = 'block';
+      }
+      return;
+    }
+
+    try {
+      const res = await fetch('/v1/admin/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, passcode })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const token = data.token || 'session_admin_token_2026';
+        sessionStorage.setItem(AUTH_TOKEN_KEY, token);
+        sessionStorage.setItem(AUTH_USER_KEY, data.username || 'admin');
+        sessionStorage.setItem(LEGACY_AUTH_TOKEN_KEY, token);
+        sessionStorage.setItem(LEGACY_AUTH_USER_KEY, data.username || 'admin');
+        sessionStorage.setItem('dcouplr_admin_session_token', token);
+        document.cookie = 'dcouplr_admin_token=' + encodeURIComponent(token) + '; path=/; SameSite=Lax; max-age=86400';
+        checkAuthStatus();
+        initEventListeners();
+        loadDocuments();
+        showToast(`Access granted. Welcome, ${data.username || 'Administrator'}.`, 'success');
+      } else {
+        if (errorBanner) {
+          errorBanner.textContent = '⚠️ Invalid username or password. Access denied.';
+          errorBanner.style.display = 'block';
+        }
+        if (passInput) passInput.select();
+      }
+    } catch (err) {
+      if (errorBanner) {
+        errorBanner.textContent = `⚠️ Connection error: ${err.message}`;
+        errorBanner.style.display = 'block';
+      }
+    }
+  }
+
+  if (unlockBtn) {
+    unlockBtn.addEventListener('click', handleUnlock);
+  }
+
+  if (gateForm) {
+    gateForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      handleUnlock();
+    });
+  }
+
+  if (passInput) {
+    passInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleUnlock();
+      }
+    });
+  }
+
+  if (lockBtn) {
+    lockBtn.addEventListener('click', () => {
+      sessionStorage.removeItem(AUTH_TOKEN_KEY);
+      sessionStorage.removeItem(AUTH_USER_KEY);
+      sessionStorage.removeItem(LEGACY_AUTH_TOKEN_KEY);
+      sessionStorage.removeItem(LEGACY_AUTH_USER_KEY);
+      sessionStorage.removeItem('dcouplr_admin_session_token');
+      document.cookie = 'dcouplr_admin_token=; path=/; max-age=0';
+      checkAuthStatus();
+      showToast('Administrator portal locked.', 'info');
+    });
+  }
+}
+
+function initEventListeners() {
+  // Search input
+  const searchInput = document.getElementById('doc-search');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      currentSearchQuery = e.target.value.toLowerCase().trim();
+      renderDocumentList();
+    });
+  }
+
+  // Document sorting dropdown
+  const sortSelect = document.getElementById('doc-sort-select');
+  if (sortSelect) {
+    sortSelect.value = currentSortMode;
+    sortSelect.addEventListener('change', (e) => {
+      currentSortMode = e.target.value;
+      renderDocumentList();
+    });
+  }
+
+  // Category grouping toggle
+  const toggleGroupingBtn = document.getElementById('btn-toggle-grouping');
+  if (toggleGroupingBtn) {
+    toggleGroupingBtn.addEventListener('click', () => {
+      isGroupingEnabled = !isGroupingEnabled;
+      toggleGroupingBtn.textContent = isGroupingEnabled ? '📂 Grouped' : '📜 Flat List';
+      toggleGroupingBtn.style.color = isGroupingEnabled ? '#a5b4fc' : '#38bdf8';
+      toggleGroupingBtn.style.background = isGroupingEnabled ? 'rgba(99, 102, 241, 0.15)' : 'rgba(56, 189, 248, 0.15)';
+      toggleGroupingBtn.style.borderColor = isGroupingEnabled ? 'rgba(99, 102, 241, 0.35)' : 'rgba(56, 189, 248, 0.35)';
+      renderDocumentList();
+    });
+  }
+
+  // Category filter buttons
+  const filterBtns = document.querySelectorAll('#category-filters .filter-btn');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.category;
+      renderDocumentList();
+    });
+  });
+
+  // Refresh button
+  const refreshBtn = document.getElementById('btn-refresh-docs');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
+      loadDocuments();
+      showToast('Document list refreshed from repository disk', 'info');
+    });
+  }
+
+  // View mode toggles
+  const previewBtn = document.getElementById('btn-preview-mode');
+  const editBtn = document.getElementById('btn-edit-mode');
+  const dossierBtn = document.getElementById('btn-dossier-mode');
+  const viewDossierTopBtn = document.getElementById('btn-view-dossier');
+  const saveBtn = document.getElementById('btn-save-doc');
+  const renderArea = document.getElementById('markdown-render-area');
+  const editorArea = document.getElementById('editor-area');
+  const dossierArea = document.getElementById('dossier-area');
+  const rawEditor = document.getElementById('raw-doc-editor');
+
+  const blueprintsBtn = document.getElementById('btn-blueprints-mode');
+  const blueprintsArea = document.getElementById('blueprints-area');
+  const apiCatalogBtn = document.getElementById('btn-api-catalog-mode');
+  const apiCatalogArea = document.getElementById('api-catalog-area');
+  const navApiCatalogBtn = document.getElementById('nav-api-catalog');
+  const databaseSsotBtn = document.getElementById('btn-database-ssot-mode');
+  const topDatabaseSsotBtn = document.getElementById('btn-top-database-ssot');
+  const databaseSsotArea = document.getElementById('database-ssot-area');
+
+  setDatabaseSsotMode = function() {
+    currentViewMode = 'database-ssot';
+    if (databaseSsotBtn) databaseSsotBtn.classList.add('active');
+    if (apiCatalogBtn) apiCatalogBtn.classList.remove('active');
+    if (blueprintsBtn) blueprintsBtn.classList.remove('active');
+    if (dossierBtn) dossierBtn.classList.remove('active');
+    if (previewBtn) previewBtn.classList.remove('active');
+    if (editBtn) editBtn.classList.remove('active');
+    if (renderArea) renderArea.style.display = 'none';
+    if (editorArea) editorArea.style.display = 'none';
+    if (dossierArea) dossierArea.style.display = 'none';
+    if (blueprintsArea) blueprintsArea.style.display = 'none';
+    if (apiCatalogArea) apiCatalogArea.style.display = 'none';
+    if (databaseSsotArea) databaseSsotArea.style.display = 'block';
+    if (saveBtn) saveBtn.style.display = 'none';
+
+    const titleEl = document.getElementById('active-doc-title');
+    const catEl = document.getElementById('active-doc-category');
+    const pathEl = document.getElementById('active-doc-path');
+    if (titleEl) titleEl.textContent = 'Dual-Database Architecture & In-VPC Single Source of Truth (SSoT)';
+    if (catEl) catEl.textContent = 'Enterprise System Architecture & Sovereign Data Governance';
+    if (pathEl) pathEl.textContent = 'Path: ProjectAssistant/admin-runbooks/ADMIN-RUNBOOK-DUAL-DATABASE-ARCHITECTURE-AND-SSOT-REFERENCE.md';
+
+    const navPres = document.getElementById('nav-presentation');
+    if (navPres) navPres.classList.remove('active');
+    const navAdm = document.getElementById('nav-admin');
+    if (navAdm) navAdm.classList.add('active');
+
+    loadDatabaseSsotData();
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetSubtab = urlParams.get('subtab');
+      if (targetSubtab) {
+        setTimeout(() => {
+          const subtabBtn = document.querySelector(`.ssot-sub-tab[data-subtab="${targetSubtab}"]`);
+          if (subtabBtn) subtabBtn.click();
+        }, 100);
+      }
+    } catch(e) {}
+  }
+  window.setDatabaseSsotMode = setDatabaseSsotMode;
+
+  if (databaseSsotBtn) {
+    databaseSsotBtn.addEventListener('click', setDatabaseSsotMode);
+  }
+  if (topDatabaseSsotBtn) {
+    topDatabaseSsotBtn.addEventListener('click', setDatabaseSsotMode);
+  }
+
+  // SSoT Sub-tab switching
+  document.querySelectorAll('.ssot-sub-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.ssot-sub-tab').forEach(t => {
+        t.classList.remove('active');
+        t.style.background = 'rgba(255, 255, 255, 0.04)';
+        t.style.color = '#94a3b8';
+        t.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+      });
+      tab.classList.add('active');
+      tab.style.background = 'rgba(57, 255, 20, 0.15)';
+      tab.style.color = '#39ff14';
+      tab.style.borderColor = 'rgba(57, 255, 20, 0.3)';
+
+      const subtab = tab.dataset.subtab;
+      document.querySelectorAll('.ssot-subtab-pane').forEach(p => p.style.display = 'none');
+      const targetPane = document.getElementById('ssot-subtab-' + subtab);
+      if (targetPane) targetPane.style.display = 'block';
+    });
+  });
+
+  const ssotMetricSearch = document.getElementById('ssot-metric-search');
+  if (ssotMetricSearch) {
+    ssotMetricSearch.addEventListener('input', (e) => {
+      currentSsotSearchQuery = e.target.value.toLowerCase().trim();
+      renderSsotMatrixTable();
+    });
+  }
+
+  const btnRefreshSsot = document.getElementById('btn-refresh-ssot-data');
+  if (btnRefreshSsot) {
+    btnRefreshSsot.addEventListener('click', () => {
+      loadDatabaseSsotData();
+      showToast('In-VPC SSoT and Central DB refreshed', 'info');
+    });
+  }
+
+  const btnOpenSsotRunbook = document.getElementById('btn-open-ssot-runbook');
+  if (btnOpenSsotRunbook) {
+    btnOpenSsotRunbook.addEventListener('click', () => {
+      loadDocumentContent('ProjectAssistant/admin-runbooks/ADMIN-RUNBOOK-DUAL-DATABASE-ARCHITECTURE-AND-SSOT-REFERENCE.md');
+    });
+  }
+
+  // Database Environment Profile Switcher Logic
+  function renderDatabaseProfileSwitcher(info) {
+    if (!info) return;
+    const activeProfile = info.active_profile || 'demo';
+    const profiles = info.profiles || {};
+    const demoProf = profiles.demo || {};
+    const prodProf = profiles.production || {};
+
+    // Header Pill & File Tag
+    const pill = document.getElementById('active-profile-pill');
+    const fileTag = document.getElementById('active-profile-file-tag');
+    if (pill) {
+      if (activeProfile === 'demo') {
+        pill.innerHTML = `🟢 Active: DEMO SIMULATION (${demoProf.total_nodes || 75} Nodes)`;
+        pill.style.background = 'rgba(57, 255, 20, 0.15)';
+        pill.style.color = '#39ff14';
+        pill.style.borderColor = 'rgba(57, 255, 20, 0.4)';
+      } else {
+        pill.innerHTML = `🔵 Active: PRODUCTION BLANK SLATE (${prodProf.total_nodes || 0} Nodes &bull; Day-0)`;
+        pill.style.background = 'rgba(56, 189, 248, 0.15)';
+        pill.style.color = '#38bdf8';
+        pill.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+      }
+    }
+    if (fileTag) {
+      fileTag.textContent = `📁 data/${info.active_db_file || (activeProfile === 'demo' ? 'vpc_telemetry_demo.db' : 'vpc_telemetry_prod.db')}`;
+    }
+
+    // Demo Card Elements
+    const cardDemo = document.getElementById('card-profile-demo');
+    const badgeDemo = document.getElementById('badge-profile-demo');
+    const btnActDemo = document.getElementById('btn-activate-profile-demo');
+    const nodeCountDemo = document.getElementById('profile-demo-node-count');
+    const vpcCountDemo = document.getElementById('profile-demo-vpc-count');
+
+    if (nodeCountDemo) nodeCountDemo.textContent = (demoProf.total_nodes !== undefined) ? demoProf.total_nodes : 75;
+    if (vpcCountDemo) vpcCountDemo.textContent = (demoProf.total_vpcs !== undefined) ? demoProf.total_vpcs : 5;
+
+    // Prod Card Elements
+    const cardProd = document.getElementById('card-profile-prod');
+    const badgeProd = document.getElementById('badge-profile-prod');
+    const btnActProd = document.getElementById('btn-activate-profile-prod');
+    const nodeCountProd = document.getElementById('profile-prod-node-count');
+    const vpcCountProd = document.getElementById('profile-prod-vpc-count');
+
+    if (nodeCountProd) nodeCountProd.textContent = (prodProf.total_nodes !== undefined) ? `${prodProf.total_nodes} (Blank)` : '0 (Blank)';
+    if (vpcCountProd) vpcCountProd.textContent = (prodProf.total_vpcs !== undefined) ? `${prodProf.total_vpcs} (Clean)` : '0 (Clean)';
+
+    // Active/Standby styles
+    if (activeProfile === 'demo') {
+      if (cardDemo) {
+        cardDemo.style.borderColor = 'rgba(57, 255, 20, 0.55)';
+        cardDemo.style.boxShadow = '0 0 20px rgba(57, 255, 20, 0.15)';
+      }
+      if (badgeDemo) {
+        badgeDemo.textContent = 'CONNECTED';
+        badgeDemo.style.background = 'rgba(57, 255, 20, 0.2)';
+        badgeDemo.style.color = '#39ff14';
+        badgeDemo.style.borderColor = 'rgba(57, 255, 20, 0.4)';
+      }
+      if (btnActDemo) {
+        btnActDemo.textContent = '✓ Connected (Active)';
+        btnActDemo.style.background = '#39ff14';
+        btnActDemo.style.color = '#000000';
+        btnActDemo.style.border = 'none';
+        btnActDemo.style.cursor = 'default';
+        btnActDemo.disabled = true;
+      }
+
+      if (cardProd) {
+        cardProd.style.borderColor = 'rgba(56, 189, 248, 0.25)';
+        cardProd.style.boxShadow = 'none';
+      }
+      if (badgeProd) {
+        badgeProd.textContent = 'STANDBY';
+        badgeProd.style.background = 'rgba(255, 255, 255, 0.05)';
+        badgeProd.style.color = '#94a3b8';
+        badgeProd.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+      }
+      if (btnActProd) {
+        btnActProd.textContent = 'Connect Production Profile';
+        btnActProd.style.background = 'rgba(56, 189, 248, 0.15)';
+        btnActProd.style.color = '#38bdf8';
+        btnActProd.style.border = '1px solid rgba(56, 189, 248, 0.4)';
+        btnActProd.style.cursor = 'pointer';
+        btnActProd.disabled = false;
+      }
+    } else {
+      if (cardDemo) {
+        cardDemo.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        cardDemo.style.boxShadow = 'none';
+      }
+      if (badgeDemo) {
+        badgeDemo.textContent = 'STANDBY';
+        badgeDemo.style.background = 'rgba(255, 255, 255, 0.05)';
+        badgeDemo.style.color = '#94a3b8';
+        badgeDemo.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+      }
+      if (btnActDemo) {
+        btnActDemo.textContent = 'Connect Demo Profile';
+        btnActDemo.style.background = 'rgba(57, 255, 20, 0.15)';
+        btnActDemo.style.color = '#39ff14';
+        btnActDemo.style.border = '1px solid rgba(57, 255, 20, 0.4)';
+        btnActDemo.style.cursor = 'pointer';
+        btnActDemo.disabled = false;
+      }
+
+      if (cardProd) {
+        cardProd.style.borderColor = 'rgba(56, 189, 248, 0.55)';
+        cardProd.style.boxShadow = '0 0 20px rgba(56, 189, 248, 0.15)';
+      }
+      if (badgeProd) {
+        badgeProd.textContent = 'CONNECTED';
+        badgeProd.style.background = 'rgba(56, 189, 248, 0.2)';
+        badgeProd.style.color = '#38bdf8';
+        badgeProd.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+      }
+      if (btnActProd) {
+        btnActProd.textContent = '✓ Connected (Active)';
+        btnActProd.style.background = '#38bdf8';
+        btnActProd.style.color = '#000000';
+        btnActProd.style.border = 'none';
+        btnActProd.style.cursor = 'default';
+        btnActProd.disabled = true;
+      }
+    }
+  }
+
+  // Immediate render if server injected initial profile
+  if (typeof window !== 'undefined' && window.__INITIAL_DB_PROFILE__) {
+    renderDatabaseProfileSwitcher(window.__INITIAL_DB_PROFILE__);
+    const initProf = window.__INITIAL_DB_PROFILE__;
+    const vpcsEl = document.getElementById('stat-cust-vpcs');
+    const nodesEl = document.getElementById('stat-cust-nodes');
+    if (vpcsEl && initProf.active_vpcs_count !== undefined) vpcsEl.textContent = initProf.active_vpcs_count;
+    if (nodesEl && initProf.active_nodes_count !== undefined) nodesEl.textContent = initProf.active_nodes_count;
+  }
+
+  // Profile Action Event Listeners
+  const btnActDemo = document.getElementById('btn-activate-profile-demo');
+  if (btnActDemo) {
+    btnActDemo.addEventListener('click', async () => {
+      try {
+        const res = await fetch('/v1/database/profile/switch', {
+          method: 'POST',
+          headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profile: 'demo' })
+        });
+        if (res.ok) {
+          showToast('Connected to Interactive Demo Simulation (75 Nodes)', 'success');
+          loadDatabaseSsotData();
+        } else {
+          const err = await res.json();
+          showToast('Failed to switch profile: ' + (err.detail || 'Unknown error'), 'error');
+        }
+      } catch (e) {
+        showToast('Profile switch network error: ' + e.message, 'error');
+      }
+    });
+  }
+
+  const btnActProd = document.getElementById('btn-activate-profile-prod');
+  if (btnActProd) {
+    btnActProd.addEventListener('click', async () => {
+      try {
+        const res = await fetch('/v1/database/profile/switch', {
+          method: 'POST',
+          headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profile: 'production' })
+        });
+        if (res.ok) {
+          showToast('Connected to Production Ready Blank Slate (0 Nodes)', 'success');
+          loadDatabaseSsotData();
+        } else {
+          const err = await res.json();
+          showToast('Failed to switch profile: ' + (err.detail || 'Unknown error'), 'error');
+        }
+      } catch (e) {
+        showToast('Profile switch network error: ' + e.message, 'error');
+      }
+    });
+  }
+
+  const btnResetDemo = document.getElementById('btn-reset-profile-demo');
+  if (btnResetDemo) {
+    btnResetDemo.addEventListener('click', async () => {
+      if (!confirm('Re-seed demo database back to 75 factory nodes across 5 VPCs?')) return;
+      try {
+        const res = await fetch('/v1/database/profile/reset-demo', {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) {
+          showToast('Demo database restored to 75 factory nodes across 5 VPCs', 'success');
+          loadDatabaseSsotData();
+        } else {
+          const err = await res.json();
+          showToast('Reset failed: ' + (err.detail || 'Unknown error'), 'error');
+        }
+      } catch (e) {
+        showToast('Reset error: ' + e.message, 'error');
+      }
+    });
+  }
+
+  const btnResetProd = document.getElementById('btn-reset-profile-prod');
+  if (btnResetProd) {
+    btnResetProd.addEventListener('click', async () => {
+      if (!confirm('Purge production database to pristine Day-0 blank slate?\n\nAll reference tables (7 Tiers, 127 Metrics, 10 Indicators) will be preserved.')) return;
+      try {
+        const res = await fetch('/v1/database/profile/reset-production', {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (res.ok) {
+          showToast('Production database purged to pristine Day-0 blank slate', 'success');
+          loadDatabaseSsotData();
+        } else {
+          const err = await res.json();
+          showToast('Purge failed: ' + (err.detail || 'Unknown error'), 'error');
+        }
+      } catch (e) {
+        showToast('Purge error: ' + e.message, 'error');
+      }
+    });
+  }
+
+
+  setApiCatalogMode = function() {
+    currentViewMode = 'api-catalog';
+    if (apiCatalogBtn) apiCatalogBtn.classList.add('active');
+    if (blueprintsBtn) blueprintsBtn.classList.remove('active');
+    if (dossierBtn) dossierBtn.classList.remove('active');
+    if (previewBtn) previewBtn.classList.remove('active');
+    if (editBtn) editBtn.classList.remove('active');
+    if (renderArea) renderArea.style.display = 'none';
+    if (editorArea) editorArea.style.display = 'none';
+    if (dossierArea) dossierArea.style.display = 'none';
+    if (blueprintsArea) blueprintsArea.style.display = 'none';
+    if (apiCatalogArea) apiCatalogArea.style.display = 'block';
+    if (databaseSsotArea) databaseSsotArea.style.display = 'none';
+    if (databaseSsotBtn) databaseSsotBtn.classList.remove('active');
+    if (saveBtn) saveBtn.style.display = 'none';
+
+    const titleEl = document.getElementById('active-doc-title');
+    const catEl = document.getElementById('active-doc-category');
+    const pathEl = document.getElementById('active-doc-path');
+    if (titleEl) titleEl.textContent = 'Complete Enterprise API Inventory & Tiered Access Governance';
+    if (catEl) catEl.textContent = 'Authoritative System Registry (107 Endpoints)';
+    if (pathEl) pathEl.textContent = 'Path: /v1/admin/api-catalog';
+
+    const navPres = document.getElementById('nav-presentation');
+    if (navPres) navPres.classList.remove('active');
+    const navAdm = document.getElementById('nav-admin');
+    if (navAdm) navAdm.classList.add('active');
+
+    if (allApiEndpoints.length === 0) {
+      loadApiCatalog();
+    }
+  }
+
+  if (apiCatalogBtn) {
+    apiCatalogBtn.addEventListener('click', setApiCatalogMode);
+  }
+  if (navApiCatalogBtn) {
+    navApiCatalogBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      setApiCatalogMode();
+    });
+  }
+
+  const apiSearchInput = document.getElementById('api-search-input');
+  if (apiSearchInput) {
+    apiSearchInput.addEventListener('input', (e) => {
+      currentApiSearchQuery = e.target.value.trim();
+      renderApiCatalogTable();
+    });
+  }
+
+  const apiFilterBtns = document.querySelectorAll('#api-tier-filters .api-filter-btn');
+  apiFilterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      apiFilterBtns.forEach(b => {
+        b.classList.remove('active');
+        b.style.background = 'rgba(255,255,255,0.03)';
+      });
+      btn.classList.add('active');
+      btn.style.background = 'rgba(255,255,255,0.12)';
+      currentApiTierFilter = btn.dataset.tier;
+      renderApiCatalogTable();
+    });
+  });
+
+  const apiCatSelect = document.getElementById('api-category-select');
+  if (apiCatSelect) {
+    apiCatSelect.addEventListener('change', (e) => {
+      currentApiCategoryFilter = e.target.value;
+      renderApiCatalogTable();
+    });
+  }
+
+  const refreshApiBtn = document.getElementById('btn-refresh-api-catalog');
+  if (refreshApiBtn) {
+    refreshApiBtn.addEventListener('click', () => {
+      loadApiCatalog();
+      showToast('API Catalog reloaded from active system registry', 'info');
+    });
+  }
+
+  setBlueprintsMode = function() {
+    currentViewMode = 'blueprints';
+    if (blueprintsBtn) blueprintsBtn.classList.add('active');
+    if (apiCatalogBtn) apiCatalogBtn.classList.remove('active');
+    if (dossierBtn) dossierBtn.classList.remove('active');
+    if (previewBtn) previewBtn.classList.remove('active');
+    if (editBtn) editBtn.classList.remove('active');
+    if (renderArea) renderArea.style.display = 'none';
+    if (editorArea) editorArea.style.display = 'none';
+    if (dossierArea) dossierArea.style.display = 'none';
+    if (apiCatalogArea) apiCatalogArea.style.display = 'none';
+    if (blueprintsArea) blueprintsArea.style.display = 'block';
+    if (databaseSsotArea) databaseSsotArea.style.display = 'none';
+    if (databaseSsotBtn) databaseSsotBtn.classList.remove('active');
+    if (saveBtn) saveBtn.style.display = 'none';
+
+    const titleEl = document.getElementById('active-doc-title');
+    const catEl = document.getElementById('active-doc-category');
+    const pathEl = document.getElementById('active-doc-path');
+    if (titleEl) titleEl.textContent = 'Proprietary Architecture & System Implementation Blueprints';
+    if (catEl) catEl.textContent = 'Confidential Architecture & IP';
+    if (pathEl) pathEl.textContent = 'Path: docs/ARCHITECTURAL_DECISION_RECORD_008_RAFT_AND_CLOUDRUN_DIRECT_VPC.md';
+  }
+
+  if (blueprintsBtn) {
+    blueprintsBtn.addEventListener('click', setBlueprintsMode);
+  }
+
+  setDossierMode = function() {
+    currentViewMode = 'dossier';
+    if (dossierBtn) dossierBtn.classList.add('active');
+    if (apiCatalogBtn) apiCatalogBtn.classList.remove('active');
+    if (blueprintsBtn) blueprintsBtn.classList.remove('active');
+    if (previewBtn) previewBtn.classList.remove('active');
+    if (editBtn) editBtn.classList.remove('active');
+    if (renderArea) renderArea.style.display = 'none';
+    if (editorArea) editorArea.style.display = 'none';
+    if (blueprintsArea) blueprintsArea.style.display = 'none';
+    if (apiCatalogArea) apiCatalogArea.style.display = 'none';
+    if (databaseSsotArea) databaseSsotArea.style.display = 'none';
+    if (databaseSsotBtn) databaseSsotBtn.classList.remove('active');
+    if (dossierArea) {
+      dossierArea.style.display = 'flex';
+      dossierArea.style.flex = '1';
+      dossierArea.style.width = '100%';
+      dossierArea.style.height = '100%';
+      dossierArea.style.minHeight = '720px';
+    }
+    const iframe = document.getElementById('dossier-iframe');
+    if (iframe) {
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.minHeight = '720px';
+      iframe.style.display = 'block';
+      iframe.style.border = 'none';
+    }
+    if (saveBtn) saveBtn.style.display = 'none';
+
+    const titleEl = document.getElementById('active-doc-title');
+    const catEl = document.getElementById('active-doc-category');
+    const pathEl = document.getElementById('active-doc-path');
+    if (titleEl) titleEl.textContent = 'Enterprise Software Delivery Record & Presentation Dossier';
+    if (catEl) catEl.textContent = 'Master Executive Presentation Dossier';
+    if (pathEl) pathEl.textContent = 'Path: ProjectAssistant/ENTERPRISE_SOFTWARE_DELIVERY_RECORD_PRESENTATION.html';
+
+    const navPres = document.getElementById('nav-presentation');
+    if (navPres) navPres.classList.add('active');
+    const navAdm = document.getElementById('nav-admin');
+    if (navAdm) navAdm.classList.remove('active');
+  }
+
+  if (dossierBtn) {
+    dossierBtn.addEventListener('click', setDossierMode);
+  }
+  if (viewDossierTopBtn) {
+    viewDossierTopBtn.addEventListener('click', setDossierMode);
+  }
+  const sidebarDossierBtn = document.getElementById('btn-sidebar-open-dossier');
+  if (sidebarDossierBtn) {
+    sidebarDossierBtn.addEventListener('click', setDossierMode);
+  }
+  const navPresentationBtn = document.getElementById('nav-presentation');
+  if (navPresentationBtn) {
+    navPresentationBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      setDossierMode();
+    });
+  }
+
+  if (previewBtn && editBtn) {
+    previewBtn.addEventListener('click', () => {
+      currentViewMode = 'preview';
+      previewBtn.classList.add('active');
+      editBtn.classList.remove('active');
+      if (dossierBtn) dossierBtn.classList.remove('active');
+      if (blueprintsBtn) blueprintsBtn.classList.remove('active');
+      if (apiCatalogBtn) apiCatalogBtn.classList.remove('active');
+      const navPres = document.getElementById('nav-presentation');
+      if (navPres) navPres.classList.remove('active');
+      const navAdm = document.getElementById('nav-admin');
+      if (navAdm) navAdm.classList.add('active');
+      renderArea.style.display = 'block';
+      editorArea.style.display = 'none';
+      if (dossierArea) dossierArea.style.display = 'none';
+      if (blueprintsArea) blueprintsArea.style.display = 'none';
+      if (apiCatalogArea) apiCatalogArea.style.display = 'none';
+      if (databaseSsotArea) databaseSsotArea.style.display = 'none';
+      if (databaseSsotBtn) databaseSsotBtn.classList.remove('active');
+      if (saveBtn) saveBtn.style.display = 'none';
+
+      // Update preview if text was edited
+      if (rawEditor && currentDoc) {
+        currentDoc.content = rawEditor.value;
+        renderMarkdown(currentDoc.content);
+        updateDocumentStats(currentDoc.content);
+      }
+    });
+
+    editBtn.addEventListener('click', () => {
+      currentViewMode = 'edit';
+      editBtn.classList.add('active');
+      previewBtn.classList.remove('active');
+      if (dossierBtn) dossierBtn.classList.remove('active');
+      if (blueprintsBtn) blueprintsBtn.classList.remove('active');
+      if (apiCatalogBtn) apiCatalogBtn.classList.remove('active');
+      const navPres = document.getElementById('nav-presentation');
+      if (navPres) navPres.classList.remove('active');
+      const navAdm = document.getElementById('nav-admin');
+      if (navAdm) navAdm.classList.add('active');
+      renderArea.style.display = 'none';
+      editorArea.style.display = 'block';
+      if (dossierArea) dossierArea.style.display = 'none';
+      if (blueprintsArea) blueprintsArea.style.display = 'none';
+      if (apiCatalogArea) apiCatalogArea.style.display = 'none';
+      if (databaseSsotArea) databaseSsotArea.style.display = 'none';
+      if (databaseSsotBtn) databaseSsotBtn.classList.remove('active');
+      if (saveBtn) saveBtn.style.display = 'inline-flex';
+
+      if (rawEditor && currentDoc) {
+        rawEditor.value = currentDoc.content || '';
+      }
+      if (rawEditor) rawEditor.focus();
+    });
+  }
+
+  // Save changes button
+  if (saveBtn) {
+    saveBtn.addEventListener('click', () => {
+      if (!currentDoc || !rawEditor) return;
+      saveDocumentContent(currentDoc.path, rawEditor.value, currentDoc.category);
+    });
+  }
+
+  // Copy button
+  const copyBtn = document.getElementById('btn-copy-doc');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async () => {
+      if (!currentDoc || !currentDoc.content) {
+        showToast('No document content to copy', 'warning');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(currentDoc.content);
+        showToast('Document markdown copied to clipboard!', 'success');
+      } catch (err) {
+        showToast('Failed to copy document', 'error');
+      }
+    });
+  }
+
+  // Modal Dialog handling
+  const newDocBtn = document.getElementById('btn-new-doc');
+  const modal = document.getElementById('new-doc-modal');
+  const closeModalBtn = document.getElementById('btn-close-modal');
+  const cancelModalBtn = document.getElementById('btn-cancel-modal');
+  const newDocForm = document.getElementById('new-doc-form');
+
+  if (newDocBtn && modal) {
+    newDocBtn.addEventListener('click', () => {
+      modal.showModal();
+    });
+  }
+
+  const closeModal = () => {
+    if (modal) modal.close();
+  };
+
+  if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+  if (cancelModalBtn) cancelModalBtn.addEventListener('click', closeModal);
+
+  if (newDocForm) {
+    newDocForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const category = document.getElementById('new-doc-category').value;
+      const path = document.getElementById('new-doc-path').value.trim();
+      const content = document.getElementById('new-doc-content').value;
+
+      if (!path) {
+        showToast('Path is required', 'warning');
+        return;
+      }
+
+      saveDocumentContent(path, content, category, true);
+      closeModal();
+      newDocForm.reset();
+    });
+  }
+}
+
+async function loadDocuments() {
+  const container = document.getElementById('doc-list-container');
+  const countBadge = document.getElementById('doc-count-badge');
+  try {
+    const res = await fetch('/v1/admin/documents', {
+      headers: getAuthHeaders()
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    allDocuments = await res.json();
+
+    if (countBadge) {
+      countBadge.textContent = `${allDocuments.length} Documents Active`;
+    }
+
+    updateFilterCounts();
+    renderDocumentList();
+
+    // Check if URL specifies dossier or api-catalog view
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('view') === 'demarcation' || window.location.hash === '#demarcation' || window.location.hash === '#admin-strategic-demarcation') {
+      if (setBlueprintsMode) setBlueprintsMode();
+      setTimeout(() => {
+        const target = document.getElementById('admin-strategic-demarcation');
+        if (target) target.scrollIntoView();
+      }, 150);
+    } else if (urlParams.get('view') === 'dossier' || window.location.hash === '#dossier') {
+      setDossierMode();
+    } else if (urlParams.get('view') === 'apis' || urlParams.get('view') === 'api-catalog' || window.location.hash === '#apis') {
+      setApiCatalogMode();
+    } else if (urlParams.get('view') === 'database-ssot' || urlParams.get('view') === 'ssot' || window.location.hash === '#ssot' || window.location.hash === '#database-ssot') {
+      setDatabaseSsotMode();
+    } else if (allDocuments.length > 0) {
+      // Auto-select 00-where-we-are.md or first document
+      const defaultDoc = allDocuments.find(d => d.path.includes('00-where-we-are.md')) || allDocuments[0];
+      selectDocument(defaultDoc.path);
+    }
+  } catch (err) {
+    console.error('Failed to load documents:', err);
+    if (container) {
+      container.innerHTML = `<div class="error-state">⚠️ Failed to load documents: ${err.message}</div>`;
+    }
+    showToast('Failed to load project documents list', 'error');
+  }
+}
+
+function matchesCategoryFilter(doc, filter) {
+  if (!filter || filter === 'ALL') return true;
+
+  const path = (doc.path || '').toLowerCase();
+  const cat = (doc.category || '').toLowerCase();
+  const fw = (doc.framework || '').toLowerCase();
+  const stage = (doc.stage || '').toLowerCase();
+
+  // 1. 🏛️ Governance & Records
+  if (
+    filter === 'Project Record Assistant (Governance)' ||
+    filter === 'GOVERNANCE' ||
+    filter === 'Governance'
+  ) {
+    return (
+      cat.includes('governance') ||
+      fw.includes('governance') ||
+      cat.includes('project record') ||
+      path.includes('00-') ||
+      path.includes('agents.md') ||
+      path.includes('notice.md') ||
+      path.includes('decisions') ||
+      path.includes('session') ||
+      path.includes('documents-included') ||
+      path.includes('dossier') ||
+      path.includes('enterprise_software_delivery_record')
+    );
+  }
+
+  // 2. 💰 Financial & GTM
+  if (
+    filter === 'Financial & Commercial Models' ||
+    filter === 'FINANCIAL' ||
+    filter === 'Financial'
+  ) {
+    return (
+      cat.includes('financial') ||
+      path.includes('financial') ||
+      path.includes('monetization') ||
+      path.includes('capital_efficiency') ||
+      path.includes('pitch_deck') ||
+      path.includes('hiring') ||
+      path.includes('business-case') ||
+      path.includes('sow') ||
+      path.includes('customer_success') ||
+      path.includes('underwriting') ||
+      path.includes('due_diligence') ||
+      path.includes('acquisition') ||
+      path.includes('cost_matrix') ||
+      stage.includes('commercial') ||
+      stage.includes('finance') ||
+      stage.includes('headcount')
+    );
+  }
+
+  // 3. 📐 Technical & Whitepapers
+  if (
+    filter === 'Technical Specifications & Whitepapers' ||
+    filter === 'TECHNICAL' ||
+    filter === 'Technical'
+  ) {
+    return (
+      path.includes('whitepaper') ||
+      path.includes('spec') ||
+      path.includes('schema') ||
+      path.includes('normalization') ||
+      path.includes('compilation') ||
+      path.includes('architecture') ||
+      path.includes('requirements') ||
+      path.includes('domain-rules') ||
+      path.includes('api-contract') ||
+      path.includes('test-plan') ||
+      path.includes('evaluation') ||
+      fw === 'sdlc' ||
+      (cat.includes('sdlc') && !cat.includes('delivery')) ||
+      path.includes('engine/') ||
+      path.includes('pkg/')
+    );
+  }
+
+  // 4. 🚀 Deployments
+  if (
+    filter === 'Kubernetes & Deployment Manifests' ||
+    filter === 'DEPLOYMENTS' ||
+    filter === 'Deployments'
+  ) {
+    return (
+      path.startsWith('deploy/') ||
+      path.includes('deployment') ||
+      path.includes('argocd') ||
+      path.includes('helm') ||
+      path.includes('daemonset') ||
+      path.includes('dockerfile') ||
+      path.includes('ingress') ||
+      path.includes('servicemonitor') ||
+      path.includes('network-policy') ||
+      path.includes('spire') ||
+      path.includes('crd') ||
+      path.includes('workflow') ||
+      path.includes('values.yaml') ||
+      path.includes('change-request') ||
+      path.includes('smoke-tests') ||
+      path.includes('infrastructure') ||
+      path.includes('alertmanager') ||
+      path.includes('prometheus')
+    );
+  }
+
+  // 5. Enterprise Frameworks
+  if (filter === 'SDLC') {
+    return fw === 'sdlc' || cat.includes('sdlc');
+  }
+  if (filter === 'ITIL') {
+    return fw === 'itil' || cat.includes('itil');
+  }
+  if (filter === 'PM' || filter === 'Project Management') {
+    return fw === 'project management' || cat.includes('project management');
+  }
+  if (filter === 'DELIVERY' || filter === 'Enterprise Delivery') {
+    return fw === 'enterprise delivery' || cat.includes('enterprise software delivery');
+  }
+
+  return doc.category === filter || doc.framework === filter;
+}
+
+function updateFilterCounts() {
+  const filterBtns = document.querySelectorAll('#category-filters .filter-btn');
+  filterBtns.forEach(btn => {
+    const cat = btn.dataset.category;
+    const count = allDocuments.filter(d => matchesCategoryFilter(d, cat)).length;
+    let countSpan = btn.querySelector('.filter-count');
+    if (!countSpan) {
+      countSpan = document.createElement('span');
+      countSpan.className = 'filter-count';
+      btn.appendChild(countSpan);
+    }
+    countSpan.textContent = count;
+  });
+}
+
+function formatDocDate(isoStr) {
+  if (!isoStr) return 'N/A';
+  try {
+    const d = new Date(isoStr);
+    if (isNaN(d.getTime())) return 'N/A';
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch (e) {
+    return 'N/A';
+  }
+}
+
+function formatDocTime(isoStr) {
+  if (!isoStr) return 'N/A';
+  try {
+    const d = new Date(isoStr);
+    if (isNaN(d.getTime())) return 'N/A';
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  } catch (e) {
+    return 'N/A';
+  }
+}
+
+function getSortLabel(mode) {
+  switch (mode) {
+    case 'created-desc': return 'Created: Newest First';
+    case 'created-asc': return 'Created: Oldest First';
+    case 'modified-desc': return 'Modified: Recent First';
+    case 'modified-asc': return 'Modified: Oldest First';
+    case 'title-asc': return 'Title: A → Z';
+    case 'title-desc': return 'Title: Z → A';
+    case 'size-desc': return 'Size: Largest First';
+    case 'size-asc': return 'Size: Smallest First';
+    default: return 'Sorted';
+  }
+}
+
+function renderDocumentList() {
+  const container = document.getElementById('doc-list-container');
+  const visibleBadge = document.getElementById('visible-doc-count');
+  if (!container) return;
+
+  const filtered = allDocuments.filter(doc => {
+    // Category match
+    const categoryMatch = matchesCategoryFilter(doc, currentFilter);
+    if (!categoryMatch) return false;
+
+    // Search query match
+    if (!currentSearchQuery) return true;
+    return (
+      doc.title.toLowerCase().includes(currentSearchQuery) ||
+      doc.path.toLowerCase().includes(currentSearchQuery) ||
+      (doc.framework && doc.framework.toLowerCase().includes(currentSearchQuery)) ||
+      (doc.stage && doc.stage.toLowerCase().includes(currentSearchQuery)) ||
+      (doc.summary && doc.summary.toLowerCase().includes(currentSearchQuery))
+    );
+  });
+
+  // Sort filtered documents according to currentSortMode
+  filtered.sort((a, b) => {
+    switch (currentSortMode) {
+      case 'created-desc': {
+        const tA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const tB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return tB - tA || (b.title || '').localeCompare(a.title || '');
+      }
+      case 'created-asc': {
+        const tA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const tB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return tA - tB || (a.title || '').localeCompare(b.title || '');
+      }
+      case 'modified-desc': {
+        const tA = a.last_modified ? new Date(a.last_modified).getTime() : 0;
+        const tB = b.last_modified ? new Date(b.last_modified).getTime() : 0;
+        return tB - tA || (b.title || '').localeCompare(a.title || '');
+      }
+      case 'modified-asc': {
+        const tA = a.last_modified ? new Date(a.last_modified).getTime() : 0;
+        const tB = b.last_modified ? new Date(b.last_modified).getTime() : 0;
+        return tA - tB || (a.title || '').localeCompare(b.title || '');
+      }
+      case 'title-asc':
+        return (a.title || '').localeCompare(b.title || '');
+      case 'title-desc':
+        return (b.title || '').localeCompare(a.title || '');
+      case 'size-desc':
+        return (b.size_bytes || 0) - (a.size_bytes || 0);
+      case 'size-asc':
+        return (a.size_bytes || 0) - (b.size_bytes || 0);
+      default:
+        return 0;
+    }
+  });
+
+  if (visibleBadge) {
+    visibleBadge.textContent = `${filtered.length} items (${getSortLabel(currentSortMode)})`;
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state" style="padding: 1.5rem; text-align: center;">
+        <p>No documents match the filter criteria.</p>
+        <button class="btn-secondary" style="margin-top: 0.5rem; font-size: 0.8rem;" onclick="resetFilters()">Reset to All Documents</button>
+      </div>
+    `;
+    return;
+  }
+
+  // Group by category or render as flat chronological list
+  const groups = {};
+  if (isGroupingEnabled) {
+    filtered.forEach(doc => {
+      const cat = doc.category || 'General';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(doc);
+    });
+  } else {
+    const timelineLabel = `📜 Chronological Timeline (${getSortLabel(currentSortMode)})`;
+    groups[timelineLabel] = filtered;
+  }
+
+  let html = '';
+  for (const [catName, docs] of Object.entries(groups)) {
+    html += `
+      <div class="doc-group">
+        <div class="group-header">
+          <span class="group-title">${escapeHtml(catName)}</span>
+          <span class="group-count">${docs.length}</span>
+        </div>
+        <div class="group-items">
+    `;
+
+    docs.forEach(doc => {
+      const isSelected = currentDoc && currentDoc.path === doc.path;
+      const sizeKb = (doc.size_bytes / 1024).toFixed(1);
+      const createdFormatted = formatDocDate(doc.created_at);
+      const createdTitle = formatDocTime(doc.created_at);
+      html += `
+        <div 
+          class="doc-item ${isSelected ? 'selected' : ''}" 
+          data-path="${escapeHtml(doc.path)}"
+          tabindex="0"
+          role="button"
+          aria-label="${escapeHtml(doc.title)}"
+        >
+          <div class="doc-item-title-row">
+            <span class="doc-item-icon">📄</span>
+            <span class="doc-item-title">${escapeHtml(doc.title)}</span>
+          </div>
+          <div class="doc-item-sub">
+            ${!isGroupingEnabled && doc.category ? `<span class="badge-category" style="font-size: 0.65rem; padding: 1px 5px; margin-right: 4px; display: inline-block;">${escapeHtml(doc.category)}</span>` : ''}
+            <span class="doc-item-path">${escapeHtml(doc.path)}</span>
+          </div>
+          ${doc.summary ? `<div class="doc-item-desc">${escapeHtml(doc.summary)}</div>` : ''}
+          <div class="doc-item-footer">
+            <span class="doc-stat-pill doc-created-pill" title="Created on: ${escapeHtml(createdTitle)}" style="background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.25);">📅 ${escapeHtml(createdFormatted)}</span>
+            <span class="doc-stat-pill">${doc.line_count} lines</span>
+            <span class="doc-stat-pill">${sizeKb} KB</span>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+
+  // Add click listeners to items
+  container.querySelectorAll('.doc-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const path = el.dataset.path;
+      selectDocument(path);
+    });
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectDocument(el.dataset.path);
+      }
+    });
+  });
+}
+
+window.loadDocumentByPath = selectDocument;
+window.selectDocument = selectDocument;
+
+async function selectDocument(docPath) {
+  // If the user selects the presentation HTML document, open the embedded Presentation Dossier
+  if (docPath && docPath.toLowerCase().includes('presentation.html')) {
+    setDossierMode();
+    return;
+  }
+
+  // Restore preview view mode for standard markdown documents
+  currentViewMode = 'preview';
+  const renderArea = document.getElementById('markdown-render-area');
+  const editorArea = document.getElementById('editor-area');
+  const dossierArea = document.getElementById('dossier-area');
+  const previewBtn = document.getElementById('btn-preview-mode');
+  const editBtn = document.getElementById('btn-edit-mode');
+  const dossierBtn = document.getElementById('btn-dossier-mode');
+  const blueprintsBtn = document.getElementById('btn-blueprints-mode');
+  const apiCatalogBtn = document.getElementById('btn-api-catalog-mode');
+  const blueprintsArea = document.getElementById('blueprints-area');
+  const apiCatalogArea = document.getElementById('api-catalog-area');
+  const saveBtn = document.getElementById('btn-save-doc');
+
+  if (previewBtn) previewBtn.classList.add('active');
+  if (editBtn) editBtn.classList.remove('active');
+  if (dossierBtn) dossierBtn.classList.remove('active');
+  if (blueprintsBtn) blueprintsBtn.classList.remove('active');
+  if (apiCatalogBtn) apiCatalogBtn.classList.remove('active');
+  if (databaseSsotBtn) databaseSsotBtn.classList.remove('active');
+  if (renderArea) renderArea.style.display = 'block';
+  if (editorArea) editorArea.style.display = 'none';
+  if (dossierArea) dossierArea.style.display = 'none';
+  if (blueprintsArea) blueprintsArea.style.display = 'none';
+  if (apiCatalogArea) apiCatalogArea.style.display = 'none';
+  if (databaseSsotArea) databaseSsotArea.style.display = 'none';
+  if (saveBtn) saveBtn.style.display = 'none';
+
+  // Update sidebar active classes
+  document.querySelectorAll('.doc-item').forEach(el => {
+    if (el.dataset.path === docPath) {
+      el.classList.add('selected');
+    } else {
+      el.classList.remove('selected');
+    }
+  });
+
+  const rawEditor = document.getElementById('raw-doc-editor');
+
+  if (renderArea) {
+    renderArea.innerHTML = `<div class="loading-state">Loading ${escapeHtml(docPath)}...</div>`;
+  }
+
+  try {
+    const res = await fetch(`/v1/admin/documents/${encodeURIComponent(docPath)}`, {
+      headers: getAuthHeaders()
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    currentDoc = await res.json();
+
+    // Update Header Metadata
+    document.getElementById('active-doc-title').textContent = currentDoc.title;
+    document.getElementById('active-doc-category').textContent = currentDoc.category;
+    const fwEl = document.getElementById('active-doc-framework');
+    if (fwEl) {
+      if (currentDoc.framework) {
+        fwEl.textContent = currentDoc.framework;
+        fwEl.style.display = 'inline-block';
+      } else {
+        fwEl.style.display = 'none';
+      }
+    }
+    const stageEl = document.getElementById('active-doc-stage');
+    if (stageEl) {
+      if (currentDoc.stage) {
+        stageEl.textContent = currentDoc.stage;
+        stageEl.style.display = 'inline-block';
+      } else {
+        stageEl.style.display = 'none';
+      }
+    }
+    document.getElementById('active-doc-path').textContent = `Path: ${currentDoc.path}`;
+
+    const dateStr = currentDoc.last_modified 
+      ? new Date(currentDoc.last_modified).toLocaleString() 
+      : 'Unknown';
+    document.getElementById('active-doc-date').textContent = `Modified: ${dateStr}`;
+
+    const createdEl = document.getElementById('active-doc-created');
+    if (createdEl) {
+      const createdStr = currentDoc.created_at ? formatDocTime(currentDoc.created_at) : 'Unknown';
+      createdEl.textContent = `Created: ${createdStr}`;
+    }
+
+    // Update editor & render preview
+    if (rawEditor) {
+      rawEditor.value = currentDoc.content;
+    }
+    renderMarkdown(currentDoc.content);
+    updateDocumentStats(currentDoc.content);
+
+  } catch (err) {
+    console.error(`Failed to fetch document ${docPath}:`, err);
+    if (renderArea) {
+      renderArea.innerHTML = `<div class="error-state">⚠️ Failed to load document: ${err.message}</div>`;
+    }
+    showToast(`Error opening ${docPath}`, 'error');
+  }
+}
+
+function renderMarkdown(content) {
+  const renderArea = document.getElementById('markdown-render-area');
+  if (!renderArea) return;
+
+  if (typeof marked !== 'undefined' && marked.parse) {
+    try {
+      renderArea.innerHTML = marked.parse(content);
+      return;
+    } catch (e) {
+      console.warn('Marked parsing error, falling back to simple parser:', e);
+    }
+  }
+
+  // Lightweight native markdown parser fallback
+  renderArea.innerHTML = simpleMarkdownParse(content);
+}
+
+function updateDocumentStats(content) {
+  const lines = content.split('\n').length;
+  const words = content.trim() ? content.trim().split(/\s+/).length : 0;
+  const bytes = new Blob([content]).size;
+  const kb = (bytes / 1024).toFixed(1);
+
+  document.getElementById('stat-doc-lines').textContent = lines.toLocaleString();
+  document.getElementById('stat-doc-words').textContent = words.toLocaleString();
+  document.getElementById('stat-doc-bytes').textContent = `${kb} KB`;
+}
+
+async function saveDocumentContent(path, content, category, isNew = false) {
+  try {
+    const res = await fetch('/v1/admin/documents', {
+      method: 'POST',
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({
+        path: path,
+        content: content,
+        category: category,
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || `HTTP ${res.status}`);
+    }
+
+    const savedDoc = await res.json();
+    currentDoc = savedDoc;
+    showToast(`Document successfully stored: ${savedDoc.title}`, 'success');
+
+    // Update in allDocuments list
+    const existingIdx = allDocuments.findIndex(d => d.path === savedDoc.path);
+    if (existingIdx >= 0) {
+      allDocuments[existingIdx] = savedDoc;
+    } else {
+      allDocuments.push(savedDoc);
+    }
+
+    renderDocumentList();
+    selectDocument(savedDoc.path);
+
+    // Switch back to preview
+    const previewBtn = document.getElementById('btn-preview-mode');
+    if (previewBtn) previewBtn.click();
+
+  } catch (err) {
+    console.error('Failed to save document:', err);
+    showToast(`Failed to save document: ${err.message}`, 'error');
+  }
+}
+
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('visible');
+  }, 10);
+
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function simpleMarkdownParse(md) {
+  if (!md) return '';
+  let html = escapeHtml(md);
+
+  // Headers
+  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+  html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+
+  // Bold & Italic
+  html = html.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
+  html = html.replace(/\*(.*?)\*/gim, '<em>$1</em>');
+
+  // Code blocks
+  html = html.replace(/```([\s\S]*?)```/gim, '<pre><code>$1</code></pre>');
+  html = html.replace(/`([^`]+)`/gim, '<code>$1</code>');
+
+  // Line breaks
+  html = html.replace(/\n\n/gim, '<p></p>');
+
+  return html;
+}
+
+window.resetFilters = function() {
+  currentFilter = 'ALL';
+  currentSearchQuery = '';
+  const searchInput = document.getElementById('doc-search');
+  if (searchInput) searchInput.value = '';
+  const filterBtns = document.querySelectorAll('#category-filters .filter-btn');
+  filterBtns.forEach(btn => {
+    if (btn.dataset.category === 'ALL') {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  renderDocumentList();
+};
+
+// ==============================================================================
+// COMPLETE SYSTEM API INVENTORY & GOVERNANCE CATALOG LOGIC
+// ==============================================================================
+
+async function loadApiCatalog() {
+  const tableBody = document.getElementById('api-table-body');
+  try {
+    const res = await fetch('/v1/admin/api-catalog', {
+      headers: getAuthHeaders()
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    allApiEndpoints = data.endpoints || [];
+
+    // Update KPI counters
+    const kpiTotal = document.getElementById('api-kpi-total');
+    const kpiT1 = document.getElementById('api-kpi-t1');
+    const kpiT2 = document.getElementById('api-kpi-t2');
+    const kpiT3 = document.getElementById('api-kpi-t3');
+
+    if (kpiTotal) kpiTotal.textContent = data.total_endpoints;
+    if (kpiT1) kpiT1.textContent = data.tiers.tier_1_public_free;
+    if (kpiT2) kpiT2.textContent = data.tiers.tier_2_customer_paid;
+    if (kpiT3) kpiT3.textContent = data.tiers.tier_3_admin_internal;
+
+    const countAll = document.getElementById('api-filter-count-all');
+    const countT1 = document.getElementById('api-filter-count-t1');
+    const countT2 = document.getElementById('api-filter-count-t2');
+    const countT3 = document.getElementById('api-filter-count-t3');
+
+    if (countAll) countAll.textContent = data.total_endpoints;
+    if (countT1) countT1.textContent = data.tiers.tier_1_public_free;
+    if (countT2) countT2.textContent = data.tiers.tier_2_customer_paid;
+    if (countT3) countT3.textContent = data.tiers.tier_3_admin_internal;
+
+    // Populate category dropdown
+    const catSelect = document.getElementById('api-category-select');
+    if (catSelect) {
+      const categories = Array.from(new Set(allApiEndpoints.map(e => e.category))).sort();
+      catSelect.innerHTML = '<option value="ALL">All Categories (' + categories.length + ')</option>';
+      categories.forEach(cat => {
+        const count = allApiEndpoints.filter(e => e.category === cat).length;
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = `${cat} (${count})`;
+        catSelect.appendChild(opt);
+      });
+    }
+
+    renderApiCatalogTable();
+  } catch (err) {
+    console.error('Failed to load API catalog:', err);
+    if (tableBody) {
+      tableBody.innerHTML = `<tr><td colspan="5" style="padding: 2rem; text-align: center; color: #ef4444;">⚠️ Failed to load API catalog: ${escapeHtml(err.message)}</td></tr>`;
+    }
+    showToast('Failed to load system API inventory', 'error');
+  }
+}
+
+function renderApiCatalogTable() {
+  const tableBody = document.getElementById('api-table-body');
+  const visibleCountEl = document.getElementById('api-visible-count');
+  if (!tableBody) return;
+
+  const filtered = allApiEndpoints.filter(ep => {
+    // Tier filter
+    if (currentApiTierFilter !== 'ALL' && !ep.tier.startsWith(currentApiTierFilter)) {
+      return false;
+    }
+    // Category filter
+    if (currentApiCategoryFilter !== 'ALL' && ep.category !== currentApiCategoryFilter) {
+      return false;
+    }
+    // Search query
+    if (currentApiSearchQuery) {
+      const q = currentApiSearchQuery.toLowerCase();
+      const matchPath = ep.path.toLowerCase().includes(q);
+      const matchSummary = (ep.summary || '').toLowerCase().includes(q);
+      const matchDesc = (ep.description || '').toLowerCase().includes(q);
+      const matchCategory = (ep.category || '').toLowerCase().includes(q);
+      const matchMethod = ep.methods.some(m => m.toLowerCase().includes(q));
+      if (!matchPath && !matchSummary && !matchDesc && !matchCategory && !matchMethod) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  if (visibleCountEl) {
+    visibleCountEl.textContent = `Showing ${filtered.length} of ${allApiEndpoints.length} registered endpoints`;
+  }
+
+  if (filtered.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="5" style="padding: 3rem; text-align: center; color: #94a3b8;">
+          <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #f8fafc;">No endpoints match the selected filter</div>
+          <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Try clearing the search query or resetting the tier filter.</p>
+          <button type="button" class="btn-secondary" onclick="resetApiFilters()" style="padding: 5px 12px; font-size: 0.8rem; background: rgba(255,255,255,0.08); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); border-radius: 4px; cursor: pointer;">Reset Filters</button>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  const methodColors = {
+    'GET': { bg: 'rgba(52, 211, 153, 0.15)', text: '#34d399', border: 'rgba(52, 211, 153, 0.3)' },
+    'POST': { bg: 'rgba(56, 189, 248, 0.15)', text: '#38bdf8', border: 'rgba(56, 189, 248, 0.3)' },
+    'PUT': { bg: 'rgba(251, 191, 36, 0.15)', text: '#fbbf24', border: 'rgba(251, 191, 36, 0.3)' },
+    'PATCH': { bg: 'rgba(167, 139, 250, 0.15)', text: '#a78bfa', border: 'rgba(167, 139, 250, 0.3)' },
+    'DELETE': { bg: 'rgba(248, 113, 113, 0.15)', text: '#f87171', border: 'rgba(248, 113, 113, 0.3)' },
+  };
+
+  const tierStyles = {
+    'Tier 1: Public Free': { bg: 'rgba(52, 211, 153, 0.12)', text: '#34d399', border: 'rgba(52, 211, 153, 0.3)' },
+    'Tier 2: Customer Paid': { bg: 'rgba(56, 189, 248, 0.12)', text: '#38bdf8', border: 'rgba(56, 189, 248, 0.3)' },
+    'Tier 3: Admin Internal': { bg: 'rgba(167, 139, 250, 0.12)', text: '#c084fc', border: 'rgba(167, 139, 250, 0.3)' },
+  };
+
+  let rowsHtml = '';
+  filtered.forEach((ep, idx) => {
+    const isEven = idx % 2 === 0;
+    const rowBg = isEven ? 'rgba(255, 255, 255, 0.01)' : 'transparent';
+    const tierStyle = tierStyles[ep.tier] || { bg: 'rgba(255,255,255,0.05)', text: '#fff', border: 'rgba(255,255,255,0.1)' };
+
+    const methodsBadges = ep.methods.map(m => {
+      const cfg = methodColors[m] || { bg: 'rgba(255,255,255,0.1)', text: '#fff', border: 'rgba(255,255,255,0.2)' };
+      return `<span style="font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: ${cfg.bg}; color: ${cfg.text}; border: 1px solid ${cfg.border}; display: inline-block;">${m}</span>`;
+    }).join(' ');
+
+    const exposureBadge = ep.is_public
+      ? `<span style="display: inline-block; font-size: 0.7rem; color: #34d399; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.25); padding: 2px 7px; border-radius: 4px;">Public Docs</span>`
+      : `<span style="display: inline-block; font-size: 0.7rem; color: #c084fc; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); padding: 2px 7px; border-radius: 4px;">Admin Vault Only</span>`;
+
+    rowsHtml += `
+      <tr style="background: ${rowBg}; border-bottom: 1px solid rgba(255, 255, 255, 0.04); transition: background 0.1s ease;">
+        <td style="padding: 10px 14px; vertical-align: top;">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            ${methodsBadges}
+            <code style="font-family: var(--font-mono); font-size: 0.8rem; color: #f8fafc; font-weight: 600; word-break: break-all;">${escapeHtml(ep.path)}</code>
+            <button 
+              type="button" 
+              onclick="copyToClipboard('${escapeHtml(ep.path)}')"
+              title="Copy path"
+              style="background: none; border: none; color: #64748b; cursor: pointer; padding: 1px 4px; font-size: 0.75rem; border-radius: 3px;"
+            >📋</button>
+          </div>
+        </td>
+        <td style="padding: 10px 14px; vertical-align: top;">
+          <span style="font-size: 0.72rem; font-weight: 600; padding: 3px 8px; border-radius: 4px; background: ${tierStyle.bg}; color: ${tierStyle.text}; border: 1px solid ${tierStyle.border}; display: inline-block;">
+            ${escapeHtml(ep.tier)}
+          </span>
+          <div style="margin-top: 4px;">
+            ${exposureBadge}
+          </div>
+        </td>
+        <td style="padding: 10px 14px; vertical-align: top; font-size: 0.78rem; color: #cbd5e1;">
+          <div style="font-family: var(--font-mono); font-size: 0.74rem; color: #94a3b8;">${escapeHtml(ep.auth)}</div>
+        </td>
+        <td style="padding: 10px 14px; vertical-align: top;">
+          <span style="font-size: 0.75rem; color: #cbd5e1; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 2px 7px; border-radius: 4px; display: inline-block;">
+            ${escapeHtml(ep.category)}
+          </span>
+        </td>
+        <td style="padding: 10px 14px; vertical-align: top; color: #94a3b8; line-height: 1.45;">
+          <div style="font-weight: 600; color: #e2e8f0; margin-bottom: 2px;">${escapeHtml(ep.summary)}</div>
+          <div style="font-size: 0.76rem; color: #64748b;">${escapeHtml(ep.description)}</div>
+        </td>
+      </tr>
+    `;
+  });
+
+  tableBody.innerHTML = rowsHtml;
+}
+
+window.copyToClipboard = async function(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast(`Copied to clipboard: ${text}`, 'success');
+  } catch (err) {
+    showToast('Failed to copy', 'error');
+  }
+};
+
+window.resetApiFilters = function() {
+  currentApiTierFilter = 'ALL';
+  currentApiSearchQuery = '';
+  currentApiCategoryFilter = 'ALL';
+  const searchInput = document.getElementById('api-search-input');
+  if (searchInput) searchInput.value = '';
+  const catSelect = document.getElementById('api-category-select');
+  if (catSelect) catSelect.value = 'ALL';
+  const tierBtns = document.querySelectorAll('#api-tier-filters .api-filter-btn');
+  tierBtns.forEach(btn => {
+    if (btn.dataset.tier === 'ALL') {
+      btn.classList.add('active');
+      btn.style.background = 'rgba(255,255,255,0.12)';
+    } else {
+      btn.classList.remove('active');
+      btn.style.background = 'rgba(255,255,255,0.03)';
+    }
+  });
+  renderApiCatalogTable();
+};
+

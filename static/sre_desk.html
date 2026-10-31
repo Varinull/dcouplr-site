@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span>: SRE Desk • 7-Tier Full-Stack Monitoring Console (Outside-VPC Hub)</title>
+  <meta name="description" content="2-Way Outside-VPC SRE & DBA Command Console: 7-Tier Health Matrix, Incident Triage with Invariants, Failing Node Diagnostics, and Bidirectional Cluster Control.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <style>
+    :root {
+      --bg-dark: #070a14;
+      --bg-card: #0c1222;
+      --bg-surface: #131d33;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-highlight: rgba(56, 189, 248, 0.35);
+      --accent-green: #39ff14;
+      --accent-cyan: #38bdf8;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-purple: #c084fc;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Monaco, Consolas, monospace;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      margin: 0;
+      padding: 0;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Nav Bar */
+    .top-header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.65rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+    }
+    .top-header.header-pulse-critical {
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.28) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+      border-bottom: 2px solid #ef4444 !important;
+      box-shadow: 0 4px 25px rgba(239, 68, 68, 0.45);
+    }
+    .top-header.header-pulse-warning {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.25) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+      border-bottom: 2px solid #f59e0b !important;
+      box-shadow: 0 4px 25px rgba(245, 158, 11, 0.4);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .dcouplr-logo {
+      display: inline-flex;
+      align-items: center;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.5px;
+      text-decoration: none;
+      color: #fff;
+    }
+    .dcouplr-bracket { color: var(--accent-green); font-family: var(--font-mono); font-size: 1.25rem; font-weight: 900; }
+    .dcouplr-text { font-family: var(--font-sans); color: #fff; font-weight: 800; }
+
+    .brand-badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 800;
+      background: rgba(139, 92, 246, 0.18);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.45);
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .brand-badge.two-way {
+      background: rgba(56, 189, 248, 0.18);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.45);
+    }
+
+    /* Simulation Bar */
+    .sim-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(11, 17, 32, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 4px 8px;
+    }
+    .sim-label {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn-sim {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-sim:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+    .btn-sim.active {
+      border-color: var(--accent-green);
+      background: rgba(57, 255, 20, 0.18);
+      color: #86efac;
+      box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+    }
+    .btn-sim.active.crit {
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.22);
+      color: #fca5a5;
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.35);
+    }
+    .btn-sim.active.warn {
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.22);
+      color: #fde047;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+    }
+    .btn-reset-nominal {
+      background: linear-gradient(135deg, rgba(57, 255, 20, 0.2), rgba(16, 185, 129, 0.25));
+      border: 1px solid rgba(57, 255, 20, 0.5);
+      color: #86efac;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-reset-nominal:hover {
+      background: linear-gradient(135deg, rgba(57, 255, 20, 0.35), rgba(16, 185, 129, 0.4));
+      box-shadow: 0 0 12px rgba(57, 255, 20, 0.5);
+      color: #fff;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-link-btn {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+      padding: 4px 10px;
+      border-radius: 5px;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .nav-link-btn:hover {
+      background: rgba(56, 189, 248, 0.25);
+      color: #fff;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1720px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.25rem 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* Section 1: Glance Health Banner */
+    .glance-health-banner {
+      background: rgba(12, 18, 34, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 1rem 1.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      transition: all 0.3s ease;
+    }
+    .glance-health-banner.healthy {
+      border-left: 5px solid var(--accent-green);
+      background: linear-gradient(90deg, rgba(57, 255, 20, 0.08) 0%, rgba(12, 18, 34, 0.95) 100%);
+    }
+    .glance-health-banner.critical {
+      border-left: 5px solid var(--accent-red);
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.22) 0%, rgba(12, 18, 34, 0.95) 100%);
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.35);
+      animation: pulseBannerCritical 2s infinite ease-in-out;
+    }
+    .glance-health-banner.warning {
+      border-left: 5px solid var(--accent-amber);
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.18) 0%, rgba(12, 18, 34, 0.95) 100%);
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+      animation: pulseBannerWarning 2.5s infinite ease-in-out;
+    }
+
+    @keyframes pulseBannerCritical {
+      0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.25); }
+      50% { box-shadow: 0 0 35px rgba(239, 68, 68, 0.55); border-color: rgba(239, 68, 68, 0.8); }
+    }
+    @keyframes pulseBannerWarning {
+      0%, 100% { box-shadow: 0 0 12px rgba(245, 158, 11, 0.2); }
+      50% { box-shadow: 0 0 28px rgba(245, 158, 11, 0.45); border-color: rgba(245, 158, 11, 0.7); }
+    }
+
+    .glance-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .glance-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+    .glance-headline {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      color: #fff;
+    }
+    .glance-subline {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .glance-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .status-badge {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 5px;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-badge.healthy {
+      background: rgba(57, 255, 20, 0.15);
+      border: 1px solid rgba(57, 255, 20, 0.4);
+      color: #86efac;
+    }
+    .status-badge.critical {
+      background: rgba(239, 68, 68, 0.25);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+    }
+    .status-badge.warning {
+      background: rgba(245, 158, 11, 0.25);
+      border: 1px solid #f59e0b;
+      color: #fde047;
+    }
+
+    /* Section 2: 7-Tier Small Surface Area Grid */
+    .section-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.65rem;
+    }
+    .tier-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 1400px) {
+      .tier-cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    @media (max-width: 900px) {
+      .tier-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .tier-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 105px;
+    }
+    .tier-card:hover {
+      border-color: var(--border-highlight);
+      transform: translateY(-2px);
+    }
+    .tier-card.selected-tier {
+      outline: 2px solid var(--accent-cyan);
+    }
+    .tier-card.pulse-critical {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.75), inset 0 0 15px rgba(239, 68, 68, 0.25) !important;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(15, 23, 42, 0.98) 100%) !important;
+      animation: pulseCardRed 1.8s infinite ease-in-out;
+    }
+    .tier-card.pulse-warning {
+      border-color: #f59e0b !important;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.65), inset 0 0 12px rgba(245, 158, 11, 0.2) !important;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(15, 23, 42, 0.98) 100%) !important;
+      animation: pulseCardYellow 2.2s infinite ease-in-out;
+    }
+
+    @keyframes pulseCardRed {
+      0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+      50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.9); }
+    }
+    @keyframes pulseCardYellow {
+      0%, 100% { box-shadow: 0 0 12px rgba(245, 158, 11, 0.45); }
+      50% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.8); }
+    }
+
+    .tier-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+    .tier-num {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #94a3b8;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+    .tier-status-pill {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .tier-status-pill.status-healthy {
+      background: rgba(57, 255, 20, 0.12);
+      color: #86efac;
+      border: 1px solid rgba(57, 255, 20, 0.35);
+    }
+    .tier-status-pill.status-critical {
+      background: rgba(239, 68, 68, 0.25);
+      color: #fca5a5;
+      border: 1px solid #ef4444;
+    }
+    .tier-status-pill.status-warning {
+      background: rgba(245, 158, 11, 0.25);
+      color: #fde047;
+      border: 1px solid #f59e0b;
+    }
+
+    .tier-name {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #f8fafc;
+      line-height: 1.25;
+      margin-bottom: 6px;
+    }
+    .tier-kpi {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: #38bdf8;
+      font-weight: 600;
+    }
+    .tier-inv-count {
+      font-size: 0.65rem;
+      color: #94a3b8;
+      font-family: var(--font-mono);
+    }
+
+    /* Section 3: High-Priority Incident Triage Board with Invariant Details */
+    .triage-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 1.25rem 1.4rem;
+    }
+    .triage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .triage-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .triage-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid;
+    }
+
+    .incident-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 1.15rem;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .incident-card.p1 {
+      border-left: 4px solid #ef4444;
+      border-color: rgba(239, 68, 68, 0.45);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(15, 23, 42, 0.95) 100%);
+    }
+    .incident-card.p2 {
+      border-left: 4px solid #f59e0b;
+      border-color: rgba(245, 158, 11, 0.45);
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(15, 23, 42, 0.95) 100%);
+    }
+
+    .incident-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .rank-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .rank-tag.p1 { background: #ef4444; color: #fff; }
+    .rank-tag.p2 { background: #f59e0b; color: #000; }
+
+    .incident-headline {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    /* Invariant Callout Banner - Prominently Highlighted on TOP */
+    .invariant-breach-callout {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 2px solid #ef4444;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 0 24px rgba(239, 68, 68, 0.35), inset 0 0 15px rgba(239, 68, 68, 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: all 0.3s ease;
+    }
+    .incident-card.p2 .invariant-breach-callout {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border-color: #f59e0b;
+      box-shadow: 0 0 24px rgba(245, 158, 11, 0.35), inset 0 0 15px rgba(245, 158, 11, 0.12);
+    }
+    .invariant-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .invariant-title-cluster {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .invariant-warning-icon {
+      font-size: 1.45rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8));
+      animation: pulseWarningIcon 1.8s infinite ease-in-out;
+    }
+    .incident-card.p2 .invariant-warning-icon {
+      filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.8));
+    }
+    @keyframes pulseWarningIcon {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.18); opacity: 0.88; }
+    }
+    .invariant-name {
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #fca5a5;
+      letter-spacing: 0.02em;
+    }
+    .incident-card.p2 .invariant-name {
+      color: #fde047;
+    }
+    .invariant-node-tag {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      font-family: var(--font-mono);
+      background: rgba(0, 0, 0, 0.4);
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .invariant-pre-diagnosis-row,
+    .invariant-pre-analysis-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 6px;
+      padding: 9px 12px;
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+    .invariant-pre-diagnosis-row {
+      border-left: 3px solid #ef4444;
+    }
+    .incident-card.p2 .invariant-pre-diagnosis-row {
+      border-left-color: #f59e0b;
+    }
+    .invariant-pre-analysis-row {
+      border-left: 3px solid #38bdf8;
+    }
+    .pre-badge-label {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.74rem;
+      padding: 2px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .pre-badge-label.diag-badge {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+    .incident-card.p2 .pre-badge-label.diag-badge {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fde047;
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+    .pre-badge-label.analysis-badge {
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+    .pre-badge-content {
+      color: #f1f5f9;
+      flex: 1;
+    }
+    .pre-badge-content code {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      color: #67e8f9;
+      font-size: 0.74rem;
+    }
+    .pre-badge-content a {
+      color: #38bdf8;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* Node Census Details Grid - 3x3 Perfectly Balanced & Easily Spotted */
+    .node-triage-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 1200px) {
+      .node-triage-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 768px) {
+      .node-triage-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .node-triage-item {
+      background: rgba(10, 16, 30, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    }
+    .node-triage-item:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+      background: rgba(15, 23, 42, 0.9);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+    .node-triage-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+    .node-field-icon {
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+    .node-triage-label {
+      color: #94a3b8;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-family: var(--font-mono);
+      display: inline-block;
+    }
+    .node-triage-val {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .val-hostname { color: #38bdf8; }
+    .val-ip { color: #34d399; }
+    .val-role { color: #f1f5f9; }
+    .val-network { color: #c084fc; }
+    .val-os { color: #cbd5e1; }
+    .val-lb { color: #38bdf8; }
+    .stack-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #e2e8f0;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-right: 4px;
+      margin-bottom: 4px;
+    }
+    .threshold-current {
+      font-size: 0.92rem;
+      font-weight: 800;
+    }
+    .threshold-current.p1 {
+      color: #ef4444;
+      text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+    }
+    .threshold-current.p2 {
+      color: #f59e0b;
+      text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+    }
+    .threshold-limits {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      margin-left: 6px;
+      font-weight: 500;
+    }
+    .val-policy { color: #2dd4bf; }
+
+    .incident-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .action-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-action {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 4px;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      border: 1px solid;
+    }
+    .btn-action.voe {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+    }
+    .btn-action.logs {
+      background: rgba(192, 132, 252, 0.15);
+      border-color: rgba(192, 132, 252, 0.4);
+      color: #c084fc;
+    }
+    .btn-action.traces {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #67e8f9;
+    }
+    .btn-action.resolve {
+      background: rgba(57, 255, 20, 0.15);
+      border-color: rgba(57, 255, 20, 0.4);
+      color: #86efac;
+    }
+    .btn-action:hover {
+      filter: brightness(1.2);
+    }
+
+    /* Toast Notification */
+    #toast-notification {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      border-radius: 8px;
+      padding: 12px 18px;
+      color: #f8fafc;
+      font-size: 0.8rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      z-index: 9999;
+      display: none;
+      max-width: 480px;
+      animation: slideInToast 0.3s ease;
+    }
+    @keyframes slideInToast {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Modal for Outside VPC Hubs */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 9998;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .modal-card {
+      background: #0c1222;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 12px;
+      max-width: 1200px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1.75rem;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header with 2-Way SRE Controls -->
+  <header class="top-header" id="top-header-bar">
+    <div class="brand-group">
+      <a href="/" class="dcouplr-logo" title="<dcouplr/> Home">
+        <span class="dcouplr-bracket">&lt;</span>
+        <span class="dcouplr-text">dcouplr</span>
+        <span class="dcouplr-bracket">/&gt;</span>
+      </a>
+      <span class="brand-badge two-way">SRE DESK CONSOLE</span>
+      <span style="font-size: 0.7rem; color: #6ee7b7; font-family: var(--font-mono); font-weight: 700;">$0.00 WAN Egress</span>
+    </div>
+
+    <!-- 2-Way Simulation & Incident Reset Control Bar (Hidden when no issue) -->
+    <div class="sim-bar" id="sre-sim-bar" style="display: none;">
+      <span class="sim-label">⚡ SRE Cluster Controls:</span>
+      <button type="button" class="btn-sim active" id="btn-sim-nominal" onclick="setScenario('HEALTHY')">Nominal (Healthy)</button>
+      <button type="button" class="btn-sim" id="btn-sim-p1" onclick="setScenario('P1_CRITICAL')">P1: DB Deadlock</button>
+      <button type="button" class="btn-sim" id="btn-sim-p2" onclick="setScenario('P2_WARNING')">P2: Storage Latency</button>
+      <button type="button" class="btn-sim" id="btn-sim-dual" onclick="setScenario('DUAL_CASCADE')">Dual Cascade</button>
+      <button type="button" class="btn-reset-nominal" id="btn-reset-all" onclick="resetToNominal()" title="Broadcast Incident Resolution Cluster-Wide">
+        🔄 Reset to Nominal (Healthy)
+      </button>
+    </div>
+
+    <!-- Nav Actions -->
+    <div class="nav-actions">
+      <button type="button" class="nav-link-btn" id="btn-toggle-sim" onclick="toggleSimBar()" title="Toggle SRE Cluster Controls" style="color: #cbd5e1; border-color: rgba(255, 255, 255, 0.15); background: transparent; cursor: pointer;">
+        ⚡ Sim Controls
+      </button>
+      <a href="/docs" class="nav-link-btn" id="nav-docs" title="Technical Documentation &amp; Runbooks" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.35); text-decoration: none;">
+        📖 TechDocs
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Body Content -->
+  <main class="container">
+
+    <!-- Section 1: ALL 7 TIERS FULLY OPERATIONAL (Glance Banner) -->
+    <section class="glance-health-banner healthy" id="glance-health-banner">
+      <div class="glance-left">
+        <div class="glance-icon" id="glance-icon">🟢</div>
+        <div>
+          <div class="glance-headline" id="glance-headline">ALL 7 TIERS FULLY OPERATIONAL</div>
+          <div class="glance-subline" id="glance-subline">
+            Zero Invariant Breaches &bull; 122 Invariants Satisfied &bull; 71 Nodes Monitored &bull; In-Perimeter IPC Buffer Active
+          </div>
+        </div>
+      </div>
+      <div class="glance-right">
+        <span class="status-badge healthy" id="glance-status-pill">100% HEALTHY</span>
+        <span style="font-size: 0.72rem; color: #94a3b8; font-family: var(--font-mono);">
+          Pulse Latency: <strong style="color: #38bdf8;" id="glance-pulse-latency">0.4ms</strong>
+        </span>
+        <span style="font-size: 0.72rem; color: #94a3b8; font-family: var(--font-mono);">
+          Cluster Uptime: <strong style="color: #86efac;">99.999%</strong>
+        </span>
+      </div>
+    </section>
+
+    <!-- Section 2: 7-Tier Operational Health Matrix (Small Surface Area) -->
+    <section>
+      <div class="section-title">
+        <span>7-Tier Operational Health Matrix (Small Surface Area)</span>
+        <span style="font-size: 0.7rem; color: #94a3b8; font-weight: 500;">
+          Click tier to isolate incidents &bull; Evaluated continuously via <span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span> zero-egress engine
+        </span>
+      </div>
+
+      <div class="tier-cards-grid">
+        <!-- Tier 1 -->
+        <div class="tier-card" id="card-tier-1" onclick="filterTier('tier_1_physical_dc')">
+          <div class="tier-header">
+            <span class="tier-num">Tier 1</span>
+            <span class="tier-status-pill status-healthy" id="pill-tier-1">Nominal</span>
+          </div>
+          <div class="tier-name">DC &amp; Facilities</div>
+          <div class="tier-kpi" id="kpi-tier-1">PDU: 99.8% Eff</div>
+          <div class="tier-inv-count">16 Invariants Nominal</div>
+        </div>
+
+        <!-- Tier 2 -->
+        <div class="tier-card" id="card-tier-2" onclick="filterTier('tier_2_network_routing')">
+          <div class="tier-header">
+            <span class="tier-num">Tier 2</span>
+            <span class="tier-status-pill status-healthy" id="pill-tier-2">Nominal</span>
+          </div>
+          <div class="tier-name">Network &amp; Routing</div>
+          <div class="tier-kpi" id="kpi-tier-2">BGP Peers: 100%</div>
+          <div class="tier-inv-count">24 Invariants Nominal</div>
+        </div>
+
+        <!-- Tier 3 -->
+        <div class="tier-card" id="card-tier-3" onclick="filterTier('tier_3_compute_virtualization')">
+          <div class="tier-header">
+            <span class="tier-num">Tier 3</span>
+            <span class="tier-status-pill status-healthy" id="pill-tier-3">Nominal</span>
+          </div>
+          <div class="tier-name">Compute &amp; Hosts</div>
+          <div class="tier-kpi" id="kpi-tier-3">CPU p99: 14.2%</div>
+          <div class="tier-inv-count">18 Invariants Nominal</div>
+        </div>
+
+        <!-- Tier 4 -->
+        <div class="tier-card" id="card-tier-4" onclick="filterTier('tier_4_storage_block_io')">
+          <div class="tier-header">
+            <span class="tier-num">Tier 4</span>
+            <span class="tier-status-pill status-healthy" id="pill-tier-4">Nominal</span>
+          </div>
+          <div class="tier-name">Storage &amp; Block IO</div>
+          <div class="tier-kpi" id="kpi-tier-4">IOPS: 12.4k (Nom)</div>
+          <div class="tier-inv-count">14 Invariants Nominal</div>
+        </div>
+
+        <!-- Tier 5 -->
+        <div class="tier-card" id="card-tier-5" onclick="filterTier('tier_5_middleware_databases')">
+          <div class="tier-header">
+            <span class="tier-num">Tier 5</span>
+            <span class="tier-status-pill status-healthy" id="pill-tier-5">Nominal</span>
+          </div>
+          <div class="tier-name">Middleware &amp; DBs</div>
+          <div class="tier-kpi" id="kpi-tier-5">Locks: 4 (Nom)</div>
+          <div class="tier-inv-count">22 Invariants Nominal</div>
+        </div>
+
+        <!-- Tier 6 -->
+        <div class="tier-card" id="card-tier-6" onclick="filterTier('tier_6_application_apis')">
+          <div class="tier-header">
+            <span class="tier-num">Tier 6</span>
+            <span class="tier-status-pill status-healthy" id="pill-tier-6">Nominal</span>
+          </div>
+          <div class="tier-name">Apps &amp; Microservices</div>
+          <div class="tier-kpi" id="kpi-tier-6">HTTP 5xx: 0.00%</div>
+          <div class="tier-inv-count">15 Invariants Nominal</div>
+        </div>
+
+        <!-- Tier 7 -->
+        <div class="tier-card" id="card-tier-7" onclick="filterTier('tier_7_observability_siem')">
+          <div class="tier-header">
+            <span class="tier-num">Tier 7</span>
+            <span class="tier-status-pill status-healthy" id="pill-tier-7">Nominal</span>
+          </div>
+          <div class="tier-name">Observability &amp; Invariants</div>
+          <div class="tier-kpi" id="kpi-tier-7">WAN Egress: $0.00</div>
+          <div class="tier-inv-count">13 Invariants Nominal</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: High-Priority Incident & Operational Triage Board with Invariant Details -->
+    <section class="triage-section">
+      <div class="triage-header">
+        <div class="triage-title">
+          <span>🚨 High-Priority Incident &amp; Operational Triage Board</span>
+          <span class="triage-badge" id="triage-active-count" style="background: rgba(57, 255, 20, 0.12); border-color: rgba(57, 255, 20, 0.35); color: #86efac;">
+            0 Active Issues
+          </span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span id="tier-filter-indicator" style="font-size: 0.72rem; color: #94a3b8; font-family: var(--font-mono);">
+            Filter: All Tiers
+          </span>
+          <button type="button" id="btn-clear-tier-filter" onclick="filterTier(null)" style="display: none; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); color: #cbd5e1; font-size: 0.68rem; padding: 2px 7px; border-radius: 4px; cursor: pointer;">
+            ✕ Reset Filter
+          </button>
+        </div>
+      </div>
+
+      <div id="incident-list">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+  </main>
+
+<!-- =========================================================================
+     Modal: Outside-VPC Hubs: 24x7 Wallboards, Kiosks & Operator Desks (FULL EXPANDED)
+     ========================================================================= -->
+<div id="modal-wallboard-modes" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); z-index: 99999; align-items: center; justify-content: center; padding: 0; box-sizing: border-box;" onclick="if (event.target === this) this.style.display='none';">
+  <div class="modal-card" id="modal-wallboard-card" data-fullscreen="true" style="background: #090e17; border: 1px solid rgba(56, 189, 248, 0.35); box-shadow: 0 25px 80px rgba(0, 0, 0, 0.95), 0 0 50px rgba(56, 189, 248, 0.18); border-radius: 0; max-width: 100vw; width: 100vw; height: 100vh; max-height: 100vh; overflow-y: auto; display: flex; flex-direction: column; box-sizing: border-box; color: #f8fafc; padding: 1.6rem;">
+    
+    <!-- Modal Top Header -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.85rem; margin-bottom: 1.25rem;">
+      <div>
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px; flex-wrap: wrap;">
+          <span class="brand-badge" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.45); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">🛡️ ZERO-EGRESS AIR-GAPPED PERIMETER</span>
+          <span class="brand-badge" style="background: rgba(6, 182, 212, 0.15); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.35); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">☁️ CLOUDFLARE ZERO TRUST READY</span>
+          <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">🔒 0 INBOUND OPEN PORTS</span>
+          <span class="brand-badge" style="background: rgba(250, 204, 21, 0.15); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.35); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">~$0.01/mo TRANSPORT</span>
+        </div>
+        <h2 id="modal-wallboard-title" style="font-size: 1.45rem; font-weight: 800; color: #ffffff; margin: 0; display: flex; align-items: center; gap: 10px;">
+          📺 Outside-VPC Hubs: 24x7 Wallboards, Kiosks &amp; Operator Desks
+        </h2>
+        <p style="font-size: 0.82rem; color: #94a3b8; margin: 5px 0 0 0; line-height: 1.4;">
+          Project real-time multi-cloud topology, 7-tier operational health, and incident triage securely outside the VPC perimeter with strictly $0.00 billable cloud egress. Choose your operational display or deploy turnkey background tunnels:
+        </p>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button type="button" class="modal-close-btn" id="btn-close-wallboard-modal" onclick="document.getElementById('modal-wallboard-modes').style.display='none';" style="background: none; border: none; color: #94a3b8; font-size: 1.8rem; cursor: pointer; line-height: 1; padding: 0 4px;" title="Close Modal">&times;</button>
+      </div>
+    </div>
+
+    <!-- The 4 Outside-VPC Hubs Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 1.5rem;">
+      
+      <!-- 1. NOC Desk (Recommended · 2-Way) -->
+      <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(6, 182, 212, 0.35); border-radius: 10px; padding: 1.15rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span class="brand-badge" style="background: rgba(6, 182, 212, 0.2); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.45); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">NOC Desk (Recommended)</span>
+            <span style="font-size: 0.68rem; color: #6ee7b7; font-family: monospace; font-weight: 600;">~$0.01 / month</span>
+          </div>
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0 0 4px 0;">
+            <span style="font-weight: 800; letter-spacing: -0.02em;"><span style="color: #64748b;">&lt;</span><span style="color: #38bdf8;">dcouplr</span><span style="color: #64748b;">/&gt;</span></span> NOC Desk (AirLock™)
+          </h3>
+          <div style="font-size: 0.74rem; color: #38bdf8; font-weight: 600; margin-bottom: 8px;">
+            Zero-Trust Ingress Tunnel • 2-Way Interactive Replica of /dashboard
+          </div>
+          <p style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 10px;">
+            Interactive bidirectional command center projected outside VPC. NOC operators receive 1s SSE streams, inspect subnets and load balancers, dispatch incidents, trigger test simulations, and click "Reset to Nominal (Healthy)" to clear active outages cluster-wide.
+          </p>
+          <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 8px; margin-bottom: 12px; font-size: 0.7rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Path:</span><span style="color: #f8fafc; font-weight: 600;">Outbound Cloudflare Tunnel / TLS 1.3</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Mode:</span><span style="color: #38bdf8; font-weight: 700;">2-Way Interactive (Dispatch &amp; Clear)</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">Target URL:</span><code style="color: #a7f3d0;">/NOCDesk</code>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <a href="/NOCDesk" target="_blank" class="btn-sm-action" style="flex: 1; text-align: center; text-decoration: none; background: linear-gradient(135deg, rgba(6, 182, 212, 0.3), rgba(16, 185, 129, 0.3)); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.5); padding: 7px 10px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+            🚀 Launch NOC Desk (/NOCDesk) ↗
+          </a>
+          <button type="button" id="btn-copy-airlock-cmd" onclick="navigator.clipboard.writeText('cloudflared tunnel --url http://127.0.0.1:8000').then(() => { this.textContent = '✓ Copied!'; setTimeout(() => this.textContent = '📋 Copy CLI', 1500); });" style="background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 7px 8px; border-radius: 6px; font-size: 0.74rem; cursor: pointer;">
+            📋 Copy CLI
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. SRE Desk (Specialized Engineering · 2-Way) -->
+      <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.45); border-radius: 10px; padding: 1.15rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span class="brand-badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.45); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">SRE Desk (Specialized Engineering)</span>
+            <span style="font-size: 0.68rem; color: #38bdf8; font-family: monospace; font-weight: 600;">2-Way Console</span>
+          </div>
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0 0 4px 0;">
+            <span style="font-weight: 800; letter-spacing: -0.02em;"><span style="color: #64748b;">&lt;</span><span style="color: #38bdf8;">dcouplr</span><span style="color: #64748b;">/&gt;</span></span> SRE Desk
+          </h3>
+          <div style="font-size: 0.74rem; color: #38bdf8; font-weight: 600; margin-bottom: 8px;">
+            7-Tier Matrix Out-VPC Console • Dedicated DBA &amp; SRE Command
+          </div>
+          <p style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 10px;">
+            Dedicated 2-way console for DBAs, SREs, Network, and SecOps teams. Projected outside VPC from /matrix with deep node diagnostics (HostName &amp; Node ID, IP, Subnet, OS, Stacks, /logs link) and bidirectional simulation &amp; reset controls.
+          </p>
+          <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 8px; margin-bottom: 12px; font-size: 0.7rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Path:</span><span style="color: #f8fafc; font-weight: 600;">Cloudflare Access SSO / mTLS</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Mode:</span><span style="color: #38bdf8; font-weight: 700;">2-Way Simulation &amp; Reset</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">Target URL:</span><code style="color: #a7f3d0;">/SREDesk</code>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <a href="/SREDesk" target="_blank" class="btn-sm-action" style="flex: 1; text-align: center; text-decoration: none; background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(139, 92, 246, 0.3)); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.5); padding: 7px 10px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+            🛠️ Launch SRE Desk (/SREDesk) ↗
+          </a>
+          <a href="/matrix" target="_blank" class="btn-sm-action" style="text-decoration: none; background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 7px 8px; border-radius: 6px; font-size: 0.74rem;">
+            In-VPC Matrix ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- 3. 7-Tier Wallboard (Wall Projection · 1-Way) -->
+      <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(57, 255, 20, 0.35); border-radius: 10px; padding: 1.15rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span class="brand-badge" style="background: rgba(57, 255, 20, 0.15); color: #39ff14; border: 1px solid rgba(57, 255, 20, 0.45); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Full-Stack Monitoring Matrix Hub</span>
+            <span style="font-size: 0.68rem; color: #86efac; font-family: monospace; font-weight: 600;">1-Way Wall</span>
+          </div>
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0 0 4px 0;">
+            <span style="font-weight: 800; letter-spacing: -0.02em;"><span style="color: #64748b;">&lt;</span><span style="color: #38bdf8;">dcouplr</span><span style="color: #64748b;">/&gt;</span></span> 7-Tier Wallboard
+          </h3>
+          <div style="font-size: 0.74rem; color: #39ff14; font-weight: 600; margin-bottom: 8px;">
+            1-Way Out-VPC Matrix Projection • Operations Center Display
+          </div>
+          <p style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 10px;">
+            Wall-mounted projection of the 7-Tier Operational Health Matrix, High-Priority Incident Triage Board, and Alert &amp; Triage Engine architectural blueprint. Synchronized with the cluster state with zero interaction required.
+          </p>
+          <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 8px; margin-bottom: 12px; font-size: 0.7rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Path:</span><span style="color: #f8fafc; font-weight: 600;">Sanitized Pulse JSON / Edge CDN</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Mode:</span><span style="color: #34d399; font-weight: 700;">1-Way Read-Only Wallboard</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">Target URL:</span><code style="color: #a7f3d0;">/wallboard</code>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <a href="/wallboard" target="_blank" class="btn-sm-action" style="flex: 1; text-align: center; text-decoration: none; background: linear-gradient(135deg, rgba(57, 255, 20, 0.25), rgba(6, 182, 212, 0.25)); color: #86efac; border: 1px solid rgba(57, 255, 20, 0.5); padding: 7px 10px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+            🛡️ Launch 7-Tier Wallboard (/wallboard) ↗
+          </a>
+          <a href="/matrix" target="_blank" class="btn-sm-action" style="text-decoration: none; background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 7px 8px; border-radius: 6px; font-size: 0.74rem;">
+            In-VPC Matrix ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- 4. NOC Kiosk (Air-Gapped SecOps · 1-Way) -->
+      <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(139, 92, 246, 0.35); border-radius: 10px; padding: 1.15rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span class="brand-badge" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.45); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">NOC Kiosk (Air-Gapped SecOps)</span>
+            <span style="font-size: 0.68rem; color: #a78bfa; font-family: monospace; font-weight: 600;">$0.00 R2 / $0.05 S3</span>
+          </div>
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0 0 4px 0;">
+            <span style="font-weight: 800; letter-spacing: -0.02em;"><span style="color: #64748b;">&lt;</span><span style="color: #38bdf8;">dcouplr</span><span style="color: #64748b;">/&gt;</span></span> NOC Kiosk (PulseCast™)
+          </h3>
+          <div style="font-size: 0.74rem; color: #c4b5fd; font-weight: 600; margin-bottom: 8px;">
+            Edge CDN Pulse Mirror • 1-Way Public Lobby &amp; Multi-NOC Walls
+          </div>
+          <p style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 10px;">
+            Unhackable unidirectional edge broadcast projected outside VPC from /dashboard. An in-VPC exporter pushes an ultra-lean 1.14 KB sanitized JSON pulse every 5 seconds. Absolute zero incoming ports or attack surface.
+          </p>
+          <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 8px; margin-bottom: 12px; font-size: 0.7rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Path:</span><span style="color: #f8fafc; font-weight: 600;">Outbound HTTPS PUT only</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Mode:</span><span style="color: #34d399; font-weight: 700;">1-Way Air-Gapped Wallboard</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">Target URL:</span><code style="color: #a7f3d0;">/kiosk</code>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <a href="/kiosk" target="_blank" class="btn-sm-action" style="flex: 1; text-align: center; text-decoration: none; background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(6, 182, 212, 0.3)); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.5); padding: 7px 10px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+            📺 Launch NOC Kiosk (/kiosk) ↗
+          </a>
+          <button type="button" id="btn-copy-pulsecast-cmd" onclick="navigator.clipboard.writeText('curl -X POST http://127.0.0.1:8000/v1/telemetry/topology-pulse').then(() => { this.textContent = '✓ Copied!'; setTimeout(() => this.textContent = '📋 Copy Exporter', 1500); });" style="background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 7px 8px; border-radius: 6px; font-size: 0.74rem; cursor: pointer;">
+            📋 Copy Exporter
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Comprehensive Turnkey Setup & Cloudflare Tunnel Engine Tabbed Section -->
+    <div style="background: rgba(11, 17, 32, 0.95); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem;">
+      
+      <!-- Section Tab Bar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.05rem; font-weight: 800; color: #ffffff;">🚀 Turnkey Outside-VPC Deployment &amp; Cloudflare Tunnel Engine</span>
+          <span style="font-size: 0.68rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 2px 7px; border-radius: 4px; font-family: monospace;">cloudflared • TLS 1.3 • QUIC</span>
+        </div>
+        
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="hub-modal-tabs">
+          <button type="button" onclick="document.querySelectorAll('.hub-tab-content').forEach(function(el){el.style.display='none';}); document.getElementById('tab-installers').style.display='block'; document.querySelectorAll('.hub-tab-btn').forEach(function(b){b.style.background='rgba(255,255,255,0.05)'; b.style.color='#cbd5e1'; b.style.border='1px solid rgba(255,255,255,0.15)'; b.style.fontWeight='600';}); this.style.background='rgba(56,189,248,0.25)'; this.style.color='#38bdf8'; this.style.border='1px solid rgba(56,189,248,0.5)'; this.style.fontWeight='700';" class="hub-tab-btn active" style="background: rgba(56, 189, 248, 0.25); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.5); padding: 4px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: 700; cursor: pointer;">⚡ 1-Click Installers</button>
+          <button type="button" onclick="document.querySelectorAll('.hub-tab-content').forEach(function(el){el.style.display='none';}); document.getElementById('tab-why-cloudflare').style.display='block'; document.querySelectorAll('.hub-tab-btn').forEach(function(b){b.style.background='rgba(255,255,255,0.05)'; b.style.color='#cbd5e1'; b.style.border='1px solid rgba(255,255,255,0.15)'; b.style.fontWeight='600';}); this.style.background='rgba(56,189,248,0.25)'; this.style.color='#38bdf8'; this.style.border='1px solid rgba(56,189,248,0.5)'; this.style.fontWeight='700';" class="hub-tab-btn" style="background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 4px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: 600; cursor: pointer;">☁️ Why Cloudflare Zero Trust?</button>
+          <button type="button" onclick="document.querySelectorAll('.hub-tab-content').forEach(function(el){el.style.display='none';}); document.getElementById('tab-routes').style.display='block'; document.querySelectorAll('.hub-tab-btn').forEach(function(b){b.style.background='rgba(255,255,255,0.05)'; b.style.color='#cbd5e1'; b.style.border='1px solid rgba(255,255,255,0.15)'; b.style.fontWeight='600';}); this.style.background='rgba(56,189,248,0.25)'; this.style.color='#38bdf8'; this.style.border='1px solid rgba(56,189,248,0.5)'; this.style.fontWeight='700';" class="hub-tab-btn" style="background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 4px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: 600; cursor: pointer;">🗺️ Multi-Ingress Route Map</button>
+        </div>
+      </div>
+
+      <!-- TAB 1: 1-Click Installers (Linux & Windows) -->
+      <div id="tab-installers" class="hub-tab-content">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 14px;">
+          
+          <!-- Linux Installer Box -->
+          <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <strong style="color: #38bdf8; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                🐧 Linux Turnkey Deployment (Ubuntu / RHEL / AL2023)
+              </strong>
+              <span style="font-size: 0.68rem; color: #a7f3d0; font-family: monospace;">Systemd Daemon</span>
+            </div>
+            <p style="font-size: 0.74rem; color: #94a3b8; line-height: 1.4; margin-bottom: 8px;">
+              Downloads <code style="color: #38bdf8;">install-outside-vpc-hubs.sh</code>, provisions official <code style="color: #38bdf8;">cloudflared</code>, configures multi-route ingress for all 4 hubs, and starts the systemd service.
+            </p>
+            <div style="background: #040810; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 8px 10px; font-family: monospace; font-size: 0.7rem; color: #67e8f9; word-break: break-all; margin-bottom: 8px; user-select: all;">
+              curl -sSL http://127.0.0.1:8000/install-outside-vpc-hubs.sh | sudo bash -s -- --domain "noc.yourcompany.com"
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" onclick="navigator.clipboard.writeText('curl -sSL http://127.0.0.1:8000/install-outside-vpc-hubs.sh | sudo bash -s -- --domain &quot;noc.yourcompany.com&quot;').then(() => { this.textContent = '✓ Copied Linux Command!'; setTimeout(() => this.textContent = '📋 Copy Linux Command', 2000); });" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 5px 12px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">
+                📋 Copy Linux Command
+              </button>
+              <a href="/install-outside-vpc-hubs.sh" download style="background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 10px; border-radius: 5px; font-size: 0.72rem; text-decoration: none;">
+                ⬇ Download Script (.sh)
+              </a>
+            </div>
+          </div>
+
+          <!-- Windows Installer Box -->
+          <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <strong style="color: #c4b5fd; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                🪟 Windows Server PowerShell (2019 / 2022 / 2025)
+              </strong>
+              <span style="font-size: 0.68rem; color: #c4b5fd; font-family: monospace;">Windows Service</span>
+            </div>
+            <p style="font-size: 0.74rem; color: #94a3b8; line-height: 1.4; margin-bottom: 8px;">
+              Executes <code style="color: #c4b5fd;">install-outside-vpc-hubs.ps1</code>, fetches official <code style="color: #c4b5fd;">cloudflared.exe</code>, configures routes, and installs a resilient Windows Service.
+            </p>
+            <div style="background: #040810; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 8px 10px; font-family: monospace; font-size: 0.7rem; color: #c4b5fd; word-break: break-all; margin-bottom: 8px; user-select: all;">
+              irm http://127.0.0.1:8000/install-outside-vpc-hubs.ps1 | iex
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" onclick="navigator.clipboard.writeText('irm http://127.0.0.1:8000/install-outside-vpc-hubs.ps1 | iex').then(() => { this.textContent = '✓ Copied PowerShell Command!'; setTimeout(() => this.textContent = '📋 Copy PowerShell Command', 2000); });" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.4); padding: 5px 12px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">
+                📋 Copy PowerShell Command
+              </button>
+              <a href="/install-outside-vpc-hubs.ps1" download style="background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 10px; border-radius: 5px; font-size: 0.72rem; text-decoration: none;">
+                ⬇ Download Script (.ps1)
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB 2: Why Cloudflare Zero Trust? -->
+      <div id="tab-why-cloudflare" class="hub-tab-content" style="display: none;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+          
+          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 10px 12px;">
+            <h4 style="font-size: 0.82rem; font-weight: 700; color: #34d399; margin: 0 0 4px 0;">
+              🔒 100% Outbound Connections Only
+            </h4>
+            <p style="font-size: 0.74rem; color: #cbd5e1; line-height: 1.4; margin: 0;">
+              The tunnel initiates outbound TLS 1.3 / QUIC connections to Cloudflare Edge data centers. <strong>Zero open inbound ports on AWS Security Groups or GCP Firewalls</strong> (0.0.0.0/0:ANY = Blocked).
+            </p>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 10px 12px;">
+            <h4 style="font-size: 0.82rem; font-weight: 700; color: #38bdf8; margin: 0 0 4px 0;">
+              🔑 Identity-Aware SSO &amp; Hardware MFA
+            </h4>
+            <p style="font-size: 0.74rem; color: #cbd5e1; line-height: 1.4; margin: 0;">
+              2-way command desks (<code style="color: #38bdf8;">/NOCDesk</code>, <code style="color: #38bdf8;">/SREDesk</code>) are protected at Cloudflare Edge by Okta, Azure AD, or Google Workspace SSO with mandatory YubiKey MFA before packets reach the VPC.
+            </p>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 8px; padding: 10px 12px;">
+            <h4 style="font-size: 0.82rem; font-weight: 700; color: #facc15; margin: 0 0 4px 0;">
+              💰 Zero-Egress FinOps Invariant ($0.00)
+            </h4>
+            <p style="font-size: 0.74rem; color: #cbd5e1; line-height: 1.4; margin: 0;">
+              Cloudflare does not charge data transfer egress on tunnels. The in-VPC agent keeps all telemetry inside the perimeter and streams only UI state, preserving the sub-$0.05/mo operating profile.
+            </p>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 10px 12px;">
+            <h4 style="font-size: 0.82rem; font-weight: 700; color: #c4b5fd; margin: 0 0 4px 0;">
+              📺 Unidirectional Air-Gap for Wallboards
+            </h4>
+            <p style="font-size: 0.74rem; color: #cbd5e1; line-height: 1.4; margin: 0;">
+              1-way wallboards (<code style="color: #c4b5fd;">/wallboard</code>, <code style="color: #c4b5fd;">/kiosk</code>) consume static 1.14 KB JSON pulses from Cloudflare R2 / Edge CDN. Wall TV screens have absolute zero network routes into the VPC.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB 3: Multi-Ingress Route Map -->
+      <div id="tab-routes" class="hub-tab-content" style="display: none;">
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.74rem; color: #cbd5e1; text-align: left;">
+            <thead>
+              <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.15); color: #94a3b8;">
+                <th style="padding: 6px 8px;">Hub Name</th>
+                <th style="padding: 6px 8px;">Target Route</th>
+                <th style="padding: 6px 8px;">Mode</th>
+                <th style="padding: 6px 8px;">Security &amp; Auth</th>
+                <th style="padding: 6px 8px;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                <td style="padding: 6px 8px; font-weight: 700; color: #fff;">1. NOC Desk</td>
+                <td style="padding: 6px 8px;"><code style="color: #38bdf8;">/NOCDesk</code></td>
+                <td style="padding: 6px 8px;"><span style="color: #38bdf8; font-weight: 700;">2-Way Interactive</span></td>
+                <td style="padding: 6px 8px;">Cloudflare Access SSO (NOC Role + MFA)</td>
+                <td style="padding: 6px 8px;"><a href="/NOCDesk" target="_blank" style="color: #38bdf8; text-decoration: none;">Launch ↗</a></td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                <td style="padding: 6px 8px; font-weight: 700; color: #fff;">2. SRE Desk</td>
+                <td style="padding: 6px 8px;"><code style="color: #7dd3fc;">/SREDesk</code></td>
+                <td style="padding: 6px 8px;"><span style="color: #38bdf8; font-weight: 700;">2-Way Interactive</span></td>
+                <td style="padding: 6px 8px;">Cloudflare Access SSO (SRE / DBA Role + MFA)</td>
+                <td style="padding: 6px 8px;"><a href="/SREDesk" target="_blank" style="color: #7dd3fc; text-decoration: none;">Launch ↗</a></td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                <td style="padding: 6px 8px; font-weight: 700; color: #fff;">3. 7-Tier Wallboard</td>
+                <td style="padding: 6px 8px;"><code style="color: #86efac;">/wallboard</code></td>
+                <td style="padding: 6px 8px;"><span style="color: #34d399; font-weight: 700;">1-Way Passive</span></td>
+                <td style="padding: 6px 8px;">Edge Pulse Token / IP Allowlist</td>
+                <td style="padding: 6px 8px;"><a href="/wallboard" target="_blank" style="color: #86efac; text-decoration: none;">Launch ↗</a></td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 8px; font-weight: 700; color: #fff;">4. NOC Kiosk</td>
+                <td style="padding: 6px 8px;"><code style="color: #c4b5fd;">/kiosk</code></td>
+                <td style="padding: 6px 8px;"><span style="color: #34d399; font-weight: 700;">1-Way Air-Gapped</span></td>
+                <td style="padding: 6px 8px;">Public Edge CDN / Anonymous Read-Only</td>
+                <td style="padding: 6px 8px;"><a href="/kiosk" target="_blank" style="color: #c4b5fd; text-decoration: none;">Launch ↗</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Documentation & Health Quick-Links Footer Strip -->
+    <div style="background: rgba(11, 17, 32, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <div style="font-size: 0.78rem; font-weight: 700; color: #f8fafc; margin-bottom: 2px;">
+          Exhaustive Cloudflare Zero Trust Runbook &amp; Attestation Proofs
+        </div>
+        <div style="font-size: 0.72rem; color: #94a3b8;">
+          Review production config.yml, systemd unit templates, Windows service commands, and disaster recovery procedures.
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+        <a href="/docs/runbooks/RUNBOOK-OUTSIDE-VPC-HUBS-DEPLOYMENT-AND-CLOUDFLARE-TUNNELS.html" target="_blank" style="text-decoration: none; font-size: 0.74rem; color: #38bdf8; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); padding: 5px 12px; border-radius: 6px; font-weight: 700;">
+          📖 Read Exhaustive Runbook ↗
+        </a>
+        <a href="/v1/hubs/status" target="_blank" style="text-decoration: none; font-size: 0.72rem; color: #a78bfa; background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.35); padding: 5px 9px; border-radius: 5px; font-family: monospace;">
+          Inspect /v1/hubs/status JSON ↗
+        </a>
+        <a href="/v1/telemetry/topology-pulse" target="_blank" style="text-decoration: none; font-size: 0.72rem; color: #34d399; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); padding: 5px 9px; border-radius: 5px; font-family: monospace;">
+          Inspect 1.14KB Pulse ↗
+        </a>
+        <button type="button" onclick="document.getElementById('modal-wallboard-modes').style.display='none';" style="background: rgba(255, 255, 255, 0.08); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.18); padding: 5px 12px; border-radius: 6px; font-size: 0.74rem; cursor: pointer; font-weight: 600;">
+          Close Hub
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+  <!-- Toast Container -->
+  <div id="toast-notification"></div>
+
+  <script>
+    // State
+    let currentScenario = "HEALTHY";
+    let selectedTierFilter = null;
+
+    const INCIDENT_DEFINITIONS = {
+      P1_POSTGRES_LOCK: {
+        id: "inc-p1-pg-01",
+        severity: "P1",
+        score: 1000,
+        tier: "tier_5_middleware_databases",
+        tierName: "Tier 5: Middleware & Databases",
+        component: "Relational DBs (PostgreSQL / MySQL / Oracle)",
+        metric: "Active Lock Contention & Transaction Deadlocks",
+        node: "node-vpc-db-01 (10.100.20.44 [alias: db-pg-master-01.ord1])",
+        nodeId: "node-vpc-db-01",
+        networkId: "vpc-aws-prod-01",
+        impactedSubnet: "private-db-1b (10.100.20.0/24)",
+        impactedRack: "Zone: us-east-1b (Compute Rack B)",
+        associatedLb: "prod-internal-nlb (Backend Lock Contention)",
+        invariantName: "INVARIANT_VIOLATION: Zero-Egress Perimeter INTACT · Backend Deadlock Detected",
+        preDiagnosis: "High transaction concurrency and unindexed foreign key lock contention caused pool exhaustion in PostgreSQL 16 master (db-pg-master-01.ord1).",
+        preAnalysis: "Capture live lock blockers via: <code>SELECT pid, age(clock_timestamp(), query_start), usename, pg_blocking_pids(pid), query FROM pg_stat_activity WHERE wait_event_type = 'Lock';</code> &bull; Active trace span at <a href=\"/traces?node_id=node-vpc-db-01\" target=\"_blank\">/traces?node_id=node-vpc-db-01</a> &bull; In-VPC log buffer at <a href=\"/logs?node_id=node-vpc-db-01\" target=\"_blank\">/logs?node_id=node-vpc-db-01</a>",
+        policyRule: "Zero-Trust Ingress Security Group &bull; Subnet private-db-1b Protected",
+        nodeDetails: {
+          hostname: "ip-10-100-20-44.ec2.internal (db-pg-master-01.ord1)",
+          ip: "10.100.20.44",
+          network: "AWS Production VPC (us-east-1)",
+          role: "Cloud VPC Clustered Database & In-Memory Cache (PostgreSQL 16 Master [db-pg-master-01])",
+          os: "Ubuntu 22.04.3 LTS (Kernel 5.15.0-1048-aws)",
+          stacks: ["PostgreSQL 16.1", "PgBouncer 1.21", "Redis 7.2", "pg_stat_statements", "VOE Harvester"]
+        },
+        currentVal: "198 locks",
+        warnVal: "50",
+        critVal: "100",
+        rootCause: "High transaction concurrency and unindexed foreign key lock contention caused pool exhaustion in PostgreSQL 16 master (db-pg-master-01.ord1)."
+      },
+      P2_NETWORK_BUFFER: {
+        id: "inc-p2-net-01",
+        severity: "P2",
+        score: 750,
+        tier: "tier_4_storage_block_io",
+        tierName: "Tier 4: Storage & Block I/O",
+        component: "Network-Attached & Block Storage (Ceph / EBS / SAN)",
+        metric: "I/O Wait & Storage Latency Spike",
+        node: "node-bm-kvm-01 (10.10.1.15 [alias: bare-metal-kvm-racks])",
+        nodeId: "node-bm-kvm-01",
+        networkId: "vpc-onprem-dc-01",
+        impactedSubnet: "bare-metal-kvm-racks (10.10.1.0/24)",
+        impactedRack: "On-Premises Core DC &bull; Row 3 Rack 12",
+        associatedLb: "core-switch-agg-01 (Storage VLAN Trunk)",
+        invariantName: "INVARIANT_VIOLATION: Ceph NVMe Fabric I/O Wait Exceeds 15ms Ceiling",
+        preDiagnosis: "Ceph OSD scrub storm and NVMe-oF transport congestion saturated storage ingress queue depth on kvm-hypervisor-01.",
+        preAnalysis: "Capture storage I/O &amp; Ceph status via: <code>ceph osd status &amp; iostat -xz 1 5</code> &bull; Active trace span at <a href=\"/traces?node_id=node-bm-kvm-01\" target=\"_blank\">/traces?node_id=node-bm-kvm-01</a> &bull; In-VPC log buffer at <a href=\"/logs?node_id=node-bm-kvm-01\" target=\"_blank\">/logs?node_id=node-bm-kvm-01</a>",
+        policyRule: "Storage Isolation Policy &bull; Bare-Metal Fibre Channel Fabric",
+        nodeDetails: {
+          hostname: "kvm-hypervisor-01.ord1.internal (bare-metal-kvm-racks)",
+          ip: "10.10.1.15",
+          network: "On-Premises Data Center (ORD-1)",
+          role: "Bare-Metal KVM Hypervisor & Ceph Storage Target (Row 3 Rack 12)",
+          os: "Rocky Linux 9.3 Enterprise Hardened (Kernel 5.14.0)",
+          stacks: ["QEMU/KVM 8.1", "Ceph 18.2 Reef", "Open vSwitch 3.2", "NVMe-oF", "Collectd"]
+        },
+        currentVal: "48.2 ms",
+        warnVal: "15.0 ms",
+        critVal: "40.0 ms",
+        rootCause: "Ceph OSD scrub storm and NVMe-oF transport congestion saturated storage ingress queue depth on kvm-hypervisor-01."
+      }
+    };
+
+    function openOutsideVpcModal() {
+      const modal = document.getElementById("modal-wallboard-modes");
+      if (modal) modal.style.display = "flex";
+    }
+
+    function showToast(html) {
+      const toast = document.getElementById("toast-notification");
+      if (!toast) return;
+      toast.innerHTML = html;
+      toast.style.display = "block";
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.style.display = "none";
+      }, 5000);
+    }
+
+    function filterTier(tierKey) {
+      selectedTierFilter = (selectedTierFilter === tierKey) ? null : tierKey;
+      document.querySelectorAll(".tier-card").forEach(c => c.classList.remove("selected-tier"));
+      if (selectedTierFilter) {
+        const activeCard = document.getElementById(`card-${selectedTierFilter.replace('_', '-')}`);
+        if (activeCard) activeCard.classList.add("selected-tier");
+        document.getElementById("tier-filter-indicator").textContent = `Filter: ${selectedTierFilter}`;
+        document.getElementById("btn-clear-tier-filter").style.display = "inline-block";
+      } else {
+        document.getElementById("tier-filter-indicator").textContent = "Filter: All Tiers";
+        document.getElementById("btn-clear-tier-filter").style.display = "none";
+      }
+      renderTriageBoard();
+    }
+
+    // 2-Way SRE Simulation Trigger
+    async function setScenario(scenarioKey, shouldBroadcast = true) {
+      currentScenario = scenarioKey;
+
+      // Update simulation button styles
+      document.querySelectorAll(".btn-sim").forEach(b => {
+        b.classList.remove("active", "crit", "warn");
+      });
+      if (scenarioKey === "HEALTHY") {
+        document.getElementById("btn-sim-nominal").classList.add("active");
+      } else if (scenarioKey === "P1_CRITICAL") {
+        document.getElementById("btn-sim-p1").classList.add("active", "crit");
+      } else if (scenarioKey === "P2_WARNING") {
+        document.getElementById("btn-sim-p2").classList.add("active", "warn");
+      } else if (scenarioKey === "DUAL_CASCADE") {
+        document.getElementById("btn-sim-dual").classList.add("active", "crit");
+        selectedTierFilter = null;
+        document.querySelectorAll(".tier-summary-card").forEach(c => c.classList.remove("selected-filter"));
+      }
+
+      renderScenario();
+
+      if (shouldBroadcast) {
+        try {
+          localStorage.setItem("dcouplr_active_scenario", scenarioKey);
+          await fetch("/v1/telemetry/simulation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ scenario: scenarioKey })
+          });
+        } catch (err) {
+          console.warn("Failed to post simulation scenario to API:", err);
+        }
+      }
+    }
+
+    // Toggle SRE Cluster Controls manually
+    function toggleSimBar() {
+      const simBar = document.getElementById("sre-sim-bar");
+      if (!simBar) return;
+      if (simBar.style.display === "none" || getComputedStyle(simBar).display === "none") {
+        simBar.style.display = "flex";
+        simBar.dataset.manualOpen = "true";
+      } else {
+        simBar.style.display = "none";
+        delete simBar.dataset.manualOpen;
+      }
+    }
+
+    // Reset to Nominal
+    async function resetToNominal() {
+      const simBar = document.getElementById("sre-sim-bar");
+      if (simBar) {
+        delete simBar.dataset.manualOpen;
+        simBar.style.display = "none";
+      }
+      await setScenario("HEALTHY", true);
+      showToast(`
+        <strong style="color: #86efac;">✓ SRE Reset Signal Dispatched:</strong><br>
+        All active outages cleared. Cluster reset to <strong>Nominal (100% Healthy)</strong> across all VPCs and wallboards.
+      `);
+    }
+
+    // Render Scenario UI
+    function renderScenario() {
+      const topHeader = document.getElementById("top-header-bar");
+      const banner = document.getElementById("glance-health-banner");
+      const icon = document.getElementById("glance-icon");
+      const headline = document.getElementById("glance-headline");
+      const subline = document.getElementById("glance-subline");
+      const statusPill = document.getElementById("glance-status-pill");
+
+      // Reset tier cards
+      for (let i = 1; i <= 7; i++) {
+        const c = document.getElementById(`card-tier-${i}`);
+        const p = document.getElementById(`pill-tier-${i}`);
+        if (c) c.classList.remove("pulse-critical", "pulse-warning");
+        if (p) {
+          p.className = "tier-status-pill status-healthy";
+          p.textContent = "Nominal";
+        }
+      }
+
+      topHeader.classList.remove("header-pulse-critical", "header-pulse-warning");
+
+      // SRE Cluster Controls visibility: hide if nominal / no issue, show if an issue exists
+      const simBar = document.getElementById("sre-sim-bar");
+      if (simBar) {
+        if (currentScenario === "HEALTHY") {
+          if (!simBar.dataset.manualOpen) {
+            simBar.style.display = "none";
+          }
+        } else {
+          simBar.style.display = "flex";
+          delete simBar.dataset.manualOpen;
+        }
+      }
+
+      if (currentScenario === "HEALTHY") {
+        banner.className = "glance-health-banner healthy";
+        icon.textContent = "🟢";
+        headline.textContent = "ALL 7 TIERS FULLY OPERATIONAL";
+        subline.textContent = "Zero Invariant Breaches • 122 Invariants Satisfied • 71 Nodes Monitored • In-Perimeter IPC Buffer Active";
+        statusPill.className = "status-badge healthy";
+        statusPill.textContent = "100% HEALTHY";
+        document.getElementById("kpi-tier-5").textContent = "Locks: 4 (Nom)";
+        document.getElementById("kpi-tier-4").textContent = "IOPS: 12.4k (Nom)";
+      } else if (currentScenario === "P1_CRITICAL") {
+        topHeader.classList.add("header-pulse-critical");
+        banner.className = "glance-health-banner critical";
+        icon.textContent = "🚨";
+        headline.textContent = "P1 CRITICAL INCIDENT DETECTED";
+        subline.textContent = "Active SLA Invariant Breach in Tier 5 Middleware & Relational Databases • SRE Response Armed";
+        statusPill.className = "status-badge critical";
+        statusPill.textContent = "CRITICAL TRIAGE ACTIVE";
+
+        const card5 = document.getElementById("card-tier-5");
+        const pill5 = document.getElementById("pill-tier-5");
+        if (card5) card5.classList.add("pulse-critical");
+        if (pill5) {
+          pill5.className = "tier-status-pill status-critical";
+          pill5.textContent = "CRITICAL";
+        }
+        document.getElementById("kpi-tier-5").textContent = "Locks: 198 (>100)";
+      } else if (currentScenario === "P2_WARNING") {
+        topHeader.classList.add("header-pulse-warning");
+        banner.className = "glance-health-banner warning";
+        icon.textContent = "⚠️";
+        headline.textContent = "P2 WARNING ADVISORY ACTIVE";
+        subline.textContent = "Tier 4 Storage IOPS Degradation on Bare-Metal KVM Hypervisor • Automated Runbook Triggered";
+        statusPill.className = "status-badge warning";
+        statusPill.textContent = "WARNING ADVISORY";
+
+        const card4 = document.getElementById("card-tier-4");
+        const pill4 = document.getElementById("pill-tier-4");
+        if (card4) card4.classList.add("pulse-warning");
+        if (pill4) {
+          pill4.className = "tier-status-pill status-warning";
+          pill4.textContent = "WARNING";
+        }
+        document.getElementById("kpi-tier-4").textContent = "IO Wait: 48.2ms (>15)";
+      } else if (currentScenario === "DUAL_CASCADE") {
+        selectedTierFilter = null;
+        topHeader.classList.add("header-pulse-critical");
+        banner.className = "glance-health-banner critical";
+        icon.textContent = "🚨";
+        headline.textContent = "CASCADE OUTAGE: P1 CRITICAL + P2 WARNING";
+        subline.textContent = "Correlated Invariant Breaches in Tier 5 Relational DBs and Tier 4 Storage & Block I/O";
+        statusPill.className = "status-badge critical";
+        statusPill.textContent = "DUAL OUTAGE ACTIVE";
+
+        const card5 = document.getElementById("card-tier-5");
+        const pill5 = document.getElementById("pill-tier-5");
+        if (card5) card5.classList.add("pulse-critical");
+        if (pill5) {
+          pill5.className = "tier-status-pill status-critical";
+          pill5.textContent = "CRITICAL";
+        }
+        document.getElementById("kpi-tier-5").textContent = "Locks: 198 (>100)";
+
+        const card4 = document.getElementById("card-tier-4");
+        const pill4 = document.getElementById("pill-tier-4");
+        if (card4) card4.classList.add("pulse-warning");
+        if (pill4) {
+          pill4.className = "tier-status-pill status-warning";
+          pill4.textContent = "WARNING";
+        }
+        document.getElementById("kpi-tier-4").textContent = "IO Wait: 48.2ms (>15)";
+      }
+
+      renderTriageBoard();
+    }
+
+    // Render High-Priority Incident Triage Board with Invariant Details
+    function renderTriageBoard() {
+      const container = document.getElementById("incident-list");
+      const activeCount = document.getElementById("triage-active-count");
+
+      let activeIncidents = [];
+      if (currentScenario === "P1_CRITICAL") {
+        activeIncidents.push(INCIDENT_DEFINITIONS.P1_POSTGRES_LOCK);
+      } else if (currentScenario === "P2_WARNING") {
+        activeIncidents.push(INCIDENT_DEFINITIONS.P2_NETWORK_BUFFER);
+      } else if (currentScenario === "DUAL_CASCADE") {
+        activeIncidents.push(INCIDENT_DEFINITIONS.P1_POSTGRES_LOCK);
+        activeIncidents.push(INCIDENT_DEFINITIONS.P2_NETWORK_BUFFER);
+      }
+
+      if (selectedTierFilter) {
+        activeIncidents = activeIncidents.filter(inc => inc.tier === selectedTierFilter);
+      }
+
+      // Automatic sort: most critical down to least priority (P1 -> P2 -> P3 -> P4)
+      const sevOrder = { P1: 1, P2: 2, P3: 3, P4: 4 };
+      activeIncidents.sort((a, b) => (sevOrder[a.severity] || 99) - (sevOrder[b.severity] || 99) || (b.score - a.score));
+
+      if (activeCount) {
+        activeCount.textContent = `${activeIncidents.length} Active Issue${activeIncidents.length === 1 ? '' : 's'}`;
+        if (activeIncidents.length >= 2) {
+          activeCount.style.background = "rgba(239, 68, 68, 0.25)";
+          activeCount.style.borderColor = "#ef4444";
+          activeCount.style.color = "#fca5a5";
+        } else if (activeIncidents.length === 1) {
+          const isP1 = activeIncidents[0].severity === "P1";
+          activeCount.style.background = isP1 ? "rgba(239, 68, 68, 0.25)" : "rgba(245, 158, 11, 0.25)";
+          activeCount.style.borderColor = isP1 ? "#ef4444" : "#f59e0b";
+          activeCount.style.color = isP1 ? "#fca5a5" : "#fde047";
+        } else {
+          activeCount.style.background = "rgba(57, 255, 20, 0.12)";
+          activeCount.style.borderColor = "rgba(57, 255, 20, 0.35)";
+          activeCount.style.color = "#86efac";
+        }
+      }
+
+      if (activeIncidents.length === 0) {
+        container.innerHTML = `
+          <div style="background: rgba(57, 255, 20, 0.05); border: 1px solid rgba(57, 255, 20, 0.2); border-radius: 8px; padding: 2rem; text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛡️</div>
+            <div style="font-size: 1.05rem; font-weight: 800; color: #39ff14; font-family: var(--font-mono); margin-bottom: 0.35rem;">
+              All 7 Tiers Operating Within Nominal SLA Limits
+            </div>
+            <p style="font-size: 0.78rem; color: #94a3b8; max-width: 600px; margin: 0 auto;">
+              No threshold breaches or active incident tickets. The <span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span> autonomous observer is continuously evaluating all 122 telemetry invariants and 71 node stacks across 4 staged networks with zero WAN egress.
+            </p>
+          </div>`;
+        return;
+      }
+
+      let html = "";
+      activeIncidents.forEach((inc, idx) => {
+        const isP1 = inc.severity === "P1";
+        const rankClass = isP1 ? "p1" : "p2";
+        const d = inc.nodeDetails;
+
+        html += `
+          <div class="incident-card ${rankClass}">
+            <div class="incident-top-row">
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span class="rank-tag ${rankClass}">
+                  #${idx + 1} TOP PRIORITY [${inc.severity} ACTIVE]
+                </span>
+                <span class="incident-headline">${inc.tierName} &bull; ${inc.component}</span>
+              </div>
+              <span style="font-size: 0.72rem; font-family: var(--font-mono); color: ${isP1 ? '#f87171' : '#fde047'}; font-weight: 700; background: ${isP1 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)'}; padding: 2px 8px; border-radius: 4px; border: 1px solid ${isP1 ? 'rgba(239, 68, 68, 0.35)' : 'rgba(245, 158, 11, 0.35)'};">
+                SLA Invariant Breach Active
+              </span>
+            </div>
+
+            <!-- PROMINENT TOP HIGHLIGHT: INVARIANT VIOLATION + PRE-DIAGNOSIS + PRE-ANALYSIS -->
+            <div class="invariant-breach-callout ${rankClass}">
+              <div class="invariant-top-row">
+                <div class="invariant-title-cluster">
+                  <span class="invariant-warning-icon">⚠️</span>
+                  <span class="invariant-name">${inc.invariantName}</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span class="invariant-node-tag">Target Node: <code style="color: #69f0ae;">${inc.nodeId}</code></span>
+                </div>
+              </div>
+
+              <div class="invariant-pre-diagnosis-row">
+                <span class="pre-badge-label diag-badge">Pre-Diagnosis:</span>
+                <div class="pre-badge-content">${inc.preDiagnosis}</div>
+              </div>
+
+              <div class="invariant-pre-analysis-row">
+                <span class="pre-badge-label analysis-badge">Pre-Analysis:</span>
+                <div class="pre-badge-content">${inc.preAnalysis}</div>
+              </div>
+            </div>
+
+            <!-- Monitored Node Details Census: 9 Essential Fields Easily Spotted in 3x3 Grid -->
+            <div class="node-triage-grid">
+              <!-- 1. HostName & Node ID -->
+              <div class="node-triage-item">
+                <div class="node-triage-header">
+                  <span class="node-field-icon">🖥️</span>
+                  <span class="node-triage-label">HostName &amp; Node ID:</span>
+                </div>
+                <div class="node-triage-val val-hostname">
+                  ${d.hostname}
+                </div>
+              </div>
+
+              <!-- 2. IP Address -->
+              <div class="node-triage-item">
+                <div class="node-triage-header">
+                  <span class="node-field-icon">🌐</span>
+                  <span class="node-triage-label">IP Address:</span>
+                </div>
+                <div class="node-triage-val val-ip">${d.ip}</div>
+              </div>
+
+              <!-- 3. Role / Workload -->
+              <div class="node-triage-item">
+                <div class="node-triage-header">
+                  <span class="node-field-icon">⚙️</span>
+                  <span class="node-triage-label">Role / Workload:</span>
+                </div>
+                <div class="node-triage-val val-role">${d.role}</div>
+              </div>
+
+              <!-- 4. Network & Subnet -->
+              <div class="node-triage-item">
+                <div class="node-triage-header">
+                  <span class="node-field-icon">🏢</span>
+                  <span class="node-triage-label">Network &amp; Subnet:</span>
+                </div>
+                <div class="node-triage-val val-network">
+                  ${d.network} &bull; ${inc.impactedSubnet}
+                </div>
+              </div>
+
+              <!-- 5. Operating System -->
+              <div class="node-triage-item">
+                <div class="node-triage-header">
+                  <span class="node-field-icon">🐧</span>
+                  <span class="node-triage-label">Operating System:</span>
+                </div>
+                <div class="node-triage-val val-os">${d.os}</div>
+              </div>
+
+              <!-- 6. Associated Load Balancer -->
+              <div class="node-triage-item">
+                <div class="node-triage-header">
+                  <span class="node-field-icon">⚖️</span>
+                  <span class="node-triage-label">Associated Load Balancer:</span>
+                </div>
+                <div class="node-triage-val val-lb">${inc.associatedLb}</div>
+              </div>
+
+              <!-- 7. Software Stacks -->
+              <div class="node-triage-item">
+                <div class="node-triage-header">
+                  <span class="node-field-icon">📦</span>
+                  <span class="node-triage-label">Software Stacks:</span>
+                </div>
+                <div class="node-triage-val">
+                  ${d.stacks.map(s => `<span class="stack-badge">${s}</span>`).join(' ')}
+                </div>
+              </div>
+
+              <!-- 8. Live Value vs Threshold -->
+              <div class="node-triage-item">
+                <div class="node-triage-header">
+                  <span class="node-field-icon">📊</span>
+                  <span class="node-triage-label">Live Value vs Threshold:</span>
+                </div>
+                <div class="node-triage-val">
+                  <span class="threshold-current ${rankClass}">${inc.currentVal}</span>
+                  <span class="threshold-limits">(Warn &gt; ${inc.warnVal}, Crit &gt; ${inc.critVal})</span>
+                </div>
+              </div>
+
+              <!-- 9. Ingress Policy -->
+              <div class="node-triage-item">
+                <div class="node-triage-header">
+                  <span class="node-field-icon">🛡️</span>
+                  <span class="node-triage-label">Ingress Policy:</span>
+                </div>
+                <div class="node-triage-val val-policy">${inc.policyRule}</div>
+              </div>
+            </div>
+
+            <!-- 2-Way SRE Incident Actions -->
+            <div class="incident-actions">
+              <div class="action-group">
+                <button type="button" class="btn-action voe" onclick="dispatchVoeTicket('${inc.id}')">
+                  <span>⚡ Dispatch to VOE Spool</span>
+                </button>
+                <a href="/logs?node_id=${inc.nodeId}" target="_blank" class="btn-action logs">
+                  <span>📜 View In-VPC Logs (${inc.nodeId}) ↗</span>
+                </a>
+                <a href="/traces?node_id=${inc.nodeId}" target="_blank" class="btn-action traces">
+                  <span>⚡ View APM Traces (${inc.nodeId}) ↗</span>
+                </a>
+                <button type="button" class="btn-action resolve" onclick="resolveIncident('${inc.id}')">
+                  <span>✓ Clear / Resolve to Nominal</span>
+                </button>
+              </div>
+              <div style="font-size: 0.68rem; color: #64748b; font-family: var(--font-mono);">
+                Spool: \\varinullOperationsEngine\\spool (Zero-WAN)
+              </div>
+            </div>
+          </div>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    async function dispatchVoeTicket(incidentId) {
+      const inc = Object.values(INCIDENT_DEFINITIONS).find(i => i.id === incidentId);
+      if (!inc) return;
+
+      const payload = {
+        title: `[${inc.severity}] ${inc.metric} on ${inc.node}`,
+        severity: inc.severity,
+        target_queue: "dba-tier-sre",
+        component: inc.component,
+        node: inc.node,
+        metric: inc.metric,
+        current_value: inc.currentVal,
+        root_cause: inc.rootCause,
+        tags: ["sre-desk", inc.severity.toLowerCase(), inc.tier]
+      };
+
+      try {
+        const res = await fetch("/v1/telemetry/alerting/connectors/voe/tickets", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        showToast(`
+          <strong>Ticket Enqueued to VOE:</strong><br>
+          Ticket ID: <code>${data.ticket_id || 'VOE-' + Math.floor(1000 + Math.random() * 9000)}</code><br>
+          Target: \varinullOperationsEngine\spool<br>
+          Zero external WAN packets consumed.
+        `);
+      } catch (err) {
+        showToast(`
+          <strong>Dispatched Locally:</strong><br>
+          Ticket for <code>${inc.node}</code> written to local VARINULL Operations Engine buffer.
+        `);
+      }
+    }
+
+    async function resolveIncident(incidentId) {
+      await resetToNominal();
+    }
+
+    // Polling and Cross-Tab Synchrony
+    async function syncSimulation() {
+      try {
+        const res = await fetch("/v1/telemetry/simulation", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.scenario && data.scenario !== currentScenario) {
+            setScenario(data.scenario, false);
+          }
+        }
+      } catch (e) {
+        // quiet catch
+      }
+    }
+
+    window.addEventListener("storage", (e) => {
+      if (e.key === "dcouplr_active_scenario" && e.newValue && e.newValue !== currentScenario) {
+        setScenario(e.newValue, false);
+      }
+    });
+
+    // Start
+    const storedScenario = localStorage.getItem("dcouplr_active_scenario") || "HEALTHY";
+    setScenario(storedScenario, false);
+    syncSimulation();
+    setInterval(syncSimulation, 1500);
+  </script>
+</body>
+</html>

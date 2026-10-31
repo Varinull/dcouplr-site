@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt;: 7-Tier Full-Stack Monitoring Wallboard (Outside-VPC Projection)</title>
+  <meta name="description" content="1-Way Outside-VPC Wallboard Projection of 7-Tier Operational Health Matrix, High-Priority Triage Board, and Alert & Triage Engine.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <style>
+    :root {
+      --bg-dark: #070a14;
+      --bg-card: #0c1222;
+      --bg-surface: #131d33;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-highlight: rgba(56, 189, 248, 0.35);
+      --accent-green: #39ff14;
+      --accent-cyan: #38bdf8;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-purple: #c084fc;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Monaco, Consolas, monospace;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      margin: 0;
+      padding: 0;
+      line-height: 1.35;
+      -webkit-font-smoothing: antialiased;
+      height: 100vh;
+      width: 100vw;
+      max-width: 100vw;
+      max-height: 100vh;
+      overflow: hidden; /* Strict zero page scrollbar */
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Nav Bar */
+    .top-header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.35rem 1rem;
+      height: 42px;
+      min-height: 42px;
+      max-height: 42px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(12px);
+      flex-shrink: 0;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    .top-header.header-pulse-critical {
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.28) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+      border-bottom: 2px solid #ef4444 !important;
+      box-shadow: 0 2px 18px rgba(239, 68, 68, 0.45);
+    }
+    .top-header.header-pulse-warning {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.25) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+      border-bottom: 2px solid #f59e0b !important;
+      box-shadow: 0 2px 18px rgba(245, 158, 11, 0.4);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .dcouplr-logo {
+      display: inline-flex;
+      align-items: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.5px;
+      text-decoration: none;
+      color: #fff;
+    }
+    .dcouplr-bracket { color: var(--accent-green); font-family: var(--font-mono); font-size: 1.2rem; font-weight: 900; }
+    .dcouplr-text { font-family: var(--font-sans); color: #fff; font-weight: 800; }
+
+    .brand-badge {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 800;
+      background: rgba(139, 92, 246, 0.18);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.45);
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-link-btn {
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 3px 8px;
+      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .nav-link-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .pulse-pill {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      background: rgba(57, 255, 20, 0.1);
+      color: #86efac;
+      border: 1px solid rgba(57, 255, 20, 0.3);
+      white-space: nowrap;
+    }
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 6px var(--accent-green);
+      animation: pulseAnim 1.6s infinite;
+    }
+    @keyframes pulseAnim {
+      0% { transform: scale(0.9); opacity: 0.7; }
+      50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 10px var(--accent-green); }
+      100% { transform: scale(0.9); opacity: 0.7; }
+    }
+
+    /* Incident Notification Ticker Strip */
+    #noc-incident-banner {
+      margin: 0;
+      padding: 4px 1rem;
+      min-height: 30px;
+      border-radius: 0;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      gap: 8px;
+      flex-wrap: wrap;
+      z-index: 999;
+      overflow: hidden;
+    }
+
+    /* Main Container (Fluid 100vw, Full Height, Flex Column) */
+    .matrix-wall-container {
+      width: 100vw;
+      max-width: 100vw;
+      flex: 1;
+      min-height: 0;
+      margin: 0;
+      padding: 0.55rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      box-sizing: border-box;
+      overflow: hidden; /* Strict zero page scrollbar */
+    }
+
+    /* 1. Glanceable Health Banner */
+    .glance-health-banner {
+      background: var(--bg-card);
+      border-radius: 8px;
+      padding: 0.5rem 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+    .glance-health-banner.healthy {
+      border: 1px solid rgba(57, 255, 20, 0.35);
+      background: linear-gradient(135deg, rgba(57, 255, 20, 0.05) 0%, rgba(15, 23, 42, 0.95) 100%);
+    }
+    .glance-health-banner.warning {
+      border: 1px solid rgba(245, 158, 11, 0.75);
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.16) 0%, rgba(15, 23, 42, 0.95) 100%);
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.35);
+      animation: pulseCardYellow 2s infinite ease-in-out;
+    }
+    .glance-health-banner.critical {
+      border: 1px solid rgba(239, 68, 68, 0.75);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%);
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.35);
+      animation: pulseCardRed 2s infinite ease-in-out;
+    }
+    .glance-health-banner.critical.orig {
+      border: 1px solid rgba(239, 68, 68, 0.6);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(15, 23, 42, 0.95) 100%);
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);
+    }
+
+    /* Keyframes for Pulsating Shadows & Alert Glow */
+    @keyframes pulseCardRed {
+      0%, 100% {
+        box-shadow: 0 0 18px rgba(239, 68, 68, 0.65), inset 0 0 10px rgba(239, 68, 68, 0.2);
+        border-color: rgba(239, 68, 68, 0.85);
+      }
+      50% {
+        box-shadow: 0 0 38px rgba(239, 68, 68, 0.95), 0 0 15px #ef4444, inset 0 0 20px rgba(239, 68, 68, 0.4);
+        border-color: #ef4444;
+      }
+    }
+
+    @keyframes pulseCardYellow {
+      0%, 100% {
+        box-shadow: 0 0 18px rgba(245, 158, 11, 0.65), inset 0 0 10px rgba(245, 158, 11, 0.2);
+        border-color: rgba(245, 158, 11, 0.85);
+      }
+      50% {
+        box-shadow: 0 0 38px rgba(245, 158, 11, 0.95), 0 0 15px #f59e0b, inset 0 0 20px rgba(245, 158, 11, 0.4);
+        border-color: #f59e0b;
+      }
+    }
+
+    .glance-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .glance-icon-badge {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .glance-icon-badge.healthy { background: rgba(57, 255, 20, 0.15); border: 1px solid rgba(57, 255, 20, 0.4); }
+    .glance-icon-badge.warning { background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.5); }
+    .glance-icon-badge.critical { background: rgba(239, 68, 68, 0.25); border: 1px solid rgba(239, 68, 68, 0.6); animation: pulseAlert 1.5s infinite; }
+
+    @keyframes pulseAlert {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+      70% { transform: scale(1.04); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    .glance-headline {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      font-family: var(--font-mono);
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+    .glance-subline {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .glance-chips {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .glance-chip {
+      font-size: 0.73rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: #cbd5e1;
+    }
+
+    /* 2. 7-Tier Small-Surface-Area Grid */
+    .matrix-strip-section {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .section-title {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.65rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .section-title-sub {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: none;
+    }
+
+    .tiers-compact-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.45rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .tier-micro-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 80px;
+      box-sizing: border-box;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45), 0 0 14px rgba(57, 255, 20, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+    .tier-micro-card:hover {
+      border-color: rgba(56, 189, 248, 0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.55), 0 0 20px rgba(56, 189, 248, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .tier-micro-card.selected-tier {
+      border-color: var(--accent-cyan) !important;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.16) 0%, rgba(15, 23, 42, 0.98) 100%) !important;
+      box-shadow: 0 0 28px rgba(56, 189, 248, 0.55), 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(56, 189, 248, 0.2) !important;
+      transform: translateY(-2px);
+    }
+    .tier-micro-card.pulse-critical {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 32px rgba(239, 68, 68, 0.85), inset 0 0 15px rgba(239, 68, 68, 0.3) !important;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.28) 0%, rgba(15, 23, 42, 0.98) 100%) !important;
+      animation: pulseCardRed 1.6s infinite ease-in-out !important;
+    }
+    .tier-micro-card.pulse-warning {
+      border-color: #f59e0b !important;
+      box-shadow: 0 0 32px rgba(245, 158, 11, 0.85), inset 0 0 15px rgba(245, 158, 11, 0.3) !important;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(15, 23, 42, 0.98) 100%) !important;
+      animation: pulseCardYellow 1.6s infinite ease-in-out !important;
+    }
+
+    .tier-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.4rem;
+    }
+    .tier-card-icon {
+      font-size: 1.25rem;
+    }
+    .tier-status-pill {
+      font-size: 0.65rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+    .status-healthy { background: rgba(57, 255, 20, 0.15); color: #39ff14; border: 1px solid rgba(57, 255, 20, 0.35); }
+    .status-warning { background: rgba(245, 158, 11, 0.18); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.45); }
+    .status-critical { background: rgba(239, 68, 68, 0.22); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.55); animation: pulseAlert 1.5s infinite; }
+
+    .tier-card-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tier-card-components {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .tier-card-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      margin-top: 0.5rem;
+      padding-top: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+    }
+    .tier-kpi-badge {
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    /* 3. Main Split Section (Triage Board Dominant ~70% + Alert & Triage Table ~30%) */
+    .wall-main-split {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 2.3fr 1fr;
+      gap: 0.45rem;
+      overflow: hidden;
+    }
+
+    /* Left Column: High-Priority Incident Triage Board (Prominent Operational Stage) */
+    .triage-panel {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.5rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    .triage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+      flex-shrink: 0;
+      gap: 0.5rem;
+    }
+    .triage-title {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #fff;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.2;
+    }
+    .triage-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(57, 255, 20, 0.4);
+      background: rgba(57, 255, 20, 0.12);
+      color: #86efac;
+      white-space: nowrap;
+    }
+
+    .incident-list {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      padding-right: 2px;
+    }
+    .incident-list.dual-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+    }
+    .incident-list.dual-grid .incident-details-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .incident-list.single-grid .incident-details-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .incident-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .incident-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+    }
+
+    /* Cascading Incident Matrix Table (Smart / Dynamic Rendering for Zero-Scroll 1-Monitor Wallboard) */
+    .wall-cascade-table-wrapper {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.45rem 0.65rem;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .wall-cascade-table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+    }
+    .wall-cascade-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+    }
+    .wall-cascade-table th {
+      text-align: left;
+      padding: 5px 8px;
+      color: #94a3b8;
+      font-weight: 700;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .wall-cascade-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      vertical-align: middle;
+    }
+    .wall-cascade-table tr.row-p1 {
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.14) 0%, rgba(15, 23, 42, 0.85) 100%);
+      border-left: 3px solid #ef4444;
+    }
+    .wall-cascade-table tr.row-p2 {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.12) 0%, rgba(15, 23, 42, 0.85) 100%);
+      border-left: 3px solid #f59e0b;
+    }
+    .wall-cascade-table tr:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .incident-card {
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 6px;
+      padding: 0.55rem 0.85rem;
+      border: 1px solid var(--border-subtle);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .incident-card.p1 {
+      border: 1px solid rgba(239, 68, 68, 0.75);
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.25);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(15, 23, 42, 0.95) 100%);
+    }
+    .incident-card.p2 {
+      border: 1px solid rgba(245, 158, 11, 0.75);
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.2);
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(15, 23, 42, 0.95) 100%);
+    }
+
+    .incident-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.45rem;
+      gap: 8px;
+      line-height: 1.2;
+    }
+    .incident-rank-tag {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 900;
+      padding: 3px 9px;
+      border-radius: 4px;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+    }
+    .rank-p1 { background: #ef4444; color: #fff; box-shadow: 0 0 8px rgba(239, 68, 68, 0.6); }
+    .rank-p2 { background: #f59e0b; color: #000; box-shadow: 0 0 8px rgba(245, 158, 11, 0.6); }
+
+    .incident-details-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem 0.75rem;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.5rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      margin-bottom: 0.4rem;
+      font-family: var(--font-mono);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .incident-meta-item {
+      color: #cbd5e1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .incident-meta-item strong { color: #fff; }
+
+    .incident-diagnosis {
+      font-size: 0.74rem;
+      color: #cbd5e1;
+      background: rgba(56, 189, 248, 0.06);
+      border-left: 3px solid #38bdf8;
+      padding: 0.45rem 0.75rem;
+      border-radius: 4px;
+      line-height: 1.45;
+      margin-bottom: 0.4rem;
+    }
+    .incident-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .incident-actions .nav-link-btn {
+      font-size: 0.7rem;
+      padding: 3px 9px;
+    }
+
+    /* Right Column: Alert & Triage Engine (Table Form - 6 Hubs Active) */
+    .alert-tree-panel {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.45rem 0.65rem;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    .alert-tree-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.3rem;
+      flex-shrink: 0;
+      gap: 0.4rem;
+    }
+    .alert-tree-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #fff;
+      font-family: var(--font-mono);
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+    .alert-tree-subtitle {
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.15;
+      margin-top: 1px;
+    }
+    .tree-root-container {
+      display: flex;
+      margin-bottom: 0.35rem;
+      flex-shrink: 0;
+    }
+    .tree-root-box {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      box-shadow: 0 2px 8px rgba(168, 85, 247, 0.15);
+      border-radius: 6px;
+      padding: 0.25rem 0.65rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tree-root-brand { font-size: 0.72rem; font-weight: 800; color: #fff; line-height: 1.1; }
+    .tree-root-sub { font-size: 0.6rem; color: #cbd5e1; display: flex; align-items: center; gap: 5px; }
+
+    /* Alert Engine 6 Hubs Table */
+    .alert-table-wrapper {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.25);
+    }
+    .alert-hubs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+    }
+    .alert-hubs-table thead th {
+      background: rgba(15, 23, 42, 0.92);
+      position: sticky;
+      top: 0;
+      padding: 5px 8px;
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #94a3b8;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 2;
+    }
+    .alert-hubs-table tbody tr.tree-hub-card {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.25s ease;
+    }
+    .alert-hubs-table tbody tr.tree-hub-card:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .alert-hubs-table tbody td {
+      padding: 6px 8px;
+      vertical-align: middle;
+      line-height: 1.3;
+    }
+    .tree-hub-card.hub-dispatched-critical {
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.22) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+      border-left: 3px solid #ef4444 !important;
+    }
+    .tree-hub-card.hub-dispatched-warning {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.2) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+      border-left: 3px solid #f59e0b !important;
+    }
+
+    .tree-wire {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #475569;
+      box-shadow: 0 0 4px rgba(71, 85, 105, 0.6);
+      transition: all 0.3s ease;
+      vertical-align: middle;
+      margin-right: 6px;
+      flex-shrink: 0;
+    }
+    .tree-wire.active-wire-critical {
+      background: #ef4444 !important;
+      box-shadow: 0 0 8px #ef4444, 0 0 16px rgba(239, 68, 68, 0.8) !important;
+      animation: pulseWireOrb 1.3s infinite ease-in-out;
+    }
+    .tree-wire.active-wire-warning {
+      background: #f59e0b !important;
+      box-shadow: 0 0 8px #f59e0b, 0 0 16px rgba(245, 158, 11, 0.8) !important;
+      animation: pulseWireOrb 1.3s infinite ease-in-out;
+    }
+    @keyframes pulseWireOrb {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.35); opacity: 1; }
+    }
+
+    .tree-hub-status {
+      font-size: 0.62rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #94a3b8;
+      white-space: nowrap;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: inline-block;
+      text-align: center;
+      min-width: 68px;
+    }
+    .tree-hub-card.hub-dispatched-critical .tree-hub-status {
+      background: #ef4444 !important;
+      color: #fff !important;
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+    }
+    .tree-hub-card.hub-dispatched-warning .tree-hub-status {
+      background: #f59e0b !important;
+      color: #000 !important;
+      border-color: #f59e0b !important;
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+    }
+
+    /* 4. Bottom Compatibility Strip (Subnets, Load Balancers, SLA) */
+    .wall-compat-strip {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.67rem;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      gap: 8px;
+      line-height: 1.2;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Global Header -->
+  <header class="top-header" id="top-header-bar">
+    <div class="brand-group">
+      <a href="/" class="dcouplr-logo" title="&lt;dcouplr/&gt; Home">
+        <span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span>
+      </a>
+      <span class="brand-badge">OUTSIDE-VPC HUB &bull; 7-TIER WALLBOARD</span>
+      <span id="top-bar-incident-alert" class="tier-status-pill status-critical" style="display: none; padding: 2px 7px; font-weight: 800;">
+        🚨 P1 CRITICAL INCIDENT DETECTED
+      </span>
+    </div>
+
+    <div class="header-actions">
+      <div class="pulse-pill" id="wall-stream-pill">
+        <span class="pulse-dot"></span>
+        <span id="wall-stream-text">Wallboard Live (1s)</span>
+      </div>
+      <button type="button" class="nav-link-btn" onclick="document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();" title="Toggle Fullscreen Wall Mode">
+        ⛶ Fullscreen
+      </button>
+      <button type="button" id="btn-2way-bridge" onclick="toggle2WayBridge()" style="display: none;">Bridge</button>
+    </div>
+  </header>
+
+  <!-- Incident Notification Ticker Banner (Docks smoothly under header when active) -->
+  <div id="noc-incident-banner" class="pulse-critical" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.28) 0%, rgba(15, 23, 42, 0.98) 100%); border-bottom: 2px solid #ef4444;">
+    <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; color: #fff;">
+      <span id="noc-inc-badge" class="tier-status-pill status-critical">🚨 P1 CRITICAL</span>
+      <span id="noc-inc-title">PostgreSQL Lock Contention Spike</span>
+      <span id="noc-inc-target" style="color: #67e8f9; font-weight: 700;">node-vpc-db-01 (10.100.20.44)</span>
+      <span id="noc-inc-loc" style="color: #fca5a5;">in AWS Production VPC</span>
+    </div>
+    <div id="noc-inc-metric" style="color: #fca5a5; font-size: 0.68rem;">
+      Metric: 198 locks (>100) &bull; Subnet: private-db-1b &bull; LB: prod-internal-nlb
+    </div>
+  </div>
+
+  <main class="matrix-wall-container">
+
+    <!-- 1. Glance Health Banner: ALL 7 TIERS FULLY OPERATIONAL -->
+    <section class="glance-health-banner healthy" id="glance-health-banner" aria-label="7-Tier Glance Operational Health">
+      <div class="glance-left">
+        <div class="glance-icon-badge healthy" id="glance-icon">🟢</div>
+        <div style="min-width: 0;">
+          <div class="glance-headline" id="glance-headline">
+            <span>ALL 7 TIERS FULLY OPERATIONAL</span>
+          </div>
+          <div class="glance-subline" id="glance-subline">
+            Zero Invariant Breaches &bull; 122 Invariants Satisfied &bull; 75 Nodes Online &bull; Zero-Egress In-Perimeter SLA Strict Nominal
+          </div>
+        </div>
+      </div>
+      <div class="glance-chips">
+        <span class="status-healthy tier-status-pill" id="glance-status-pill">100% HEALTHY</span>
+        <span class="glance-chip" style="color: #39ff14;">7 / 7 Tiers Active</span>
+        <span class="glance-chip" style="color: #38bdf8;">24 Components Up</span>
+        <span class="glance-chip" style="color: #c084fc;">75 Monitored Nodes</span>
+        <span class="glance-chip" id="glance-db-chip" style="color: #38bdf8;" title="Version-agnostic customer database fleet selection">🌐 DB Fleet: Universal</span>
+        <span class="glance-chip" style="color: #69f0ae;">0 WAN Packets ($0.00)</span>
+        <div class="glance-vpc-strip" style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+          <span class="glance-chip" style="color: #00e5ff; border-color: rgba(0, 229, 255, 0.35); font-size: 0.68rem; padding: 2px 7px;">☁️ AWS Prod</span>
+          <span class="glance-chip" style="color: #34d399; border-color: rgba(52, 211, 153, 0.35); font-size: 0.68rem; padding: 2px 7px;">☁️ GCP Analytics</span>
+          <span class="glance-chip" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.35); font-size: 0.68rem; padding: 2px 7px;">☁️ Azure VNet</span>
+          <span class="glance-chip" style="color: #818cf8; border-color: rgba(129, 140, 248, 0.35); font-size: 0.68rem; padding: 2px 7px;">☁️ AWS Staging</span>
+          <span class="glance-chip" style="color: #f59e0b; border-color: rgba(245, 158, 11, 0.35); font-size: 0.68rem; padding: 2px 7px;">🏢 OnPrem DC1</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Small Surface Area: 7-Tier Operational Health Matrix Strip -->
+    <section class="matrix-strip-section" aria-label="7-Tier Infrastructure Matrix">
+      <div class="section-title">
+        <span>7-Tier Operational Health Matrix (Small Surface Area)</span>
+        <span class="section-title-sub">Continuous 1-Way Telemetry Observer Projection Outside VPC</span>
+      </div>
+
+      <div class="tiers-compact-grid" id="tiers-compact-grid">
+        <!-- Tier 1: Physical DC -->
+        <article class="tier-micro-card" id="card-tier-1" data-tier="tier_1_physical_dc">
+          <div class="tier-card-top">
+            <span class="tier-card-icon">🖥️</span>
+            <span class="tier-status-pill status-healthy" id="pill-tier-1">HEALTHY</span>
+          </div>
+          <div>
+            <div class="tier-card-name">1. Physical DC</div>
+            <div class="tier-card-components">Bare Metal &bull; DCIM &bull; SAN</div>
+          </div>
+          <div class="tier-card-bottom">
+            <span>3 Comps &bull; 17 Invar</span>
+            <span class="tier-kpi-badge" id="kpi-tier-1">CPU 24.8%</span>
+          </div>
+        </article>
+
+        <!-- Tier 2: Networking -->
+        <article class="tier-micro-card" id="card-tier-2" data-tier="tier_2_network">
+          <div class="tier-card-top">
+            <span class="tier-card-icon">🌐</span>
+            <span class="tier-status-pill status-healthy" id="pill-tier-2">HEALTHY</span>
+          </div>
+          <div>
+            <div class="tier-card-name">2. Networking</div>
+            <div class="tier-card-components">Core Spines &bull; BGP &bull; Optics</div>
+          </div>
+          <div class="tier-card-bottom">
+            <span>3 Comps &bull; 14 Invar</span>
+            <span class="tier-kpi-badge" id="kpi-tier-2">Drops 0.00%</span>
+          </div>
+        </article>
+
+        <!-- Tier 3: Cloud & VPC -->
+        <article class="tier-micro-card" id="card-tier-3" data-tier="tier_3_vpc_cloud">
+          <div class="tier-card-top">
+            <span class="tier-card-icon">☁️</span>
+            <span class="tier-status-pill status-healthy" id="pill-tier-3">HEALTHY</span>
+          </div>
+          <div>
+            <div class="tier-card-name">3. Cloud &amp; VPC</div>
+            <div class="tier-card-components">VPC Flow &bull; Subnets &bull; LB</div>
+          </div>
+          <div class="tier-card-bottom">
+            <span>4 Comps &bull; 19 Invar</span>
+            <span class="tier-kpi-badge" id="kpi-tier-3">0 WAN Pkts</span>
+          </div>
+        </article>
+
+        <!-- Tier 4: Compute & Hypervisors -->
+        <article class="tier-micro-card" id="card-tier-4" data-tier="tier_4_compute_hypervisors">
+          <div class="tier-card-top">
+            <span class="tier-card-icon">⚙️</span>
+            <span class="tier-status-pill status-healthy" id="pill-tier-4">HEALTHY</span>
+          </div>
+          <div>
+            <div class="tier-card-name">4. Compute &amp; Runtimes</div>
+            <div class="tier-card-components">K8s &bull; KVM &bull; Containers</div>
+          </div>
+          <div class="tier-card-bottom">
+            <span>4 Comps &bull; 21 Invar</span>
+            <span class="tier-kpi-badge" id="kpi-tier-4">Pods 100%</span>
+          </div>
+        </article>
+
+        <!-- Tier 5: Middleware & DBs -->
+        <article class="tier-micro-card" id="card-tier-5" data-tier="tier_5_middleware_databases">
+          <div class="tier-card-top">
+            <span class="tier-card-icon">🗄️</span>
+            <span class="tier-status-pill status-healthy" id="pill-tier-5">HEALTHY</span>
+          </div>
+          <div>
+            <div class="tier-card-name">5. Middleware &amp; DBs</div>
+            <div class="tier-card-components">Postgres &bull; Redis &bull; Kafka</div>
+          </div>
+          <div class="tier-card-bottom">
+            <span>4 Comps &bull; 18 Invar</span>
+            <span class="tier-kpi-badge" id="kpi-tier-5">Conns: 42</span>
+          </div>
+        </article>
+
+        <!-- Tier 6: Applications -->
+        <article class="tier-micro-card" id="card-tier-6" data-tier="tier_6_applications">
+          <div class="tier-card-top">
+            <span class="tier-card-icon">📦</span>
+            <span class="tier-status-pill status-healthy" id="pill-tier-6">HEALTHY</span>
+          </div>
+          <div>
+            <div class="tier-card-name">6. Application Logic</div>
+            <div class="tier-card-components">APM Traces &bull; REST &bull; Microservices</div>
+          </div>
+          <div class="tier-card-bottom">
+            <span>4 Comps &bull; 17 Invar</span>
+            <span class="tier-kpi-badge" id="kpi-tier-6">0.42 ms p50</span>
+          </div>
+        </article>
+
+        <!-- Tier 7: Governance & SIEM -->
+        <article class="tier-micro-card" id="card-tier-7" data-tier="tier_7_governance_siem">
+          <div class="tier-card-top">
+            <span class="tier-card-icon">🛡️</span>
+            <span class="tier-status-pill status-healthy" id="pill-tier-7">HEALTHY</span>
+          </div>
+          <div>
+            <div class="tier-card-name">7. Governance &amp; SIEM</div>
+            <div class="tier-card-components">Audit &bull; OPA Invariants &bull; SOC2</div>
+          </div>
+          <div class="tier-card-bottom">
+            <span>3 Comps &bull; 16 Invar</span>
+            <span class="tier-kpi-badge" id="kpi-tier-7">100% Passed</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 3. Side-by-Side Main Split: Triage Board (Left) & Architectural Engine (Right) -->
+    <div class="wall-main-split">
+
+      <!-- Left Column: High-Priority Incident & Operational Triage Board -->
+      <section class="triage-panel" aria-label="Incident Triage Board">
+        <div class="triage-header">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="triage-title">
+              🚨 High-Priority Incident &amp; Operational Triage Board
+            </span>
+            <span class="triage-badge" id="triage-active-count">0 Active Issues</span>
+          </div>
+          <div style="font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono);">
+            Smart Sorting: <span style="color: #39ff14;">P1 &gt; P2 &gt; P3 &gt; P4</span>
+          </div>
+        </div>
+
+        <!-- Triage Items Container (Scrollable within container if multiple incidents occur) -->
+        <div class="incident-list" id="incident-list">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- Right Column: Alert & Triage Engine (6 Hubs Active) in Table Form -->
+      <section class="alert-tree-panel" id="alert-tree-section" aria-label="Alert &amp; Triage Architecture Engine">
+        <div class="alert-tree-header-row">
+          <div style="min-width: 0;">
+            <span class="alert-tree-title">
+              💜 <span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span> Alert &amp; Triage Engine (6 Hubs Active)
+            </span>
+            <div class="alert-tree-subtitle">
+              Alert &amp; Triage Engine &bull; Architectural Blueprint &bull; 📢 Active Notification Channels
+            </div>
+          </div>
+          <span class="tier-status-pill status-healthy" id="tree-dispatch-spool-badge" style="font-size: 0.58rem; padding: 2px 6px;">SPOOL ARMED (0 WAN)</span>
+        </div>
+
+        <!-- Root Summary Bar -->
+        <div class="tree-root-container">
+          <div class="tree-root-box" id="tree-root-node">
+            <div class="tree-root-brand">
+              ⚡ Notification Dispatch: <span style="color: #c084fc;">6 Active Hubs</span>
+            </div>
+            <div class="tree-root-sub">
+              <span id="tree-root-status-pill" style="font-size: 0.58rem; font-weight: 800; padding: 2px 6px; border-radius: 3px; background: rgba(57, 255, 20, 0.12); color: #86efac; border: 1px solid rgba(57, 255, 20, 0.35);">
+                NOMINAL &bull; 0 BREACHES
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6 Hubs in High-Contrast Table Form -->
+        <div class="alert-table-wrapper">
+          <table class="alert-hubs-table">
+            <thead>
+              <tr>
+                <th style="text-align: left; width: 34%;">Channel / Hub</th>
+                <th style="text-align: left; width: 44%;">Target Connectors</th>
+                <th style="text-align: right; width: 22%;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="tree-hub-card" id="hub-card-itsm">
+                <td style="font-weight: 700; color: #fff; white-space: nowrap;">
+                  <span id="tree-wire-itsm" class="tree-wire"></span>1. Enterprise ITSM
+                </td>
+                <td style="color: #cbd5e1; font-size: 0.65rem;">
+                  ServiceNow Enterprise &bull; Jira
+                </td>
+                <td style="text-align: right;">
+                  <span class="tree-hub-status" id="badge-tree-itsm">STANDBY</span>
+                </td>
+              </tr>
+              <tr class="tree-hub-card" id="hub-card-chat">
+                <td style="font-weight: 700; color: #fff; white-space: nowrap;">
+                  <span id="tree-wire-chat" class="tree-wire"></span>2. ChatOps
+                </td>
+                <td style="color: #cbd5e1; font-size: 0.65rem;">
+                  Slack Enterprise &bull; MS Teams
+                </td>
+                <td style="text-align: right;">
+                  <span class="tree-hub-status" id="badge-tree-chat">STANDBY</span>
+                </td>
+              </tr>
+              <tr class="tree-hub-card" id="hub-card-paging">
+                <td style="font-weight: 700; color: #fff; white-space: nowrap;">
+                  <span id="tree-wire-paging" class="tree-wire"></span>3. On-Call Paging
+                </td>
+                <td style="color: #cbd5e1; font-size: 0.65rem;">
+                  PagerDuty Escalation &bull; Opsgenie
+                </td>
+                <td style="text-align: right;">
+                  <span class="tree-hub-status" id="badge-tree-paging">STANDBY</span>
+                </td>
+              </tr>
+              <tr class="tree-hub-card" id="hub-card-sms">
+                <td style="font-weight: 700; color: #fff; white-space: nowrap;">
+                  <span id="tree-wire-voice" class="tree-wire"></span>4. Out-of-Band &amp; Voice
+                </td>
+                <td style="color: #cbd5e1; font-size: 0.65rem;">
+                  Twilio Voice &bull; Auto Call &bull; SMS
+                </td>
+                <td style="text-align: right;">
+                  <span class="tree-hub-status" id="badge-tree-sms">STANDBY</span>
+                </td>
+              </tr>
+              <tr class="tree-hub-card" id="hub-card-events">
+                <td style="font-weight: 700; color: #fff; white-space: nowrap;">
+                  <span id="tree-wire-events" class="tree-wire"></span>5. Event Store &amp; MQ
+                </td>
+                <td style="color: #cbd5e1; font-size: 0.65rem;">
+                  Apache Kafka (alerts.p1) &bull; EventBridge
+                </td>
+                <td style="text-align: right;">
+                  <span class="tree-hub-status" id="badge-tree-events">STANDBY</span>
+                </td>
+              </tr>
+              <tr class="tree-hub-card" id="hub-card-noc">
+                <td style="font-weight: 700; color: #fff; white-space: nowrap;">
+                  <span id="tree-wire-noc" class="tree-wire"></span>6. Wallboards &amp; Sinks
+                </td>
+                <td style="color: #cbd5e1; font-size: 0.65rem;">
+                  Physical Red Strobes &bull; Splunk HEC
+                </td>
+                <td style="text-align: right;">
+                  <span class="tree-hub-status" id="badge-tree-noc">STANDBY</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- 4. Compatibility Strip for Subnets & Load Balancers Invariant Proof -->
+    <div class="wall-compat-strip" id="wall-compat-strip">
+      <div>
+        <strong>🏢 Subnets &amp; Racks Monitored:</strong> 
+        <span style="color: #cbd5e1;">public-1a &bull; private-app-1a &bull; private-db-1b &bull; bare-metal-kvm-racks</span>
+      </div>
+      <div>
+        <strong>⚖️ Load Balancers Monitored:</strong> 
+        <span style="color: #cbd5e1;">prod-public-alb &bull; prod-internal-nlb &bull; internal-haproxy-vrrp</span>
+      </div>
+      <div>
+        <span style="color: var(--accent-green); font-weight: 700;">Zero-Egress In-Perimeter SLA Verified ($0.00 WAN)</span>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="modal-2way-bridge" style="display: none;"></div>
+
+  <script>
+    let currentScenario = "HEALTHY";
+
+    const INCIDENTS = {
+      P1_POSTGRES_LOCK: {
+        id: "inc-p1-pg-01",
+        severity: "P1",
+        score: 1000,
+        title: "PostgreSQL Lock Contention Spike",
+        location: "AWS Production VPC",
+        tierName: "Tier 5: Middleware & Databases",
+        component: "Relational DBs (PostgreSQL / MySQL / Oracle)",
+        metric: "Active Lock Contention & Transaction Deadlocks",
+        node: "node-vpc-db-01 (10.100.20.44 [alias: db-pg-master-01.ord1])",
+        nodeId: "node-vpc-db-01",
+        ip: "10.100.20.44",
+        impacted_subnet: "private-db-1b (10.100.20.0/24)",
+        impacted_rack: "Zone: us-east-1b (Compute Rack B)",
+        associated_lb: "prod-internal-nlb (Backend Lock Contention)",
+        lb_status: "DEGRADED",
+        policy_rule: "INV-05 Database Transaction Lock Duration & Pool Contention",
+        currentVal: "198 locks",
+        warnVal: "50",
+        critVal: "100",
+        status: "CRITICAL",
+        rootCause: "Database active exclusive table locks exceeded critical threshold (198 > 100). 14 long-running analytical queries blocking write catalog transactions on node-vpc-db-01 (10.100.20.44)."
+      },
+      P2_NETWORK_BUFFER: {
+        id: "inc-p2-net-02",
+        severity: "P2",
+        score: 500,
+        title: "HAProxy Core Ingress Buffer Drops",
+        location: "Chicago DC1",
+        tierName: "Tier 2: Networking (Physical & Virtual)",
+        component: "Core Spine & Leaf Switches / Gateways",
+        metric: "Ingress / Egress Buffer Queue Drops",
+        node: "node-dc1-bm-08 (172.16.1.18)",
+        nodeId: "node-dc1-bm-08",
+        ip: "172.16.1.18",
+        impacted_subnet: "bare-metal-kvm-racks (172.16.1.0/24)",
+        impacted_rack: "Rack DC1-A (Switch Leaf 01/02)",
+        associated_lb: "internal-haproxy-vrrp (Core Ingress Buffer Drops 0.18%)",
+        lb_status: "SATURATED",
+        policy_rule: "INV-02 Ingress Spine Drop Saturation",
+        currentVal: "0.18 %",
+        warnVal: "0.05 %",
+        critVal: "0.50 %",
+        status: "WARNING",
+        rootCause: "HAProxy ingress buffer queue drops elevated on node-dc1-bm-08 (172.16.1.18) due to East-West replication burst. In-perimeter traffic approaching port capacity."
+      }
+    };
+
+    function toggle2WayBridge() {
+      // 1-way wallboard mode compatibility stub
+      console.log("Wallboard operating in 1-way projection mode.");
+    }
+
+    function setScenario(scenarioKey) {
+      currentScenario = scenarioKey;
+      renderScenario();
+    }
+
+    async function send2WaySignal(scenarioKey) {
+      try {
+        localStorage.setItem('dcouplr_active_scenario', scenarioKey);
+        await fetch('/v1/telemetry/simulation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ scenario: scenarioKey })
+        });
+        syncSimulation();
+      } catch (e) {}
+    }
+
+    async function syncSimulation() {
+      try {
+        const res = await fetch("/v1/telemetry/simulation", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.scenario && data.scenario !== currentScenario) {
+            currentScenario = data.scenario;
+            renderScenario();
+          }
+        }
+      } catch (e) {
+        const sc = localStorage.getItem("dcouplr_active_scenario");
+        if (sc && sc !== currentScenario) {
+          currentScenario = sc;
+          renderScenario();
+        }
+      }
+    }
+
+    function renderScenario() {
+      const banner = document.getElementById("glance-health-banner");
+      const icon = document.getElementById("glance-icon");
+      const headline = document.getElementById("glance-headline");
+      const subline = document.getElementById("glance-subline");
+      const statusPill = document.getElementById("glance-status-pill");
+      const header = document.getElementById("top-header-bar");
+      const alertPill = document.getElementById("top-bar-incident-alert");
+      const nocBanner = document.getElementById("noc-incident-banner");
+
+      const cardTier5 = document.getElementById("card-tier-5");
+      const pillTier5 = document.getElementById("pill-tier-5");
+      const kpiTier5 = document.getElementById("kpi-tier-5");
+
+      const cardTier2 = document.getElementById("card-tier-2");
+      const pillTier2 = document.getElementById("pill-tier-2");
+      const kpiTier2 = document.getElementById("kpi-tier-2");
+
+      const wireItsm = document.getElementById("tree-wire-itsm");
+      const wirePaging = document.getElementById("tree-wire-paging");
+      const wireChat = document.getElementById("tree-wire-chat");
+      const wireVoice = document.getElementById("tree-wire-voice");
+      const wireEvents = document.getElementById("tree-wire-events");
+      const wireNoc = document.getElementById("tree-wire-noc");
+
+      const hubCardItsm = document.getElementById("hub-card-itsm");
+      const hubCardPaging = document.getElementById("hub-card-paging");
+      const hubCardChat = document.getElementById("hub-card-chat");
+      const hubCardVoice = document.getElementById("hub-card-voice");
+      const hubCardEvents = document.getElementById("hub-card-events");
+      const hubCardNoc = document.getElementById("hub-card-noc");
+
+      const treeRootStatusPill = document.getElementById("tree-root-status-pill");
+      const badgeItsm = document.getElementById("badge-tree-itsm");
+      const badgeChat = document.getElementById("badge-tree-chat");
+      const badgePaging = document.getElementById("badge-tree-paging");
+      const badgeVoice = document.getElementById("badge-tree-voice");
+      const badgeEvents = document.getElementById("badge-tree-events");
+      const badgeNoc = document.getElementById("badge-tree-noc");
+
+      // Reset
+      header.classList.remove("header-pulse-critical", "header-pulse-warning");
+      alertPill.style.display = "none";
+      alertPill.className = "tier-status-pill status-critical";
+      alertPill.style.background = "";
+      alertPill.style.color = "";
+      alertPill.style.borderColor = "";
+
+      nocBanner.style.display = "none";
+      nocBanner.className = "pulse-critical";
+      nocBanner.style.background = "linear-gradient(135deg, rgba(239, 68, 68, 0.28) 0%, rgba(15, 23, 42, 0.98) 100%)";
+      nocBanner.style.borderBottom = "2px solid #ef4444";
+      nocBanner.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; color: #fff;">
+          <span id="noc-inc-badge" class="tier-status-pill status-critical">🚨 P1 CRITICAL</span>
+          <span id="noc-inc-title">PostgreSQL Lock Contention Spike</span>
+          <span id="noc-inc-target" style="color: #67e8f9; font-weight: 700;">node-vpc-db-01 (10.100.20.44)</span>
+          <span id="noc-inc-loc" style="color: #fca5a5;">in AWS Production VPC</span>
+        </div>
+        <div id="noc-inc-metric" style="color: #fca5a5; font-size: 0.68rem;">
+          Metric: 198 locks (>100) &bull; Subnet: private-db-1b &bull; LB: prod-internal-nlb
+        </div>
+      `;
+
+      document.querySelectorAll(".tier-micro-card").forEach(c => {
+        c.classList.remove("pulse-critical", "pulse-warning");
+        c.style.borderColor = "";
+        c.style.boxShadow = "";
+        c.style.background = "";
+      });
+      document.querySelectorAll(".tree-wire").forEach(w => {
+        w.classList.remove("active-wire-critical", "active-wire-warning");
+      });
+      document.querySelectorAll(".tree-hub-card").forEach(h => {
+        h.classList.remove("hub-dispatched-critical", "hub-dispatched-warning");
+      });
+
+      if (treeRootStatusPill) {
+        treeRootStatusPill.style.background = "rgba(57, 255, 20, 0.12)";
+        treeRootStatusPill.style.borderColor = "rgba(57, 255, 20, 0.35)";
+        treeRootStatusPill.style.color = "#86efac";
+        treeRootStatusPill.innerHTML = "NOMINAL &bull; 0 BREACHES";
+      }
+      if (badgeItsm) badgeItsm.textContent = "STANDBY";
+      if (badgeChat) badgeChat.textContent = "STANDBY";
+      if (badgePaging) badgePaging.textContent = "STANDBY";
+      if (badgeVoice) badgeVoice.textContent = "STANDBY";
+      if (badgeEvents) badgeEvents.textContent = "STANDBY";
+      if (badgeNoc) badgeNoc.textContent = "STANDBY";
+
+      // Reset all 7 tiers in the 7-Tier Operational Health Matrix (Small Surface Area)
+      for (let i = 1; i <= 7; i++) {
+        const pill = document.getElementById(`pill-tier-${i}`);
+        if (pill) {
+          pill.className = "tier-status-pill status-healthy";
+          pill.textContent = "HEALTHY";
+          pill.style.background = "";
+          pill.style.color = "";
+          pill.style.borderColor = "";
+        }
+        const kpi = document.getElementById(`kpi-tier-${i}`);
+        if (kpi) {
+          kpi.style.color = "";
+          kpi.style.fontWeight = "";
+        }
+      }
+
+      if (kpiTier5) kpiTier5.textContent = "Conns: 42";
+      if (kpiTier2) kpiTier2.textContent = "Drops 0.00%";
+
+      if (currentScenario === "HEALTHY") {
+        banner.className = "glance-health-banner healthy";
+        icon.className = "glance-icon-badge healthy";
+        icon.textContent = "🟢";
+        headline.innerHTML = "<span>ALL 7 TIERS FULLY OPERATIONAL</span>";
+        statusPill.className = "tier-status-pill status-healthy";
+        statusPill.textContent = "100% HEALTHY";
+        statusPill.style.background = "";
+        statusPill.style.color = "";
+        statusPill.style.borderColor = "";
+        subline.textContent = "Zero Invariant Breaches \u2022 122 Invariants Satisfied \u2022 75 Nodes Online \u2022 Zero-Egress In-Perimeter SLA Strict Nominal";
+      } else if (currentScenario === "P1_CRITICAL") {
+        header.classList.add("header-pulse-critical");
+        alertPill.style.display = "inline-flex";
+        alertPill.textContent = "🚨 P1 CRITICAL INCIDENT DETECTED";
+
+        nocBanner.style.display = "flex";
+        document.getElementById("noc-inc-badge").textContent = "🚨 P1 CRITICAL";
+        document.getElementById("noc-inc-title").textContent = "PostgreSQL Lock Contention Spike";
+        document.getElementById("noc-inc-target").textContent = "node-vpc-db-01 (10.100.20.44)";
+        document.getElementById("noc-inc-loc").textContent = "in AWS Production VPC";
+        document.getElementById("noc-inc-metric").textContent = "Metric: 198 locks (>100) \u2022 Subnet: private-db-1b (10.100.20.0/24) \u2022 LB: prod-internal-nlb";
+
+        banner.className = "glance-health-banner critical";
+        icon.className = "glance-icon-badge critical";
+        icon.textContent = "🚨";
+        headline.innerHTML = "<span>P1 CRITICAL INCIDENT DETECTED</span>";
+        statusPill.className = "tier-status-pill status-critical";
+        statusPill.textContent = "CRITICAL TRIAGE ACTIVE";
+        subline.textContent = "Active SLA Invariant Breach in Tier 5 Middleware & Relational Databases \u2022 Target Node: node-vpc-db-01 (10.100.20.44)";
+
+        cardTier5.classList.add("pulse-critical");
+        cardTier5.style.borderColor = "#ef4444";
+        cardTier5.style.boxShadow = "0 0 32px rgba(239, 68, 68, 0.85), inset 0 0 15px rgba(239, 68, 68, 0.3)";
+        cardTier5.style.background = "linear-gradient(135deg, rgba(239, 68, 68, 0.28) 0%, rgba(15, 23, 42, 0.98) 100%)";
+        pillTier5.className = "tier-status-pill status-critical";
+        pillTier5.textContent = "CRITICAL";
+        pillTier5.style.background = "rgba(239, 68, 68, 0.35)";
+        pillTier5.style.color = "#ffffff";
+        pillTier5.style.borderColor = "#ef4444";
+        kpiTier5.textContent = "Locks: 198 (>100)";
+        kpiTier5.style.color = "#ef4444";
+        kpiTier5.style.fontWeight = "800";
+
+        if (wireItsm) wireItsm.classList.add("active-wire-critical");
+        if (wirePaging) wirePaging.classList.add("active-wire-critical");
+        if (hubCardItsm) hubCardItsm.classList.add("hub-dispatched-critical");
+        if (hubCardPaging) hubCardPaging.classList.add("hub-dispatched-critical");
+        if (badgeItsm) badgeItsm.textContent = "P1 DISPATCHED";
+        if (badgePaging) badgePaging.textContent = "P1 PAGED";
+        if (treeRootStatusPill) {
+          treeRootStatusPill.style.background = "rgba(239, 68, 68, 0.25)";
+          treeRootStatusPill.style.borderColor = "#ef4444";
+          treeRootStatusPill.style.color = "#fca5a5";
+          treeRootStatusPill.innerHTML = "P1 ACTIVE &bull; 2 CHANNELS NOTIFIED";
+        }
+      } else if (currentScenario === "P2_WARNING") {
+        header.classList.add("header-pulse-warning");
+        alertPill.style.display = "inline-flex";
+        alertPill.className = "tier-status-pill status-warning";
+        alertPill.textContent = "⚠️ P2 WARNING DETECTED";
+
+        nocBanner.style.display = "flex";
+        nocBanner.className = "pulse-warning";
+        document.getElementById("noc-inc-badge").className = "tier-status-pill status-warning";
+        document.getElementById("noc-inc-badge").textContent = "⚠️ P2 WARNING";
+        document.getElementById("noc-inc-title").textContent = "HAProxy Core Ingress Buffer Drops";
+        document.getElementById("noc-inc-target").textContent = "node-dc1-bm-08 (172.16.1.18)";
+        document.getElementById("noc-inc-loc").textContent = "in Chicago DC1";
+        document.getElementById("noc-inc-metric").textContent = "Metric: 0.18% drop (>0.05%) \u2022 Subnet: bare-metal-kvm-racks \u2022 LB: internal-haproxy-vrrp";
+
+        banner.className = "glance-health-banner warning";
+        icon.className = "glance-icon-badge warning";
+        icon.textContent = "⚠️";
+        headline.innerHTML = "<span>P2 WARNING ADVISORY DETECTED</span>";
+        statusPill.className = "tier-status-pill status-warning";
+        statusPill.textContent = "WARNING ADVISORY ACTIVE";
+        subline.textContent = "Buffer queue drop elevation approaching capacity on node-dc1-bm-08 (172.16.1.18) \u2022 ChatOps advisory armed";
+
+        cardTier2.classList.add("pulse-warning");
+        cardTier2.style.borderColor = "#f59e0b";
+        cardTier2.style.boxShadow = "0 0 32px rgba(245, 158, 11, 0.85), inset 0 0 15px rgba(245, 158, 11, 0.3)";
+        cardTier2.style.background = "linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(15, 23, 42, 0.98) 100%)";
+        pillTier2.className = "tier-status-pill status-warning";
+        pillTier2.textContent = "WARNING";
+        pillTier2.style.background = "rgba(245, 158, 11, 0.35)";
+        pillTier2.style.color = "#ffffff";
+        pillTier2.style.borderColor = "#f59e0b";
+        kpiTier2.textContent = "Drops 0.18%";
+        kpiTier2.style.color = "#f59e0b";
+        kpiTier2.style.fontWeight = "800";
+
+        if (wireChat) wireChat.classList.add("active-wire-warning");
+        if (wirePaging) wirePaging.classList.add("active-wire-warning");
+        if (hubCardChat) hubCardChat.classList.add("hub-dispatched-warning");
+        if (hubCardPaging) hubCardPaging.classList.add("hub-dispatched-warning");
+        if (badgeChat) badgeChat.textContent = "P2 POSTED";
+        if (badgePaging) badgePaging.textContent = "P2 PAGED";
+        if (treeRootStatusPill) {
+          treeRootStatusPill.style.background = "rgba(245, 158, 11, 0.25)";
+          treeRootStatusPill.style.borderColor = "#f59e0b";
+          treeRootStatusPill.style.color = "#fde047";
+          treeRootStatusPill.innerHTML = "P2 ACTIVE &bull; 2 CHANNELS NOTIFIED";
+        }
+      } else if (currentScenario === "DUAL_CASCADE") {
+        header.classList.add("header-pulse-critical");
+        alertPill.style.display = "inline-flex";
+        alertPill.textContent = "🚨 MULTI-INCIDENT CASCADE (P1+P2)";
+
+        nocBanner.style.display = "flex";
+        nocBanner.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1; min-width: 0;">
+            <span class="tier-status-pill status-critical" style="font-size: 0.7rem; padding: 2px 6px;">🚨 DUAL CASCADE</span>
+            <span style="background: rgba(239,68,68,0.25); border: 1px solid #ef4444; color: #fff; padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 700;">Issue 1: P1 Postgres Lock Spike (198 locks) &bull; node-vpc-db-01 (AWS Prod)</span>
+            <span style="background: rgba(245,158,11,0.25); border: 1px solid #f59e0b; color: #fff; padding: 1px 6px; border-radius: 4px; font-size: 0.68rem; font-weight: 700;">Issue 2: P2 HAProxy Ingress Buffer Drops (0.18%) &bull; node-dc1-bm-08 (Chicago DC1)</span>
+          </div>
+          <div style="color: #fde047; font-size: 0.68rem; font-weight: 700; white-space: nowrap;">
+            Automated Multi-Channel Forwarding Active
+          </div>
+        `;
+
+        banner.className = "glance-health-banner critical";
+        icon.className = "glance-icon-badge critical";
+        icon.textContent = "🚨";
+        headline.innerHTML = "<span>MULTI-INCIDENT CASCADE (P1+P2)</span>";
+        statusPill.className = "tier-status-pill status-critical";
+        statusPill.textContent = "CRITICAL CASCADE";
+        subline.textContent = "Simultaneous Outages in Tier 5 Middleware & Tier 2 Networking \u2022 Multi-Channel Escalation Active";
+
+        cardTier5.classList.add("pulse-critical");
+        cardTier5.style.borderColor = "#ef4444";
+        cardTier5.style.boxShadow = "0 0 32px rgba(239, 68, 68, 0.85), inset 0 0 15px rgba(239, 68, 68, 0.3)";
+        cardTier5.style.background = "linear-gradient(135deg, rgba(239, 68, 68, 0.28) 0%, rgba(15, 23, 42, 0.98) 100%)";
+        pillTier5.className = "tier-status-pill status-critical";
+        pillTier5.textContent = "CRITICAL";
+        pillTier5.style.background = "rgba(239, 68, 68, 0.35)";
+        pillTier5.style.color = "#ffffff";
+        pillTier5.style.borderColor = "#ef4444";
+        kpiTier5.textContent = "Locks: 198 (>100)";
+        kpiTier5.style.color = "#ef4444";
+        kpiTier5.style.fontWeight = "800";
+
+        cardTier2.classList.add("pulse-warning");
+        cardTier2.style.borderColor = "#f59e0b";
+        cardTier2.style.boxShadow = "0 0 32px rgba(245, 158, 11, 0.85), inset 0 0 15px rgba(245, 158, 11, 0.3)";
+        cardTier2.style.background = "linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(15, 23, 42, 0.98) 100%)";
+        pillTier2.className = "tier-status-pill status-warning";
+        pillTier2.textContent = "WARNING";
+        pillTier2.style.background = "rgba(245, 158, 11, 0.35)";
+        pillTier2.style.color = "#ffffff";
+        pillTier2.style.borderColor = "#f59e0b";
+        kpiTier2.textContent = "Drops 0.18%";
+        kpiTier2.style.color = "#f59e0b";
+        kpiTier2.style.fontWeight = "800";
+
+        if (wireItsm) wireItsm.classList.add("active-wire-critical");
+        if (wirePaging) wirePaging.classList.add("active-wire-critical");
+        if (wireChat) wireChat.classList.add("active-wire-warning");
+        if (hubCardItsm) hubCardItsm.classList.add("hub-dispatched-critical");
+        if (hubCardPaging) hubCardPaging.classList.add("hub-dispatched-critical");
+        if (hubCardChat) hubCardChat.classList.add("hub-dispatched-warning");
+        if (badgeItsm) badgeItsm.textContent = "P1 DISPATCHED";
+        if (badgePaging) badgePaging.textContent = "P1 PAGED";
+        if (badgeChat) badgeChat.textContent = "P2 POSTED";
+        if (treeRootStatusPill) {
+          treeRootStatusPill.style.background = "rgba(239, 68, 68, 0.25)";
+          treeRootStatusPill.style.borderColor = "#ef4444";
+          treeRootStatusPill.style.color = "#fca5a5";
+          treeRootStatusPill.innerHTML = "CASCADE &bull; 3 CHANNELS NOTIFIED";
+        }
+      }
+
+      renderTriageBoard();
+    }
+
+    function renderTriageBoard() {
+      const container = document.getElementById("incident-list");
+      const activeCount = document.getElementById("triage-active-count");
+
+      let activeIncidents = [];
+      if (currentScenario === "P1_CRITICAL") activeIncidents.push(INCIDENTS.P1_POSTGRES_LOCK);
+      else if (currentScenario === "P2_WARNING") activeIncidents.push(INCIDENTS.P2_NETWORK_BUFFER);
+      else if (currentScenario === "DUAL_CASCADE") {
+        activeIncidents.push(INCIDENTS.P1_POSTGRES_LOCK);
+        activeIncidents.push(INCIDENTS.P2_NETWORK_BUFFER);
+      }
+
+      // Smart Dynamic Sorting: automatically sort from most critical down to least priority
+      const sevOrder = { P1: 1, P2: 2, P3: 3, P4: 4 };
+      activeIncidents.sort((a, b) => (sevOrder[a.severity] || 99) - (sevOrder[b.severity] || 99));
+
+      container.className = "incident-list";
+
+      activeCount.textContent = `${activeIncidents.length} Active Issue${activeIncidents.length === 1 ? '' : 's'}`;
+      if (activeIncidents.length > 0) {
+        activeCount.style.background = activeIncidents[0].severity === "P1" ? "rgba(239, 68, 68, 0.25)" : "rgba(245, 158, 11, 0.25)";
+        activeCount.style.borderColor = activeIncidents[0].severity === "P1" ? "#ef4444" : "#f59e0b";
+        activeCount.style.color = activeIncidents[0].severity === "P1" ? "#fca5a5" : "#fde047";
+      } else {
+        activeCount.style.background = "rgba(57, 255, 20, 0.12)";
+        activeCount.style.borderColor = "rgba(57, 255, 20, 0.35)";
+        activeCount.style.color = "#86efac";
+      }
+
+      if (activeIncidents.length === 0) {
+        container.innerHTML = `
+          <div style="background: rgba(57, 255, 20, 0.04); border: 1px solid rgba(57, 255, 20, 0.2); border-radius: 6px; padding: 1.25rem 1rem; text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box;">
+            <div style="font-size: 1.6rem; margin-bottom: 0.25rem;">🛡️</div>
+            <div style="font-size: 0.95rem; font-weight: 800; color: #39ff14; font-family: var(--font-mono); margin-bottom: 0.25rem;">
+              All 7 Tiers Operating Within Nominal SLA Limits
+            </div>
+            <p style="font-size: 0.72rem; color: #94a3b8; max-width: 500px; margin: 0 auto; line-height: 1.4;">
+              No threshold breaches or active incident tickets. The 1-way outside-VPC observer is continuously evaluating all 122 invariants across 75 nodes with zero WAN egress.
+            </p>
+          </div>`;
+        return;
+      }
+
+      // Smart / Dynamic Display Rendering:
+      // When multiple cascading issues exist, render a readable table sorting automatically
+      // from most critical down to least priority so all incidents fit on 1 monitor display without scrolling!
+      if (activeIncidents.length > 1) {
+        let tableRows = "";
+        activeIncidents.forEach((inc) => {
+          const isP1 = inc.severity === "P1";
+          const rowClass = isP1 ? "row-p1" : "row-p2";
+          const rankClass = isP1 ? "rank-p1" : "rank-p2";
+          const metricVal = inc.currentVal || inc.metricVal || (isP1 ? "198 locks" : "0.18 %");
+          const metricThresh = inc.critVal ? ("> " + inc.critVal) : (inc.metricThresh || (isP1 ? "> 100 locks" : "> 0.05 %"));
+          const networkName = inc.location || inc.network || (isP1 ? "AWS Production VPC" : "Chicago DC1");
+          const invariantName = inc.policy_rule || inc.invariant || (isP1 ? "INV-05 DB Locks" : "INV-02 Buffer Drops");
+          const channels = inc.channels || (isP1 ? ["Slack #noc", "PagerDuty"] : ["Slack #noc", "ChatOps"]);
+
+          tableRows += `
+            <tr class="${rowClass}" id="${inc.id}" data-incident-id="${inc.id}">
+              <td style="width: 100px; padding: 4px 6px;">
+                <span class="incident-rank-tag ${rankClass}" style="font-size: 0.68rem; padding: 2px 6px;">
+                  🚨 ${inc.severity} ${inc.status}
+                </span>
+              </td>
+              <td style="font-weight: 700; color: #fff; padding: 4px 6px;">
+                <span style="font-size: 0.72rem;">${inc.title || (isP1 ? "PostgreSQL Lock Contention Spike" : "HAProxy Core Ingress Buffer Drops")}</span>
+                <div style="font-size: 0.62rem; color: #94a3b8; margin-top: 1px;">${invariantName}</div>
+              </td>
+              <td style="padding: 4px 6px;">
+                <span style="color: #67e8f9; font-weight: 700; font-size: 0.72rem;">${inc.nodeId}</span>
+                <div style="font-size: 0.62rem; color: #94a3b8;">${inc.ip} (${inc.node})</div>
+              </td>
+              <td style="padding: 4px 6px;">
+                <span style="color: #e2e8f0; font-size: 0.72rem;">${networkName}</span>
+                <div style="font-size: 0.62rem; color: #fca5a5;">${inc.impacted_subnet} (${inc.impacted_rack})</div>
+              </td>
+              <td style="padding: 4px 6px;">
+                <div style="font-size: 0.62rem; color: #cbd5e1;">LB: <strong>${inc.associated_lb}</strong></div>
+              </td>
+              <td style="padding: 4px 6px;">
+                <span style="color: ${isP1 ? '#f87171' : '#fde047'}; font-weight: 800; font-size: 0.72rem;">${metricVal}</span>
+                <div style="font-size: 0.62rem; color: #94a3b8;">Thresh: ${metricThresh}</div>
+              </td>
+              <td style="padding: 4px 6px;">
+                <span style="color: ${isP1 ? '#ef4444' : '#f59e0b'}; font-weight: 700; font-size: 0.7rem;">${isP1 ? 'Active Breach (Deadlock)' : 'Buffer Saturation'}</span>
+              </td>
+              <td style="padding: 4px 6px;">
+                <span style="color: #86efac; font-size: 0.66rem;">${channels.join(' + ')}</span>
+              </td>
+            </tr>
+          `;
+        });
+
+        container.innerHTML = `
+          <div class="wall-cascade-table-wrapper" style="flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding: 0.35rem 0.55rem; gap: 0.25rem;">
+            <div class="wall-cascade-table-header" style="flex-shrink: 0;">
+              <span style="font-weight: 800; color: #fca5a5; display: flex; align-items: center; gap: 6px;">
+                <span>🚨</span> CASCADING INCIDENTS ACTIVE (${activeIncidents.length} Breaches Detected &bull; Ranked by Severity)
+              </span>
+              <span style="color: #94a3b8; font-size: 0.68rem;">1-Monitor Zero-Scroll Fluid Dynamic Table</span>
+            </div>
+            <div style="flex: 1; min-height: 0; overflow: hidden;">
+              <table class="wall-cascade-table" style="width: 100%;">
+                <thead>
+                  <tr>
+                    <th style="width: 100px; padding: 4px 6px;">Severity</th>
+                    <th style="padding: 4px 6px;">Incident &amp; Invariant</th>
+                    <th style="width: 125px; padding: 4px 6px;">Target &amp; IP</th>
+                    <th style="width: 160px; padding: 4px 6px;">Subnets &amp; Racks</th>
+                    <th style="width: 135px; padding: 4px 6px;">Load Balancers</th>
+                    <th style="width: 105px; padding: 4px 6px;">Live Metric</th>
+                    <th style="width: 115px; padding: 4px 6px;">SLA Status</th>
+                    <th style="width: 145px; padding: 4px 6px;">Forwarding</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${tableRows}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // Single Incident: Render focused high-level card with id for backwards-compatibility
+      const inc = activeIncidents[0];
+      const isP1 = inc.severity === "P1";
+      const rankClass = isP1 ? "rank-p1" : "rank-p2";
+      const cardClass = isP1 ? "incident-card p1" : "incident-card p2";
+      const metricVal = inc.currentVal || inc.metricVal || (isP1 ? "198 locks" : "0.18 %");
+      const metricThresh = inc.critVal ? ("> " + inc.critVal) : (inc.metricThresh || (isP1 ? "> 100 locks" : "> 0.05 %"));
+      const networkName = inc.location || inc.network || (isP1 ? "AWS Production VPC" : "Chicago DC1");
+      const invariantName = inc.policy_rule || inc.invariant || (isP1 ? "INV-05 DB Locks" : "INV-02 Buffer Drops");
+      const channels = (inc.channels || (isP1 ? ["Slack #noc-alerts", "PagerDuty P1"] : ["Slack #noc-alerts", "ChatOps"])).join(', ');
+
+      container.innerHTML = `
+        <div class="${cardClass}" id="${inc.id}" data-incident-id="${inc.id}" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; padding: 0.5rem 0.8rem;">
+          <div class="incident-top-row" style="margin-bottom: 0.35rem; padding-bottom: 0.3rem; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span class="incident-rank-tag ${rankClass}" style="font-size: 0.78rem; padding: 2px 7px; font-weight: 900; letter-spacing: 0.5px;">
+                🚨 ${inc.severity} ${inc.status}
+              </span>
+              <span style="font-size: 0.95rem; font-weight: 900; color: #fff; font-family: var(--font-mono); letter-spacing: 0.3px;">
+                ${inc.title || (isP1 ? "PostgreSQL Lock Contention Spike" : "HAProxy Core Ingress Buffer Drops")}
+              </span>
+              <span style="color: #38bdf8; font-family: var(--font-mono); font-weight: 800; font-size: 0.82rem; background: rgba(0,0,0,0.45); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.35);">
+                ${inc.nodeId} (${inc.ip})
+              </span>
+              <span style="color: #fca5a5; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700;">
+                in ${networkName}
+              </span>
+            </div>
+          </div>
+          <div class="incident-details-grid" style="flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.35rem 0.65rem; padding: 0.45rem 0.75rem; font-size: 0.7rem; align-items: center; margin-bottom: 0.35rem;">
+            <div class="incident-meta-item"><strong>Target Node:</strong> ${inc.nodeId}</div>
+            <div class="incident-meta-item"><strong>IP Address:</strong> ${inc.ip}</div>
+            <div class="incident-meta-item"><strong>Network / VPC:</strong> ${networkName}</div>
+            <div class="incident-meta-item"><strong>Subnets &amp; Racks:</strong> <span style="color: #67e8f9;">${inc.impacted_subnet} (${inc.impacted_rack})</span></div>
+            <div class="incident-meta-item"><strong>Load Balancers:</strong> <span style="color: #cbd5e1;">${inc.associated_lb}</span></div>
+            <div class="incident-meta-item"><strong>Invariant:</strong> <span style="color: #fca5a5;">${invariantName}</span></div>
+            <div class="incident-meta-item"><strong>Live Value:</strong> <span style="color: #ef4444; font-weight: 700;">${metricVal}</span></div>
+            <div class="incident-meta-item"><strong>Threshold:</strong> ${metricThresh}</div>
+            <div class="incident-meta-item"><strong>Forwarding:</strong> <span style="color: #86efac;">${channels}</span></div>
+          </div>
+          <div class="incident-diagnosis" style="flex-shrink: 0; font-size: 0.7rem; padding: 0.35rem 0.65rem; margin-bottom: 0.25rem;">
+            <strong>Diagnosis:</strong> ${inc.rootCause || "Active invariant violation detected by 1-way observer."}
+          </div>
+        </div>
+      `;
+    }
+
+    // Init and Polling
+    window.addEventListener("storage", (e) => {
+      if (e.key === "dcouplr_active_scenario" && e.newValue) {
+        currentScenario = e.newValue;
+        renderScenario();
+      }
+    });
+
+    syncSimulation();
+    setInterval(syncSimulation, 1500);
+  </script>
+</body>
+</html>

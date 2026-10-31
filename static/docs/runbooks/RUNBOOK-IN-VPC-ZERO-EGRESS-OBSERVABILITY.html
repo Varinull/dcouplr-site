@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-IN-VPC-ZERO-EGRESS-OBSERVABILITY.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-IN-VPC-ZERO-EGRESS-OBSERVABILITY.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-IN-VPC-ZERO-EGRESS-OBSERVABILITY.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="runbook-operating-in-vpc-zero-egress-observability-post-migration"><dcouplr/> Runbook: Operating In-VPC Zero-Egress Observability Post-Migration</h1>
+<p><strong>Document ID:</strong> <code>VA-RUNBOOK-OBSERVABILITY-001</code><br />
+<strong>Classification:</strong> Standard Operating Procedure (SOP) / Field Engineering<br />
+<strong>Scope:</strong> In-VPC Operational Monitoring, Live Compiler Alerting, and Zero-Egress Telemetry<br />
+<strong>Audience:</strong> Site Reliability Engineers (SRE), DevOps Engineers, Cloud Architects, and NOC Operators</p>
+<hr />
+<h2 id="executive-overview-architectural-value">Executive Overview &amp; Architectural Value</h2>
+<p>Once your cloud infrastructure and databases have successfully completed cross-VPC replication and migration, you do <strong>not</strong> need to maintain expensive legacy SaaS monitoring subscriptions (such as Datadog, New Relic, or Dynatrace), nor do you need to operate complex, fragile clusters of external Prometheus servers and Grafana nodes.</p>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> provides a <strong>unified, self-contained In-VPC Observability Platform</strong> that combines the core capabilities of Prometheus, Grafana, and Datadog directly inside your private subnet boundary with <strong>$0.00 billable cloud egress</strong>:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+----------------------------------------------------------------------------------------------------+
+|                                    PRIVATE VPC BOUNDARY (10.0.0.0/16)                             |
+|                                                                                                    |
+|  +---------------------------+     Sub-second Delta Ticks     +---------------------------------+  |
+|  |   <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Telemetry    | =============================&gt; |  <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Live Dashboard      |  |
+|  |   Collector &amp; Engine      |        (SSE / Zero Hops)       |  (http://&lt;internal-ip&gt;:8000/    |  |
+|  |   - In-Memory Ring Buffer |                                |   dashboard)                    |  |
+|  |   - Raft Consensus Bridge |                                +---------------------------------+  |
+|  |   - Bounded &lt; 50 MiB RAM  |                                                                     |
+|  +---------------------------+     Air-Gapped Resilient Poll  +---------------------------------+  |
+|                |                   =========================&gt; |  <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> 24x7 NOC Wallboard  |  |
+|                |                     (/topology-pulse.json)   |  (http://&lt;internal-ip&gt;:8000/    |  |
+|                v                                              |   wallboard)                    |  |
+|  +---------------------------+                                +---------------------------------+  |
+|  |   <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Compiler     |                                                                     |
+|  |   - Transpiles Datadog    |                                                                     |
+|  |   - In-VPC Rule Evaluator |     GAP-06 Remote-Write (Opt)  +---------------------------------+  |
+|  |   - Circuit Breaker Chaos | =============================&gt; |  In-VPC Long-Term Storage       |  |
+|  +---------------------------+       (Snappy / Protobuf)      |  (VictoriaMetrics / Mimir / S3) |  |
+|                                                               +---------------------------------+  |
+|                                                                                                    |
+|  PUBLIC INTERNET (0.0.0.0/0): [BLOCKED / ZERO PACKETS / $0.00 BILLABLE EGRESS]                     |
++----------------------------------------------------------------------------------------------------+
+</code></pre></div>
+<h3 id="the-observability-trinity-traditional-stack-vs-dcouplr">The Observability Trinity: Traditional Stack vs. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Capability</th>
+<th style="text-align:left">Traditional Prometheus Stack</th>
+<th style="text-align:left">Traditional Datadog SaaS</th>
+<th style="text-align:left"><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> In-VPC Engine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Primary Role</strong></td>
+<td style="text-align:left">Metric Collector &amp; TSDB</td>
+<td style="text-align:left">All-in-one SaaS Platform</td>
+<td style="text-align:left">Autonomous In-VPC Consensus &amp; Observability</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Data Collection</strong></td>
+<td style="text-align:left">Pull-model HTTP scraping</td>
+<td style="text-align:left">Push-model proprietary agent daemon</td>
+<td style="text-align:left">Lock-free in-memory ring buffer (sub-second delta ticks)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Visualization</strong></td>
+<td style="text-align:left">Requires external Grafana server</td>
+<td style="text-align:left">Proprietary cloud UI</td>
+<td style="text-align:left">Built-in Dual Tier: Live Dashboard (<code>/dashboard</code>) + 24x7 NOC Wallboard (<code>/wallboard</code>)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Alert Rule Engine</strong></td>
+<td style="text-align:left">PromQL Alertmanager YAML</td>
+<td style="text-align:left">Datadog proprietary DSL monitors</td>
+<td style="text-align:left">Live AST Compiler (<code>/compiler</code>): Transpiles &amp; evaluates rules locally</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Data Sovereignty</strong></td>
+<td style="text-align:left">Self-hosted (internal compute cost)</td>
+<td style="text-align:left">Third-party cloud vendor storage</td>
+<td style="text-align:left"><strong>100% In-VPC Private Memory</strong> (no external telemetry leakage)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Egress Cost</strong></td>
+<td style="text-align:left">Low (if kept in-VPC)</td>
+<td style="text-align:left"><strong>Extremely High</strong> ($0.09/GB NAT Gateway + SaaS egress)</td>
+<td style="text-align:left"><strong>$0.00 Guaranteed</strong> (Mathematical Egress Attestation)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Memory Footprint</strong></td>
+<td style="text-align:left">4 GiB - 32 GiB TSDB RAM</td>
+<td style="text-align:left">250 MiB - 1 GiB agent daemon</td>
+<td style="text-align:left"><strong>Strictly bounded &lt; 50 MiB RAM ceiling</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="section-1-prerequisites-tooling-checklist">Section 1: Prerequisites &amp; Tooling Checklist</h2>
+<p>Before activating in-VPC observability on your migrated instances, verify that your environment satisfies these operational prerequisites:</p>
+<ul>
+<li>[ ] <strong>Private Subnet Access:</strong> Workstation or bastion must have network route to port <code>8000/TCP</code> on the migrated instance.</li>
+<li>[ ] <strong>Python Runtime:</strong> Python 3.10+ installed on the host node (<code>python3 --version</code>).</li>
+<li>[ ] <strong>Curl / Wget:</strong> Standard command-line HTTP utility installed (<code>curl --version</code>).</li>
+<li>[ ] <strong>Firewall / Security Group:</strong>
+<ul>
+<li>Ingress <code>8000/TCP</code>: Allowed from corporate VPN / internal NOC CIDR (<code>10.0.0.0/8</code> or <code>172.16.0.0/12</code>).</li>
+<li>Egress <code>0.0.0.0/0</code>: <strong>Restricted / Blocked</strong> (confirms zero-egress compliance).</li>
+</ul>
+</li>
+<li>[ ] <strong>Modern Web Browser:</strong> Chrome 100+, Edge 100+, or Firefox 95+ (supports CSS Grid and Server-Sent Events).</li>
+</ul>
+<hr />
+<h2 id="section-2-where-to-get-it-where-to-put-it">Section 2: Where to Get It &amp; Where to Put It</h2>
+<h3 id="1-file-locations-on-migrated-nodes">1. File Locations on Migrated Nodes</h3>
+<p>All components run out of the standard <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> deployment root:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Component</th>
+<th style="text-align:left">Absolute File Path</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Service Entrypoint</strong></td>
+<td style="text-align:left"><code>/opt/dcouplr/migration_tools/api/app.py</code></td>
+<td style="text-align:left">FastAPI in-VPC telemetry &amp; compiler daemon</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Telemetry Collector</strong></td>
+<td style="text-align:left"><code>/opt/dcouplr/migration_tools/api/telemetry.py</code></td>
+<td style="text-align:left">In-memory ring buffer &amp; Raft consensus telemetry</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Rule Compiler</strong></td>
+<td style="text-align:left"><code>/opt/dcouplr/migration_tools/semantic/alert_transpiler.py</code></td>
+<td style="text-align:left">AST rule converter and threshold scaler</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>NOC Wallboard</strong></td>
+<td style="text-align:left"><code>/opt/dcouplr/migration_tools/api/static/wallboard.html</code></td>
+<td style="text-align:left">High-visibility dark-mode operations canvas</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Live Dashboard</strong></td>
+<td style="text-align:left"><code>/opt/dcouplr/migration_tools/api/static/dashboard.html</code></td>
+<td style="text-align:left">Interactive SRE triage console with SSE streaming</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Systemd Service</strong></td>
+<td style="text-align:left"><code>/etc/systemd/system/dcouplr-observability.service</code></td>
+<td style="text-align:left">Linux daemon auto-restart configuration</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-standalone-wallboard-static-bundle-for-air-gapped-nocs">2. Standalone Wallboard Static Bundle (For Air-Gapped NOCs)</h3>
+<p>If your NOC video wall runs on an air-gapped display controller (e.g. Raspberry Pi, Chromebox, Smart TV) that cannot reach the API server directly, use the pre-built single-file static bundle:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Source path in repository:
+dist/pulsecast-cdn/index.html
+
+# Target path on private NOC HTTP server / S3 bucket:
+/var/www/html/wallboard/index.html
+</code></pre></div>
+<hr />
+<h2 id="section-3-step-by-step-transition-decommissioning-datadog-activating-dcouplr">Section 3: Step-by-Step Transition: Decommissioning Datadog &amp; Activating <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code></h2>
+<p>Follow this 5-step procedure to transition from legacy SaaS to internal zero-egress observability:</p>
+<h3 id="step-31-export-legacy-datadog-monitors-to-json">Step 3.1: Export Legacy Datadog Monitors to JSON</h3>
+<p>From your legacy Datadog workspace or Terraform state, export your production monitor definitions:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Export using Datadog API (executed once prior to SaaS cutover):
+curl -s -X GET &quot;https://api.datadoghq.com/api/v1/monitor&quot; \
+  -H &quot;DD-API-KEY: ${DD_API_KEY}&quot; \
+  -H &quot;DD-APPLICATION-KEY: ${DD_APP_KEY}&quot; \
+  &gt; /tmp/legacy_datadog_monitors.json
+</code></pre></div>
+<h3 id="step-32-transpile-rules-using-the-dcouplr-in-vpc-compiler">Step 3.2: Transpile Rules Using the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> In-VPC Compiler</h3>
+<p>Navigate to the Compiler Studio or invoke the in-VPC compilation API:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Transpile Datadog monitors into Prometheus Alertmanager and Grafana Unified Alerting:
+curl -s -X POST &quot;http://127.0.0.1:8000/v1/compiler/transpile-alert-rules&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;source_format&quot;: &quot;datadog_json&quot;,
+    &quot;target_format&quot;: &quot;prometheus_rules_yaml&quot;,
+    &quot;target_tier&quot;: &quot;t4g.xlarge&quot;,
+    &quot;rules&quot;: [
+      {
+        &quot;name&quot;: &quot;High CPU Utilization&quot;,
+        &quot;query&quot;: &quot;avg(last_5m):avg:system.cpu.user{*} by {host} &gt; 85&quot;,
+        &quot;message&quot;: &quot;CPU usage exceeds 85% on {{host.name}}&quot;,
+        &quot;thresholds&quot;: {&quot;critical&quot;: 85, &quot;warning&quot;: 75}
+      }
+    ]
+  }' | jq .
+</code></pre></div>
+<p><strong>Expected JSON Response:</strong></p>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;status&quot;: &quot;success&quot;,
+  &quot;transpiled_rules_count&quot;: 1,
+  &quot;zero_egress_attested&quot;: true,
+  &quot;manifest_yaml&quot;: &quot;groups:\n  - name: dcouplr-in-vpc-alerts\n    rules:\n      - alert: HighCPUUtilization\n        expr: avg by(instance) (rate(node_cpu_seconds_total{mode=\&quot;user\&quot;}[5m])) * 100 &gt; 85\n        for: 5m\n        labels:\n          severity: critical\n          vpc: target-vpc-prod\n        annotations:\n          summary: CPU usage exceeds 85% on target instance&quot;
+}
+</code></pre></div>
+<h3 id="step-33-verify-systemd-service-is-running">Step 3.3: Verify Systemd Service is Running</h3>
+<p>Ensure the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> observability daemon is enabled and active on the host:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">sudo systemctl status dcouplr-observability
+</code></pre></div>
+<p><strong>Expected Console Output:</strong></p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">● dcouplr-observability.service - <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> In-VPC Observability Engine
+     Loaded: loaded (/etc/systemd/system/dcouplr-observability.service; enabled; vendor preset: enabled)
+     Active: active (running) since Wed 2026-10-28 02:30:00 UTC; 18min ago
+   Main PID: 1420 (uvicorn)
+      Tasks: 4 (limit: 4681)
+     Memory: 38.4M (limit: 50.0M)
+        CPU: 1.210s
+     CGroup: /system.slice/dcouplr-observability.service
+             └─1420 /opt/dcouplr/.venv/bin/python3 -m uvicorn migration_tools.api.app:app --host 0.0.0.0 --port 8000
+</code></pre></div>
+<h3 id="step-34-decommission-the-legacy-datadog-agent">Step 3.4: Decommission the Legacy Datadog Agent</h3>
+<p>Once <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> is actively collecting metrics, stop and purge the Datadog agent to immediately eliminate SaaS license consumption and internet outbound traffic:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Ubuntu / Debian:
+sudo systemctl stop datadog-agent
+sudo apt-get purge -y datadog-agent
+sudo rm -rf /etc/datadog-agent /var/log/datadog
+
+# RHEL / Rocky Linux:
+sudo systemctl stop datadog-agent
+sudo yum remove -y datadog-agent
+sudo rm -rf /etc/datadog-agent /var/log/datadog
+</code></pre></div>
+<hr />
+<h2 id="section-4-operating-the-in-vpc-visualization-tier">Section 4: Operating the In-VPC Visualization Tier</h2>
+<h3 id="1-in-vpc-live-sre-dashboard-dashboard">1. In-VPC Live SRE Dashboard (<code>/dashboard</code>)</h3>
+<p>The SRE Dashboard provides interactive, real-time telemetry streaming for active engineering triage:</p>
+<ul>
+<li><strong>URL:</strong> <code>http://&lt;internal-ip&gt;:8000/dashboard</code></li>
+<li><strong>Features:</strong>
+<ul>
+<li><strong>Sub-second SSE Streaming:</strong> Real-time updates pushed via <code>/v1/telemetry/stream</code> without page refreshes.</li>
+<li><strong>Multi-VPC Topology Visualizer:</strong> Displays live health, replication status, and cross-VPC latency.</li>
+<li><strong>FinOps Cost Real-Time Comparison:</strong> Live ticker tracking eliminated SaaS fees and zero-egress savings.</li>
+<li><strong>Synthetic Incident Trigger:</strong> On-demand circuit-breaker chaos drill testing.</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-24x7-noc-wallboard-wallboard">2. 24x7 NOC Wallboard (<code>/wallboard</code>)</h3>
+<p>The NOC Wallboard is optimized for wall-mounted TV monitors and continuous unattended display:</p>
+<ul>
+<li><strong>URL:</strong> <code>http://&lt;internal-ip&gt;:8000/wallboard</code></li>
+<li><strong>Branding Specification (<code>VA-BRAND-001</code>):</strong> Features the high-contrast neon-green <code>&lt;</code> and <code>/&gt;</code> (<code>#39ff14</code>) with crisp white sans-serif <code>dcouplr</code> typography for optical clarity from across the operations room.</li>
+<li><strong>Fail-Safe Operation:</strong> Automatically freezes metrics and presents an amber warning if the local agent stops pulsing for more than 10 seconds, then seamlessly reconnects without operator intervention.</li>
+</ul>
+<hr />
+<h2 id="section-5-in-vpc-long-term-storage-optional-gap-06-integration">Section 5: In-VPC Long-Term Storage (Optional GAP-06 Integration)</h2>
+<p>If your enterprise retention policy requires storing numerical time-series metrics for 1–7 years (e.g. SOC2, FedRAMP, HIPAA), configure <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>'s built-in <strong>Prometheus Remote-Write Exporter</strong> to push to an in-VPC database:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Configure the remote-write target (e.g. in-VPC VictoriaMetrics or Mimir):
+curl -s -X POST &quot;http://127.0.0.1:8000/v1/telemetry/remote-write/configure&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;X-API-Key: dcouplr-dev-2026&quot; \
+  -d '{
+    &quot;endpoint_url&quot;: &quot;http://victoriametrics.internal.vpc:8428/api/v1/write&quot;,
+    &quot;batch_size&quot;: 100,
+    &quot;flush_interval_sec&quot;: 5.0,
+    &quot;max_retries&quot;: 3,
+    &quot;compression&quot;: &quot;snappy&quot;
+  }' | jq .
+</code></pre></div>
+<p><strong>Key Security Guarantees:</strong></p>
+<ul>
+<li>Pure in-VPC networking (private DNS resolution).</li>
+<li>Bounded memory queue: Discards oldest samples if the destination is unavailable, strictly enforcing the <code>&lt; 50 MiB</code> RAM ceiling.</li>
+<li>Exponential backoff and fail-fast circuit breaker preventing memory exhaustion.</li>
+</ul>
+<hr />
+<h2 id="section-6-zero-egress-cryptographic-attestation">Section 6: Zero-Egress Cryptographic Attestation</h2>
+<p>To prove to security auditors and executive stakeholders that no telemetry data escapes the VPC perimeter, query the Egress Attestation endpoint:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -s &quot;http://127.0.0.1:8000/v1/telemetry/vpcs/vpc-target-prod/egress-attestation&quot; | jq .
+</code></pre></div>
+<p><strong>Sample Attestation Output:</strong></p>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;attestation_id&quot;: &quot;attest-dc-8942-prod&quot;,
+  &quot;vpc_id&quot;: &quot;vpc-target-prod&quot;,
+  &quot;timestamp_utc&quot;: &quot;2026-10-28T02:45:00Z&quot;,
+  &quot;in_vpc_metrics_samples_collected&quot;: 1420890,
+  &quot;public_internet_egress_bytes&quot;: 0,
+  &quot;billable_cloud_egress_usd&quot;: 0.00,
+  &quot;airgap_compliance_status&quot;: &quot;CERTIFIED_ZERO_EGRESS&quot;,
+  &quot;sha256_audit_hash&quot;: &quot;e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855&quot;
+}
+</code></pre></div>
+<hr />
+<h2 id="section-7-troubleshooting-field-diagnostics">Section 7: Troubleshooting &amp; Field Diagnostics</h2>
+<h3 id="issue-1-dashboard-or-wallboard-shows-connection-stalled">Issue 1: Dashboard or Wallboard Shows &quot;Connection Stalled&quot;</h3>
+<ul>
+<li><strong>Symptom:</strong> Wallboard pulse dot turns amber, badge displays <code>FEED STALLED</code>.</li>
+<li><strong>Diagnostic Command:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -I http://127.0.0.1:8000/v1/telemetry/topology-pulse
+</code></pre></div>
+</li>
+<li><strong>Remediation:</strong> If HTTP 200 is returned, verify browser network settings. If connection refused, check systemd daemon: <code>sudo systemctl restart dcouplr-observability</code>.</li>
+</ul>
+<h3 id="issue-2-compiler-transpilation-returns-validation-error">Issue 2: Compiler Transpilation Returns Validation Error</h3>
+<ul>
+<li><strong>Symptom:</strong> POST <code>/v1/compiler/transpile-alert-rules</code> returns HTTP 422.</li>
+<li><strong>Root Cause:</strong> Malformed input query string or unsupported custom aggregation function.</li>
+<li><strong>Remediation:</strong> Run the query through the built-in query validator:<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -s -X POST &quot;http://127.0.0.1:8000/v1/compiler/validate-query&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;query&quot;: &quot;avg:system.cpu.user{*} by {host}&quot;}' | jq .
+</code></pre></div>
+</li>
+</ul>
+<hr />
+<h2 id="document-control-verification">Document Control &amp; Verification</h2>
+<ul>
+<li><strong>Lead Engineer:</strong> Cloud Infrastructure &amp; SRE Core Team</li>
+<li><strong>Approved For:</strong> Enterprise Production Deployments</li>
+<li><strong>Zero-Egress Invariant:</strong> Enforced by Kernel iptables &amp; AWS VPC Security Group rules.</li>
+</ul>
+</div>
+      <pre id="raw-view"><code># &lt;dcouplr/&gt; Runbook: Operating In-VPC Zero-Egress Observability Post-Migration
+**Document ID:** `VA-RUNBOOK-OBSERVABILITY-001`  
+**Classification:** Standard Operating Procedure (SOP) / Field Engineering  
+**Scope:** In-VPC Operational Monitoring, Live Compiler Alerting, and Zero-Egress Telemetry  
+**Audience:** Site Reliability Engineers (SRE), DevOps Engineers, Cloud Architects, and NOC Operators  
+
+---
+
+## Executive Overview &amp; Architectural Value
+
+Once your cloud infrastructure and databases have successfully completed cross-VPC replication and migration, you do **not** need to maintain expensive legacy SaaS monitoring subscriptions (such as Datadog, New Relic, or Dynatrace), nor do you need to operate complex, fragile clusters of external Prometheus servers and Grafana nodes.
+
+`&lt;dcouplr/&gt;` provides a **unified, self-contained In-VPC Observability Platform** that combines the core capabilities of Prometheus, Grafana, and Datadog directly inside your private subnet boundary with **$0.00 billable cloud egress**:
+
+```
++----------------------------------------------------------------------------------------------------+
+|                                    PRIVATE VPC BOUNDARY (10.0.0.0/16)                             |
+|                                                                                                    |
+|  +---------------------------+     Sub-second Delta Ticks     +---------------------------------+  |
+|  |   &lt;dcouplr/&gt; Telemetry    | =============================&gt; |  &lt;dcouplr/&gt; Live Dashboard      |  |
+|  |   Collector &amp; Engine      |        (SSE / Zero Hops)       |  (http://&lt;internal-ip&gt;:8000/    |  |
+|  |   - In-Memory Ring Buffer |                                |   dashboard)                    |  |
+|  |   - Raft Consensus Bridge |                                +---------------------------------+  |
+|  |   - Bounded &lt; 50 MiB RAM  |                                                                     |
+|  +---------------------------+     Air-Gapped Resilient Poll  +---------------------------------+  |
+|                |                   =========================&gt; |  &lt;dcouplr/&gt; 24x7 NOC Wallboard  |  |
+|                |                     (/topology-pulse.json)   |  (http://&lt;internal-ip&gt;:8000/    |  |
+|                v                                              |   wallboard)                    |  |
+|  +---------------------------+                                +---------------------------------+  |
+|  |   &lt;dcouplr/&gt; Compiler     |                                                                     |
+|  |   - Transpiles Datadog    |                                                                     |
+|  |   - In-VPC Rule Evaluator |     GAP-06 Remote-Write (Opt)  +---------------------------------+  |
+|  |   - Circuit Breaker Chaos | =============================&gt; |  In-VPC Long-Term Storage       |  |
+|  +---------------------------+       (Snappy / Protobuf)      |  (VictoriaMetrics / Mimir / S3) |  |
+|                                                               +---------------------------------+  |
+|                                                                                                    |
+|  PUBLIC INTERNET (0.0.0.0/0): [BLOCKED / ZERO PACKETS / $0.00 BILLABLE EGRESS]                     |
++----------------------------------------------------------------------------------------------------+
+```
+
+### The Observability Trinity: Traditional Stack vs. `&lt;dcouplr/&gt;`
+
+| Capability | Traditional Prometheus Stack | Traditional Datadog SaaS | `&lt;dcouplr/&gt;` In-VPC Engine |
+| :--- | :--- | :--- | :--- |
+| **Primary Role** | Metric Collector &amp; TSDB | All-in-one SaaS Platform | Autonomous In-VPC Consensus &amp; Observability |
+| **Data Collection** | Pull-model HTTP scraping | Push-model proprietary agent daemon | Lock-free in-memory ring buffer (sub-second delta ticks) |
+| **Visualization** | Requires external Grafana server | Proprietary cloud UI | Built-in Dual Tier: Live Dashboard (`/dashboard`) + 24x7 NOC Wallboard (`/wallboard`) |
+| **Alert Rule Engine** | PromQL Alertmanager YAML | Datadog proprietary DSL monitors | Live AST Compiler (`/compiler`): Transpiles &amp; evaluates rules locally |
+| **Data Sovereignty** | Self-hosted (internal compute cost) | Third-party cloud vendor storage | **100% In-VPC Private Memory** (no external telemetry leakage) |
+| **Egress Cost** | Low (if kept in-VPC) | **Extremely High** ($0.09/GB NAT Gateway + SaaS egress) | **$0.00 Guaranteed** (Mathematical Egress Attestation) |
+| **Memory Footprint**| 4 GiB - 32 GiB TSDB RAM | 250 MiB - 1 GiB agent daemon | **Strictly bounded &lt; 50 MiB RAM ceiling** |
+
+---
+
+## Section 1: Prerequisites &amp; Tooling Checklist
+
+Before activating in-VPC observability on your migrated instances, verify that your environment satisfies these operational prerequisites:
+
+- [ ] **Private Subnet Access:** Workstation or bastion must have network route to port `8000/TCP` on the migrated instance.
+- [ ] **Python Runtime:** Python 3.10+ installed on the host node (`python3 --version`).
+- [ ] **Curl / Wget:** Standard command-line HTTP utility installed (`curl --version`).
+- [ ] **Firewall / Security Group:**
+  - Ingress `8000/TCP`: Allowed from corporate VPN / internal NOC CIDR (`10.0.0.0/8` or `172.16.0.0/12`).
+  - Egress `0.0.0.0/0`: **Restricted / Blocked** (confirms zero-egress compliance).
+- [ ] **Modern Web Browser:** Chrome 100+, Edge 100+, or Firefox 95+ (supports CSS Grid and Server-Sent Events).
+
+---
+
+## Section 2: Where to Get It &amp; Where to Put It
+
+### 1. File Locations on Migrated Nodes
+
+All components run out of the standard `&lt;dcouplr/&gt;` deployment root:
+
+| Component | Absolute File Path | Description |
+| :--- | :--- | :--- |
+| **Service Entrypoint** | `/opt/dcouplr/migration_tools/api/app.py` | FastAPI in-VPC telemetry &amp; compiler daemon |
+| **Telemetry Collector**| `/opt/dcouplr/migration_tools/api/telemetry.py` | In-memory ring buffer &amp; Raft consensus telemetry |
+| **Rule Compiler** | `/opt/dcouplr/migration_tools/semantic/alert_transpiler.py` | AST rule converter and threshold scaler |
+| **NOC Wallboard** | `/opt/dcouplr/migration_tools/api/static/wallboard.html` | High-visibility dark-mode operations canvas |
+| **Live Dashboard** | `/opt/dcouplr/migration_tools/api/static/dashboard.html` | Interactive SRE triage console with SSE streaming |
+| **Systemd Service** | `/etc/systemd/system/dcouplr-observability.service` | Linux daemon auto-restart configuration |
+
+### 2. Standalone Wallboard Static Bundle (For Air-Gapped NOCs)
+
+If your NOC video wall runs on an air-gapped display controller (e.g. Raspberry Pi, Chromebox, Smart TV) that cannot reach the API server directly, use the pre-built single-file static bundle:
+
+```bash
+# Source path in repository:
+dist/pulsecast-cdn/index.html
+
+# Target path on private NOC HTTP server / S3 bucket:
+/var/www/html/wallboard/index.html
+```
+
+---
+
+## Section 3: Step-by-Step Transition: Decommissioning Datadog &amp; Activating `&lt;dcouplr/&gt;`
+
+Follow this 5-step procedure to transition from legacy SaaS to internal zero-egress observability:
+
+### Step 3.1: Export Legacy Datadog Monitors to JSON
+
+From your legacy Datadog workspace or Terraform state, export your production monitor definitions:
+
+```bash
+# Export using Datadog API (executed once prior to SaaS cutover):
+curl -s -X GET &quot;https://api.datadoghq.com/api/v1/monitor&quot; \
+  -H &quot;DD-API-KEY: ${DD_API_KEY}&quot; \
+  -H &quot;DD-APPLICATION-KEY: ${DD_APP_KEY}&quot; \
+  &gt; /tmp/legacy_datadog_monitors.json
+```
+
+### Step 3.2: Transpile Rules Using the `&lt;dcouplr/&gt;` In-VPC Compiler
+
+Navigate to the Compiler Studio or invoke the in-VPC compilation API:
+
+```bash
+# Transpile Datadog monitors into Prometheus Alertmanager and Grafana Unified Alerting:
+curl -s -X POST &quot;http://127.0.0.1:8000/v1/compiler/transpile-alert-rules&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;source_format&quot;: &quot;datadog_json&quot;,
+    &quot;target_format&quot;: &quot;prometheus_rules_yaml&quot;,
+    &quot;target_tier&quot;: &quot;t4g.xlarge&quot;,
+    &quot;rules&quot;: [
+      {
+        &quot;name&quot;: &quot;High CPU Utilization&quot;,
+        &quot;query&quot;: &quot;avg(last_5m):avg:system.cpu.user{*} by {host} &gt; 85&quot;,
+        &quot;message&quot;: &quot;CPU usage exceeds 85% on {{host.name}}&quot;,
+        &quot;thresholds&quot;: {&quot;critical&quot;: 85, &quot;warning&quot;: 75}
+      }
+    ]
+  }&#x27; | jq .
+```
+
+**Expected JSON Response:**
+```json
+{
+  &quot;status&quot;: &quot;success&quot;,
+  &quot;transpiled_rules_count&quot;: 1,
+  &quot;zero_egress_attested&quot;: true,
+  &quot;manifest_yaml&quot;: &quot;groups:\n  - name: dcouplr-in-vpc-alerts\n    rules:\n      - alert: HighCPUUtilization\n        expr: avg by(instance) (rate(node_cpu_seconds_total{mode=\&quot;user\&quot;}[5m])) * 100 &gt; 85\n        for: 5m\n        labels:\n          severity: critical\n          vpc: target-vpc-prod\n        annotations:\n          summary: CPU usage exceeds 85% on target instance&quot;
+}
+```
+
+### Step 3.3: Verify Systemd Service is Running
+
+Ensure the `&lt;dcouplr/&gt;` observability daemon is enabled and active on the host:
+
+```bash
+sudo systemctl status dcouplr-observability
+```
+
+**Expected Console Output:**
+```
+● dcouplr-observability.service - &lt;dcouplr/&gt; In-VPC Observability Engine
+     Loaded: loaded (/etc/systemd/system/dcouplr-observability.service; enabled; vendor preset: enabled)
+     Active: active (running) since Wed 2026-10-28 02:30:00 UTC; 18min ago
+   Main PID: 1420 (uvicorn)
+      Tasks: 4 (limit: 4681)
+     Memory: 38.4M (limit: 50.0M)
+        CPU: 1.210s
+     CGroup: /system.slice/dcouplr-observability.service
+             └─1420 /opt/dcouplr/.venv/bin/python3 -m uvicorn migration_tools.api.app:app --host 0.0.0.0 --port 8000
+```
+
+### Step 3.4: Decommission the Legacy Datadog Agent
+
+Once `&lt;dcouplr/&gt;` is actively collecting metrics, stop and purge the Datadog agent to immediately eliminate SaaS license consumption and internet outbound traffic:
+
+```bash
+# Ubuntu / Debian:
+sudo systemctl stop datadog-agent
+sudo apt-get purge -y datadog-agent
+sudo rm -rf /etc/datadog-agent /var/log/datadog
+
+# RHEL / Rocky Linux:
+sudo systemctl stop datadog-agent
+sudo yum remove -y datadog-agent
+sudo rm -rf /etc/datadog-agent /var/log/datadog
+```
+
+---
+
+## Section 4: Operating the In-VPC Visualization Tier
+
+### 1. In-VPC Live SRE Dashboard (`/dashboard`)
+
+The SRE Dashboard provides interactive, real-time telemetry streaming for active engineering triage:
+
+- **URL:** `http://&lt;internal-ip&gt;:8000/dashboard`
+- **Features:**
+  - **Sub-second SSE Streaming:** Real-time updates pushed via `/v1/telemetry/stream` without page refreshes.
+  - **Multi-VPC Topology Visualizer:** Displays live health, replication status, and cross-VPC latency.
+  - **FinOps Cost Real-Time Comparison:** Live ticker tracking eliminated SaaS fees and zero-egress savings.
+  - **Synthetic Incident Trigger:** On-demand circuit-breaker chaos drill testing.
+
+### 2. 24x7 NOC Wallboard (`/wallboard`)
+
+The NOC Wallboard is optimized for wall-mounted TV monitors and continuous unattended display:
+
+- **URL:** `http://&lt;internal-ip&gt;:8000/wallboard`
+- **Branding Specification (`VA-BRAND-001`):** Features the high-contrast neon-green `&lt;` and `/&gt;` (`#39ff14`) with crisp white sans-serif `dcouplr` typography for optical clarity from across the operations room.
+- **Fail-Safe Operation:** Automatically freezes metrics and presents an amber warning if the local agent stops pulsing for more than 10 seconds, then seamlessly reconnects without operator intervention.
+
+---
+
+## Section 5: In-VPC Long-Term Storage (Optional GAP-06 Integration)
+
+If your enterprise retention policy requires storing numerical time-series metrics for 1–7 years (e.g. SOC2, FedRAMP, HIPAA), configure `&lt;dcouplr/&gt;`&#x27;s built-in **Prometheus Remote-Write Exporter** to push to an in-VPC database:
+
+```bash
+# Configure the remote-write target (e.g. in-VPC VictoriaMetrics or Mimir):
+curl -s -X POST &quot;http://127.0.0.1:8000/v1/telemetry/remote-write/configure&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;X-API-Key: dcouplr-dev-2026&quot; \
+  -d &#x27;{
+    &quot;endpoint_url&quot;: &quot;http://victoriametrics.internal.vpc:8428/api/v1/write&quot;,
+    &quot;batch_size&quot;: 100,
+    &quot;flush_interval_sec&quot;: 5.0,
+    &quot;max_retries&quot;: 3,
+    &quot;compression&quot;: &quot;snappy&quot;
+  }&#x27; | jq .
+```
+
+**Key Security Guarantees:**
+- Pure in-VPC networking (private DNS resolution).
+- Bounded memory queue: Discards oldest samples if the destination is unavailable, strictly enforcing the `&lt; 50 MiB` RAM ceiling.
+- Exponential backoff and fail-fast circuit breaker preventing memory exhaustion.
+
+---
+
+## Section 6: Zero-Egress Cryptographic Attestation
+
+To prove to security auditors and executive stakeholders that no telemetry data escapes the VPC perimeter, query the Egress Attestation endpoint:
+
+```bash
+curl -s &quot;http://127.0.0.1:8000/v1/telemetry/vpcs/vpc-target-prod/egress-attestation&quot; | jq .
+```
+
+**Sample Attestation Output:**
+```json
+{
+  &quot;attestation_id&quot;: &quot;attest-dc-8942-prod&quot;,
+  &quot;vpc_id&quot;: &quot;vpc-target-prod&quot;,
+  &quot;timestamp_utc&quot;: &quot;2026-10-28T02:45:00Z&quot;,
+  &quot;in_vpc_metrics_samples_collected&quot;: 1420890,
+  &quot;public_internet_egress_bytes&quot;: 0,
+  &quot;billable_cloud_egress_usd&quot;: 0.00,
+  &quot;airgap_compliance_status&quot;: &quot;CERTIFIED_ZERO_EGRESS&quot;,
+  &quot;sha256_audit_hash&quot;: &quot;e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855&quot;
+}
+```
+
+---
+
+## Section 7: Troubleshooting &amp; Field Diagnostics
+
+### Issue 1: Dashboard or Wallboard Shows &quot;Connection Stalled&quot;
+- **Symptom:** Wallboard pulse dot turns amber, badge displays `FEED STALLED`.
+- **Diagnostic Command:**
+  ```bash
+  curl -I http://127.0.0.1:8000/v1/telemetry/topology-pulse
+  ```
+- **Remediation:** If HTTP 200 is returned, verify browser network settings. If connection refused, check systemd daemon: `sudo systemctl restart dcouplr-observability`.
+
+### Issue 2: Compiler Transpilation Returns Validation Error
+- **Symptom:** POST `/v1/compiler/transpile-alert-rules` returns HTTP 422.
+- **Root Cause:** Malformed input query string or unsupported custom aggregation function.
+- **Remediation:** Run the query through the built-in query validator:
+  ```bash
+  curl -s -X POST &quot;http://127.0.0.1:8000/v1/compiler/validate-query&quot; \
+    -H &quot;Content-Type: application/json&quot; \
+    -d &#x27;{&quot;query&quot;: &quot;avg:system.cpu.user{*} by {host}&quot;}&#x27; | jq .
+  ```
+
+---
+
+## Document Control &amp; Verification
+
+- **Lead Engineer:** Cloud Infrastructure &amp; SRE Core Team
+- **Approved For:** Enterprise Production Deployments
+- **Zero-Egress Invariant:** Enforced by Kernel iptables &amp; AWS VPC Security Group rules.
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;dcouplr/&gt; Runbook: Operating In-VPC Zero-Egress Observability Post-Migration
+**Document ID:** `VA-RUNBOOK-OBSERVABILITY-001`  
+**Classification:** Standard Operating Procedure (SOP) / Field Engineering  
+**Scope:** In-VPC Operational Monitoring, Live Compiler Alerting, and Zero-Egress Telemetry  
+**Audience:** Site Reliability Engineers (SRE), DevOps Engineers, Cloud Architects, and NOC Operators  
+
+---
+
+## Executive Overview &amp; Architectural Value
+
+Once your cloud infrastructure and databases have successfully completed cross-VPC replication and migration, you do **not** need to maintain expensive legacy SaaS monitoring subscriptions (such as Datadog, New Relic, or Dynatrace), nor do you need to operate complex, fragile clusters of external Prometheus servers and Grafana nodes.
+
+`&lt;dcouplr/&gt;` provides a **unified, self-contained In-VPC Observability Platform** that combines the core capabilities of Prometheus, Grafana, and Datadog directly inside your private subnet boundary with **$0.00 billable cloud egress**:
+
+```
++----------------------------------------------------------------------------------------------------+
+|                                    PRIVATE VPC BOUNDARY (10.0.0.0/16)                             |
+|                                                                                                    |
+|  +---------------------------+     Sub-second Delta Ticks     +---------------------------------+  |
+|  |   &lt;dcouplr/&gt; Telemetry    | =============================&gt; |  &lt;dcouplr/&gt; Live Dashboard      |  |
+|  |   Collector &amp; Engine      |        (SSE / Zero Hops)       |  (http://&lt;internal-ip&gt;:8000/    |  |
+|  |   - In-Memory Ring Buffer |                                |   dashboard)                    |  |
+|  |   - Raft Consensus Bridge |                                +---------------------------------+  |
+|  |   - Bounded &lt; 50 MiB RAM  |                                                                     |
+|  +---------------------------+     Air-Gapped Resilient Poll  +---------------------------------+  |
+|                |                   =========================&gt; |  &lt;dcouplr/&gt; 24x7 NOC Wallboard  |  |
+|                |                     (/topology-pulse.json)   |  (http://&lt;internal-ip&gt;:8000/    |  |
+|                v                                              |   wallboard)                    |  |
+|  +---------------------------+                                +---------------------------------+  |
+|  |   &lt;dcouplr/&gt; Compiler     |                                                                     |
+|  |   - Transpiles Datadog    |                                                                     |
+|  |   - In-VPC Rule Evaluator |     GAP-06 Remote-Write (Opt)  +---------------------------------+  |
+|  |   - Circuit Breaker Chaos | =============================&gt; |  In-VPC Long-Term Storage       |  |
+|  +---------------------------+       (Snappy / Protobuf)      |  (VictoriaMetrics / Mimir / S3) |  |
+|                                                               +---------------------------------+  |
+|                                                                                                    |
+|  PUBLIC INTERNET (0.0.0.0/0): [BLOCKED / ZERO PACKETS / $0.00 BILLABLE EGRESS]                     |
++----------------------------------------------------------------------------------------------------+
+```
+
+### The Observability Trinity: Traditional Stack vs. `&lt;dcouplr/&gt;`
+
+| Capability | Traditional Prometheus Stack | Traditional Datadog SaaS | `&lt;dcouplr/&gt;` In-VPC Engine |
+| :--- | :--- | :--- | :--- |
+| **Primary Role** | Metric Collector &amp; TSDB | All-in-one SaaS Platform | Autonomous In-VPC Consensus &amp; Observability |
+| **Data Collection** | Pull-model HTTP scraping | Push-model proprietary agent daemon | Lock-free in-memory ring buffer (sub-second delta ticks) |
+| **Visualization** | Requires external Grafana server | Proprietary cloud UI | Built-in Dual Tier: Live Dashboard (`/dashboard`) + 24x7 NOC Wallboard (`/wallboard`) |
+| **Alert Rule Engine** | PromQL Alertmanager YAML | Datadog proprietary DSL monitors | Live AST Compiler (`/compiler`): Transpiles &amp; evaluates rules locally |
+| **Data Sovereignty** | Self-hosted (internal compute cost) | Third-party cloud vendor storage | **100% In-VPC Private Memory** (no external telemetry leakage) |
+| **Egress Cost** | Low (if kept in-VPC) | **Extremely High** ($0.09/GB NAT Gateway + SaaS egress) | **$0.00 Guaranteed** (Mathematical Egress Attestation) |
+| **Memory Footprint**| 4 GiB - 32 GiB TSDB RAM | 250 MiB - 1 GiB agent daemon | **Strictly bounded &lt; 50 MiB RAM ceiling** |
+
+---
+
+## Section 1: Prerequisites &amp; Tooling Checklist
+
+Before activating in-VPC observability on your migrated instances, verify that your environment satisfies these operational prerequisites:
+
+- [ ] **Private Subnet Access:** Workstation or bastion must have network route to port `8000/TCP` on the migrated instance.
+- [ ] **Python Runtime:** Python 3.10+ installed on the host node (`python3 --version`).
+- [ ] **Curl / Wget:** Standard command-line HTTP utility installed (`curl --version`).
+- [ ] **Firewall / Security Group:**
+  - Ingress `8000/TCP`: Allowed from corporate VPN / internal NOC CIDR (`10.0.0.0/8` or `172.16.0.0/12`).
+  - Egress `0.0.0.0/0`: **Restricted / Blocked** (confirms zero-egress compliance).
+- [ ] **Modern Web Browser:** Chrome 100+, Edge 100+, or Firefox 95+ (supports CSS Grid and Server-Sent Events).
+
+---
+
+## Section 2: Where to Get It &amp; Where to Put It
+
+### 1. File Locations on Migrated Nodes
+
+All components run out of the standard `&lt;dcouplr/&gt;` deployment root:
+
+| Component | Absolute File Path | Description |
+| :--- | :--- | :--- |
+| **Service Entrypoint** | `/opt/dcouplr/migration_tools/api/app.py` | FastAPI in-VPC telemetry &amp; compiler daemon |
+| **Telemetry Collector**| `/opt/dcouplr/migration_tools/api/telemetry.py` | In-memory ring buffer &amp; Raft consensus telemetry |
+| **Rule Compiler** | `/opt/dcouplr/migration_tools/semantic/alert_transpiler.py` | AST rule converter and threshold scaler |
+| **NOC Wallboard** | `/opt/dcouplr/migration_tools/api/static/wallboard.html` | High-visibility dark-mode operations canvas |
+| **Live Dashboard** | `/opt/dcouplr/migration_tools/api/static/dashboard.html` | Interactive SRE triage console with SSE streaming |
+| **Systemd Service** | `/etc/systemd/system/dcouplr-observability.service` | Linux daemon auto-restart configuration |
+
+### 2. Standalone Wallboard Static Bundle (For Air-Gapped NOCs)
+
+If your NOC video wall runs on an air-gapped display controller (e.g. Raspberry Pi, Chromebox, Smart TV) that cannot reach the API server directly, use the pre-built single-file static bundle:
+
+```bash
+# Source path in repository:
+dist/pulsecast-cdn/index.html
+
+# Target path on private NOC HTTP server / S3 bucket:
+/var/www/html/wallboard/index.html
+```
+
+---
+
+## Section 3: Step-by-Step Transition: Decommissioning Datadog &amp; Activating `&lt;dcouplr/&gt;`
+
+Follow this 5-step procedure to transition from legacy SaaS to internal zero-egress observability:
+
+### Step 3.1: Export Legacy Datadog Monitors to JSON
+
+From your legacy Datadog workspace or Terraform state, export your production monitor definitions:
+
+```bash
+# Export using Datadog API (executed once prior to SaaS cutover):
+curl -s -X GET &quot;https://api.datadoghq.com/api/v1/monitor&quot; \
+  -H &quot;DD-API-KEY: ${DD_API_KEY}&quot; \
+  -H &quot;DD-APPLICATION-KEY: ${DD_APP_KEY}&quot; \
+  &gt; /tmp/legacy_datadog_monitors.json
+```
+
+### Step 3.2: Transpile Rules Using the `&lt;dcouplr/&gt;` In-VPC Compiler
+
+Navigate to the Compiler Studio or invoke the in-VPC compilation API:
+
+```bash
+# Transpile Datadog monitors into Prometheus Alertmanager and Grafana Unified Alerting:
+curl -s -X POST &quot;http://127.0.0.1:8000/v1/compiler/transpile-alert-rules&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;source_format&quot;: &quot;datadog_json&quot;,
+    &quot;target_format&quot;: &quot;prometheus_rules_yaml&quot;,
+    &quot;target_tier&quot;: &quot;t4g.xlarge&quot;,
+    &quot;rules&quot;: [
+      {
+        &quot;name&quot;: &quot;High CPU Utilization&quot;,
+        &quot;query&quot;: &quot;avg(last_5m):avg:system.cpu.user{*} by {host} &gt; 85&quot;,
+        &quot;message&quot;: &quot;CPU usage exceeds 85% on {{host.name}}&quot;,
+        &quot;thresholds&quot;: {&quot;critical&quot;: 85, &quot;warning&quot;: 75}
+      }
+    ]
+  }&#x27; | jq .
+```
+
+**Expected JSON Response:**
+```json
+{
+  &quot;status&quot;: &quot;success&quot;,
+  &quot;transpiled_rules_count&quot;: 1,
+  &quot;zero_egress_attested&quot;: true,
+  &quot;manifest_yaml&quot;: &quot;groups:\n  - name: dcouplr-in-vpc-alerts\n    rules:\n      - alert: HighCPUUtilization\n        expr: avg by(instance) (rate(node_cpu_seconds_total{mode=\&quot;user\&quot;}[5m])) * 100 &gt; 85\n        for: 5m\n        labels:\n          severity: critical\n          vpc: target-vpc-prod\n        annotations:\n          summary: CPU usage exceeds 85% on target instance&quot;
+}
+```
+
+### Step 3.3: Verify Systemd Service is Running
+
+Ensure the `&lt;dcouplr/&gt;` observability daemon is enabled and active on the host:
+
+```bash
+sudo systemctl status dcouplr-observability
+```
+
+**Expected Console Output:**
+```
+● dcouplr-observability.service - &lt;dcouplr/&gt; In-VPC Observability Engine
+     Loaded: loaded (/etc/systemd/system/dcouplr-observability.service; enabled; vendor preset: enabled)
+     Active: active (running) since Wed 2026-10-28 02:30:00 UTC; 18min ago
+   Main PID: 1420 (uvicorn)
+      Tasks: 4 (limit: 4681)
+     Memory: 38.4M (limit: 50.0M)
+        CPU: 1.210s
+     CGroup: /system.slice/dcouplr-observability.service
+             └─1420 /opt/dcouplr/.venv/bin/python3 -m uvicorn migration_tools.api.app:app --host 0.0.0.0 --port 8000
+```
+
+### Step 3.4: Decommission the Legacy Datadog Agent
+
+Once `&lt;dcouplr/&gt;` is actively collecting metrics, stop and purge the Datadog agent to immediately eliminate SaaS license consumption and internet outbound traffic:
+
+```bash
+# Ubuntu / Debian:
+sudo systemctl stop datadog-agent
+sudo apt-get purge -y datadog-agent
+sudo rm -rf /etc/datadog-agent /var/log/datadog
+
+# RHEL / Rocky Linux:
+sudo systemctl stop datadog-agent
+sudo yum remove -y datadog-agent
+sudo rm -rf /etc/datadog-agent /var/log/datadog
+```
+
+---
+
+## Section 4: Operating the In-VPC Visualization Tier
+
+### 1. In-VPC Live SRE Dashboard (`/dashboard`)
+
+The SRE Dashboard provides interactive, real-time telemetry streaming for active engineering triage:
+
+- **URL:** `http://&lt;internal-ip&gt;:8000/dashboard`
+- **Features:**
+  - **Sub-second SSE Streaming:** Real-time updates pushed via `/v1/telemetry/stream` without page refreshes.
+  - **Multi-VPC Topology Visualizer:** Displays live health, replication status, and cross-VPC latency.
+  - **FinOps Cost Real-Time Comparison:** Live ticker tracking eliminated SaaS fees and zero-egress savings.
+  - **Synthetic Incident Trigger:** On-demand circuit-breaker chaos drill testing.
+
+### 2. 24x7 NOC Wallboard (`/wallboard`)
+
+The NOC Wallboard is optimized for wall-mounted TV monitors and continuous unattended display:
+
+- **URL:** `http://&lt;internal-ip&gt;:8000/wallboard`
+- **Branding Specification (`VA-BRAND-001`):** Features the high-contrast neon-green `&lt;` and `/&gt;` (`#39ff14`) with crisp white sans-serif `dcouplr` typography for optical clarity from across the operations room.
+- **Fail-Safe Operation:** Automatically freezes metrics and presents an amber warning if the local agent stops pulsing for more than 10 seconds, then seamlessly reconnects without operator intervention.
+
+---
+
+## Section 5: In-VPC Long-Term Storage (Optional GAP-06 Integration)
+
+If your enterprise retention policy requires storing numerical time-series metrics for 1–7 years (e.g. SOC2, FedRAMP, HIPAA), configure `&lt;dcouplr/&gt;`&#x27;s built-in **Prometheus Remote-Write Exporter** to push to an in-VPC database:
+
+```bash
+# Configure the remote-write target (e.g. in-VPC VictoriaMetrics or Mimir):
+curl -s -X POST &quot;http://127.0.0.1:8000/v1/telemetry/remote-write/configure&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;X-API-Key: dcouplr-dev-2026&quot; \
+  -d &#x27;{
+    &quot;endpoint_url&quot;: &quot;http://victoriametrics.internal.vpc:8428/api/v1/write&quot;,
+    &quot;batch_size&quot;: 100,
+    &quot;flush_interval_sec&quot;: 5.0,
+    &quot;max_retries&quot;: 3,
+    &quot;compression&quot;: &quot;snappy&quot;
+  }&#x27; | jq .
+```
+
+**Key Security Guarantees:**
+- Pure in-VPC networking (private DNS resolution).
+- Bounded memory queue: Discards oldest samples if the destination is unavailable, strictly enforcing the `&lt; 50 MiB` RAM ceiling.
+- Exponential backoff and fail-fast circuit breaker preventing memory exhaustion.
+
+---
+
+## Section 6: Zero-Egress Cryptographic Attestation
+
+To prove to security auditors and executive stakeholders that no telemetry data escapes the VPC perimeter, query the Egress Attestation endpoint:
+
+```bash
+curl -s &quot;http://127.0.0.1:8000/v1/telemetry/vpcs/vpc-target-prod/egress-attestation&quot; | jq .
+```
+
+**Sample Attestation Output:**
+```json
+{
+  &quot;attestation_id&quot;: &quot;attest-dc-8942-prod&quot;,
+  &quot;vpc_id&quot;: &quot;vpc-target-prod&quot;,
+  &quot;timestamp_utc&quot;: &quot;2026-10-28T02:45:00Z&quot;,
+  &quot;in_vpc_metrics_samples_collected&quot;: 1420890,
+  &quot;public_internet_egress_bytes&quot;: 0,
+  &quot;billable_cloud_egress_usd&quot;: 0.00,
+  &quot;airgap_compliance_status&quot;: &quot;CERTIFIED_ZERO_EGRESS&quot;,
+  &quot;sha256_audit_hash&quot;: &quot;e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855&quot;
+}
+```
+
+---
+
+## Section 7: Troubleshooting &amp; Field Diagnostics
+
+### Issue 1: Dashboard or Wallboard Shows &quot;Connection Stalled&quot;
+- **Symptom:** Wallboard pulse dot turns amber, badge displays `FEED STALLED`.
+- **Diagnostic Command:**
+  ```bash
+  curl -I http://127.0.0.1:8000/v1/telemetry/topology-pulse
+  ```
+- **Remediation:** If HTTP 200 is returned, verify browser network settings. If connection refused, check systemd daemon: `sudo systemctl restart dcouplr-observability`.
+
+### Issue 2: Compiler Transpilation Returns Validation Error
+- **Symptom:** POST `/v1/compiler/transpile-alert-rules` returns HTTP 422.
+- **Root Cause:** Malformed input query string or unsupported custom aggregation function.
+- **Remediation:** Run the query through the built-in query validator:
+  ```bash
+  curl -s -X POST &quot;http://127.0.0.1:8000/v1/compiler/validate-query&quot; \
+    -H &quot;Content-Type: application/json&quot; \
+    -d &#x27;{&quot;query&quot;: &quot;avg:system.cpu.user{*} by {host}&quot;}&#x27; | jq .
+  ```
+
+---
+
+## Document Control &amp; Verification
+
+- **Lead Engineer:** Cloud Infrastructure &amp; SRE Core Team
+- **Approved For:** Enterprise Production Deployments
+- **Zero-Egress Invariant:** Enforced by Kernel iptables &amp; AWS VPC Security Group rules.
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

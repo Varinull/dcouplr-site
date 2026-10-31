@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - CLOUD_NATIVE_REPLICATION_ORCHESTRATION_SPECIFICATION.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/CLOUD_NATIVE_REPLICATION_ORCHESTRATION_SPECIFICATION.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="CLOUD_NATIVE_REPLICATION_ORCHESTRATION_SPECIFICATION.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="dcouplr-cloud-native-block-replication-orchestration-specification">🚀 <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Cloud-Native Block Replication Orchestration Specification</h1>
+<p><strong>Document ID:</strong> <code>VA-SPEC-ORCH-001</code><br />
+<strong>Classification:</strong> Enterprise Systems Architecture &amp; Hyperscaler Workload Acquisition Blueprint<br />
+<strong>Version:</strong> 1.0.0 Approved Strategic Architecture<br />
+<strong>Date:</strong> 2026-10-25<br />
+<strong>Target Entities:</strong> AWS (AWS MGN), Google Cloud (GCP Migrate), Microsoft Azure (Azure Migrate)<br />
+<strong>Security Standard:</strong> In-VPC Zero-Egress Hermetic Interoperability</p>
+<hr />
+<h2 id="1-executive-summary-architectural-philosophy">1. Executive Summary &amp; Architectural Philosophy</h2>
+<h3 id="11-the-brain-vs-the-muscle">1.1 The Brain vs. The Muscle</h3>
+<p>In enterprise cloud migrations, the technical challenge splits naturally into two distinct domains:</p>
+<ul>
+<li><strong>The &quot;Muscle&quot; (Data Plane - Block Replication):</strong> Streaming gigabytes or terabytes of raw operating system disk blocks (VMDK, VHD, QCOW2) across the network, kernel change block tracking (CBT), and VSS snapshot drivers. Cloud hyperscalers have already invested hundreds of millions of dollars building reliable, hardened cloud-native replication engines for this task.</li>
+<li><strong>The &quot;Brain&quot; (Control Plane - <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>):</strong> Designing the destination VPC/subnet topology, remapping hardcoded legacy IPs to In-VPC Private DNS (<code>*.mesh.internal</code>), transpiling proprietary observability alerts (Datadog/Nagios $\to$ Prometheus/Grafana), and coordinating zero-downtime cutover sequences.</li>
+</ul>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">graph TD
+    subgraph The Brain: Control Plane [<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> In-VPC Engine]
+        A[Legacy Server &amp; Network Discovery] --&gt; B[Parent /16 to Child /24 Subnet Planner]
+        B --&gt; C[OpenTofu / Terraform Target IaC]
+        B --&gt; D[Private DNS Remapping Table]
+        B --&gt; E[Mathematical AST Alert Transpiler]
+        B --&gt; F[Replication Manifest &amp; Launch Templates]
+    end
+
+    subgraph The Muscle: Data Plane [Cloud-Native Block Engines]
+        F --&gt; G1[AWS MGN: Application Migration Service]
+        F --&gt; G2[GCP Migrate for Compute Engine]
+        F --&gt; G3[Azure Migrate Server Replication]
+        G1 --&gt; H[Continuous Disk Block Sync: VMDK/VHD -&gt; Cloud Disks]
+        G2 --&gt; H
+        G3 --&gt; H
+    end
+
+    subgraph The Synchronized Cutover [<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Orchestrator]
+        H --&gt;|Delta Lag &lt; 1 min| I[5-Phase Zero-Downtime Cutover Script]
+        I --&gt; J1[Promote Final Cloud Instances]
+        I --&gt; J2[Flip In-VPC DNS Records]
+        I --&gt; J3[Arm Prometheus Alertmanager]
+        I --&gt; J4[Auto-Revoke Ephemeral JIT Ports]
+    end
+</code></pre></div>
+<h3 id="12-preservation-of-architectural-decision-d-05">1.2 Preservation of Architectural Decision D-05</h3>
+<p>As codified in <strong>Decision D-05</strong> (<code>ProjectAssistant/phase-4/04-decisions.md</code>):</p>
+<blockquote>
+<p><em>&quot;Exclude low-level VM disk block conversions (VMDK/QCOW2 binary bitstreams) from the compiler core. Virtual machine disk conversion is systems virtualization I/O; confining the compiler to declarative logic, policy, and telemetry avoids fatal engineering dilution.&quot;</em></p>
+</blockquote>
+<p>By <strong>orchestrating</strong> proven cloud-native replication engines instead of rewriting hypervisor disk drivers from scratch, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> delivers complete, turnkey end-to-end migration while keeping its codebase lightweight, deterministic, and 100% zero-egress.</p>
+<hr />
+<h2 id="2-hyperscaler-target-engine-matrix">2. Hyperscaler Target Engine Matrix</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> standardizes orchestration across the three primary hyperscalers:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Provider</th>
+<th style="text-align:left">Replication Engine</th>
+<th style="text-align:left">Agent Installer Package</th>
+<th style="text-align:left">Target Launch Artifact</th>
+<th style="text-align:left">Configuration API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>AWS</strong></td>
+<td style="text-align:left"><strong>AWS Application Migration Service (AWS MGN)</strong></td>
+<td style="text-align:left"><code>AwsReplicationAgentInstaller.exe</code> (Win) / <code>aws-replication-installer-init.py</code> (Linux)</td>
+<td style="text-align:left">EC2 Launch Templates (<code>LaunchTemplateData</code>) + MGN Launch Settings</td>
+<td style="text-align:left"><code>aws mgn update-launch-configuration</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Google Cloud</strong></td>
+<td style="text-align:left"><strong>Migrate to Virtual Machines (v4 / M4CE)</strong></td>
+<td style="text-align:left"><code>m4ce-agent.msi</code> (Win) / <code>m4ce-agent.deb</code> / <code>m4ce-agent.rpm</code> (Linux)</td>
+<td style="text-align:left">Compute Engine Target Instance Template + Migration Group JSON</td>
+<td style="text-align:left"><code>gcloud vms migration-groups</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Microsoft Azure</strong></td>
+<td style="text-align:left"><strong>Azure Migrate: Server Migration</strong></td>
+<td style="text-align:left">Azure Site Recovery Mobility Service (<code>ASR_Deployment_Tool.exe</code>)</td>
+<td style="text-align:left">Azure Virtual Network &amp; Subnet Allocation JSON</td>
+<td style="text-align:left"><code>az migrate vm create-replication</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-the-3-tier-integration-architecture">3. The 3-Tier Integration Architecture</h2>
+<h3 id="tier-1-manifest-launch-template-synthesis">Tier 1: Manifest &amp; Launch Template Synthesis</h3>
+<p>When <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> analyzes a source VPC or legacy baremetal cluster (<code>POST /v1/telemetry/topology/lift-and-shift</code>), it automatically generates the provider-specific replication launch templates alongside the OpenTofu IaC:</p>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;source_cluster_id&quot;: &quot;dc-onprem-core-01&quot;,
+  &quot;target_cloud&quot;: &quot;AWS&quot;,
+  &quot;target_region&quot;: &quot;us-east-1&quot;,
+  &quot;target_supernet_cidr&quot;: &quot;10.200.0.0/16&quot;,
+  &quot;servers&quot;: [
+    {
+      &quot;source_hostname&quot;: &quot;bare-metal-kvm-01&quot;,
+      &quot;source_ip&quot;: &quot;172.16.1.15&quot;,
+      &quot;operating_system&quot;: &quot;linux&quot;,
+      &quot;target_subnet_cidr&quot;: &quot;10.200.10.0/24&quot;,
+      &quot;target_private_ip&quot;: &quot;10.200.10.15&quot;,
+      &quot;target_instance_type&quot;: &quot;m6i.xlarge&quot;,
+      &quot;target_dns_fqdn&quot;: &quot;bare-metal-kvm-01.mesh.internal&quot;,
+      &quot;target_security_group_tags&quot;: [&quot;mesh-private-app&quot;],
+      &quot;aws_mgn_launch_template&quot;: {
+        &quot;NetworkInterfaces&quot;: [
+          {
+            &quot;DeviceIndex&quot;: 0,
+            &quot;SubnetId&quot;: &quot;var.subnet_app_private_id&quot;,
+            &quot;PrivateIpAddress&quot;: &quot;10.200.10.15&quot;,
+            &quot;AssociatePublicIpAddress&quot;: false,
+            &quot;Groups&quot;: [&quot;var.sg_mesh_internal_id&quot;]
+          }
+        ],
+        &quot;InstanceType&quot;: &quot;m6i.xlarge&quot;
+      }
+    }
+  ]
+}
+</code></pre></div>
+<h3 id="tier-2-ephemeral-just-in-time-jit-agent-push">Tier 2: Ephemeral Just-In-Time (JIT) Agent Push</h3>
+<p>Cloud provider agents must be installed inside the guest OS. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> automates this without leaving persistent management ports open:</p>
+<ol>
+<li><strong>Private CIDR Lockdown:</strong> Ingress ports (WinRM 5985/5986, SSH 22) are bound strictly to the in-VPC migration runner CIDR (<code>10.200.0.0/16</code>). Zero exposure to <code>0.0.0.0/0</code>.</li>
+<li><strong>One-Command Agent Bootstrap:</strong>
+<ul>
+<li><strong>Windows:</strong> PowerShell script triggered over WinRM executing the provider installer with temporary, short-lived IAM session credentials.</li>
+<li><strong>Linux:</strong> Bash script over SSH executing the installer package.</li>
+</ul>
+</li>
+<li><strong>Automated Exit Trap:</strong> If agent bootstrap completes or aborts, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>'s cutover engine guarantees management ports are immediately revoked:<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">cleanup() {
+  echo &quot;[Security Teardown] Automatically revoking JIT WinRM &amp; SSH ports...&quot;
+  tofu apply -auto-approve -var=&quot;enable_migration_mgmt_ports=false&quot; &gt;/dev/null 2&gt;&amp;1 || true
+}
+trap cleanup EXIT
+</code></pre></div>
+</li>
+</ol>
+<h3 id="tier-3-synchronized-5-phase-cutover-execution">Tier 3: Synchronized 5-Phase Cutover Execution</h3>
+<p>Replication tools replicate blocks, but only <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> coordinates the live application traffic switch:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">[Phase 1: Pre-Flight Health] --&gt; Verify target cloud subnets respond 200 OK
+[Phase 2: Final Delta Sync]   --&gt; Trigger replication freeze &amp; promote final cloud instances
+[Phase 3: Route Reflector]    --&gt; Switch In-VPC Private DNS (*.mesh.internal) to new cloud IPs
+[Phase 4: Telemetry Arming]   --&gt; Load transpiled Prometheus Alertmanager rules (0 alert gaps)
+[Phase 5: Security Teardown]  --&gt; Revoke JIT management ports &amp; isolate legacy source VPC
+</code></pre></div>
+<hr />
+<h2 id="4-api-endpoints-data-contracts">4. API Endpoints &amp; Data Contracts</h2>
+<h3 id="41-schema-definitions-migrationtoolscoremodelspy">4.1 Schema Definitions (<code>migration_tools/core/models.py</code>)</h3>
+<div class="code-box"><div class="code-box-header"><span>python</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-python">class ReplicationEngineTarget(str, Enum):
+    AWS_MGN = &quot;AWS_MGN&quot;
+    GCP_MIGRATE = &quot;GCP_MIGRATE&quot;
+    AZURE_MIGRATE = &quot;AZURE_MIGRATE&quot;
+
+class ServerReplicationMapping(BaseModel):
+    source_hostname: str
+    source_ip: str
+    operating_system: str
+    target_subnet_cidr: str
+    target_private_ip: str
+    target_instance_type: str
+    target_dns_fqdn: str
+    launch_template_json: Dict[str, Any]
+    bootstrap_agent_command: str
+
+class ReplicationPlanResponse(BaseModel):
+    target_cloud: str
+    engine: ReplicationEngineTarget
+    target_region: str
+    target_supernet_cidr: str
+    server_count: int
+    mappings: List[ServerReplicationMapping]
+    agent_push_script_powershell: str
+    agent_push_script_bash: str
+    synchronized_cutover_script: str
+</code></pre></div>
+<h3 id="42-endpoint-specifications-migrationtoolsapiapppy">4.2 Endpoint Specifications (<code>migration_tools/api/app.py</code>)</h3>
+<ul>
+<li><code>POST /v1/telemetry/topology/replication-plan</code>
+<ul>
+<li><strong>Tags:</strong> <code>[&quot;Telemetry &amp; Topology&quot;, &quot;Lift &amp; Shift&quot;]</code></li>
+<li><strong>Summary:</strong> Generates complete cloud-native replication manifests, agent installation commands, and synchronized cutover scripts for AWS MGN, GCP Migrate, or Azure Migrate.</li>
+<li><strong>Response:</strong> <code>ReplicationPlanResponse</code></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="5-hyperscaler-strategic-value-ma-thesis">5. Hyperscaler Strategic Value &amp; M&amp;A Thesis</h2>
+<h3 id="51-the-strategic-dilemma-for-hyperscalers">5.1 The Strategic Dilemma for Hyperscalers</h3>
+<p>Hyperscalers (AWS, Google Cloud, Microsoft Azure) lose billions of dollars in potential enterprise cloud revenue because enterprise workloads are stuck on-premises or locked into competitor platforms:</p>
+<ul>
+<li><strong>The Problem:</strong> Moving raw disk blocks is cheap and solved. What prevents migrations is <strong>Translation Friction</strong>:
+<ol>
+<li>Rewriting infrastructure templates (CloudFormation $\leftrightarrow$ Terraform $\leftrightarrow$ Bicep).</li>
+<li>Migrating hundreds of complex Datadog/New Relic dashboards and monitors ($100k+ in SRE labor).</li>
+<li>Debugging broken hardcoded IPs and route tables after cutover.</li>
+</ol>
+</li>
+</ul>
+<h3 id="52-why-dcouplr-is-the-high-leverage-ma-target">5.2 Why <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> is the High-Leverage M&amp;A Target</h3>
+<p>By combining <strong>Landing Zone Synthesis</strong>, <strong>AST Observability Transpilation</strong>, and <strong>Cloud-Native Replication Orchestration</strong>, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> acts as the definitive &quot;Trojan Horse&quot; for hyperscaler corporate development teams:</p>
+<ol>
+<li><strong>For Google Cloud (GCP):</strong>
+<ul>
+<li>GCP struggles to displace AWS in legacy enterprises.</li>
+<li>With <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>, GCP sales teams can walk into AWS + Datadog enterprises and offer automated conversion of AWS infrastructure and Datadog alerts into Google Cloud Managed Prometheus and Compute Engine, with zero outbound data egress.</li>
+</ul>
+</li>
+<li><strong>For AWS:</strong>
+<ul>
+<li>AWS Migration Hub can integrate <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> as its primary orchestration brain to pull legacy VMware/bare-metal estates into AWS MGN while guaranteeing zero Datadog lock-in.</li>
+</ul>
+</li>
+<li><strong>For Microsoft Azure:</strong>
+<ul>
+<li>Azure Arc can embed <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> to extend governance and multi-cloud translation across on-prem, AWS, and GCP workloads.</li>
+</ul>
+</li>
+</ol>
+<h3 id="53-historical-acquisition-precedents">5.3 Historical Acquisition Precedents</h3>
+<p>Hyperscaler corporate development teams have a long history of acquiring migration accelerator technologies:</p>
+<ul>
+<li><strong>AWS:</strong> Acquired <strong>CloudEndure</strong> ($250M) for disk replication; acquired <strong>TSO Logic</strong> for TCO migration planning.</li>
+<li><strong>Google Cloud:</strong> Acquired <strong>Velostrata</strong> ($100M+) for streaming VM migration; acquired <strong>Cornerstone Technology</strong> for mainframe translation.</li>
+<li><strong>Microsoft:</strong> Acquired <strong>Movere</strong> for discovery and <strong>CloudKnox</strong> for permissions.</li>
+</ul>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> represents the next evolutionary step: <strong>The Universal Observability &amp; IaC Migration Orchestrator</strong>.</p>
+<hr />
+<h2 id="6-phased-implementation-roadmap">6. Phased Implementation Roadmap</h2>
+<ul>
+<li><strong>Phase 1: Model &amp; Manifest Generation Engine</strong>
+<ul>
+<li>Define <code>ReplicationPlanResponse</code> and provider-specific launch template synthesis in <code>migration_tools.api.telemetry</code>.</li>
+<li>Support AWS MGN EC2 launch template formatting and GCP Migrate group schemas.</li>
+</ul>
+</li>
+<li><strong>Phase 2: JIT Agent Bootstrap Script Generation</strong>
+<ul>
+<li>Synthesize automated <code>install_agent.ps1</code> (WinRM) and <code>install_agent.sh</code> (SSH) scripts with short-lived session token injection.</li>
+</ul>
+</li>
+<li><strong>Phase 3: Synchronized Cutover Orchestration Engine</strong>
+<ul>
+<li>Extend <code>cutover.sh</code> to include replication delta verification and automated promotion triggers.</li>
+</ul>
+</li>
+<li><strong>Phase 4: Dashboard UI Visualizer</strong>
+<ul>
+<li>Add a &quot;Replication &amp; Block Engine Orchestration&quot; tab to the Lift &amp; Shift modal in <code>dashboard.html</code> / <code>dashboard.js</code>.</li>
+</ul>
+</li>
+<li><strong>Phase 5: Test Verification &amp; Due Diligence Hardening</strong>
+<ul>
+<li>Add unit and integration tests asserting schema compliance, zero-exfiltration sanitization, and 100% test suite pass rate.</li>
+</ul>
+</li>
+</ul>
+</div>
+      <pre id="raw-view"><code># 🚀 `&lt;dcouplr/&gt;` Cloud-Native Block Replication Orchestration Specification
+
+**Document ID:** `VA-SPEC-ORCH-001`  
+**Classification:** Enterprise Systems Architecture &amp; Hyperscaler Workload Acquisition Blueprint  
+**Version:** 1.0.0 Approved Strategic Architecture  
+**Date:** 2026-10-25  
+**Target Entities:** AWS (AWS MGN), Google Cloud (GCP Migrate), Microsoft Azure (Azure Migrate)  
+**Security Standard:** In-VPC Zero-Egress Hermetic Interoperability  
+
+---
+
+## 1. Executive Summary &amp; Architectural Philosophy
+
+### 1.1 The Brain vs. The Muscle
+In enterprise cloud migrations, the technical challenge splits naturally into two distinct domains:
+* **The &quot;Muscle&quot; (Data Plane - Block Replication):** Streaming gigabytes or terabytes of raw operating system disk blocks (VMDK, VHD, QCOW2) across the network, kernel change block tracking (CBT), and VSS snapshot drivers. Cloud hyperscalers have already invested hundreds of millions of dollars building reliable, hardened cloud-native replication engines for this task.
+* **The &quot;Brain&quot; (Control Plane - `&lt;dcouplr/&gt;`):** Designing the destination VPC/subnet topology, remapping hardcoded legacy IPs to In-VPC Private DNS (`*.mesh.internal`), transpiling proprietary observability alerts (Datadog/Nagios $\to$ Prometheus/Grafana), and coordinating zero-downtime cutover sequences.
+
+```mermaid
+graph TD
+    subgraph The Brain: Control Plane [&lt;dcouplr/&gt; In-VPC Engine]
+        A[Legacy Server &amp; Network Discovery] --&gt; B[Parent /16 to Child /24 Subnet Planner]
+        B --&gt; C[OpenTofu / Terraform Target IaC]
+        B --&gt; D[Private DNS Remapping Table]
+        B --&gt; E[Mathematical AST Alert Transpiler]
+        B --&gt; F[Replication Manifest &amp; Launch Templates]
+    end
+
+    subgraph The Muscle: Data Plane [Cloud-Native Block Engines]
+        F --&gt; G1[AWS MGN: Application Migration Service]
+        F --&gt; G2[GCP Migrate for Compute Engine]
+        F --&gt; G3[Azure Migrate Server Replication]
+        G1 --&gt; H[Continuous Disk Block Sync: VMDK/VHD -&gt; Cloud Disks]
+        G2 --&gt; H
+        G3 --&gt; H
+    end
+
+    subgraph The Synchronized Cutover [&lt;dcouplr/&gt; Orchestrator]
+        H --&gt;|Delta Lag &lt; 1 min| I[5-Phase Zero-Downtime Cutover Script]
+        I --&gt; J1[Promote Final Cloud Instances]
+        I --&gt; J2[Flip In-VPC DNS Records]
+        I --&gt; J3[Arm Prometheus Alertmanager]
+        I --&gt; J4[Auto-Revoke Ephemeral JIT Ports]
+    end
+```
+
+### 1.2 Preservation of Architectural Decision D-05
+As codified in **Decision D-05** (`ProjectAssistant/phase-4/04-decisions.md`):
+&gt; *&quot;Exclude low-level VM disk block conversions (VMDK/QCOW2 binary bitstreams) from the compiler core. Virtual machine disk conversion is systems virtualization I/O; confining the compiler to declarative logic, policy, and telemetry avoids fatal engineering dilution.&quot;*
+
+By **orchestrating** proven cloud-native replication engines instead of rewriting hypervisor disk drivers from scratch, `&lt;dcouplr/&gt;` delivers complete, turnkey end-to-end migration while keeping its codebase lightweight, deterministic, and 100% zero-egress.
+
+---
+
+## 2. Hyperscaler Target Engine Matrix
+
+`&lt;dcouplr/&gt;` standardizes orchestration across the three primary hyperscalers:
+
+| Provider | Replication Engine | Agent Installer Package | Target Launch Artifact | Configuration API |
+| :--- | :--- | :--- | :--- | :--- |
+| **AWS** | **AWS Application Migration Service (AWS MGN)** | `AwsReplicationAgentInstaller.exe` (Win) / `aws-replication-installer-init.py` (Linux) | EC2 Launch Templates (`LaunchTemplateData`) + MGN Launch Settings | `aws mgn update-launch-configuration` |
+| **Google Cloud** | **Migrate to Virtual Machines (v4 / M4CE)** | `m4ce-agent.msi` (Win) / `m4ce-agent.deb` / `m4ce-agent.rpm` (Linux) | Compute Engine Target Instance Template + Migration Group JSON | `gcloud vms migration-groups` |
+| **Microsoft Azure** | **Azure Migrate: Server Migration** | Azure Site Recovery Mobility Service (`ASR_Deployment_Tool.exe`) | Azure Virtual Network &amp; Subnet Allocation JSON | `az migrate vm create-replication` |
+
+---
+
+## 3. The 3-Tier Integration Architecture
+
+### Tier 1: Manifest &amp; Launch Template Synthesis
+When `&lt;dcouplr/&gt;` analyzes a source VPC or legacy baremetal cluster (`POST /v1/telemetry/topology/lift-and-shift`), it automatically generates the provider-specific replication launch templates alongside the OpenTofu IaC:
+
+```json
+{
+  &quot;source_cluster_id&quot;: &quot;dc-onprem-core-01&quot;,
+  &quot;target_cloud&quot;: &quot;AWS&quot;,
+  &quot;target_region&quot;: &quot;us-east-1&quot;,
+  &quot;target_supernet_cidr&quot;: &quot;10.200.0.0/16&quot;,
+  &quot;servers&quot;: [
+    {
+      &quot;source_hostname&quot;: &quot;bare-metal-kvm-01&quot;,
+      &quot;source_ip&quot;: &quot;172.16.1.15&quot;,
+      &quot;operating_system&quot;: &quot;linux&quot;,
+      &quot;target_subnet_cidr&quot;: &quot;10.200.10.0/24&quot;,
+      &quot;target_private_ip&quot;: &quot;10.200.10.15&quot;,
+      &quot;target_instance_type&quot;: &quot;m6i.xlarge&quot;,
+      &quot;target_dns_fqdn&quot;: &quot;bare-metal-kvm-01.mesh.internal&quot;,
+      &quot;target_security_group_tags&quot;: [&quot;mesh-private-app&quot;],
+      &quot;aws_mgn_launch_template&quot;: {
+        &quot;NetworkInterfaces&quot;: [
+          {
+            &quot;DeviceIndex&quot;: 0,
+            &quot;SubnetId&quot;: &quot;var.subnet_app_private_id&quot;,
+            &quot;PrivateIpAddress&quot;: &quot;10.200.10.15&quot;,
+            &quot;AssociatePublicIpAddress&quot;: false,
+            &quot;Groups&quot;: [&quot;var.sg_mesh_internal_id&quot;]
+          }
+        ],
+        &quot;InstanceType&quot;: &quot;m6i.xlarge&quot;
+      }
+    }
+  ]
+}
+```
+
+### Tier 2: Ephemeral Just-In-Time (JIT) Agent Push
+Cloud provider agents must be installed inside the guest OS. `&lt;dcouplr/&gt;` automates this without leaving persistent management ports open:
+1. **Private CIDR Lockdown:** Ingress ports (WinRM 5985/5986, SSH 22) are bound strictly to the in-VPC migration runner CIDR (`10.200.0.0/16`). Zero exposure to `0.0.0.0/0`.
+2. **One-Command Agent Bootstrap:**
+   - **Windows:** PowerShell script triggered over WinRM executing the provider installer with temporary, short-lived IAM session credentials.
+   - **Linux:** Bash script over SSH executing the installer package.
+3. **Automated Exit Trap:** If agent bootstrap completes or aborts, `&lt;dcouplr/&gt;`&#x27;s cutover engine guarantees management ports are immediately revoked:
+   ```bash
+   cleanup() {
+     echo &quot;[Security Teardown] Automatically revoking JIT WinRM &amp; SSH ports...&quot;
+     tofu apply -auto-approve -var=&quot;enable_migration_mgmt_ports=false&quot; &gt;/dev/null 2&gt;&amp;1 || true
+   }
+   trap cleanup EXIT
+   ```
+
+### Tier 3: Synchronized 5-Phase Cutover Execution
+Replication tools replicate blocks, but only `&lt;dcouplr/&gt;` coordinates the live application traffic switch:
+
+```
+[Phase 1: Pre-Flight Health] --&gt; Verify target cloud subnets respond 200 OK
+[Phase 2: Final Delta Sync]   --&gt; Trigger replication freeze &amp; promote final cloud instances
+[Phase 3: Route Reflector]    --&gt; Switch In-VPC Private DNS (*.mesh.internal) to new cloud IPs
+[Phase 4: Telemetry Arming]   --&gt; Load transpiled Prometheus Alertmanager rules (0 alert gaps)
+[Phase 5: Security Teardown]  --&gt; Revoke JIT management ports &amp; isolate legacy source VPC
+```
+
+---
+
+## 4. API Endpoints &amp; Data Contracts
+
+### 4.1 Schema Definitions (`migration_tools/core/models.py`)
+
+```python
+class ReplicationEngineTarget(str, Enum):
+    AWS_MGN = &quot;AWS_MGN&quot;
+    GCP_MIGRATE = &quot;GCP_MIGRATE&quot;
+    AZURE_MIGRATE = &quot;AZURE_MIGRATE&quot;
+
+class ServerReplicationMapping(BaseModel):
+    source_hostname: str
+    source_ip: str
+    operating_system: str
+    target_subnet_cidr: str
+    target_private_ip: str
+    target_instance_type: str
+    target_dns_fqdn: str
+    launch_template_json: Dict[str, Any]
+    bootstrap_agent_command: str
+
+class ReplicationPlanResponse(BaseModel):
+    target_cloud: str
+    engine: ReplicationEngineTarget
+    target_region: str
+    target_supernet_cidr: str
+    server_count: int
+    mappings: List[ServerReplicationMapping]
+    agent_push_script_powershell: str
+    agent_push_script_bash: str
+    synchronized_cutover_script: str
+```
+
+### 4.2 Endpoint Specifications (`migration_tools/api/app.py`)
+
+* `POST /v1/telemetry/topology/replication-plan`
+  * **Tags:** `[&quot;Telemetry &amp; Topology&quot;, &quot;Lift &amp; Shift&quot;]`
+  * **Summary:** Generates complete cloud-native replication manifests, agent installation commands, and synchronized cutover scripts for AWS MGN, GCP Migrate, or Azure Migrate.
+  * **Response:** `ReplicationPlanResponse`
+
+---
+
+## 5. Hyperscaler Strategic Value &amp; M&amp;A Thesis
+
+### 5.1 The Strategic Dilemma for Hyperscalers
+Hyperscalers (AWS, Google Cloud, Microsoft Azure) lose billions of dollars in potential enterprise cloud revenue because enterprise workloads are stuck on-premises or locked into competitor platforms:
+* **The Problem:** Moving raw disk blocks is cheap and solved. What prevents migrations is **Translation Friction**:
+  1. Rewriting infrastructure templates (CloudFormation $\leftrightarrow$ Terraform $\leftrightarrow$ Bicep).
+  2. Migrating hundreds of complex Datadog/New Relic dashboards and monitors ($100k+ in SRE labor).
+  3. Debugging broken hardcoded IPs and route tables after cutover.
+
+### 5.2 Why `&lt;dcouplr/&gt;` is the High-Leverage M&amp;A Target
+By combining **Landing Zone Synthesis**, **AST Observability Transpilation**, and **Cloud-Native Replication Orchestration**, `&lt;dcouplr/&gt;` acts as the definitive &quot;Trojan Horse&quot; for hyperscaler corporate development teams:
+
+1. **For Google Cloud (GCP):**
+   * GCP struggles to displace AWS in legacy enterprises.
+   * With `&lt;dcouplr/&gt;`, GCP sales teams can walk into AWS + Datadog enterprises and offer automated conversion of AWS infrastructure and Datadog alerts into Google Cloud Managed Prometheus and Compute Engine, with zero outbound data egress.
+2. **For AWS:**
+   * AWS Migration Hub can integrate `&lt;dcouplr/&gt;` as its primary orchestration brain to pull legacy VMware/bare-metal estates into AWS MGN while guaranteeing zero Datadog lock-in.
+3. **For Microsoft Azure:**
+   * Azure Arc can embed `&lt;dcouplr/&gt;` to extend governance and multi-cloud translation across on-prem, AWS, and GCP workloads.
+
+### 5.3 Historical Acquisition Precedents
+Hyperscaler corporate development teams have a long history of acquiring migration accelerator technologies:
+* **AWS:** Acquired **CloudEndure** ($250M) for disk replication; acquired **TSO Logic** for TCO migration planning.
+* **Google Cloud:** Acquired **Velostrata** ($100M+) for streaming VM migration; acquired **Cornerstone Technology** for mainframe translation.
+* **Microsoft:** Acquired **Movere** for discovery and **CloudKnox** for permissions.
+
+`&lt;dcouplr/&gt;` represents the next evolutionary step: **The Universal Observability &amp; IaC Migration Orchestrator**.
+
+---
+
+## 6. Phased Implementation Roadmap
+
+* **Phase 1: Model &amp; Manifest Generation Engine**
+  * Define `ReplicationPlanResponse` and provider-specific launch template synthesis in `migration_tools.api.telemetry`.
+  * Support AWS MGN EC2 launch template formatting and GCP Migrate group schemas.
+* **Phase 2: JIT Agent Bootstrap Script Generation**
+  * Synthesize automated `install_agent.ps1` (WinRM) and `install_agent.sh` (SSH) scripts with short-lived session token injection.
+* **Phase 3: Synchronized Cutover Orchestration Engine**
+  * Extend `cutover.sh` to include replication delta verification and automated promotion triggers.
+* **Phase 4: Dashboard UI Visualizer**
+  * Add a &quot;Replication &amp; Block Engine Orchestration&quot; tab to the Lift &amp; Shift modal in `dashboard.html` / `dashboard.js`.
+* **Phase 5: Test Verification &amp; Due Diligence Hardening**
+  * Add unit and integration tests asserting schema compliance, zero-exfiltration sanitization, and 100% test suite pass rate.
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># 🚀 `&lt;dcouplr/&gt;` Cloud-Native Block Replication Orchestration Specification
+
+**Document ID:** `VA-SPEC-ORCH-001`  
+**Classification:** Enterprise Systems Architecture &amp; Hyperscaler Workload Acquisition Blueprint  
+**Version:** 1.0.0 Approved Strategic Architecture  
+**Date:** 2026-10-25  
+**Target Entities:** AWS (AWS MGN), Google Cloud (GCP Migrate), Microsoft Azure (Azure Migrate)  
+**Security Standard:** In-VPC Zero-Egress Hermetic Interoperability  
+
+---
+
+## 1. Executive Summary &amp; Architectural Philosophy
+
+### 1.1 The Brain vs. The Muscle
+In enterprise cloud migrations, the technical challenge splits naturally into two distinct domains:
+* **The &quot;Muscle&quot; (Data Plane - Block Replication):** Streaming gigabytes or terabytes of raw operating system disk blocks (VMDK, VHD, QCOW2) across the network, kernel change block tracking (CBT), and VSS snapshot drivers. Cloud hyperscalers have already invested hundreds of millions of dollars building reliable, hardened cloud-native replication engines for this task.
+* **The &quot;Brain&quot; (Control Plane - `&lt;dcouplr/&gt;`):** Designing the destination VPC/subnet topology, remapping hardcoded legacy IPs to In-VPC Private DNS (`*.mesh.internal`), transpiling proprietary observability alerts (Datadog/Nagios $\to$ Prometheus/Grafana), and coordinating zero-downtime cutover sequences.
+
+```mermaid
+graph TD
+    subgraph The Brain: Control Plane [&lt;dcouplr/&gt; In-VPC Engine]
+        A[Legacy Server &amp; Network Discovery] --&gt; B[Parent /16 to Child /24 Subnet Planner]
+        B --&gt; C[OpenTofu / Terraform Target IaC]
+        B --&gt; D[Private DNS Remapping Table]
+        B --&gt; E[Mathematical AST Alert Transpiler]
+        B --&gt; F[Replication Manifest &amp; Launch Templates]
+    end
+
+    subgraph The Muscle: Data Plane [Cloud-Native Block Engines]
+        F --&gt; G1[AWS MGN: Application Migration Service]
+        F --&gt; G2[GCP Migrate for Compute Engine]
+        F --&gt; G3[Azure Migrate Server Replication]
+        G1 --&gt; H[Continuous Disk Block Sync: VMDK/VHD -&gt; Cloud Disks]
+        G2 --&gt; H
+        G3 --&gt; H
+    end
+
+    subgraph The Synchronized Cutover [&lt;dcouplr/&gt; Orchestrator]
+        H --&gt;|Delta Lag &lt; 1 min| I[5-Phase Zero-Downtime Cutover Script]
+        I --&gt; J1[Promote Final Cloud Instances]
+        I --&gt; J2[Flip In-VPC DNS Records]
+        I --&gt; J3[Arm Prometheus Alertmanager]
+        I --&gt; J4[Auto-Revoke Ephemeral JIT Ports]
+    end
+```
+
+### 1.2 Preservation of Architectural Decision D-05
+As codified in **Decision D-05** (`ProjectAssistant/phase-4/04-decisions.md`):
+&gt; *&quot;Exclude low-level VM disk block conversions (VMDK/QCOW2 binary bitstreams) from the compiler core. Virtual machine disk conversion is systems virtualization I/O; confining the compiler to declarative logic, policy, and telemetry avoids fatal engineering dilution.&quot;*
+
+By **orchestrating** proven cloud-native replication engines instead of rewriting hypervisor disk drivers from scratch, `&lt;dcouplr/&gt;` delivers complete, turnkey end-to-end migration while keeping its codebase lightweight, deterministic, and 100% zero-egress.
+
+---
+
+## 2. Hyperscaler Target Engine Matrix
+
+`&lt;dcouplr/&gt;` standardizes orchestration across the three primary hyperscalers:
+
+| Provider | Replication Engine | Agent Installer Package | Target Launch Artifact | Configuration API |
+| :--- | :--- | :--- | :--- | :--- |
+| **AWS** | **AWS Application Migration Service (AWS MGN)** | `AwsReplicationAgentInstaller.exe` (Win) / `aws-replication-installer-init.py` (Linux) | EC2 Launch Templates (`LaunchTemplateData`) + MGN Launch Settings | `aws mgn update-launch-configuration` |
+| **Google Cloud** | **Migrate to Virtual Machines (v4 / M4CE)** | `m4ce-agent.msi` (Win) / `m4ce-agent.deb` / `m4ce-agent.rpm` (Linux) | Compute Engine Target Instance Template + Migration Group JSON | `gcloud vms migration-groups` |
+| **Microsoft Azure** | **Azure Migrate: Server Migration** | Azure Site Recovery Mobility Service (`ASR_Deployment_Tool.exe`) | Azure Virtual Network &amp; Subnet Allocation JSON | `az migrate vm create-replication` |
+
+---
+
+## 3. The 3-Tier Integration Architecture
+
+### Tier 1: Manifest &amp; Launch Template Synthesis
+When `&lt;dcouplr/&gt;` analyzes a source VPC or legacy baremetal cluster (`POST /v1/telemetry/topology/lift-and-shift`), it automatically generates the provider-specific replication launch templates alongside the OpenTofu IaC:
+
+```json
+{
+  &quot;source_cluster_id&quot;: &quot;dc-onprem-core-01&quot;,
+  &quot;target_cloud&quot;: &quot;AWS&quot;,
+  &quot;target_region&quot;: &quot;us-east-1&quot;,
+  &quot;target_supernet_cidr&quot;: &quot;10.200.0.0/16&quot;,
+  &quot;servers&quot;: [
+    {
+      &quot;source_hostname&quot;: &quot;bare-metal-kvm-01&quot;,
+      &quot;source_ip&quot;: &quot;172.16.1.15&quot;,
+      &quot;operating_system&quot;: &quot;linux&quot;,
+      &quot;target_subnet_cidr&quot;: &quot;10.200.10.0/24&quot;,
+      &quot;target_private_ip&quot;: &quot;10.200.10.15&quot;,
+      &quot;target_instance_type&quot;: &quot;m6i.xlarge&quot;,
+      &quot;target_dns_fqdn&quot;: &quot;bare-metal-kvm-01.mesh.internal&quot;,
+      &quot;target_security_group_tags&quot;: [&quot;mesh-private-app&quot;],
+      &quot;aws_mgn_launch_template&quot;: {
+        &quot;NetworkInterfaces&quot;: [
+          {
+            &quot;DeviceIndex&quot;: 0,
+            &quot;SubnetId&quot;: &quot;var.subnet_app_private_id&quot;,
+            &quot;PrivateIpAddress&quot;: &quot;10.200.10.15&quot;,
+            &quot;AssociatePublicIpAddress&quot;: false,
+            &quot;Groups&quot;: [&quot;var.sg_mesh_internal_id&quot;]
+          }
+        ],
+        &quot;InstanceType&quot;: &quot;m6i.xlarge&quot;
+      }
+    }
+  ]
+}
+```
+
+### Tier 2: Ephemeral Just-In-Time (JIT) Agent Push
+Cloud provider agents must be installed inside the guest OS. `&lt;dcouplr/&gt;` automates this without leaving persistent management ports open:
+1. **Private CIDR Lockdown:** Ingress ports (WinRM 5985/5986, SSH 22) are bound strictly to the in-VPC migration runner CIDR (`10.200.0.0/16`). Zero exposure to `0.0.0.0/0`.
+2. **One-Command Agent Bootstrap:**
+   - **Windows:** PowerShell script triggered over WinRM executing the provider installer with temporary, short-lived IAM session credentials.
+   - **Linux:** Bash script over SSH executing the installer package.
+3. **Automated Exit Trap:** If agent bootstrap completes or aborts, `&lt;dcouplr/&gt;`&#x27;s cutover engine guarantees management ports are immediately revoked:
+   ```bash
+   cleanup() {
+     echo &quot;[Security Teardown] Automatically revoking JIT WinRM &amp; SSH ports...&quot;
+     tofu apply -auto-approve -var=&quot;enable_migration_mgmt_ports=false&quot; &gt;/dev/null 2&gt;&amp;1 || true
+   }
+   trap cleanup EXIT
+   ```
+
+### Tier 3: Synchronized 5-Phase Cutover Execution
+Replication tools replicate blocks, but only `&lt;dcouplr/&gt;` coordinates the live application traffic switch:
+
+```
+[Phase 1: Pre-Flight Health] --&gt; Verify target cloud subnets respond 200 OK
+[Phase 2: Final Delta Sync]   --&gt; Trigger replication freeze &amp; promote final cloud instances
+[Phase 3: Route Reflector]    --&gt; Switch In-VPC Private DNS (*.mesh.internal) to new cloud IPs
+[Phase 4: Telemetry Arming]   --&gt; Load transpiled Prometheus Alertmanager rules (0 alert gaps)
+[Phase 5: Security Teardown]  --&gt; Revoke JIT management ports &amp; isolate legacy source VPC
+```
+
+---
+
+## 4. API Endpoints &amp; Data Contracts
+
+### 4.1 Schema Definitions (`migration_tools/core/models.py`)
+
+```python
+class ReplicationEngineTarget(str, Enum):
+    AWS_MGN = &quot;AWS_MGN&quot;
+    GCP_MIGRATE = &quot;GCP_MIGRATE&quot;
+    AZURE_MIGRATE = &quot;AZURE_MIGRATE&quot;
+
+class ServerReplicationMapping(BaseModel):
+    source_hostname: str
+    source_ip: str
+    operating_system: str
+    target_subnet_cidr: str
+    target_private_ip: str
+    target_instance_type: str
+    target_dns_fqdn: str
+    launch_template_json: Dict[str, Any]
+    bootstrap_agent_command: str
+
+class ReplicationPlanResponse(BaseModel):
+    target_cloud: str
+    engine: ReplicationEngineTarget
+    target_region: str
+    target_supernet_cidr: str
+    server_count: int
+    mappings: List[ServerReplicationMapping]
+    agent_push_script_powershell: str
+    agent_push_script_bash: str
+    synchronized_cutover_script: str
+```
+
+### 4.2 Endpoint Specifications (`migration_tools/api/app.py`)
+
+* `POST /v1/telemetry/topology/replication-plan`
+  * **Tags:** `[&quot;Telemetry &amp; Topology&quot;, &quot;Lift &amp; Shift&quot;]`
+  * **Summary:** Generates complete cloud-native replication manifests, agent installation commands, and synchronized cutover scripts for AWS MGN, GCP Migrate, or Azure Migrate.
+  * **Response:** `ReplicationPlanResponse`
+
+---
+
+## 5. Hyperscaler Strategic Value &amp; M&amp;A Thesis
+
+### 5.1 The Strategic Dilemma for Hyperscalers
+Hyperscalers (AWS, Google Cloud, Microsoft Azure) lose billions of dollars in potential enterprise cloud revenue because enterprise workloads are stuck on-premises or locked into competitor platforms:
+* **The Problem:** Moving raw disk blocks is cheap and solved. What prevents migrations is **Translation Friction**:
+  1. Rewriting infrastructure templates (CloudFormation $\leftrightarrow$ Terraform $\leftrightarrow$ Bicep).
+  2. Migrating hundreds of complex Datadog/New Relic dashboards and monitors ($100k+ in SRE labor).
+  3. Debugging broken hardcoded IPs and route tables after cutover.
+
+### 5.2 Why `&lt;dcouplr/&gt;` is the High-Leverage M&amp;A Target
+By combining **Landing Zone Synthesis**, **AST Observability Transpilation**, and **Cloud-Native Replication Orchestration**, `&lt;dcouplr/&gt;` acts as the definitive &quot;Trojan Horse&quot; for hyperscaler corporate development teams:
+
+1. **For Google Cloud (GCP):**
+   * GCP struggles to displace AWS in legacy enterprises.
+   * With `&lt;dcouplr/&gt;`, GCP sales teams can walk into AWS + Datadog enterprises and offer automated conversion of AWS infrastructure and Datadog alerts into Google Cloud Managed Prometheus and Compute Engine, with zero outbound data egress.
+2. **For AWS:**
+   * AWS Migration Hub can integrate `&lt;dcouplr/&gt;` as its primary orchestration brain to pull legacy VMware/bare-metal estates into AWS MGN while guaranteeing zero Datadog lock-in.
+3. **For Microsoft Azure:**
+   * Azure Arc can embed `&lt;dcouplr/&gt;` to extend governance and multi-cloud translation across on-prem, AWS, and GCP workloads.
+
+### 5.3 Historical Acquisition Precedents
+Hyperscaler corporate development teams have a long history of acquiring migration accelerator technologies:
+* **AWS:** Acquired **CloudEndure** ($250M) for disk replication; acquired **TSO Logic** for TCO migration planning.
+* **Google Cloud:** Acquired **Velostrata** ($100M+) for streaming VM migration; acquired **Cornerstone Technology** for mainframe translation.
+* **Microsoft:** Acquired **Movere** for discovery and **CloudKnox** for permissions.
+
+`&lt;dcouplr/&gt;` represents the next evolutionary step: **The Universal Observability &amp; IaC Migration Orchestrator**.
+
+---
+
+## 6. Phased Implementation Roadmap
+
+* **Phase 1: Model &amp; Manifest Generation Engine**
+  * Define `ReplicationPlanResponse` and provider-specific launch template synthesis in `migration_tools.api.telemetry`.
+  * Support AWS MGN EC2 launch template formatting and GCP Migrate group schemas.
+* **Phase 2: JIT Agent Bootstrap Script Generation**
+  * Synthesize automated `install_agent.ps1` (WinRM) and `install_agent.sh` (SSH) scripts with short-lived session token injection.
+* **Phase 3: Synchronized Cutover Orchestration Engine**
+  * Extend `cutover.sh` to include replication delta verification and automated promotion triggers.
+* **Phase 4: Dashboard UI Visualizer**
+  * Add a &quot;Replication &amp; Block Engine Orchestration&quot; tab to the Lift &amp; Shift modal in `dashboard.html` / `dashboard.js`.
+* **Phase 5: Test Verification &amp; Due Diligence Hardening**
+  * Add unit and integration tests asserting schema compliance, zero-exfiltration sanitization, and 100% test suite pass rate.
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

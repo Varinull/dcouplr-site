@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt;: Zero-Egress In-VPC Observability &amp; IaC Transpiler</title>
+  
+  <!-- Primary SEO Meta Tags -->
+  <meta name="description" content="Modernize your cloud stack without breaking production. &lt;dcouplr/&gt; translates Datadog monitors, CloudWatch alerts, and Terraform HCL directly into Grafana and OpenTofu in-memory with zero egress.">
+  <meta name="keywords" content="datadog to grafana, terraform to opentofu, observability migration, in-vpc transpiler, zero-egress, finops cloud migration, prometheus rules generator, ast transpiler">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <link rel="canonical" href="https://dcouplr.com/">
+
+  <!-- Open Graph / Facebook / LinkedIn / Slack -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="dcouplr">
+  <meta property="og:url" content="https://dcouplr.com/">
+  <meta property="og:title" content="&lt;dcouplr/&gt;: Zero-Egress In-VPC Observability &amp; IaC Transpiler">
+  <meta property="og:description" content="Modernize your cloud stack without breaking production. &lt;dcouplr/&gt; translates Datadog monitors, CloudWatch alerts, and Terraform HCL directly into Grafana and OpenTofu in-memory.">
+  <meta property="og:image" content="https://dcouplr.com/static/dcouplr-wordmark.jpg">
+  <meta property="og:image:alt" content="dcouplr Zero-Egress Transpiler">
+
+  <!-- Twitter / X Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://dcouplr.com/">
+  <meta name="twitter:title" content="&lt;dcouplr/&gt;: Zero-Egress In-VPC Observability &amp; IaC Transpiler">
+  <meta name="twitter:description" content="Modernize your cloud stack without breaking production. &lt;dcouplr/&gt; translates Datadog monitors, CloudWatch alerts, and Terraform HCL directly into Grafana and OpenTofu in-memory.">
+  <meta name="twitter:image" content="https://dcouplr.com/static/dcouplr-wordmark.jpg">
+
+  <!-- JSON-LD Schema Markup (Structured Data) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://dcouplr.com/#software",
+        "name": "dcouplr",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Linux, macOS, Windows, Kubernetes, Cloud (AWS, GCP, Azure)",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock",
+          "description": "Open Core Apache 2.0 Community Edition"
+        },
+        "description": "Zero-Egress Observability & IaC Transpiler for converting Datadog monitors and Terraform HCL to Grafana Alerting, Prometheus rules, and OpenTofu in volatile memory.",
+        "url": "https://dcouplr.com/",
+        "softwareVersion": "1.0.0",
+        "license": "https://www.apache.org/licenses/LICENSE-2.0",
+        "author": {
+          "@type": "Organization",
+          "name": "Varinull"
+        },
+        "featureList": [
+          "In-Memory AST Translation under 2ms",
+          "Zero-Egress In-VPC Execution",
+          "Datadog to Grafana Alerting Transpilation",
+          "Terraform HCL to OpenTofu Migration",
+          "Air-Gapped & Offline Architecture"
+        ]
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://dcouplr.com/#organization",
+        "name": "dcouplr by Varinull",
+        "url": "https://dcouplr.com/",
+        "logo": "https://dcouplr.com/static/dcouplr-logo.svg",
+        "sameAs": [
+          "https://github.com/Varinull/dcouplr-community",
+          "https://github.com/Varinull/dcouplr-community"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://dcouplr.com/#website",
+        "url": "https://dcouplr.com/",
+        "name": "dcouplr",
+        "description": "Modernize your cloud stack without breaking production. Zero-Egress In-VPC Observability & IaC Transpiler.",
+        "publisher": {
+          "@id": "https://dcouplr.com/#organization"
+        }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="/static/styles.css?v=20261028_fluid_v2">
+  <link rel="icon" type="image/png" href="/static/favicon.png?v=6">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=6">
+  <style>
+    /* Mobile Fluid Typography Shield */
+    @media (max-width: 992px) {
+      .site-header .nav-links { display: none !important; }
+      .site-header .header-inner { padding: 0.65rem 1rem !important; }
+      .site-header .nav-actions .btn-nav-secondary { display: none !important; }
+      .site-header .nav-actions .btn-nav-primary { font-size: 0.76rem !important; padding: 0.4rem 0.75rem !important; }
+    }
+    .hero-section {
+      padding: clamp(3rem, 7vw, 5.5rem) clamp(0.75rem, 3vw, 1.5rem) 3.5rem !important;
+      overflow-x: hidden !important;
+    }
+    .hero-container {
+      width: 100% !important;
+      max-width: min(1200px, 94vw) !important;
+      padding: 0 clamp(0.25rem, 1.5vw, 1.5rem) !important;
+      box-sizing: border-box !important;
+    }
+    .hero-tag {
+      display: inline-flex !important;
+      flex-wrap: wrap !important;
+      justify-content: center !important;
+      gap: 6px 8px !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+      font-size: clamp(0.68rem, 2.2vw, 0.78rem) !important;
+      line-height: 1.4 !important;
+      text-align: center !important;
+    }
+    .hero-heading {
+      font-size: clamp(1.75rem, 5.5vw, 4.2rem) !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.03em !important;
+      line-height: 1.15 !important;
+      margin-bottom: 1.25rem !important;
+      text-align: center !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+      hyphens: auto !important;
+      max-width: 960px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    .hero-lead {
+      font-size: clamp(0.92rem, 2.2vw, 1.22rem) !important;
+      line-height: 1.6 !important;
+      max-width: 780px !important;
+      width: 100% !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+      box-sizing: border-box !important;
+    }
+    @media (max-width: 640px) {
+      .hero-section { padding-top: 2.75rem !important; padding-bottom: 2rem !important; }
+      .hero-tag { border-radius: 12px !important; padding: 6px 10px !important; margin-bottom: 1.1rem !important; }
+      .hero-heading {
+        font-size: clamp(1.55rem, 7vw, 2.25rem) !important;
+        line-height: 1.2 !important;
+        letter-spacing: -0.02em !important;
+        margin-bottom: 1rem !important;
+      }
+      .hero-lead { font-size: 0.92rem !important; line-height: 1.55 !important; margin-bottom: 1.75rem !important; }
+      .hero-actions { flex-direction: column !important; width: 100% !important; gap: 0.75rem !important; }
+      .hero-actions a { width: 100% !important; max-width: 340px !important; justify-content: center !important; }
+      .terminal-platform-tabs { flex-wrap: wrap !important; justify-content: center !important; width: 100% !important; }
+      .term-tab-btn { flex: 1 1 45% !important; text-align: center !important; }
+    }
+    @media (max-width: 380px) {
+      .hero-heading { font-size: 1.45rem !important; line-height: 1.22 !important; }
+      .hero-tag { font-size: 0.68rem !important; gap: 4px !important; }
+      .hero-tag .tag-separator { display: none !important; }
+    }
+  </style>
+</head>
+<body class="landing-body">
+  <!-- Top Navigation Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-area">
+        <a href="/" class="brand-link" aria-label="&lt;dcouplr/&gt; Home">
+          <div class="dcouplr-logo" title="&lt;dcouplr/&gt;">
+            <span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span>
+          </div>
+          <div class="brand-text">
+            <span class="brand-badge">v1.0.0</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Main Navigation Links -->
+      <nav class="nav-links" aria-label="Main Navigation">
+        <a href="#solutions" class="nav-link">Solutions</a>
+        <a href="#how-it-works" class="nav-link">How It Works</a>
+        <a href="#benefits" class="nav-link">Enterprise Value</a>
+        <a href="#ecosystem" class="nav-link">Ecosystem</a>
+        <a href="#comparison" class="nav-link">Operating Model</a>
+        <a href="#finops" class="nav-link">FinOps ROI</a>
+        <a href="#pricing" class="nav-link">Pricing</a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="nav-actions">
+        <a href="/docs" class="btn-nav-secondary" id="nav-docs" title="Interactive API &amp; Customer Technical Documentation">📖 Tech Docs</a>
+        <a href="#download-hub" class="btn-nav-primary btn-primary-cta" id="nav-download" title="Download dcouplr CLI Binary &amp; Enterprise Packages">⬇️ Download CLI</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 1. HERO SECTION -->
+  <section class="hero-section bg-obsidian-base" id="overview">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-container">
+      <!-- Announcement / Verification Tag -->
+      <div class="hero-tag">
+        <span class="tag-badge" style="background: linear-gradient(135deg, #06b6d4, #6366f1); color: #fff;">Turnkey Cloud Migration</span>
+        <span class="tag-separator">/</span>
+        <span class="tag-text">Zero-Egress Control Plane for AWS, GCP &amp; Azure</span>
+      </div>
+
+      <!-- Headline -->
+      <h1 class="hero-heading">
+        The Zero-Egress Control Plane for Enterprise Cloud Modernization.
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="hero-lead">
+        Eliminate manual IaC rewrites, prevent observability blind spots, and resolve cloud IP collisions without sending a single byte of telemetry outside your private network perimeter. <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> operates 100% inside your VPC boundary, transforming multi-month migration projects into automated, predictable rollouts.
+      </p>
+
+      <!-- Primary Action Buttons -->
+      <div class="hero-actions">
+        <a href="#download-hub" class="btn-hero-main btn-primary-cta" id="translate-btn" title="Download &amp; Install dcouplr CLI">
+          <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Download Free CLI &bull; v1.0.0</span>
+        </a>
+        <a href="/docs" class="btn-hero-dashboard" id="hero-btn-docs" title="Explore Interactive API &amp; Customer Technical Documentation">
+          <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <span>📖 Tech Docs</span>
+        </a>
+        <a href="#finops" class="btn-hero-ghost" style="border-color: rgba(6, 182, 212, 0.4); color: #67e8f9;" title="Calculate Your Enterprise Migration &amp; Licensing ROI">
+          <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+          <span>📊 Calculate ROI</span>
+        </a>
+      </div>
+
+      <!-- Quick Platform Switcher Tabs -->
+      <div class="terminal-platform-tabs" id="hero-platform-tabs" role="tablist">
+        <button type="button" class="term-tab-btn active" data-cmd="curl -fsSL https://dcouplr.com/install.sh | sh &amp;&amp; dcouplr doctor" data-label="Linux / macOS">🐧 Linux &amp; 🍏 macOS</button>
+        <button type="button" class="term-tab-btn" data-cmd="irm https://dcouplr.com/install.ps1 | iex" data-label="Windows PowerShell">🪟 Windows (PowerShell)</button>
+        <button type="button" class="term-tab-btn" data-cmd="git clone https://github.com/Varinull/dcouplr-community.git &amp;&amp; cd dcouplr &amp;&amp; pip install -e ." data-label="Python (Git / Local)">🐍 Python (Git / Local)</button>
+        <button type="button" class="term-tab-btn" data-cmd="docker build -t dcouplr https://github.com/Varinull/dcouplr-community.git#main &amp;&amp; docker run --rm dcouplr doctor" data-label="Docker">📦 Docker / OCI</button>
+      </div>
+
+      <!-- Terminal Command Bar -->
+      <div class="terminal-bar" id="download" aria-label="Quick CLI Installation Command">
+        <div class="terminal-bar-inner">
+          <span class="terminal-prompt">$</span>
+          <code class="terminal-command" id="cli-cmd-text">curl -fsSL https://dcouplr.com/install.sh | sh &amp;&amp; dcouplr doctor</code>
+          <button type="button" class="terminal-copy-btn" id="cli-copy-btn" aria-label="Copy installation command">
+            <svg class="copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span class="copy-label">Copy</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Value & Trust Metric Strip -->
+      <div class="telemetry-strip" aria-label="Enterprise Value Metrics">
+        <div class="telemetry-item">
+          <div class="telemetry-value" id="strip-egress">100% In-VPC</div>
+          <div class="telemetry-label">Zero Cloud Data Egress</div>
+        </div>
+        <div class="telemetry-divider"></div>
+        <div class="telemetry-item">
+          <div class="telemetry-value" id="strip-latency">&lt; 20 ms</div>
+          <div class="telemetry-label">Automated AST Transpilation</div>
+        </div>
+        <div class="telemetry-divider"></div>
+        <div class="telemetry-item">
+          <div class="telemetry-value" id="strip-velocity">10x Faster</div>
+          <div class="telemetry-label">Migration Wave Velocity</div>
+        </div>
+        <div class="telemetry-divider"></div>
+        <div class="telemetry-item">
+          <div class="telemetry-value" id="strip-parity">$0 Surcharges</div>
+          <div class="telemetry-label">Predictable Node Subscriptions</div>
+        </div>
+        <a href="/docs" class="telemetry-strip-action" title="View Customer Technical Documentation">
+          <span class="telemetry-strip-pill">Tech Docs ➔</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. ENTERPRISE SOLUTIONS: THE 3 UNSOLVED OBSTACLES -->
+  <section class="section-container bg-obsidian-elevated" id="solutions">
+    <div class="section-header">
+      <div class="section-kicker">Enterprise Solutions</div>
+      <h2 class="section-title">Overcome the 3 Unsolved Enterprise Migration Obstacles</h2>
+      <p class="section-description">
+        Enterprise migrations stall not because of moving raw storage bits, but because of what happens <em>around</em> the infrastructure. <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> acts as the hermetic control plane brain that eliminates manual IaC rewrites, observability blind spots, and network collisions with zero WAN data egress.
+      </p>
+    </div>
+
+    <div class="solution-cards-grid">
+      <!-- Obstacle 1 -->
+      <div class="solution-card card-elevated">
+        <div class="solution-header">
+          <div class="solution-icon-wrap">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </div>
+          <span class="solution-badge">Eliminates 3–6 Mos</span>
+        </div>
+        <h3 class="solution-title">1. Zero Manual IaC Rewrites</h3>
+        <div class="solution-challenge">
+          <strong>The Obstacle:</strong> Manually converting legacy Terraform HCL, CloudFormation, or bespoke deployment scripts to target cloud templates takes quarters of expensive Systems Integrator consulting.
+        </div>
+        <p class="solution-benefit">
+          <strong>The Solution:</strong> Automated in-memory compilation translates legacy configurations directly into standardized OpenTofu HCL and cloud-native landing zones (AWS, GCP, Azure) in milliseconds.
+        </p>
+        <div class="solution-impact">
+          <span>⚡ 100% Deterministic &bull; Zero Hallucinations</span>
+        </div>
+      </div>
+
+      <!-- Obstacle 2 -->
+      <div class="solution-card card-elevated card-amber">
+        <div class="solution-header">
+          <div class="solution-icon-wrap" style="background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.25); color: #fbbf24;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <span class="solution-badge" style="background: rgba(245, 158, 11, 0.15); color: #fde047; border-color: rgba(245, 158, 11, 0.3);">Saves $100k+ Labor</span>
+        </div>
+        <h3 class="solution-title">2. Zero Observability Blind Spots</h3>
+        <div class="solution-challenge" style="border-left-color: #f59e0b;">
+          <strong>The Obstacle:</strong> Rebuilding hundreds of proprietary vendor alert monitors in the destination cloud leaves teams completely blind during migration cutovers, risking P1 outages.
+        </div>
+        <p class="solution-benefit">
+          <strong>The Solution:</strong> Mathematical query transpilation preserves complex multi-window rate transforms and thresholds into open-source Prometheus Alertmanager rules and Grafana 11 Unified Alerting.
+        </p>
+        <div class="solution-impact" style="color: #fbbf24;">
+          <span>🎯 Unbroken Monitoring Before, During &amp; After Cutover</span>
+        </div>
+      </div>
+
+      <!-- Obstacle 3 -->
+      <div class="solution-card card-elevated card-emerald">
+        <div class="solution-header">
+          <div class="solution-icon-wrap" style="background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.25); color: #34d399;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+              <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+              <line x1="6" y1="6" x2="6.01" y2="6"></line>
+              <line x1="6" y1="18" x2="6.01" y2="18"></line>
+            </svg>
+          </div>
+          <span class="solution-badge" style="background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.3);">Zero Code Changes</span>
+        </div>
+        <h3 class="solution-title">3. Zero IP &amp; Network Collisions</h3>
+        <div class="solution-challenge" style="border-left-color: #10b981;">
+          <strong>The Obstacle:</strong> Hardcoded legacy IP addresses and overlapping CIDR blocks cause network collisions and application failures when workloads land in modern cloud VPCs.
+        </div>
+        <p class="solution-benefit">
+          <strong>The Solution:</strong> In-VPC private DNS resolution (<code>*.mesh.internal</code>) and seamless kernel redirection eliminate hardcoded IP dependencies without recompiling application binaries.
+        </p>
+        <div class="solution-impact" style="color: #34d399;">
+          <span>🔒 Seamless Wave Cutover with Instant Fallback</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. HOW IT WORKS: 3-STEP ENTERPRISE WORKFLOW -->
+  <section class="section-container bg-obsidian-base" id="how-it-works">
+    <div class="section-header">
+      <div class="section-kicker">Enterprise Workflow</div>
+      <h2 class="section-title">High-Velocity Migration in 3 Hermetic Steps</h2>
+      <p class="section-description">
+        Deploy <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> inside your private security perimeter in under two minutes. Execute end-to-end cloud migrations without external dependencies or third-party data egress.
+      </p>
+    </div>
+
+    <div class="workflow-steps-container">
+      <!-- Step 1 -->
+      <div class="workflow-step-card card-elevated">
+        <div class="step-badge-num">01</div>
+        <h3 class="workflow-step-title">Discover &amp; Map (100% In-VPC)</h3>
+        <p class="workflow-step-desc">
+          The <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> CLI scans local source infrastructure configurations, network dependencies, and alert policies directly in volatile RAM.
+        </p>
+        <ul class="workflow-features-list">
+          <li>Zero outbound cloud network calls</li>
+          <li>In-memory sensitive token anonymization</li>
+          <li>Full inventory graph generation</li>
+          <li>Automated compliance verification</li>
+        </ul>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="workflow-step-card card-elevated">
+        <div class="step-badge-num">02</div>
+        <h3 class="workflow-step-title">Transpile &amp; Synthesize</h3>
+        <p class="workflow-step-desc">
+          Automated compilation generates clean OpenTofu landing zones and maps legacy monitor logic to standard Prometheus Alertmanager and Grafana 11 Alerting.
+        </p>
+        <ul class="workflow-features-list">
+          <li>Standard OpenTofu HCL generation</li>
+          <li>100% mathematical query equivalence</li>
+          <li>Multi-cloud target support (AWS, GCP, Azure)</li>
+          <li>Automated pre-flight syntax validation</li>
+        </ul>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="workflow-step-card card-elevated">
+        <div class="step-badge-num">03</div>
+        <h3 class="workflow-step-title">Orchestrate &amp; Cut Over</h3>
+        <p class="workflow-step-desc">
+          Orchestrates cloud-native block replication engines (AWS MGN, GCP M4CE, Azure Migrate) with zero IP collisions and automated rollback guarantees.
+        </p>
+        <ul class="workflow-features-list">
+          <li>Continuous block-level disk synchronization</li>
+          <li>Automated staged wave scheduling</li>
+          <li>Instant live rollback safeguard</li>
+          <li>Continuous parity and telemetry health checks</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. ENTERPRISE VALUE PILLARS -->
+  <section class="section-container bg-obsidian-elevated" id="benefits">
+    <div class="section-header">
+      <div class="section-kicker">Enterprise Value</div>
+      <h2 class="section-title">Engineered for Uncompromising Security, Data Isolation &amp; Cost Certainty</h2>
+      <p class="section-description">
+        Why Fortune 500 enterprises, regulated financial institutions, and high-growth scale-ups standardize on <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> for cloud modernization.
+      </p>
+    </div>
+
+    <div class="enterprise-pillars-grid">
+      <!-- Pillar 1 -->
+      <div class="pillar-card card-elevated">
+        <div class="pillar-icon-box">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+        </div>
+        <div class="pillar-card-content">
+          <h3>100% In-Perimeter Data Isolation</h3>
+          <p>
+            Zero WAN egress. Infrastructure topologies, tokens, and telemetry stay entirely within your private cloud boundary. Built from the ground up for SOC 2, HIPAA, GDPR, and PCI-DSS compliance.
+          </p>
+          <span class="pillar-tag">Zero Cloud Egress</span>
+        </div>
+      </div>
+
+      <!-- Pillar 2 -->
+      <div class="pillar-card card-elevated">
+        <div class="pillar-icon-box" style="background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.25); color: #34d399;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <div class="pillar-card-content">
+          <h3>Radical Cost Predictability</h3>
+          <p>
+            Eliminate runaway per-GB ingestion penalties, custom metric surcharges, and surprise egress bills. Fixed node-bracket pricing gives your CFO total budget certainty as your fleet expands.
+          </p>
+          <span class="pillar-tag" style="background: rgba(16, 185, 129, 0.1); color: #34d399;">70%–90% TCO Savings</span>
+        </div>
+      </div>
+
+      <!-- Pillar 3 -->
+      <div class="pillar-card card-elevated">
+        <div class="pillar-icon-box" style="background: rgba(6, 182, 212, 0.12); border-color: rgba(6, 182, 212, 0.25); color: #22d3ee;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+          </svg>
+        </div>
+        <div class="pillar-card-content">
+          <h3>Multi-Cloud Independence</h3>
+          <p>
+            Orchestrate workloads freely across AWS, Google Cloud, and Microsoft Azure using open standards (OpenTofu, Prometheus, Grafana). Never get locked into proprietary cloud architectures again.
+          </p>
+          <span class="pillar-tag" style="background: rgba(6, 182, 212, 0.1); color: #22d3ee;">Open-Core Standards</span>
+        </div>
+      </div>
+
+      <!-- Pillar 4 -->
+      <div class="pillar-card card-elevated">
+        <div class="pillar-icon-box" style="background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.25); color: #fbbf24;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <div class="pillar-card-content">
+          <h3>Hardened Air-Gapped Readiness</h3>
+          <p>
+            Ships as a lightweight, zero-dependency binary and distroless container with non-root privileges (<code class="inline-code">UID 65532</code>). Fully verified for defense, banking, and air-gapped enterprise environments.
+          </p>
+          <span class="pillar-tag" style="background: rgba(245, 158, 11, 0.1); color: #fbbf24;">Distroless UID 65532</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. UNIVERSAL ECOSYSTEM COMPATIBILITY -->
+  <section class="section-container bg-obsidian-base" id="ecosystem">
+    <div class="section-header">
+      <div class="section-kicker">Universal Compatibility</div>
+      <h2 class="section-title">Seamless Integration Across Your Entire Stack</h2>
+      <p class="section-description">
+        <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> operates natively alongside industry-standard cloud providers, infrastructure tooling, and open-source observability ecosystems with zero proprietary lock-in.
+      </p>
+    </div>
+
+    <div class="ecosystem-grid">
+      <!-- Ecosystem Card 1: Hyperscalers & On-Prem -->
+      <div class="ecosystem-card card-elevated">
+        <div class="ecosystem-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+          </svg>
+        </div>
+        <h3 class="ecosystem-card-title">Cloud Hyperscalers &amp; On-Prem</h3>
+        <div class="ecosystem-tags-wrap">
+          <span class="eco-pill">AWS (MGN &amp; EC2)</span>
+          <span class="eco-pill">Google Cloud (M4CE)</span>
+          <span class="eco-pill">Azure Migrate</span>
+          <span class="eco-pill">VMware vSphere</span>
+          <span class="eco-pill">Bare-Metal Linux</span>
+          <span class="eco-pill">OpenStack</span>
+        </div>
+      </div>
+
+      <!-- Ecosystem Card 2: Infrastructure as Code -->
+      <div class="ecosystem-card card-elevated">
+        <div class="ecosystem-icon-box" style="background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.25); color: #34d399;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </div>
+        <h3 class="ecosystem-card-title">Infrastructure as Code</h3>
+        <div class="ecosystem-tags-wrap">
+          <span class="eco-pill">OpenTofu</span>
+          <span class="eco-pill">Terraform HCL</span>
+          <span class="eco-pill">AWS CloudFormation</span>
+          <span class="eco-pill">Kubernetes CRDs</span>
+          <span class="eco-pill">ArgoCD GitOps</span>
+          <span class="eco-pill">Ansible Playbooks</span>
+        </div>
+      </div>
+
+      <!-- Ecosystem Card 3: Open Observability -->
+      <div class="ecosystem-card card-elevated">
+        <div class="ecosystem-icon-box" style="background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.25); color: #fbbf24;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20V10"></path>
+            <path d="M18 20V4"></path>
+            <path d="M6 20v-4"></path>
+          </svg>
+        </div>
+        <h3 class="ecosystem-card-title">Open Observability Standards</h3>
+        <div class="ecosystem-tags-wrap">
+          <span class="eco-pill">Prometheus &amp; PromQL</span>
+          <span class="eco-pill">Alertmanager</span>
+          <span class="eco-pill">Grafana 11 Alerting</span>
+          <span class="eco-pill">OpenTelemetry (OTel)</span>
+          <span class="eco-pill">Thanos / Cortex</span>
+          <span class="eco-pill">VictoriaMetrics</span>
+        </div>
+      </div>
+
+      <!-- Ecosystem Card 4: Zero-Trust Security & Identity -->
+      <div class="ecosystem-card card-elevated">
+        <div class="ecosystem-icon-box" style="background: rgba(99, 102, 241, 0.12); border-color: rgba(99, 102, 241, 0.25); color: #a5b4fc;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+        </div>
+        <h3 class="ecosystem-card-title">Zero-Trust Security &amp; Identity</h3>
+        <div class="ecosystem-tags-wrap">
+          <span class="eco-pill">SPIFFE / SPIRE</span>
+          <span class="eco-pill">Mutual TLS (mTLS)</span>
+          <span class="eco-pill">HashiCorp Vault</span>
+          <span class="eco-pill">RFC 1918 Anonymizer</span>
+          <span class="eco-pill">Distroless Containers</span>
+          <span class="eco-pill">Air-Gapped Perimeters</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enterprise Customer Technical Docs Callout Card (Points to /docs) -->
+    <div class="vault-cta-card card-elevated" id="tech-docs-cta">
+      <div class="vault-badge">
+        <span>📖 Enterprise Developer Documentation</span>
+      </div>
+      <h3 class="vault-title">Explore Complete OpenAPI Specs &amp; Migration Runbooks</h3>
+      <p class="vault-desc">
+        Dive into customer technical documentation, live interactive Swagger API consoles, migration wave CLI commands, and automated IaC synthesis guides. Built for cloud platform engineers and enterprise architects.
+      </p>
+      <div class="vault-actions-row">
+        <a href="/docs" class="btn-vault-primary btn-primary-cta" title="Access Interactive OpenAPI &amp; Swagger Technical Documentation">
+          <span>📖 View Interactive Tech Docs &rarr;</span>
+        </a>
+        <a href="#download-hub" data-dl-tab="free" class="btn-tier-outline" style="border-color: rgba(255, 255, 255, 0.2); color: #cbd5e1; padding: 0.85rem 1.75rem; font-size: 0.95rem;">
+          <span>⬇️ Download Free CLI</span>
+        </a>
+      </div>
+      <div class="vault-note">
+        Interactive Swagger UI &amp; OpenAPI 3.0 specification available at <a href="/docs/swagger" style="color: #38bdf8; text-decoration: underline;"><code>/docs/swagger</code></a> &bull; 100% In-VPC local execution
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. ARCHITECTURAL COMPARISON: OPERATING MODEL MATRIX -->
+  <section class="section-container bg-obsidian-elevated" id="comparison">
+    <div class="section-header">
+      <div class="section-kicker">Economics &amp; Control</div>
+      <h2 class="section-title">Centralized Cloud Ingestion vs. Zero-Egress In-VPC Decoupling</h2>
+      <p class="section-description">
+        Compare the architectural and operational boundaries of centralized multi-tenant cloud telemetry against zero-egress, predictable in-VPC compilation.
+      </p>
+    </div>
+
+    <div class="comparison-table-wrapper card-elevated">
+      <table class="comparison-table" aria-label="Architecture Comparison Table">
+        <thead>
+          <tr>
+            <th scope="col" class="th-param">Evaluation Vector</th>
+            <th scope="col" class="th-saas">Centralized Cloud Ingestion Model</th>
+            <th scope="col" class="th-dcouplr"><span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> Zero-Egress Mesh Model</th>
+            <th scope="col" class="th-benefit">Enterprise Impact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-param">Cost Architecture</td>
+            <td class="td-saas">Volumetric ingest billing ($/GB + custom metric surcharges)</td>
+            <td class="td-dcouplr"><strong>Predictable transparent node licensing</strong> ($300/mo, $1,500/mo, $3,500/mo, $45/node)</td>
+            <td class="td-benefit">70% &ndash; 90% TCO reduction as telemetry scales</td>
+          </tr>
+          <tr>
+            <td class="td-param">Query Portability</td>
+            <td class="td-saas">Closed query syntax with platform-bound evaluation semantics</td>
+            <td class="td-dcouplr"><strong>Lossless AST compilation</strong> to open standard PromQL &amp; Grafana YAML</td>
+            <td class="td-benefit">Zero vendor migration friction</td>
+          </tr>
+          <tr>
+            <td class="td-param">Data Privacy &amp; Egress</td>
+            <td class="td-saas">Telemetry payloads, hostnames, and IP tags egress to external clouds</td>
+            <td class="td-dcouplr"><strong>100% in-memory processing</strong> with local token scrubbing</td>
+            <td class="td-benefit">Compliance ready (GDPR, HIPAA, SOC 2)</td>
+          </tr>
+          <tr>
+            <td class="td-param">Process Footprint</td>
+            <td class="td-saas">High-overhead host daemons consuming 200MB+ RAM per node</td>
+            <td class="td-dcouplr"><strong>Distroless container</strong> running under 50MB RSS memory</td>
+            <td class="td-benefit">Minimal host CPU and memory overhead</td>
+          </tr>
+          <tr>
+            <td class="td-param">Failure Isolation</td>
+            <td class="td-saas">Multi-tenant cloud outages cause monitoring blind spots</td>
+            <td class="td-dcouplr"><strong>Embedded Raft consensus ring</strong> with local telemetry mirror</td>
+            <td class="td-benefit">Independent in-VPC operation</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 6. INTERACTIVE FINOPS ROI CALCULATOR -->
+  <section class="section-container bg-obsidian-base" id="finops">
+    <div class="section-header">
+      <div class="section-kicker">FinOps Modeling</div>
+      <h2 class="section-title">Calculate Your Enterprise Telemetry Savings</h2>
+      <p class="section-description">
+        Model your annual cost reduction transitioning from volumetric telemetry billing to predictable <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> cluster licensing.
+      </p>
+    </div>
+
+    <div class="calculator-card card-elevated">
+      <div class="calculator-inputs">
+        <!-- Node Slider -->
+        <div class="calc-control-group">
+          <div class="calc-label-row">
+            <label for="calc-nodes">Active Monitored Node Fleet</label>
+            <span class="calc-display-val" id="calc-nodes-val">75 nodes</span>
+          </div>
+          <input type="range" id="calc-nodes" class="range-slider" min="10" max="500" step="5" value="75">
+          <div class="range-ticks">
+            <span>10</span>
+            <span>100</span>
+            <span>250</span>
+            <span>500</span>
+          </div>
+        </div>
+
+        <!-- Bill Slider -->
+        <div class="calc-control-group">
+          <div class="calc-label-row">
+            <label for="calc-bill">Current Monthly Cloud Observability &amp; Ingestion Expense</label>
+            <span class="calc-display-val" id="calc-bill-val">$25,000 / mo</span>
+          </div>
+          <input type="range" id="calc-bill" class="range-slider" min="3000" max="120000" step="1000" value="25000">
+          <div class="range-ticks">
+            <span>$3k</span>
+            <span>$30k</span>
+            <span>$75k</span>
+            <span>$120k</span>
+          </div>
+        </div>
+
+        <div class="calc-disclaimer">
+          Calculations reflect verified baseline pricing across seed-stage enterprise financial models. Node counts determine recommended cluster tier with zero ingestion surcharges.
+        </div>
+      </div>
+
+      <!-- ROI Output Box -->
+      <div class="calculator-results">
+        <div class="result-badge">Projected Annual ROI</div>
+        <div class="result-amount" id="calc-savings-val">$253,200</div>
+        <div class="result-sub">Net Annual Savings vs Volumetric Ingestion</div>
+
+        <div class="result-metrics">
+          <div class="metric-block">
+            <span class="metric-label">Efficiency</span>
+            <span class="metric-val text-accent" id="calc-roi-pct">541% ROI</span>
+          </div>
+          <div class="metric-block">
+            <span class="metric-label">Payback Period</span>
+            <span class="metric-val" id="calc-payback-val">&lt; 42 Days</span>
+          </div>
+          <div class="metric-block">
+            <span class="metric-label">Recommended Tier</span>
+            <span class="metric-val" id="calc-tier-val">Cluster Medium</span>
+          </div>
+        </div>
+
+        <!-- Side-by-Side FinOps TCO Ledger -->
+        <div class="calc-ledger">
+          <div class="ledger-row">
+            <span class="ledger-label">Legacy SaaS Annual Ingestion</span>
+            <span class="ledger-val text-danger" id="ledger-saas-val">$300,000 / yr</span>
+          </div>
+          <div class="ledger-row">
+            <span class="ledger-label">Avoided Cloud Data Egress (AWS/GCP)</span>
+            <span class="ledger-val text-success" id="ledger-egress-val">+$24,000 / yr</span>
+          </div>
+          <div class="ledger-row">
+            <span class="ledger-label" id="ledger-license-label"><span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span> Flat Cluster License</span>
+            <span class="ledger-val" id="ledger-license-val">-$42,000 / yr</span>
+          </div>
+          <div class="ledger-row">
+            <span class="ledger-label" id="ledger-compute-label">In-VPC Local Compute (~$300/mo)</span>
+            <span class="ledger-val" id="ledger-compute-val">-$3,600 / yr</span>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <a href="#download-hub" data-dl-tab="free" class="btn-calc-action btn-primary-cta">Download CLI &bull; Free Trial</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enterprise TCO Guarantee Callout -->
+    <div class="finops-guarantee-card card-elevated">
+      <div class="finops-guarantee-content">
+        <div class="finops-guarantee-kicker">FinOps Architecture Guarantee</div>
+        <h4 class="finops-guarantee-title">Guaranteed $0.00 Cross-Cloud Egress &amp; Predictable Subscriptions</h4>
+        <p class="finops-guarantee-desc">
+          Unlike volumetric SaaS platforms that penalize enterprise growth with unpredictable ingestion overages, <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> operates with a 100% in-VPC footprint. Run telemetry, migrations, and alert routing with zero bandwidth surcharges and complete budget control.
+        </p>
+      </div>
+      <div class="finops-guarantee-actions">
+        <a href="#pricing" class="btn-tier-primary btn-primary-cta" style="width: auto !important; max-width: 220px; padding: 0.6rem 1.25rem !important; font-size: 0.86rem !important; margin: 0 !important;">View Cluster Pricing &rarr;</a>
+        <a href="/docs" class="btn-tier-outline" style="width: auto !important; max-width: 220px; padding: 0.6rem 1.25rem !important; font-size: 0.86rem !important; margin: 0 !important;">Explore Tech Docs</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. PREDICTABLE SUBSCRIPTION TIERS -->
+  <section class="section-container bg-obsidian-elevated" id="pricing">
+    <!-- Elevated Top Box on top of paid Tiers -->
+    <div class="pricing-top-box card-elevated">
+      <div class="pricing-top-box-kicker">Subscription Licensing</div>
+      <h2 class="pricing-top-box-title">Transparent, Node-Bracket Licensing</h2>
+      <p class="pricing-top-box-desc">
+        No volumetric penalties. No per-metric surcharges. Deploy within your private perimeter with complete cost certainty.
+      </p>
+      <div class="pricing-top-box-badges">
+        <span class="pricing-top-badge">🛡️ Zero Volumetric Penalties</span>
+        <span class="pricing-top-badge">🔒 100% In-Perimeter Data Isolation ($0 Egress)</span>
+        <span class="pricing-top-badge">⚡ Predictable Node-Bracket Tiers</span>
+        <span class="pricing-top-badge" style="border-color: #38bdf8; color: #38bdf8; background: rgba(56, 189, 248, 0.1);">📅 12-Month Annual Commitment • Upfront Predictable Billing</span>
+      </div>
+    </div>
+
+    <!-- Community Core: Top Box Banner on top of all Paid Tiers -->
+    <div class="community-core-top-box card-elevated">
+      <div class="community-core-content">
+        <div class="community-core-left">
+          <div class="community-kicker">Phase 1 "Crawl" &bull; Free Open-Core Seeding</div>
+          <h3 class="community-title">Community Core</h3>
+          <p class="community-desc">Phase 1 "Crawl": Free open-core seeding for engineers &amp; passive audits.</p>
+          <div class="community-price-row">
+            <div class="community-price-box">
+              <span class="price-currency">$</span>
+              <span class="price-number">0</span>
+              <span class="price-period">/ mo</span>
+            </div>
+            <span class="community-cycle-badge">Free Forever (Open-Core)</span>
+          </div>
+        </div>
+        <div class="community-core-features-col">
+          <ul class="community-features-list">
+            <li>1 Local Agent / CLI (<code>dcouplr</code>)</li>
+            <li>In-Memory Zero-Egress Sanitizer</li>
+            <li>Unlimited Local AST Transpilations</li>
+            <li>Automated <code>dcouplr doctor</code> &amp; <code>lint</code></li>
+            <li>Zero-Downtime State Relocation Planner</li>
+            <li>Community GitHub &amp; Docs ($0 Support)</li>
+          </ul>
+        </div>
+        <div class="community-core-action-col">
+          <a href="#download-hub" data-dl-tab="free" class="btn-tier-outline community-download-btn">Download Free CLI</a>
+          <span class="community-action-sub">No credit card required &bull; 100% In-VPC</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pricing-cards-grid">
+      <!-- Tier 1: Developer Pro -->
+      <div class="pricing-card card-elevated">
+        <div class="pricing-tier-header">
+          <h3 class="pricing-tier-name">Developer Pro</h3>
+          <p class="pricing-tier-desc">For isolated engineering teams and local VPC deployments.</p>
+        </div>
+        <div class="pricing-price-box">
+          <span class="price-currency">$</span>
+          <span class="price-number">300</span>
+          <span class="price-period">/ mo</span>
+        </div>
+        <div class="pricing-billing-cycle" style="color: #38bdf8; font-weight: 600;">🏷️ $3,600 / yr (Billed annually upfront) &bull; 10 Nodes Base</div>
+        <ul class="pricing-features">
+          <li>Up to 10 Active Agents / Nodes</li>
+          <li>Local In-Memory AST Compiler</li>
+          <li>Standard Zero-Exfiltration Sanitizer</li>
+          <li>Headless CLI &amp; REST API Access</li>
+          <li>Self-Service Diagnostic Doctor</li>
+          <li>Standard Email Support (48h SLA)</li>
+        </ul>
+        <button type="button" class="btn-tier-outline btn-open-checkout" data-tier="Developer Pro" style="width: 100%; cursor: pointer;">Get Pro License ($3,600 / yr) &rarr;</button>
+      </div>
+
+      <!-- Tier 2: Cluster Small -->
+      <div class="pricing-card card-elevated">
+        <div class="pricing-tier-header">
+          <h3 class="pricing-tier-name">Cluster Small</h3>
+          <p class="pricing-tier-desc">Phase 2 "Walk": For pilot clusters and dual-stack mirror staging.</p>
+        </div>
+        <div class="pricing-price-box">
+          <span class="price-currency">$</span>
+          <span class="price-number">1,500</span>
+          <span class="price-period">/ mo</span>
+        </div>
+        <div class="pricing-billing-cycle" style="color: #38bdf8; font-weight: 600;">🏷️ $18,000 / yr (Billed annually upfront) &bull; 25 Nodes Base</div>
+        <ul class="pricing-features">
+          <li><strong>25 Included Nodes Base</strong></li>
+          <li class="pricing-overage-li"><span class="pricing-overage-rate">+$60 / node / mo</span> <span class="pricing-overage-label">(overage rate &bull; $720/node/yr)</span></li>
+          <li>60 Nodes Max Tier Cap (11 to 60 nodes)</li>
+          <li>Dual-Stack Mirror Synchronization</li>
+          <li>20ms Circuit Breakers &amp; State Drift Verification</li>
+          <li>REST API + CLI Mapping (`--metric-map`)</li>
+          <li><strong>Business Queue: 9x5 NBD Portal SLA</strong></li>
+        </ul>
+        <button type="button" class="btn-tier-outline btn-open-checkout" data-tier="Cluster Small" style="width: 100%; cursor: pointer;">Subscribe for $18,000 / yr &rarr;</button>
+      </div>
+
+      <!-- Tier 3: Featured Cluster Medium -->
+      <div class="pricing-card card-elevated featured">
+        <div class="featured-ribbon">Recommended</div>
+        <div class="pricing-tier-header">
+          <h3 class="pricing-tier-name">Cluster Medium</h3>
+          <p class="pricing-tier-desc">Phase 3 "Run": Enterprise multi-region Kubernetes clusters with HA.</p>
+        </div>
+        <div class="pricing-price-box">
+          <span class="price-currency">$</span>
+          <span class="price-number">3,500</span>
+          <span class="price-period">/ mo</span>
+        </div>
+        <div class="pricing-billing-cycle" style="color: #38bdf8; font-weight: 600;">🏷️ $42,000 / yr (Billed annually upfront) &bull; 75 Nodes Base</div>
+        <ul class="pricing-features">
+          <li><strong>75 Included Nodes Base</strong></li>
+          <li class="pricing-overage-li"><span class="pricing-overage-rate">+$45 / node / mo</span> <span class="pricing-overage-label">(overage rate &bull; $540/node/yr)</span></li>
+          <li>90 Nodes Max Tier Cap (61 to 90 nodes)</li>
+          <li>Multi-Region Consensus Ring &amp; Failover</li>
+          <li>Dynamic API + GitOps Sync Controller</li>
+          <li>Automated Rollback Hook Guarantee</li>
+          <li><strong>High-Availability: 24x7 P1 (2-Hr) SLA + Shared Slack</strong></li>
+        </ul>
+        <button type="button" class="btn-tier-primary btn-primary-cta btn-open-checkout" data-tier="Cluster Medium" style="width: 100%; cursor: pointer;">⚡ Upgrade to Tier 3 ($42,000 / yr) &rarr;</button>
+      </div>
+
+      <!-- Tier 4: Cluster Large -->
+      <div class="pricing-card card-elevated">
+        <div class="pricing-tier-header">
+          <h3 class="pricing-tier-name">Cluster Large</h3>
+          <p class="pricing-tier-desc">Large-scale enterprise clusters &amp; multi-cloud fleet deployments.</p>
+        </div>
+        <div class="pricing-price-box">
+          <span class="price-currency">$</span>
+          <span class="price-number">45</span>
+          <span class="price-period">/ node / mo</span>
+        </div>
+        <div class="pricing-billing-cycle" style="color: #38bdf8; font-weight: 600;">🏷️ $540 / node / yr (Billed annually upfront) &bull; 91–300 Nodes</div>
+        <ul class="pricing-features">
+          <li><strong>Custom (91–300 Nodes) &bull; Max 300 Cap</strong></li>
+          <li class="pricing-overage-li"><span class="pricing-overage-rate">Flat $45 / node / mo</span> <span class="pricing-overage-label">&bull; Scales dynamically</span></li>
+          <li>Cross-Cloud Synchronization Cells</li>
+          <li>Custom AST Syntax Grammar Maps</li>
+          <li>SPIFFE Workload Dynamic Webhook</li>
+          <li>Hands-on War-Room Support Guarantee</li>
+          <li><strong>Mission-Critical: 24x7 P1 (1-Hr) SLA + Dedicated TAM &amp; War-Room</strong></li>
+        </ul>
+        <button type="button" class="btn-tier-outline btn-open-checkout" data-tier="Cluster Large" style="width: 100%; cursor: pointer;">Get Cluster Large ($540/node/yr) &rarr;</button>
+      </div>
+
+      <!-- Tier 5: Custom Enterprise -->
+      <div class="pricing-card card-elevated" style="border-color: rgba(251, 191, 36, 0.4); background: linear-gradient(180deg, rgba(251, 191, 36, 0.05), #0d111a);">
+        <div class="pricing-tier-header">
+          <h3 class="pricing-tier-name" style="color: #fbbf24;">Custom Enterprise</h3>
+          <p class="pricing-tier-desc">Global fleet deployments, air-gapped grids &amp; regulated compliance enclaves.</p>
+        </div>
+        <div class="pricing-price-box">
+          <span class="price-currency" style="font-size: 1.15rem; color: #fbbf24; font-weight: 700;">From </span>
+          <span class="price-number" style="font-size: clamp(1.8rem, 2vw, 2.2rem); color: #fbbf24;">$120k</span>
+          <span class="price-period" style="color: #fbbf24;">/ yr</span>
+        </div>
+        <div class="pricing-billing-cycle" style="color: #fbbf24; font-weight: 600;">⚡ Base $120k+ &bull; Volume Increments &bull; 300+ Nodes</div>
+        <ul class="pricing-features">
+          <li><strong>Custom (300+ Nodes) &bull; Unlimited Cap</strong></li>
+          <li class="pricing-overage-li"><span class="pricing-overage-rate" style="color: #fbbf24;">Volume Discounted</span> <span class="pricing-overage-label">&bull; From $10/node/mo</span></li>
+          <li>Air-Gapped In-VPC Binary Bundles</li>
+          <li>Custom AST Syntax Grammar Engine</li>
+          <li>Hardware Security Module (HSM) / Custom PKI</li>
+          <li>White-Glove Migration Assurance Team</li>
+          <li><strong>Ultra-Critical: 24&times;7 P1 (15-Min) SLA + Named TAM &amp; War-Room</strong></li>
+        </ul>
+        <button type="button" class="btn-tier-outline btn-open-checkout" data-tier="Custom Enterprise" style="width: 100%; cursor: pointer;">Contact Enterprise Fleet (Annual MSA) &rarr;</button>
+      </div>
+    </div>
+
+    <!-- Modal Trigger Callout for Detailed Matrix & Smart Proration Calculator -->
+    <div style="text-align: center; margin-top: 1.75rem;">
+      <div style="display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; max-width: 600px; margin: 0 auto; padding: 0 0.5rem;">
+        <button class="btn-tier-primary btn-primary-cta" id="btn-open-pricing-matrix" onclick="var m=document.getElementById('modal-pricing-matrix');if(m){m.style.display='flex';m.classList.add('open');document.body.style.overflow='hidden';}" style="width: auto !important; max-width: 285px; flex: 1 1 240px; padding: 0.55rem 1rem !important; font-size: 0.82rem !important; cursor: pointer; border-radius: 8px; box-shadow: 0 4px 18px rgba(6, 182, 212, 0.35); margin: 0 !important; display: inline-flex !important; align-items: center; justify-content: center; text-align: center; min-height: 38px;">
+          📊 View Full End-to-End Pricing Table &amp; SLA Matrix ↗
+        </button>
+        <button class="btn-tier-outline" id="btn-open-proration-calc" onclick="if(window.openProrationCalculator){window.openProrationCalculator();}else{var m=document.getElementById('modal-pricing-matrix');if(m){m.style.display='flex';m.classList.add('open');document.body.style.overflow='hidden';var s=document.getElementById('section-proration-calculator');var b=m.querySelector('.pricing-modal-body');if(b&&s){b.scrollTo({top:s.offsetTop-20,behavior:'smooth'});}else if(s){s.scrollIntoView({behavior:'smooth'});}}}" style="width: auto !important; max-width: 285px; flex: 1 1 240px; padding: 0.55rem 1rem !important; font-size: 0.82rem !important; cursor: pointer; border-radius: 8px; border-color: #38bdf8 !important; color: #38bdf8 !important; background: rgba(56, 189, 248, 0.08) !important; margin: 0 !important; display: inline-flex !important; align-items: center; justify-content: center; text-align: center; min-height: 38px;">
+          🧮 Smart Contract &amp; Proration Calculator ↗
+        </button>
+      </div>
+      <p style="font-size: 0.78rem; color: #94a3b8; margin-top: 0.5rem; margin-bottom: 0;">
+        Annual contract billing with exact co-termed day proration, unearned credits, and transparent overage expansion licenses.
+      </p>
+    </div>
+
+    <!-- POP-UP MODAL: Detailed End-to-End Pricing, Overages & Support Matrix -->
+    <div class="pricing-modal-backdrop" id="modal-pricing-matrix" style="display: none;">
+      <div class="pricing-modal-window">
+        
+        <!-- Persistent Identification Strip -->
+        <div class="modal-ident-strip" style="display: flex; align-items: center; justify-content: space-between; background: rgba(0, 0, 0, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 0.35rem 1.25rem; font-size: 0.65rem; font-family: monospace; letter-spacing: 0.5px; z-index: 60; user-select: none;">
+          <span style="color: #69f0ae; display: inline-flex; align-items: center; gap: 6px; font-weight: 700;">
+            <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+            ACTIVE MODAL: END-TO-END PRICING &amp; SUPPORT MATRIX
+          </span>
+          <span style="color: #94a3b8; font-size: 0.65rem;">
+            TRANSPARENT QUOTAS • PRE-APPROVED RATES
+          </span>
+        </div>
+
+        <!-- FROZEN TOP PANEL / HEADER -->
+        <div class="pricing-modal-header">
+          <div class="pricing-modal-header-info">
+            <span class="brand-badge" style="font-size: 0.72rem; margin-bottom: 0.45rem; display: inline-block;">Verified Transparent Rates</span>
+            <h2 style="font-size: clamp(1.2rem, 1.6vw, 1.55rem); font-weight: 700; color: #fff; margin: 0 0 0.25rem;">Finalized End-to-End Pricing &amp; Support Matrix</h2>
+            <p style="font-size: 0.84rem; color: #94a3b8; margin: 0;">Comprehensive breakdown of node quotas, linear overage rates, tier upgrade optimization, and support guarantees.</p>
+          </div>
+          <button class="pricing-modal-close" id="btn-close-pricing-modal" aria-label="Close Pricing Modal">&times;</button>
+        </div>
+
+        <!-- SCROLLABLE MODAL CONTENT BODY -->
+        <div class="pricing-modal-body">
+          <!-- 1. End-to-End Pricing Table List -->
+          <div style="margin-bottom: 1.75rem;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 0.65rem;">1. End-to-End Pricing &amp; Node Quota Structure</h4>
+            <div class="pricing-table-wrap">
+              <table class="pricing-table-list">
+                <thead>
+                  <tr>
+                    <th style="white-space: nowrap;">Tier Classification</th>
+                    <th style="white-space: nowrap;">Monthly Base</th>
+                    <th style="white-space: nowrap;">Included Nodes</th>
+                    <th style="white-space: nowrap;">Expansion Overage Rate</th>
+                    <th style="white-space: nowrap;">Max Tier Cap</th>
+                    <th style="white-space: nowrap;">SLA &amp; Support Channel</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="white-space: nowrap;"><span class="table-badge badge-tier-0">Tier 0: Community Core</span></td>
+                    <td style="white-space: nowrap;"><strong>$0</strong> / mo</td>
+                    <td style="white-space: nowrap;">1 Local CLI</td>
+                    <td style="white-space: nowrap;"><span style="color: #64748b;">None</span></td>
+                    <td style="white-space: nowrap;">1 Node</td>
+                    <td style="white-space: nowrap;">
+                      <div style="display: flex; align-items: center; gap: 0.55rem; flex-wrap: nowrap;">
+                        <span class="sla-badge sla-self">Self-Service</span>
+                        <span style="font-size: 0.78rem; color: #94a3b8;">GitHub Discussions</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="white-space: nowrap;"><span class="table-badge badge-tier-1">Tier 1: Developer Pro</span></td>
+                    <td style="white-space: nowrap;"><strong>$300</strong> / mo</td>
+                    <td style="white-space: nowrap;">10 Nodes</td>
+                    <td style="white-space: nowrap;"><span style="color: #64748b;">None</span></td>
+                    <td style="white-space: nowrap;">10 Nodes</td>
+                    <td style="white-space: nowrap;">
+                      <div style="display: flex; align-items: center; gap: 0.55rem; flex-wrap: nowrap;">
+                        <span class="sla-badge sla-standard">48h Email SLA</span>
+                        <span style="font-size: 0.78rem; color: #94a3b8;">Asynchronous Queue</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="white-space: nowrap;"><span class="table-badge badge-tier-2">Tier 2: Cluster Small</span></td>
+                    <td style="white-space: nowrap;"><strong>$1,500</strong> / mo</td>
+                    <td style="white-space: nowrap;">25 Nodes</td>
+                    <td style="white-space: nowrap;"><strong style="color: #a5f3fc;">+$60</strong> / node / mo</td>
+                    <td style="white-space: nowrap;">60 Nodes</td>
+                    <td style="white-space: nowrap;">
+                      <div style="display: flex; align-items: center; gap: 0.55rem; flex-wrap: nowrap;">
+                        <span class="sla-badge sla-nbd">9x5 NBD</span>
+                        <span style="font-size: 0.78rem; color: #94a3b8;">Business Portal Queue</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="tier-highlight-row">
+                    <td style="white-space: nowrap;">
+                      <span class="table-badge badge-tier-3">Tier 3: Cluster Medium</span>
+                      <span class="badge-popular">★ RECOMMENDED</span>
+                    </td>
+                    <td style="white-space: nowrap; font-weight: 700; color: #fff;">$3,500 <span style="font-size: 0.75rem; font-weight: 400; color: #94a3b8;">/ mo</span></td>
+                    <td style="white-space: nowrap;">75 Nodes</td>
+                    <td style="white-space: nowrap;"><strong style="color: var(--cyan);">+$45</strong> / node / mo</td>
+                    <td style="white-space: nowrap;">90 Nodes</td>
+                    <td style="white-space: nowrap;">
+                      <div style="display: flex; align-items: center; gap: 0.55rem; flex-wrap: nowrap;">
+                        <span class="sla-badge sla-p1-2h">24x7 P1 (2-Hr)</span>
+                        <span style="font-size: 0.78rem; color: var(--emerald); font-weight: 600;">Shared Slack Channel</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="white-space: nowrap;"><span class="table-badge badge-tier-4">Tier 4: Cluster Large</span></td>
+                    <td style="white-space: nowrap; font-weight: 700; color: #fbbf24;">$45 <span style="font-size: 0.75rem; font-weight: 400; color: #94a3b8;">/ node / mo</span></td>
+                    <td style="white-space: nowrap;">Custom (91–300)</td>
+                    <td style="white-space: nowrap;"><strong style="color: #fbbf24;">Flat $45</strong> / node / mo</td>
+                    <td style="white-space: nowrap;"><span style="color: #fbbf24;">300 Nodes</span></td>
+                    <td style="white-space: nowrap;">
+                      <div style="display: flex; align-items: center; gap: 0.55rem; flex-wrap: nowrap;">
+                        <span class="sla-badge sla-p1-1h">24x7 P1 (1-Hr)</span>
+                        <span style="font-size: 0.78rem; color: #fde68a; font-weight: 600;">Dedicated TAM &amp; War-Room</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="white-space: nowrap;"><span class="table-badge" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3);">Tier 5: Custom Enterprise</span></td>
+                    <td style="white-space: nowrap; font-weight: 700; color: #fbbf24;">$120k / $180k Base</td>
+                    <td style="white-space: nowrap;">300 Nodes Base</td>
+                    <td style="white-space: nowrap;"><strong style="color: #fbbf24;">Volume-Decay Ladder</strong> (+$30/$40, +$25/$30)</td>
+                    <td style="white-space: nowrap;"><span style="color: #38bdf8;">Site Cap: $300k / $360k flat (840/700 nodes)</span></td>
+                    <td style="white-space: nowrap;">
+                      <div style="display: flex; align-items: center; gap: 0.55rem; flex-wrap: nowrap;">
+                        <span class="sla-badge" style="background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.4);">24x7 P1 (15-Min)</span>
+                        <span style="font-size: 0.78rem; color: #fde68a; font-weight: 600;">Dedicated Named TAM &amp; Custom Air-Gap MSA</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 2. Financial & Transition Breakdown: Table Lists -->
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.75rem;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 1rem;">2. Financial &amp; Transition Breakdown: Linear Overages &amp; Tier Upgrade Optimization</h4>
+            
+            <div class="pricing-progression-grid">
+              <!-- Tier 2 Progression Table List -->
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.55rem;">
+                  <span style="font-weight: 700; font-size: 0.84rem; color: var(--cyan);">Tier 2 Progression (25 to 60 Nodes)</span>
+                  <span class="table-badge badge-tier-2">Cluster Small</span>
+                </div>
+                <div class="pricing-table-wrap" style="margin-bottom: 0.65rem;">
+                  <table class="pricing-table-list" style="font-size: 0.8rem;">
+                    <thead>
+                      <tr>
+                        <th style="white-space: nowrap;">Node Scale</th>
+                        <th style="white-space: nowrap;">Overage Formula</th>
+                        <th style="white-space: nowrap;">Monthly Total</th>
+                        <th style="white-space: nowrap;">Effective $/Node</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td style="white-space: nowrap;"><strong>25 Nodes</strong> (Base)</td>
+                        <td style="white-space: nowrap; font-family: var(--font-mono);">$1,500 + (0 &times; $60)</td>
+                        <td style="white-space: nowrap; font-weight: 700; color: #fff;">$1,500 / mo</td>
+                        <td style="white-space: nowrap; color: #94a3b8;">$60.00 / node</td>
+                      </tr>
+                      <tr>
+                        <td style="white-space: nowrap;"><strong>40 Nodes</strong></td>
+                        <td style="white-space: nowrap; font-family: var(--font-mono);">$1,500 + (15 &times; $60)</td>
+                        <td style="white-space: nowrap; font-weight: 700; color: #fff;">$2,400 / mo</td>
+                        <td style="white-space: nowrap; color: #94a3b8;">$60.00 / node</td>
+                      </tr>
+                      <tr style="background: rgba(245, 158, 11, 0.08);">
+                        <td style="white-space: nowrap;"><strong>59 Nodes</strong></td>
+                        <td style="white-space: nowrap; font-family: var(--font-mono);">$1,500 + (34 &times; $60)</td>
+                        <td style="white-space: nowrap; font-weight: 700; color: #fbbf24;">$3,540 / mo</td>
+                        <td style="white-space: nowrap; color: #94a3b8;">$60.00 / node</td>
+                      </tr>
+                      <tr style="background: rgba(239, 68, 68, 0.09);">
+                        <td style="white-space: nowrap;"><strong>60 Nodes</strong> (Cap)</td>
+                        <td style="white-space: nowrap; font-family: var(--font-mono);">$1,500 + (35 &times; $60)</td>
+                        <td style="white-space: nowrap; font-weight: 700; color: #f87171;">$3,600 / mo</td>
+                        <td style="white-space: nowrap; color: #94a3b8;">$60.00 / node</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="transition-callout-box">
+                  <strong>💡 Tier 3 Upgrade Advantage (Crossover Savings):</strong> At 59–60 nodes on Tier 2 expansion ($3,540–$3,600/mo), migrating to <strong>Tier 3 Base ($3,500/mo)</strong> <em>saves up to $100/mo</em> while expanding capacity to 75 nodes and upgrading to 24x7 P1 (2-Hr) Shared Slack!
+                </div>
+              </div>
+
+              <!-- Tier 3 Progression Table List -->
+              <div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.55rem;">
+                  <span style="font-weight: 700; font-size: 0.84rem; color: var(--emerald);">Tier 3 Progression (75 to 90 Nodes)</span>
+                  <span class="table-badge badge-tier-3">Cluster Medium</span>
+                </div>
+                <div class="pricing-table-wrap" style="margin-bottom: 0.65rem;">
+                  <table class="pricing-table-list" style="font-size: 0.8rem;">
+                    <thead>
+                      <tr>
+                        <th style="white-space: nowrap;">Node Scale</th>
+                        <th style="white-space: nowrap;">Overage Formula</th>
+                        <th style="white-space: nowrap;">Monthly Total</th>
+                        <th style="white-space: nowrap;">Effective $/Node</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td style="white-space: nowrap;"><strong>75 Nodes</strong> (Base)</td>
+                        <td style="white-space: nowrap; font-family: var(--font-mono);">$3,500 + (0 &times; $45)</td>
+                        <td style="white-space: nowrap; font-weight: 700; color: #fff;">$3,500 / mo</td>
+                        <td style="white-space: nowrap; color: #94a3b8;">$46.67 / node</td>
+                      </tr>
+                      <tr>
+                        <td style="white-space: nowrap;"><strong>85 Nodes</strong></td>
+                        <td style="white-space: nowrap; font-family: var(--font-mono);">$3,500 + (10 &times; $45)</td>
+                        <td style="white-space: nowrap; font-weight: 700; color: #fff;">$3,950 / mo</td>
+                        <td style="white-space: nowrap; color: #94a3b8;">$46.47 / node</td>
+                      </tr>
+                      <tr style="background: rgba(239, 68, 68, 0.09);">
+                        <td style="white-space: nowrap;"><strong>90 Nodes</strong> (Cap)</td>
+                        <td style="white-space: nowrap; font-family: var(--font-mono);">$3,500 + (15 &times; $45)</td>
+                        <td style="white-space: nowrap; font-weight: 700; color: #f87171;">$4,175 / mo</td>
+                        <td style="white-space: nowrap; color: #94a3b8;">$46.39 / node</td>
+                      </tr>
+                      <tr style="background: rgba(16, 185, 129, 0.09);">
+                        <td style="white-space: nowrap;"><strong>91 to 300 Nodes</strong> (Tier 4)</td>
+                        <td style="white-space: nowrap; font-family: var(--font-mono);">Scale (91 to 300 &times; $45)</td>
+                        <td style="white-space: nowrap; font-weight: 700; color: #34d399;">$4,095 – $13,500 / mo</td>
+                        <td style="white-space: nowrap; color: #45.00;">$45.00 / node</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="transition-callout-box emerald">
+                  <strong>💡 Tier 4 &amp; Enterprise Upgrade Advantage:</strong> At 90 nodes on Tier 3 expansion ($4,175/mo), upgrading to <strong>Tier 4 ($4,050/mo base for 90-91 nodes)</strong> <em>saves $125/mo</em> with predictable scaling up to 300 nodes, a Dedicated Technical Account Manager (TAM), 1-Hour SLA, and War-Room support! Above 300 nodes, <strong>Custom Enterprise</strong> provides volume tiering and air-gapped guarantees.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Updated Support SLA, Metric Mapping & Safety Matrix (Table List Format) -->
+          <div style="margin-top: 1.5rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.65rem;">
+              <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0;">3. Updated Support SLA &amp; Engagement Matrix (Table List Format)</h4>
+              <span style="font-size: 0.74rem; color: #94a3b8;">Structured by Tier &bull; Linear Guarantees</span>
+            </div>
+            <div class="pricing-table-wrap">
+              <table class="pricing-table-list">
+                <thead>
+                  <tr>
+                    <th style="white-space: nowrap;">Tier Classification</th>
+                    <th style="white-space: nowrap;">Base &amp; Expansion</th>
+                    <th style="white-space: nowrap;">Node Range</th>
+                    <th style="white-space: nowrap;">Incident Response SLA</th>
+                    <th style="white-space: nowrap;">Communication Channel</th>
+                    <th style="white-space: nowrap;">Metric Mapping Capability</th>
+                    <th style="white-space: nowrap;">Safety Guarantee</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="white-space: nowrap;"><span class="table-badge badge-tier-0">Tier 0: Community Core</span></td>
+                    <td style="white-space: nowrap;"><strong>$0</strong> / mo &bull; <span style="font-size: 0.74rem; color: #64748b;">No overage</span></td>
+                    <td style="white-space: nowrap;">1 Node (Local CLI)</td>
+                    <td style="white-space: nowrap;"><span class="sla-badge sla-self"><i class="fas fa-users"></i> Self-Service</span></td>
+                    <td style="white-space: nowrap;"><i class="fab fa-github" style="color: #94a3b8; margin-right: 0.35rem;"></i> GitHub Discussions</td>
+                    <td style="white-space: nowrap;"><code class="inline-code">--metric-map</code> Flag &bull; Local YAML</td>
+                    <td style="white-space: nowrap;"><span class="guarantee-badge"><i class="fas fa-shield-alt"></i> Non-destructive dry-run CLI</span></td>
+                  </tr>
+                  <tr>
+                    <td style="white-space: nowrap;"><span class="table-badge badge-tier-1">Tier 1: Developer Pro</span></td>
+                    <td style="white-space: nowrap;"><strong>$300</strong> / mo &bull; <span style="font-size: 0.74rem; color: #64748b;">No overage</span></td>
+                    <td style="white-space: nowrap;">1 to 10 Nodes</td>
+                    <td style="white-space: nowrap;"><span class="sla-badge sla-standard"><i class="fas fa-envelope"></i> 48 Business Hours</span></td>
+                    <td style="white-space: nowrap;"><i class="fas fa-inbox" style="color: #60a5fa; margin-right: 0.35rem;"></i> Ticketing Email Queue</td>
+                    <td style="white-space: nowrap;"><code class="inline-code">--metric-map</code> Flag</td>
+                    <td style="white-space: nowrap;"><span class="guarantee-badge"><i class="fas fa-file-code"></i> Non-destructive script</span></td>
+                  </tr>
+                  <tr>
+                    <td style="white-space: nowrap;"><span class="table-badge badge-tier-2">Tier 2: Cluster Small</span></td>
+                    <td style="white-space: nowrap;"><strong>$1,500</strong> / mo &bull; <span style="font-size: 0.74rem; color: #a5f3fc;">+$60/node/mo</span></td>
+                    <td style="white-space: nowrap;">11 to 60 Nodes</td>
+                    <td style="white-space: nowrap;"><span class="sla-badge sla-nbd"><i class="fas fa-clock"></i> 9x5 Next Business Day</span></td>
+                    <td style="white-space: nowrap;"><i class="fas fa-ticket-alt" style="color: #c084fc; margin-right: 0.35rem;"></i> Verified Support Portal</td>
+                    <td style="white-space: nowrap;">REST API + Dynamic CLI Mapping</td>
+                    <td style="white-space: nowrap;"><span class="guarantee-badge guarantee-cyan"><i class="fas fa-check-double"></i> State Drift Verification</span></td>
+                  </tr>
+                  <tr class="tier-highlight-row">
+                    <td style="white-space: nowrap;">
+                      <span class="table-badge badge-tier-3">Tier 3: Cluster Medium</span>
+                      <span class="badge-popular">★ RECOMMENDED</span>
+                    </td>
+                    <td style="white-space: nowrap;"><strong style="color: #fff;">$3,500</strong> / mo &bull; <span style="font-size: 0.74rem; color: var(--cyan);">+$45/node/mo</span></td>
+                    <td style="white-space: nowrap;">61 to 90 Nodes</td>
+                    <td style="white-space: nowrap;"><span class="sla-badge sla-p1-2h"><i class="fas fa-bolt"></i> 24x7 P1 (2 Hours)</span></td>
+                    <td style="white-space: nowrap;"><i class="fab fa-slack" style="color: var(--emerald); margin-right: 0.35rem;"></i> Shared Enterprise Slack</td>
+                    <td style="white-space: nowrap;">Dynamic API + GitOps Sync</td>
+                    <td style="white-space: nowrap;"><span class="guarantee-badge guarantee-emerald"><i class="fas fa-undo-alt"></i> Automated Rollback Hook</span></td>
+                  </tr>
+                  <tr>
+                    <td style="white-space: nowrap;"><span class="table-badge badge-tier-4">Tier 4: Cluster Large</span></td>
+                    <td style="white-space: nowrap;"><strong style="color: #fbbf24;">$45</strong> / node / mo &bull; <span style="font-size: 0.74rem; color: #94a3b8;">Flat Rate</span></td>
+                    <td style="white-space: nowrap;">91 to 300 Nodes</td>
+                    <td style="white-space: nowrap;"><span class="sla-badge sla-p1-1h"><i class="fas fa-fire-extinguisher"></i> 24x7 P1 (1 Hour)</span></td>
+                    <td style="white-space: nowrap;"><i class="fas fa-headset" style="color: #fde68a; margin-right: 0.35rem;"></i> Dedicated TAM &amp; War-Room Bridge</td>
+                    <td style="white-space: nowrap;">Custom AST Grammar Maps</td>
+                    <td style="white-space: nowrap;"><span class="guarantee-badge guarantee-gold"><i class="fas fa-user-shield"></i> Hands-on War-Room Support</span></td>
+                  </tr>
+                  <tr>
+                    <td style="white-space: nowrap;"><span class="table-badge" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3);">Tier 5: Custom Enterprise</span></td>
+                    <td style="white-space: nowrap;"><strong style="color: #fbbf24;">Custom</strong> &bull; <span style="font-size: 0.74rem; color: #94a3b8;">Volume Tiered</span></td>
+                    <td style="white-space: nowrap;">300+ Nodes (Unlimited)</td>
+                    <td style="white-space: nowrap;"><span class="sla-badge" style="background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.4);"><i class="fas fa-bolt"></i> 24x7 P1 (15-Min)</span></td>
+                    <td style="white-space: nowrap;"><i class="fas fa-user-tie" style="color: #fde68a; margin-right: 0.35rem;"></i> Dedicated On-Call Eng &amp; Executive Sponsor</td>
+                    <td style="white-space: nowrap;">Air-Gapped &amp; Custom AST Grammar Engine</td>
+                    <td style="white-space: nowrap;"><span class="guarantee-badge guarantee-gold"><i class="fas fa-file-contract"></i> Custom Enterprise MSA, BAA &amp; Full Migration Assurance</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 4. Smart Contract & Proration Calculator: Co-Termed Upgrades & Overage Licenses -->
+          <div id="section-proration-calculator" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 14px; padding: 1.5rem; margin-top: 1.75rem; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 0.75rem;">
+              <div>
+                <span class="brand-badge" style="font-size: 0.72rem; margin-bottom: 0.35rem; display: inline-block; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">Financial Precision Engine</span>
+                <h4 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin: 0;">4. Smart Contract &amp; Proration Calculator (Annual Upgrades &amp; Overage Licenses)</h4>
+              </div>
+              <span style="font-size: 0.75rem; color: #34d399; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 10px; border-radius: 20px;">
+                ✓ Co-Terming Guarantee (Single Renewal Date)
+              </span>
+            </div>
+            <p style="font-size: 0.82rem; color: #94a3b8; margin: 0 0 1.25rem 0;">
+              Because <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> tiers are billed annually upfront, mid-cycle tier upgrades and fleet expansions are calculated with <strong>exact day proration</strong>. Your unearned current plan balance is credited dollar-for-dollar, and all added overage node licenses <strong>co-term</strong> to your original contract renewal date.
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 1.5rem; margin-bottom: 1.25rem;">
+              <!-- Inputs Column -->
+              <div style="background: rgba(7, 10, 18, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 1.15rem;">
+                <h5 style="font-size: 0.86rem; font-weight: 700; color: #38bdf8; margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 6px;">
+                  <span>⚙️</span> Contract &amp; Fleet Amendment Inputs
+                </h5>
+                
+                <!-- Date Grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                  <div>
+                    <label style="font-size: 0.72rem; color: #94a3b8; display: block; margin-bottom: 3px;">Contract Start Date</label>
+                    <input type="date" id="calc-start-date" style="width: 100%; box-sizing: border-box; background: #0b1120; border: 1px solid rgba(255, 255, 255, 0.18); color: #fff; padding: 6px 8px; border-radius: 5px; font-size: 0.78rem;">
+                  </div>
+                  <div>
+                    <label style="font-size: 0.72rem; color: #94a3b8; display: block; margin-bottom: 3px;">Contract End Date (Renewal)</label>
+                    <input type="date" id="calc-end-date" style="width: 100%; box-sizing: border-box; background: #0b1120; border: 1px solid rgba(255, 255, 255, 0.18); color: #fff; padding: 6px 8px; border-radius: 5px; font-size: 0.78rem;">
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                  <label style="font-size: 0.72rem; color: #94a3b8; display: block; margin-bottom: 3px;">Effective Amendment Date (Today / Cutover)</label>
+                  <input type="date" id="calc-change-date" style="width: 100%; box-sizing: border-box; background: #0b1120; border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; padding: 6px 8px; border-radius: 5px; font-size: 0.78rem; font-weight: 600;">
+                </div>
+
+                <!-- Tier Selectors -->
+                <div style="margin-bottom: 12px;">
+                  <label style="font-size: 0.72rem; color: #94a3b8; display: block; margin-bottom: 3px;">Current Subscribed Plan</label>
+                  <select id="calc-current-tier" style="width: 100%; box-sizing: border-box; background: #0b1120; border: 1px solid rgba(255, 255, 255, 0.18); color: #fff; padding: 7px 8px; border-radius: 5px; font-size: 0.78rem;">
+                    <option value="Developer Pro" data-annual="3600" data-base="10" data-ovrate="0">Tier 1: Developer Pro ($3,600 / yr &bull; 10 Nodes Base)</option>
+                    <option value="Cluster Small" data-annual="18000" data-base="25" data-ovrate="60" selected>Tier 2: Cluster Small ($18,000 / yr &bull; 25 Nodes Base)</option>
+                    <option value="Cluster Medium" data-annual="42000" data-base="75" data-ovrate="45">Tier 3: Cluster Medium ($42,000 / yr &bull; 75 Nodes Base)</option>
+                    <option value="Cluster Large" data-annual="54000" data-base="100" data-ovrate="45">Tier 4: Cluster Large ($54,000 / yr &bull; 100 Nodes @ $540/node/yr)</option>
+                    <option value="Enterprise Ed1 Base" data-annual="120000" data-base="300" data-ovrate="30">Tier 5: Custom Enterprise Ed. 1 ($120,000 / yr &bull; 300 Nodes Base)</option>
+                    <option value="Enterprise Ed2 Base" data-annual="180000" data-base="300" data-ovrate="40">Tier 5: Custom Enterprise Ed. 2 ($180,000 / yr &bull; 300 Nodes Base)</option>
+                    <option value="Enterprise Site Ed1" data-annual="300000" data-base="840" data-ovrate="0">Tier 5 Site License Ed. 1 ($300,000 / yr flat &bull; Capped at 840 Nodes)</option>
+                    <option value="Enterprise Site Ed2" data-annual="360000" data-base="700" data-ovrate="0">Tier 5 Site License Ed. 2 ($360,000 / yr flat &bull; Capped at 700 Nodes)</option>
+                  </select>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                  <label style="font-size: 0.72rem; color: #94a3b8; display: block; margin-bottom: 3px;">Target Upgraded Tier (or Keep Current)</label>
+                  <select id="calc-target-tier" style="width: 100%; box-sizing: border-box; background: #0b1120; border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; padding: 7px 8px; border-radius: 5px; font-size: 0.78rem; font-weight: 600;">
+                    <option value="SAME">Keep Current Tier (Add-on Overage Nodes Only)</option>
+                    <option value="Cluster Small" data-annual="18000" data-base="25" data-ovrate="60">Tier 2: Cluster Small ($18,000 / yr &bull; 25 Nodes)</option>
+                    <option value="Cluster Medium" data-annual="42000" data-base="75" data-ovrate="45" selected>Tier 3: Cluster Medium ($42,000 / yr &bull; 75 Nodes)</option>
+                    <option value="Cluster Large" data-annual="54000" data-base="100" data-ovrate="45">Tier 4: Cluster Large ($54,000 / yr &bull; 100 Nodes Base)</option>
+                    <option value="Enterprise Ed1 Base" data-annual="120000" data-base="300" data-ovrate="30">Tier 5: Custom Enterprise Ed. 1 ($120,000 / yr &bull; 300 Nodes Base &bull; +$30/node/mo)</option>
+                    <option value="Enterprise Ed2 Base" data-annual="180000" data-base="300" data-ovrate="40">Tier 5: Custom Enterprise Ed. 2 ($180,000 / yr &bull; 300 Nodes Base &bull; +$40/node/mo)</option>
+                    <option value="Enterprise Site Ed1" data-annual="300000" data-base="840" data-ovrate="0">Tier 5 Site License Ed. 1 ($300,000 / yr flat &bull; Capped at 840 Nodes)</option>
+                    <option value="Enterprise Site Ed2" data-annual="360000" data-base="700" data-ovrate="0">Tier 5 Site License Ed. 2 ($360,000 / yr flat &bull; Capped at 700 Nodes)</option>
+                  </select>
+                </div>
+
+                <!-- Overage License Input -->
+                <div style="background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 6px; padding: 10px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <label style="font-size: 0.74rem; font-weight: 700; color: #e2e8f0;">Additional Overage Nodes</label>
+                    <span id="calc-overage-rate-badge" style="font-size: 0.7rem; color: #38bdf8; font-family: monospace;">+$45/node/mo ($540/yr)</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="number" id="calc-overage-nodes" min="0" max="500" value="0" style="width: 80px; box-sizing: border-box; background: #070a12; border: 1px solid rgba(56, 189, 248, 0.4); color: #fff; padding: 5px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold;">
+                    <span style="font-size: 0.74rem; color: #94a3b8;">extra nodes co-termed to renewal</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Output & Math Column -->
+              <div style="background: rgba(7, 10, 18, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 1.15rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <h5 style="font-size: 0.86rem; font-weight: 700; color: #34d399; margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 6px;">
+                    <span>📊</span> Exact Co-Termed Proration Breakdown
+                  </h5>
+
+                  <!-- Progress Bar -->
+                  <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8; margin-bottom: 3px;">
+                      <span>Elapsed: <strong id="calc-disp-elapsed-days" style="color: #cbd5e1;">120</strong> d (<span id="calc-disp-elapsed-pct">32.9%</span>)</span>
+                      <span>Remaining: <strong id="calc-disp-remaining-days" style="color: #38bdf8;">245</strong> d (<span id="calc-disp-remaining-pct">67.1%</span>)</span>
+                    </div>
+                    <div style="height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden; display: flex;">
+                      <div id="calc-bar-elapsed" style="width: 32.9%; background: #64748b;"></div>
+                      <div id="calc-bar-remaining" style="width: 67.1%; background: linear-gradient(90deg, #06b6d4, #10b981);"></div>
+                    </div>
+                  </div>
+
+                  <!-- Financial Ledger -->
+                  <div style="font-size: 0.78rem; line-height: 1.7; background: #070a12; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 10px 12px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between;">
+                      <span style="color: #94a3b8;">Current Tier Residual Credit:</span>
+                      <strong id="calc-val-unused-credit" style="color: #f87171;">-$12,082.19</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span style="color: #94a3b8;">Target Tier Prorated Charge:</span>
+                      <strong id="calc-val-target-prorated" style="color: #60a5fa;">+$28,191.78</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span style="color: #94a3b8;">Prorated Overage License Pool:</span>
+                      <strong id="calc-val-overage-prorated" style="color: #fbbf24;">+$0.00</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255, 255, 255, 0.12); margin-top: 6px; padding-top: 6px; font-size: 0.92rem;">
+                      <span style="font-weight: 700; color: #fff;">Net Amount Due Immediately:</span>
+                      <strong id="calc-val-net-due" style="color: #34d399; font-weight: 800; font-size: 1.1rem;">$16,109.59</strong>
+                    </div>
+                  </div>
+
+                  <!-- Co-Terming Guarantee Explainer -->
+                  <div style="font-size: 0.73rem; color: #94a3b8; background: rgba(16, 185, 129, 0.06); border-left: 3px solid #10b981; padding: 6px 10px; margin-bottom: 12px;">
+                    <strong style="color: #34d399;">Single Renewal Date:</strong> Contract and all <span id="calc-disp-total-nodes">75</span> licensed nodes co-term on <strong id="calc-disp-renewal-date" style="color: #fff;">Dec 31, 2026</strong>. Next annual renewal: <strong id="calc-disp-renewal-total" style="color: #fff;">$42,000 / yr</strong>.
+                  </div>
+                </div>
+
+                <!-- CLI Command & Action Button -->
+                <div>
+                  <div style="background: #000; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 5px; padding: 6px 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                    <code id="calc-cli-output" style="font-family: monospace; font-size: 0.72rem; color: #38bdf8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 82%;">
+                      dcouplr auth activate --tier "Cluster Medium" --overage-nodes 0
+                    </code>
+                    <button type="button" id="btn-copy-calc-cmd" style="background: rgba(255,255,255,0.1); border: none; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.66rem; cursor: pointer;">
+                      Copy
+                    </button>
+                  </div>
+                  <button type="button" id="btn-calc-apply-checkout" class="btn-tier-primary btn-primary-cta" style="width: 100%; padding: 7px 12px; font-size: 0.8rem; cursor: pointer; text-align: center;">
+                    ⚡ Apply this Prorated Plan to Checkout Portal &rarr;
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FROZEN BOTTOM ACTION FOOTER -->
+        <div class="pricing-modal-footer">
+          <div style="font-size: 0.76rem; color: #64748b; display: flex; align-items: center; gap: 0.5rem;">
+            <span class="status-dot" style="width: 6px; height: 6px;"></span>
+            Zero-egress in-VPC licensing &bull; Automatic crossover savings prevent overage penalties
+          </div>
+          <button type="button" class="btn-tier-outline" id="btn-close-pricing-modal-bottom" style="padding: 0.45rem 1.25rem; font-size: 0.8rem;">
+            Close Matrix
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         POP-UP MODAL: Commercial Subscription & Checkout Portal
+         ========================================================================= -->
+    <div class="pricing-modal-backdrop" id="modal-checkout-portal" style="display: none;">
+      <div class="pricing-modal-window" style="max-width: 820px; height: auto; max-height: 92vh;">
+        
+        <!-- Persistent Identification Strip -->
+        <div class="modal-ident-strip" style="display: flex; align-items: center; justify-content: space-between; background: rgba(0, 0, 0, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 0.35rem 1.25rem; font-size: 0.65rem; font-family: monospace; letter-spacing: 0.5px; z-index: 60; user-select: none;">
+          <span style="color: #69f0ae; display: inline-flex; align-items: center; gap: 6px; font-weight: 700;">
+            <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+            COMMERCIAL CHECKOUT &amp; SUBSCRIPTION FULFILLMENT
+          </span>
+          <span style="color: #94a3b8; font-size: 0.65rem;">
+            ZERO-EGRESS IN-VPC • AIR-GAPPED OR HYPERSCALER
+          </span>
+        </div>
+
+        <!-- Header -->
+        <div class="pricing-modal-header">
+          <div class="pricing-modal-header-info">
+            <span class="brand-badge" style="font-size: 0.72rem; margin-bottom: 0.45rem; display: inline-block;">Fulfillment Portal</span>
+            <h2 id="checkout-tier-title" style="font-size: clamp(1.2rem, 1.6vw, 1.55rem); font-weight: 700; color: #fff; margin: 0 0 0.25rem;">
+              Subscribe: Cluster Medium (75 Nodes Base)
+            </h2>
+            <p style="font-size: 0.84rem; color: #94a3b8; margin: 0;">Instant in-VPC license key generation, cloud marketplace entitlement, or enterprise procurement invoice.</p>
+          </div>
+          <button class="pricing-modal-close" id="btn-close-checkout-modal" aria-label="Close Checkout Modal">&times;</button>
+        </div>
+
+        <!-- Body -->
+        <div class="pricing-modal-body" style="padding: 1.25rem;">
+          
+          <!-- Selected Plan Summary Card -->
+          <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span id="checkout-badge-tier" class="table-badge badge-tier-3">Cluster Medium</span>
+                <span id="checkout-price-display" style="font-size: 1.15rem; font-weight: 800; color: #ffffff;">$3,500 / mo</span>
+                <span id="checkout-billing-cycle" style="font-size: 0.75rem; color: #38bdf8; font-weight: 600;">($42,000 / yr upfront)</span>
+                <span style="font-size: 0.7rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 2px 6px; border-radius: 4px;">12-Month Term</span>
+              </div>
+              <div id="checkout-quota-desc" style="font-size: 0.78rem; color: #94a3b8; margin-top: 4px;">
+                Includes 75 Monitored Nodes Base &bull; +$45/node/mo overage &bull; 24x7 P1 SLA + Shared Slack
+              </div>
+            </div>
+            <div>
+              <a href="/docs#architecture" class="btn-tier-outline" style="font-size: 0.74rem; padding: 4px 10px; text-decoration: none;" title="Learn more in Technical Documentation">
+                Learn More About This &rarr;
+              </a>
+            </div>
+          </div>
+
+          <!-- Overage License & Fleet Expansion Customizer -->
+          <div id="checkout-overage-box" style="background: rgba(7, 10, 18, 0.8); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; padding: 12px 14px; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <span style="font-size: 0.82rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+                  <span>⚡</span> Need Additional Monitored Nodes? (Overage License Pool)
+                </span>
+                <p style="font-size: 0.74rem; color: #94a3b8; margin: 2px 0 0 0;">
+                  Add co-termed overage node licenses upfront to eliminate runtime overage billing penalties.
+                </p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <button type="button" id="btn-checkout-ov-minus" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 28px; height: 28px; border-radius: 4px; font-weight: bold; cursor: pointer;">-</button>
+                <input type="number" id="checkout-overage-input" min="0" max="500" value="0" style="width: 60px; text-align: center; background: #000; border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; font-weight: bold; padding: 4px; border-radius: 4px; font-size: 0.85rem;">
+                <button type="button" id="btn-checkout-ov-plus" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 28px; height: 28px; border-radius: 4px; font-weight: bold; cursor: pointer;">+</button>
+                <span id="checkout-overage-rate-label" style="font-size: 0.74rem; color: #94a3b8; font-family: monospace;">(+$45/node/mo)</span>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.08); font-size: 0.78rem; flex-wrap: wrap; gap: 8px;">
+              <span style="color: #cbd5e1;">Licensed Fleet Capacity: <strong id="checkout-total-fleet-nodes" style="color: #38bdf8;">75</strong> nodes</span>
+              <span style="color: #cbd5e1;">Annual Upfront Total: <strong id="checkout-annual-total-due" style="color: #34d399; font-size: 0.95rem;">$42,000 / yr</strong></span>
+            </div>
+          </div>
+
+          <!-- Checkout Tabs / Fulfillment Channels -->
+          <div style="margin-bottom: 1rem;">
+            <div style="display: flex; gap: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 8px; flex-wrap: wrap;">
+              <button type="button" class="checkout-tab-btn active" id="tab-checkout-invpc" style="cursor: pointer; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 6px 14px; border-radius: 6px; font-size: 0.78rem; font-weight: 700;">
+                ⚡ 1-Click In-VPC Activation
+              </button>
+              <button type="button" class="checkout-tab-btn" id="tab-checkout-marketplace" style="cursor: pointer; background: rgba(255, 255, 255, 0.05); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.1); padding: 6px 14px; border-radius: 6px; font-size: 0.78rem; font-weight: 600;">
+                ☁️ Cloud Marketplace (AWS / GCP)
+              </button>
+              <button type="button" class="checkout-tab-btn" id="tab-checkout-invoice" style="cursor: pointer; background: rgba(255, 255, 255, 0.05); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.1); padding: 6px 14px; border-radius: 6px; font-size: 0.78rem; font-weight: 600;">
+                📄 Enterprise PO / Net-30 MSA
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab Content 1: In-VPC Local Mesh Activation -->
+          <div id="content-checkout-invpc" class="checkout-tab-content">
+            <p style="font-size: 0.8rem; color: #cbd5e1; margin-top: 0;">
+              Because <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> operates with a <strong>zero-egress guarantee</strong>, commercial license entitlement and seat binding are executed directly against your private in-VPC control plane without reaching the external internet.
+            </p>
+
+            <div style="background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 6px; padding: 12px 14px; margin-bottom: 1rem;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 0.8rem; font-weight: 700; color: #38bdf8;">🔐 Discrete In-VPC License Delivery</span>
+                  <span style="font-size: 0.68rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Zero-Egress Security</span>
+                </div>
+              </div>
+              <p style="font-size: 0.75rem; color: #cbd5e1; margin: 0 0 8px 0; line-height: 1.45;">
+                Because commercial licenses are cryptographically verified offline with zero outbound internet egress, your discrete signed key (<code style="color: #34d399;">dcouplr.lic</code>) is issued upon checkout and delivered discretely via your private cloud vault or secure customer portal. Keys are never exposed on public web interfaces.
+              </p>
+              <div style="background: #070a12; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 4px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center;">
+                <code id="checkout-cli-command" style="font-family: monospace; font-size: 0.76rem; color: #94a3b8; display: block; word-break: break-all;">
+                  dcouplr auth activate --tier "Cluster Medium" --key-file /secure/path/dcouplr.lic
+                </code>
+                <button type="button" id="btn-copy-checkout-cmd" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.68rem; cursor: pointer;">
+                  Copy Syntax
+                </button>
+              </div>
+            </div>
+
+            <!-- Instant In-Browser Daemon Activation -->
+            <div id="checkout-local-daemon-box" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <div style="font-size: 0.82rem; font-weight: 700; color: #34d399;">
+                  Live <span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span> In-VPC Daemon Integration
+                </div>
+                <div style="font-size: 0.74rem; color: #94a3b8;">
+                  Apply this tier upgrade directly to your local daemon now (instant zero-egress activation).
+                </div>
+              </div>
+              <button type="button" id="btn-apply-checkout-local" style="cursor: pointer; background: linear-gradient(135deg, #10b981, #059669); border: none; color: #fff; font-weight: 700; padding: 6px 14px; border-radius: 6px; font-size: 0.78rem; box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);">
+                ⚡ Apply to Local Daemon &rarr;
+              </button>
+            </div>
+            <div id="checkout-local-feedback" style="display: none; margin-top: 8px; padding: 8px 12px; border-radius: 6px; font-size: 0.78rem;"></div>
+          </div>
+
+          <!-- Tab Content 2: Hyperscaler Cloud Marketplace -->
+          <div id="content-checkout-marketplace" class="checkout-tab-content" style="display: none;">
+            <p style="font-size: 0.8rem; color: #cbd5e1; margin-top: 0;">
+              Draw down existing cloud commits (AWS EDC / GCP Committed Use Discount) by purchasing through verified cloud marketplaces with zero outbound telemetry:
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 10px;">
+              <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 12px;">
+                <div style="font-size: 0.9rem; font-weight: 700; color: #fbbf24;">AWS Marketplace</div>
+                <p style="font-size: 0.74rem; color: #94a3b8; margin: 4px 0 10px 0;">One-click SaaS contract billing against your AWS consolidated billing invoice.</p>
+                <a href="https://aws.amazon.com/marketplace" target="_blank" class="btn-tier-outline" style="display: block; text-align: center; font-size: 0.74rem; padding: 5px; text-decoration: none; border-color: rgba(245, 158, 11, 0.5); color: #fbbf24;">
+                  Open AWS Marketplace Listing ↗
+                </a>
+              </div>
+              <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 12px;">
+                <div style="font-size: 0.9rem; font-weight: 700; color: #60a5fa;">Google Cloud Marketplace</div>
+                <p style="font-size: 0.74rem; color: #94a3b8; margin: 4px 0 10px 0;">Private offer fulfillment via Cloud Commerce API and Private Service Connect.</p>
+                <a href="https://console.cloud.google.com/marketplace" target="_blank" class="btn-tier-outline" style="display: block; text-align: center; font-size: 0.74rem; padding: 5px; text-decoration: none; border-color: rgba(59, 130, 246, 0.5); color: #60a5fa;">
+                  Open GCP Marketplace Listing ↗
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content 3: Direct PO / Net-30 MSA -->
+          <div id="content-checkout-invoice" class="checkout-tab-content" style="display: none;">
+            <p style="font-size: 0.8rem; color: #cbd5e1; margin-top: 0;">
+              Need a formal vendor quote, security review package, or Net-30 Purchase Order billing under custom MSA?
+            </p>
+            <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px;">
+              <form id="form-direct-po" onsubmit="event.preventDefault(); document.getElementById('po-submit-feedback').style.display='block';">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                  <div>
+                    <label style="font-size: 0.72rem; color: #94a3b8; display: block; margin-bottom: 3px;">Full Name</label>
+                    <input type="text" id="po-name" required placeholder="Alex Mercer, Lead Architect" style="width: 100%; box-sizing: border-box; background: #070a12; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 5px 8px; border-radius: 4px; font-size: 0.78rem;">
+                  </div>
+                  <div>
+                    <label style="font-size: 0.72rem; color: #94a3b8; display: block; margin-bottom: 3px;">Work Email</label>
+                    <input type="email" id="po-email" required placeholder="alex@company.com" style="width: 100%; box-sizing: border-box; background: #070a12; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 5px 8px; border-radius: 4px; font-size: 0.78rem;">
+                  </div>
+                </div>
+                <div style="margin-bottom: 10px;">
+                  <label style="font-size: 0.72rem; color: #94a3b8; display: block; margin-bottom: 3px;">Company / Legal Entity</label>
+                  <input type="text" id="po-company" required placeholder="Acme Global Financial Technologies LLC" style="width: 100%; box-sizing: border-box; background: #070a12; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 5px 8px; border-radius: 4px; font-size: 0.78rem;">
+                </div>
+                <button type="submit" style="cursor: pointer; background: linear-gradient(135deg, #06b6d4, #3b82f6); border: none; color: #fff; font-weight: 700; padding: 7px 16px; border-radius: 6px; font-size: 0.8rem;">
+                  Request Net-30 Invoice &amp; License Keys &rarr;
+                </button>
+              </form>
+              <div id="po-submit-feedback" style="display: none; margin-top: 10px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; padding: 8px 12px; border-radius: 6px; font-size: 0.78rem;">
+                ✓ <strong>Request Received!</strong> Procurement invoice and air-gapped license package will be dispatched to your work email within 2 business hours.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="pricing-modal-footer">
+          <div style="font-size: 0.76rem; color: #64748b; display: flex; align-items: center; gap: 0.5rem;">
+            <span class="status-dot" style="width: 6px; height: 6px;"></span>
+            Zero outbound WAN traffic &bull; 100% In-VPC control plane guarantee
+          </div>
+          <button type="button" class="btn-tier-outline" id="btn-close-checkout-footer" style="padding: 0.45rem 1.25rem; font-size: 0.8rem;">
+            Close Portal
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. CLI DOWNLOAD CENTER & COMMERCIAL ENTERPRISE HUB -->
+  <section class="section-container bg-obsidian-base" id="download-hub">
+    <div class="download-hub-section">
+      <!-- Section Tag & Title -->
+      <div style="text-align: center; max-width: 860px; margin: 0 auto 1.5rem;">
+        <div class="hero-tag" style="display: inline-flex; margin-bottom: 1rem;">
+          <span class="tag-badge" style="background: linear-gradient(135deg, #06b6d4, #6366f1); color: #fff;">v1.0.0 GA</span>
+          <span class="tag-separator">/</span>
+          <span class="tag-text">Universal Multi-Platform CLI &amp; Enterprise Distribution</span>
+        </div>
+        <h2 style="font-size: clamp(1.8rem, 2.8vw, 2.6rem); font-weight: 800; color: #fff; margin-bottom: 0.85rem; letter-spacing: -0.5px;">
+          Download <span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span> CLI &amp; Enterprise Packages
+        </h2>
+        <p style="font-size: 1.05rem; color: #94a3b8; line-height: 1.6;">
+          Deploy the local-first AST transpiler and in-VPC telemetry mesh in seconds. Choose the free community open-core binary for your platform, or activate commercial cluster licenses with zero data exfiltration.
+        </p>
+      </div>
+
+      <!-- Navigation Tabs: Free vs Commercial Paid -->
+      <div class="download-nav-tabs" role="tablist">
+        <button type="button" class="download-tab-btn active" id="tab-btn-free-dl" data-target="panel-free-dl">
+          <span>🆓 Free Community Core (v1.0.0)</span>
+        </button>
+        <button type="button" class="download-tab-btn" id="tab-btn-paid-dl" data-target="panel-paid-dl">
+          <span>💼 Paid Commercial &amp; Enterprise Tiers</span>
+        </button>
+      </div>
+
+      <!-- PANEL 1: Free Community Core Downloads -->
+      <div class="download-panel active" id="panel-free-dl">
+
+        <!-- Registration Gate Notice Banner (Shown when not registered) -->
+        <div class="comm-gate-callout" id="comm-gate-notice">
+          <div class="comm-gate-callout-inner">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <span class="comm-gate-icon-badge">📋</span>
+              <div class="comm-gate-text">
+                <div class="comm-gate-title">Community Core Access &amp; Evaluation Census</div>
+                <div class="comm-gate-desc">Free forever under Apache 2.0. Tell us about your stack to unlock official installer scripts, SHA-256 manifests, and critical security errata.</div>
+              </div>
+            </div>
+            <button type="button" class="btn-tier-cta" id="btn-trigger-register-modal" style="padding: 0.55rem 1.2rem; font-size: 0.82rem; white-space: nowrap; flex-shrink: 0;">
+              Register to Download &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- Registration Success Banner (Shown when registered) -->
+        <div class="comm-unlocked-callout" id="comm-unlocked-notice" style="display: none;">
+          <div style="display: flex; align-items: center; gap: 0.65rem;">
+            <span style="color: #10b981; font-size: 1.1rem; font-weight: 700;">✓</span>
+            <span style="font-size: 0.85rem; color: #e2e8f0;">
+              Community Core Downloads Unlocked for <strong id="comm-unlocked-user-name" style="color: #38bdf8;">Engineering User</strong> (<span id="comm-unlocked-user-org" style="color: #94a3b8;">Org</span>).
+            </span>
+          </div>
+          <button type="button" class="btn-edit-details" id="btn-edit-community-profile">Edit Profile</button>
+        </div>
+
+        <div class="download-cards-grid">
+          
+          <!-- Card 1: Linux -->
+          <div class="download-card">
+            <span class="download-card-badge">Shell Installer</span>
+            <div class="download-card-header">
+              <span class="download-card-icon">🐧</span>
+              <h3 class="download-card-title">Linux (x86_64 &amp; ARM64)</h3>
+              <p class="download-card-desc">Statically linked installer for Ubuntu, Debian, RHEL, Alpine, and Amazon Linux.</p>
+            </div>
+            <div class="download-actions-list">
+              <a href="/install.sh" download="install.sh" class="btn-binary-download btn-comm-download" data-file="/install.sh" data-name="install.sh" title="Download install.sh script directly">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>Download install.sh (Shell Script)</span>
+              </a>
+              <a href="https://github.com/varinull/dcouplr-community/releases" target="_blank" rel="noopener" class="btn-binary-download btn-comm-download btn-comm-github" data-file="https://github.com/varinull/dcouplr-community/releases" data-name="GitHub Releases &amp; Packages" data-type="github" style="background: rgba(6, 182, 212, 0.08); border-color: rgba(6, 182, 212, 0.3); color: #38bdf8;" title="View official v1.0.0 releases, tarballs, and packages on GitHub">
+                <span>📦 View Releases &amp; Packages on GitHub ↗</span>
+              </a>
+              <div class="download-snippet-box">
+                <span class="download-snippet-text">curl -fsSL https://dcouplr.com/install.sh | sh &amp;&amp; dcouplr doctor</span>
+                <button type="button" class="btn-copy-snippet" data-copy="curl -fsSL https://dcouplr.com/install.sh | sh &amp;&amp; dcouplr doctor" aria-label="Copy Linux curl command">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: macOS -->
+          <div class="download-card">
+            <span class="download-card-badge">macOS Installer</span>
+            <div class="download-card-header">
+              <span class="download-card-icon">🍏</span>
+              <h3 class="download-card-title">macOS (Apple Silicon &amp; Intel)</h3>
+              <p class="download-card-desc">Universal POSIX shell installer supporting macOS Darwin on Apple Silicon (M1-M4) and Intel x86_64.</p>
+            </div>
+            <div class="download-actions-list">
+              <a href="/install.sh" download="install.sh" class="btn-binary-download btn-comm-download" data-file="/install.sh" data-name="install.sh" title="Download macOS installer script">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>Download install.sh (macOS)</span>
+              </a>
+              <a href="https://github.com/varinull/dcouplr-community/releases" target="_blank" rel="noopener" class="btn-binary-download btn-comm-download btn-comm-github" data-file="https://github.com/varinull/dcouplr-community/releases" data-name="GitHub Releases &amp; Packages" data-type="github" style="background: rgba(6, 182, 212, 0.08); border-color: rgba(6, 182, 212, 0.3); color: #38bdf8;" title="View official macOS releases, universal packages, and checksums on GitHub">
+                <span>📦 View Releases &amp; Packages on GitHub ↗</span>
+              </a>
+              <div class="download-snippet-box">
+                <span class="download-snippet-text">curl -fsSL https://dcouplr.com/install.sh | sh &amp;&amp; dcouplr doctor</span>
+                <button type="button" class="btn-copy-snippet" data-copy="curl -fsSL https://dcouplr.com/install.sh | sh &amp;&amp; dcouplr doctor" aria-label="Copy macOS curl command">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Windows -->
+          <div class="download-card">
+            <span class="download-card-badge">PowerShell Installer</span>
+            <div class="download-card-header">
+              <span class="download-card-icon">🪟</span>
+              <h3 class="download-card-title">Windows (x64 / PowerShell)</h3>
+              <p class="download-card-desc">Self-contained PowerShell installer script with preflight doctor checks and environment setup.</p>
+            </div>
+            <div class="download-actions-list">
+              <a href="/install.ps1" download="install.ps1" class="btn-binary-download btn-comm-download" data-file="/install.ps1" data-name="install.ps1" title="Download Windows PowerShell installer">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>Download install.ps1 (PowerShell)</span>
+              </a>
+              <a href="https://github.com/varinull/dcouplr-community/releases" target="_blank" rel="noopener" class="btn-binary-download btn-comm-download btn-comm-github" data-file="https://github.com/varinull/dcouplr-community/releases" data-name="GitHub Releases &amp; Packages" data-type="github" style="background: rgba(6, 182, 212, 0.08); border-color: rgba(6, 182, 212, 0.3); color: #38bdf8;" title="View official Windows releases, ZIP packages, and checksums on GitHub">
+                <span>📦 View Releases &amp; Packages on GitHub ↗</span>
+              </a>
+              <div class="download-snippet-box">
+                <span class="download-snippet-text">irm https://dcouplr.com/install.ps1 | iex</span>
+                <button type="button" class="btn-copy-snippet" data-copy="irm https://dcouplr.com/install.ps1 | iex" aria-label="Copy PowerShell command">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Docker & Python Source -->
+          <div class="download-card">
+            <span class="download-card-badge">Source &amp; Container</span>
+            <div class="download-card-header">
+              <span class="download-card-icon">📦</span>
+              <h3 class="download-card-title">Docker &amp; Python Source</h3>
+              <p class="download-card-desc">Run directly with local Docker or install into any Python virtual environment directly from Git source.</p>
+            </div>
+            <div class="download-actions-list">
+              <a href="https://github.com/varinull/dcouplr-community/pkgs/container/dcouplr" target="_blank" rel="noopener" class="btn-binary-download btn-comm-download btn-comm-github" data-file="https://github.com/varinull/dcouplr-community/pkgs/container/dcouplr" data-name="GitHub Container Packages" data-type="github" style="background: rgba(6, 182, 212, 0.08); border-color: rgba(6, 182, 212, 0.3); color: #38bdf8;" title="View official container packages on GitHub Container Registry">
+                <span>📦 View Packages on GitHub (Container Registry) ↗</span>
+              </a>
+              <div class="download-snippet-box">
+                <span class="download-snippet-text">docker build -t dcouplr https://github.com/Varinull/dcouplr-community.git#main</span>
+                <button type="button" class="btn-copy-snippet" data-copy="docker build -t dcouplr https://github.com/Varinull/dcouplr-community.git#main &amp;&amp; docker run -p 8000:8000 dcouplr" aria-label="Copy Docker command">Copy</button>
+              </div>
+              <div class="download-snippet-box">
+                <span class="download-snippet-text">git clone https://github.com/Varinull/dcouplr-community.git &amp;&amp; cd dcouplr &amp;&amp; pip install -e .</span>
+                <button type="button" class="btn-copy-snippet" data-copy="git clone https://github.com/Varinull/dcouplr-community.git &amp;&amp; cd dcouplr &amp;&amp; pip install -e ." aria-label="Copy git command">Copy</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Cryptographic Attestation & Checksum Verification Bar -->
+        <div class="card-elevated" style="padding: 1.5rem; border-radius: var(--radius-md); display: flex; flex-direction: column; gap: 0.75rem; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+              <span style="font-size: 1.1rem;">🔒</span>
+              <span style="font-size: 0.9rem; font-weight: 700; color: #fff;">Cryptographic Provenance &amp; Checksum Verification</span>
+            </div>
+            <a href="/SHA256SUMS" style="font-size: 0.8rem; color: #38bdf8; text-decoration: underline;" target="_blank">View SHA256SUMS ↗</a>
+          </div>
+          <p style="font-size: 0.8rem; color: #94a3b8; margin: 0; line-height: 1.5;">
+            Official distribution files and installer scripts are published with SHA-256 cryptographic digests. Verify file integrity directly:
+          </p>
+          <div class="download-snippet-box" style="background: rgba(0, 0, 0, 0.6);">
+            <span class="download-snippet-text">curl -fsSL https://dcouplr.com/SHA256SUMS | sha256sum -c -</span>
+            <button type="button" class="btn-copy-snippet" data-copy="curl -fsSL https://dcouplr.com/SHA256SUMS | sha256sum -c -">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL 2: Paid Commercial & Enterprise Tier Onboarding -->
+      <div class="download-panel" id="panel-paid-dl">
+        <div style="background: rgba(99, 102, 241, 0.06); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 2rem;">
+          <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
+            <span style="font-size: 1.2rem;">💎</span>
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin: 0;">How Paid Customers Download &amp; Activate <span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span></h3>
+          </div>
+          <p style="font-size: 0.86rem; color: #cbd5e1; line-height: 1.6; margin: 0;">
+            Commercial subscriptions (<strong>Developer Pro, Cluster Small/Medium/Large, Custom Enterprise</strong>) use the exact same zero-egress binary foundation with cryptographically signed offline entitlement keys. There are no proprietary phone-home licensing daemons; authentication is 100% private and in-VPC.
+          </p>
+        </div>
+
+        <div class="commercial-workflow-grid">
+          <!-- Step 1 -->
+          <div class="commercial-step-card">
+            <div class="commercial-step-num">1</div>
+            <h4 class="commercial-step-title">Subscribe to a Node Tier</h4>
+            <p class="commercial-step-desc">Select your cluster node capacity in the <a href="#pricing" style="color: #38bdf8; text-decoration: underline;">Pricing section</a> or via AWS/GCP Marketplace. Immediate invoice and PO options are available.</p>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="commercial-step-card">
+            <div class="commercial-step-num">2</div>
+            <h4 class="commercial-step-title">Receive Signed License Key</h4>
+            <p class="commercial-step-desc">Your confirmation contains an Ed25519 offline entitlement token (e.g. <code>DCL-PRO-ACME-8821B47C9</code>) encoding your node quota, support SLA, and customer organization.</p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="commercial-step-card">
+            <div class="commercial-step-num">3</div>
+            <h4 class="commercial-step-title">One-Line CLI Activation</h4>
+            <p class="commercial-step-desc">Run <code>dcouplr auth login</code> in your terminal or configure <code>DCOUPLR_LICENSE_KEY</code>. The CLI validates the key offline inside your volatile RAM boundary with $0 egress.</p>
+            <div class="download-snippet-box" style="margin-top: 0.75rem; background: rgba(0, 0, 0, 0.6);">
+              <span class="download-snippet-text">curl -fsSL https://dcouplr.com/install-enterprise.sh | sh</span>
+              <button type="button" class="btn-copy-snippet" data-copy="curl -fsSL https://dcouplr.com/install-enterprise.sh | sh" aria-label="Copy Enterprise Linux/macOS curl command">Copy</button>
+            </div>
+            <div class="download-snippet-box" style="margin-top: 0.35rem; background: rgba(0, 0, 0, 0.6);">
+              <span class="download-snippet-text">irm https://dcouplr.com/install-enterprise.ps1 | iex</span>
+              <button type="button" class="btn-copy-snippet" data-copy="irm https://dcouplr.com/install-enterprise.ps1 | iex" aria-label="Copy Enterprise PowerShell command">Copy</button>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="commercial-step-card">
+            <div class="commercial-step-num">4</div>
+            <h4 class="commercial-step-title">Air-Gapped Enterprise Distribution</h4>
+            <p class="commercial-step-desc">Download <code>dcouplr-enterprise-v1.0.0.tar.gz</code> containing offline container images, Helm charts, CRDs, CycloneDX SBOM, and SLSA Level 3 provenance.</p>
+            <div style="margin-top: 0.75rem; display: flex; flex-direction: row; flex-wrap: wrap; gap: 0.6rem;">
+              <a href="/dcouplr-enterprise-v1.0.0.tar.gz" download="dcouplr-enterprise-v1.0.0.tar.gz" class="btn-binary-download" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(6, 182, 212, 0.2)); border-color: rgba(99, 102, 241, 0.4); color: #fff; flex: 1 1 240px; width: auto; justify-content: center;" title="Download Air-Gapped Enterprise Tarball">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>Download dcouplr-enterprise-v1.0.0.tar.gz</span>
+              </a>
+              <a href="https://github.com/varinull/dcouplr-community/releases" target="_blank" rel="noopener" class="btn-binary-download" style="background: rgba(6, 182, 212, 0.08); border-color: rgba(6, 182, 212, 0.3); color: #38bdf8; flex: 1 1 240px; width: auto; justify-content: center;" title="View Enterprise and Community Release Assets on GitHub Releases">
+                <span>📦 View Release Assets on GitHub Releases ↗</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive License Key Validation Box -->
+        <div class="card-elevated" style="padding: 2rem; border-radius: var(--radius-md); border: 1px solid rgba(6, 182, 212, 0.3); background: rgba(6, 182, 212, 0.03);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+            <div>
+              <h4 style="font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem;">Test Offline Commercial Key Entitlement</h4>
+              <p style="font-size: 0.84rem; color: #94a3b8; margin: 0;">Validate how <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> inspects license parameters locally without contacting external servers.</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button type="button" class="btn-tier-outline sample-license-btn" data-key="DCL-PRO-ACME-8821B47C9" data-org="Acme Corp" style="font-size: 0.76rem; padding: 0.35rem 0.75rem;">Sample Pro Key</button>
+              <button type="button" class="btn-tier-outline sample-license-btn" data-key="DCL-CLUS-MD-FINTECH-991A4B2C8" data-org="Fintech Global" style="font-size: 0.76rem; padding: 0.35rem 0.75rem;">Sample Cluster Medium</button>
+              <button type="button" class="btn-tier-outline sample-license-btn" data-key="DCL-ENT-DEFENSE-00018X7K2" data-org="Air-Gapped Defense" style="font-size: 0.76rem; padding: 0.35rem 0.75rem;">Sample Enterprise</button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
+            <input type="text" id="landing-license-input" placeholder="Enter Commercial License Key (e.g. DCL-PRO-ACME-8821B47C9)" style="flex: 1; min-width: 260px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 0.65rem 1rem; border-radius: 6px; font-family: var(--font-mono); font-size: 0.85rem;" />
+            <button type="button" id="btn-validate-license" class="btn-tier-primary btn-primary-cta" style="width: auto !important; white-space: nowrap; flex-shrink: 0; padding: 0.65rem 1.4rem; font-size: 0.88rem;">Validate Entitlement</button>
+          </div>
+
+          <!-- License Validation Output Box -->
+          <div id="license-validation-result" style="display: none; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 6px; padding: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+              <span style="font-size: 0.95rem; font-weight: 700; color: #34d399; display: flex; align-items: center; gap: 0.4rem;">
+                <span>✅</span> <span id="res-license-tier">Developer Pro</span>
+              </span>
+              <span style="font-size: 0.74rem; background: rgba(16, 185, 129, 0.2); color: #6ee7b7; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 600;">ZERO-EGRESS VALID</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.85rem; font-size: 0.8rem; margin-bottom: 1rem;">
+              <div><strong style="color: #94a3b8;">Customer Org:</strong> <span id="res-license-org" style="color: #fff;">Acme Corp</span></div>
+              <div><strong style="color: #94a3b8;">Monitored Nodes:</strong> <span id="res-license-nodes" style="color: #fbbf24; font-weight: 700;">25 Nodes</span></div>
+              <div><strong style="color: #94a3b8;">Contractual SLA:</strong> <span id="res-license-sla" style="color: #c084fc;">48h Standard Email</span></div>
+              <div><strong style="color: #94a3b8;">Air-Gap Provenance:</strong> <span style="color: #38bdf8;">100% In-VPC Pass</span></div>
+            </div>
+            <div class="download-snippet-box">
+              <span class="download-snippet-text" id="res-license-cmd">dcouplr auth login --license-key DCL-PRO-ACME-8821B47C9</span>
+              <button type="button" class="btn-copy-snippet" id="btn-copy-license-cmd">Copy Command</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Row -->
+        <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 2rem; flex-wrap: wrap; max-width: 580px; margin-left: auto; margin-right: auto;">
+          <a href="#pricing" class="btn-tier-primary btn-primary-cta" style="width: auto !important; max-width: 270px; flex: 1 1 220px; padding: 0.65rem 1.25rem !important; font-size: 0.86rem !important; justify-content: center; text-align: center; margin: 0 !important;">
+            Explore Pricing &amp; Node Tiers &rarr;
+          </a>
+          <a href="/docs" class="btn-tier-outline" style="width: auto !important; max-width: 270px; flex: 1 1 220px; padding: 0.65rem 1.25rem !important; font-size: 0.86rem !important; justify-content: center; text-align: center; margin: 0 !important;">
+            📖 Technical Documentation
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Global Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="dcouplr-logo" title="&lt;dcouplr/&gt;" style="margin-bottom: 0.75rem;">
+            <span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span>
+          </div>
+          <p class="footer-desc">
+            Zero-egress, bi-directional vendor-agnostic infrastructure as code, alert policy transpiler, and universal turnkey cloud migration enabler. Apache 2.0 Open-Core.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-title">Product &amp; Solutions</div>
+          <a href="/v2#apm-traces" class="footer-link">In-VPC APM Traces</a>
+          <a href="/v2#log-search" class="footer-link">In-VPC Log Search</a>
+          <a href="/v2#noc-wallboard" class="footer-link">24x7 NOC Wallboard</a>
+          <a href="/v2#observability" class="footer-link">Observability Suite</a>
+          <a href="#solutions" class="footer-link">Enterprise Solutions</a>
+          <a href="#how-it-works" class="footer-link">Hermetic 3-Step Workflow</a>
+          <a href="#benefits" class="footer-link">Security &amp; In-Perimeter Data Isolation</a>
+          <a href="#ecosystem" class="footer-link">Universal Ecosystem</a>
+          <a href="#download-hub" class="footer-link">Download Free CLI</a>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-title">Licensing &amp; Economics</div>
+          <a href="#pricing" class="footer-link">Cluster Licensing Model</a>
+          <a href="#pricing" class="footer-link">Community Core (Free)</a>
+          <a href="#finops" class="footer-link">FinOps ROI Calculator</a>
+          <a href="#comparison" class="footer-link">Operating Model Comparison</a>
+          <a href="#download-hub" class="footer-link">Enterprise Activation</a>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-title">Customer Technical Docs</div>
+          <a href="/docs" class="footer-link">Interactive OpenAPI Docs</a>
+          <a href="/docs/swagger" class="footer-link">Swagger UI Console</a>
+          <a href="#ecosystem" class="footer-link">IaC &amp; Telemetry Integrations</a>
+          <a href="#download-hub" class="footer-link">CLI Command Reference</a>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-title">Trust &amp; Governance</div>
+          <a href="#benefits" class="footer-link">Zero-Egress Security Baseline</a>
+          <a href="#benefits" class="footer-link">In-Perimeter Data Isolation</a>
+          <a href="#comparison" class="footer-link">Operating Model Comparison</a>
+          <a href="/docs" class="footer-link">Architecture Verification</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-bottom-main">
+          <p>&copy; 2026 <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> Infrastructure Systems. Zero-Exfiltration Boundary Architecture. Apache 2.0 License.</p>
+          <nav class="legal-links" aria-label="Legal">
+            <a href="/legal/terms" class="legal-link">Public Terms</a>
+            <a href="/legal/privacy" class="legal-link">Privacy of Use</a>
+            <a href="/legal/security" class="legal-link">Security</a>
+          </nav>
+        </div>
+        <p class="footer-disclaimer">
+          <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> provides zero-egress configuration transpilation and architectural benchmarks for your engineering review. It does not provide legal, compliance, or tax advice. Enterprise customer deployments and data processing terms are governed by separate Master Services Agreements executed post sign-in.
+        </p>
+        <div class="footer-bottom-badges-wrap">
+          <p style="font-size: 0.72rem; color: #64748b; margin: 0; line-height: 1.5; max-width: 900px;">
+            <strong>Trademark &amp; Compatibility Notice:</strong> All product names, logos, brands, and registered trademarks are property of their respective owners. <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> is an independent open-core software project built strictly for syntax transpilation and configuration interoperability. Reference to any third-party formats or specifications is made under nominative principles to indicate syntactic translation capability, and does not imply endorsement, affiliation, or commercial comparison.
+          </p>
+          <div class="footer-badges">
+            <span class="footer-pill">RFC 1918 Sanitized</span>
+            <span class="footer-pill">SPIFFE/SPIRE Attested</span>
+            <span class="footer-pill">Distroless UID 65532</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal: Community Core Lead Gate & Download Access -->
+  <div class="community-modal-backdrop" id="modal-community-gate" role="dialog" aria-modal="true" aria-labelledby="comm-gate-title" style="display: none;">
+    <div class="community-modal-window">
+      <div class="modal-ident-strip" style="display: flex; align-items: center; justify-content: space-between; background: rgba(0, 0, 0, 0.6); border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 0.35rem 1.25rem; font-size: 0.65rem; font-family: monospace; letter-spacing: 0.5px; z-index: 60; user-select: none;">
+        <span style="color: #38bdf8; display: flex; align-items: center; gap: 0.4rem;">
+          <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+          COMMUNITY CORE ACCESS GATEWAY
+        </span>
+        <span style="color: #64748b;">SHA-256 VERIFIED RELEASE</span>
+      </div>
+
+      <div class="community-modal-header">
+        <div class="community-modal-header-info">
+          <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #06b6d4; background: rgba(6, 182, 212, 0.12); padding: 0.2rem 0.65rem; border-radius: 999px; border: 1px solid rgba(6, 182, 212, 0.3); margin-bottom: 0.4rem;">
+            🆓 Free Forever &bull; Apache 2.0 Open-Core
+          </span>
+          <h2 id="comm-gate-title">Unlock Community Core Downloads</h2>
+          <p id="comm-gate-subtitle">Register once to instantly unlock direct installer scripts, binary tarballs, and security errata notifications.</p>
+        </div>
+        <button class="pricing-modal-close" id="btn-close-community-modal" aria-label="Close Registration Modal">&times;</button>
+      </div>
+
+      <div class="community-modal-body">
+        <form id="form-community-register" novalidate>
+          <div class="gate-form-row-2">
+            <div class="gate-form-group">
+              <label for="comm-input-name">Full Name <span class="req">*</span></label>
+              <input type="text" id="comm-input-name" class="gate-input" placeholder="e.g. Alex Rivera" required autocomplete="name" />
+            </div>
+            <div class="gate-form-group">
+              <label for="comm-input-email">Work Email <span class="req">*</span></label>
+              <input type="email" id="comm-input-email" class="gate-input" placeholder="alex@company.com" required autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="gate-form-row-2">
+            <div class="gate-form-group">
+              <label for="comm-input-company">Company / Organization <span class="req">*</span></label>
+              <input type="text" id="comm-input-company" class="gate-input" placeholder="e.g. Acme Corp / Self-Employed" required autocomplete="organization" />
+            </div>
+            <div class="gate-form-group">
+              <label for="comm-input-cloud">Primary Cloud Stack</label>
+              <select id="comm-input-cloud" class="gate-select">
+                <option value="AWS">Amazon Web Services (AWS)</option>
+                <option value="GCP">Google Cloud Platform (GCP)</option>
+                <option value="Azure">Microsoft Azure</option>
+                <option value="Multi-Cloud">Multi-Cloud (Hybrid VPC)</option>
+                <option value="On-Prem">On-Premises / Sovereign Bare-Metal</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="gate-form-group">
+            <label for="comm-input-interest">Primary Migration or Telemetry Interest</label>
+            <select id="comm-input-interest" class="gate-select">
+              <option value="Datadog to Grafana">Datadog to Grafana / Zero-Egress In-VPC Observability</option>
+              <option value="Terraform to OpenTofu">Terraform to OpenTofu AST Transpilation</option>
+              <option value="In-VPC Telemetry Mesh">Zero WAN Egress In-App Telemetry &amp; Raft Mesh</option>
+              <option value="Cloud FinOps & Cost Reduction">FinOps Cloud Cost Optimization (Overages/Egress Cuts)</option>
+              <option value="General Evaluation">General Architecture Exploration &amp; Evaluation</option>
+            </select>
+          </div>
+
+          <div id="comm-gate-error" style="display: none; background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); color: #fda4af; padding: 0.65rem 0.85rem; border-radius: 7px; font-size: 0.82rem; margin-bottom: 1rem;"></div>
+
+          <div style="margin-top: 1.25rem;">
+            <button type="submit" id="btn-submit-community-gate" class="btn-tier-cta" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+              <span>Unlock &amp; Proceed to Download</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+
+          <div class="comm-gate-trust">
+            <span>🔒 Zero Spam Guarantee</span>
+            <span>&bull;</span>
+            <span>🛡️ Never Sold or Shared</span>
+            <span>&bull;</span>
+            <span>⚡ Instant One-Click Unlock</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Scroll-To-Top Push Up Arrow Button -->
+  <button id="scroll-to-top" class="scroll-to-top-btn" aria-label="Return to top of page" title="Return to top of page">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <line x1="12" y1="19" x2="12" y2="5"></line>
+      <polyline points="5 12 12 5 19 12"></polyline>
+    </svg>
+  </button>
+
+  <script src="/static/app.js?v=20261027_v15_discrete_key"></script>
+</body>
+</html>

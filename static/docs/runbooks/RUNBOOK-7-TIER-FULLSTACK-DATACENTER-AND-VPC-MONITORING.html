@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="sre-runbook-7-tier-full-stack-datacenter-cloud-vpc-monitoring-architecture-noc-hub">[SRE RUNBOOK] 7-Tier Full-Stack Datacenter &amp; Cloud VPC Monitoring Architecture &amp; NOC Hub</h1>
+<h2 id="authoritative-operating-manual-health-checks-threshold-tuning-remediation-incident-triage">Authoritative Operating Manual: Health Checks, Threshold Tuning, Remediation &amp; Incident Triage</h2>
+<blockquote>
+<p><strong>Document ID:</strong> <code>RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING</code><br />
+<strong>Classification:</strong> Engineering Operational Standard Operating Procedure (SOP) &amp; Systems Runbook<br />
+<strong>Target Audience:</strong> Site Reliability Engineers (SREs), NOC Operators, Systems Administrators, DBAs, SecOps<br />
+<strong>Applies to:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Full-Stack Suite, Bare Metal, Hybrid On-Prem &amp; Multi-Cloud VPCs<br />
+<strong>Zero-Egress Invariant:</strong> 100% In-Perimeter Telemetry • Zero Cloud WAN Bandwidth Egress • Hardware Memory Buffers<br />
+<strong>Live Online Console:</strong> <code>http://localhost:8000/docs/runbooks/RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.html</code></p>
+</blockquote>
+<hr />
+<h2 id="interactive-table-of-contents-navigation-outline">📑 Interactive Table of Contents &amp; Navigation Outline</h2>
+<ul>
+<li><strong><a href="#part-i-telemetry-pipeline--operating-principles">Part I: Telemetry Pipeline &amp; Operating Principles</a></strong>
+<ul>
+<li><a href="#11-in-perimeter-architecture">1.1 In-Perimeter Architecture</a></li>
+<li><a href="#12-global-7-tier-topology-flowchart">1.2 Global 7-Tier Topology Flowchart</a></li>
+</ul>
+</li>
+<li><strong><a href="#part-ii-severity-policies-p1p4--sliding-evaluation-windows">Part II: Severity Policies (P1–P4) &amp; Sliding Evaluation Windows</a></strong>
+<ul>
+<li><a href="#21-severity-level-hierarchy--response-targets">2.1 Severity Level Hierarchy &amp; Response Targets</a></li>
+<li><a href="#211-sla-governance-boundary-in-perimeter-metric-alerting-vs-dcouplr-commercial-vendor-support-sla">2.1.1 SLA Governance Boundary: In-Perimeter Metric Alerting vs. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Commercial Vendor Support SLA</a></li>
+<li><a href="#22-in-memory-circular-buffers--evaluation-windows">2.2 In-Memory Circular Buffers &amp; Evaluation Windows</a></li>
+<li><a href="#23-guiding-philosophy-threshold-trade-off-analysis">2.3 Guiding Philosophy: Threshold Trade-Off Analysis</a></li>
+</ul>
+</li>
+<li><strong><a href="#part-iii-tier-by-tier-runbook--configuration-manual">Part III: Tier-by-Tier Runbook &amp; Configuration Manual</a></strong>
+<ul>
+<li><strong><a href="#tier-1-physical-data-center-infrastructure-bare-metal">Tier 1: Physical Data Center Infrastructure (Bare Metal)</a></strong>
+<ul>
+<li><a href="#11-compute--bare-metal-servers">1.1 Compute / Bare Metal Servers</a></li>
+<li><a href="#12-power--environment-dcimipmi">1.2 Power &amp; Environment (DCIM/IPMI)</a></li>
+<li><a href="#13-storage-systems-san--nas--nvme-of">1.3 Storage Systems (SAN / NAS / NVMe-oF)</a></li>
+</ul>
+</li>
+<li><strong><a href="#tier-2-physical--virtual-networking">Tier 2: Physical &amp; Virtual Networking</a></strong>
+<ul>
+<li><a href="#21-core-network-devices-spines-leaves--switches">2.1 Core Network Devices (Spines, Leaves &amp; Switches)</a></li>
+<li><a href="#22-network-connectivity-jitter--bgpospf-routing-stability">2.2 Network Connectivity, Jitter &amp; BGP/OSPF Routing Stability</a></li>
+<li><a href="#23-dedicated-interconnects-aws-directconnect-expressroute--ipsec">2.3 Dedicated Interconnects (AWS DirectConnect, ExpressRoute &amp; IPsec)</a></li>
+</ul>
+</li>
+<li><strong><a href="#tier-3-vpc--cloud-infrastructure">Tier 3: VPC &amp; Cloud Infrastructure</a></strong>
+<ul>
+<li><a href="#31-vpc-flow-logs--traffic-conservation-invariant">3.1 VPC Flow Logs &amp; Traffic Conservation Invariant</a></li>
+<li><a href="#32-subnets-cidr-allocation--nat-gateway-snat">3.2 Subnets, CIDR Allocation &amp; NAT Gateway SNAT</a></li>
+<li><a href="#33-cloud-firewalls-security-groups--network-acls">3.3 Cloud Firewalls, Security Groups &amp; Network ACLs</a></li>
+<li><a href="#34-enterprise-load-balancers-alb-nlb-f5-big-ip">3.4 Enterprise Load Balancers (ALB, NLB, F5 BIG-IP)</a></li>
+</ul>
+</li>
+<li><strong><a href="#tier-4-virtualization--container-platforms">Tier 4: Virtualization &amp; Container Platforms</a></strong>
+<ul>
+<li><a href="#41-hypervisors-vmware-esxi-kvm-proxmox">4.1 Hypervisors (VMware ESXi, KVM, Proxmox)</a></li>
+<li><a href="#42-kubernetes--openshift-control-plane--etcd-fsync">4.2 Kubernetes &amp; OpenShift Control Plane &amp; ETCD Fsync</a></li>
+<li><a href="#43-workload-health-kubelets--ingress-proxies">4.3 Workload Health, Kubelets &amp; Ingress Proxies</a></li>
+</ul>
+</li>
+<li><strong><a href="#tier-5-middleware-databases--storage-layers">Tier 5: Middleware, Databases &amp; Storage Layers</a></strong>
+<ul>
+<li><a href="#51-relational-databases-postgresql-mysql-oracle-ms-sql-server">5.1 Relational Databases (PostgreSQL, MySQL, Oracle, MS SQL Server)</a></li>
+<li><a href="#52-distributed-sql--nosql-tidb--apache-cassandra">5.2 Distributed SQL &amp; NoSQL (TiDB &amp; Apache Cassandra)</a></li>
+<li><a href="#53-message-queues--event-streaming-apache-kafka-rabbitmq-sqs">5.3 Message Queues &amp; Event Streaming (Apache Kafka, RabbitMQ, SQS)</a></li>
+<li><a href="#54-in-memory-caching-redis--memcached">5.4 In-Memory Caching (Redis &amp; Memcached)</a></li>
+</ul>
+</li>
+<li><strong><a href="#tier-6-application--process-layer-apm--distributed-tracing">Tier 6: Application &amp; Process Layer (APM &amp; Distributed Tracing)</a></strong>
+<ul>
+<li><a href="#61-distributed-apm--opentelemetry-tracing">6.1 Distributed APM &amp; OpenTelemetry Tracing</a></li>
+<li><a href="#62-runtime-engines-jvm-go-nodejs-python-net">6.2 Runtime Engines (JVM, Go, Node.js, Python, .NET)</a></li>
+<li><a href="#63-synthetic-end-to-end-blackbox-probing">6.3 Synthetic End-to-End Blackbox Probing</a></li>
+</ul>
+</li>
+<li><strong><a href="#tier-7-logs-events--security-siem--auditing">Tier 7: Logs, Events &amp; Security (SIEM / Auditing)</a></strong>
+<ul>
+<li><a href="#71-centralized-high-throughput-log-streaming">7.1 Centralized High-Throughput Log Streaming</a></li>
+<li><a href="#72-security-audit-iam--scim-privilege-escalation">7.2 Security Audit, IAM &amp; SCIM Privilege Escalation</a></li>
+<li><a href="#73-zero-egress-compliance--kernel-ebpf-enforcement">7.3 Zero-Egress Compliance &amp; Kernel eBPF Enforcement</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong><a href="#part-iv-incident-routing-local-spooling--enterprise-ticketing-integration">Part IV: Incident Routing, Local Spooling &amp; Enterprise Ticketing Integration</a></strong></li>
+<li><strong><a href="#part-v-core-operational-safety-invariants--verification-rules">Part V: Core Operational Safety Invariants &amp; Verification Rules</a></strong></li>
+<li><strong><a href="#part-vi-synthetic-test-verification--api-manual">Part VI: Synthetic Test Verification &amp; API Manual</a></strong></li>
+</ul>
+<hr />
+<h1 id="part-i-telemetry-pipeline-operating-principles">Part I: Telemetry Pipeline &amp; Operating Principles</h1>
+<h3 id="11-in-perimeter-architecture">1.1 In-Perimeter Architecture</h3>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> operates as an autonomous, in-perimeter telemetry daemon deployed directly inside your private cloud VPCs and on-premises datacenter networks. It collects, correlates, and evaluates metrics, application traces, and audit logs locally without routing telemetry traffic over public internet gateways:</p>
+<ol>
+<li><strong>Zero External Bandwidth:</strong> All telemetry evaluation happens in volatile RAM on your instances. No metrics, logs, or traces leave the VPC boundary.</li>
+<li><strong>Data Isolation:</strong> Sensitive connection strings, database schemas, internal IP topologies, and customer payloads remain within your security enclave.</li>
+<li><strong>Local High Availability:</strong> The monitoring mesh runs independently of external network connectivity. If the public WAN or third-party cloud services experience outages, internal telemetry, alerting, and NOC displays remain fully operational.</li>
+</ol>
+<p>Each daemon consumes less than 50 MiB of RAM per node by utilizing circular in-memory ring buffers with strict fixed-capacity bounds.</p>
+<h3 id="12-global-7-tier-topology-flowchart">1.2 Global 7-Tier Topology Flowchart</h3>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">flowchart TD
+    subgraph INGESTION[&quot;7-Tier In-Perimeter Ingestion Fabric&quot;]
+        T1[&quot;Tier 1: Physical DC (Compute, DCIM, SAN/NAS)&quot;]
+        T2[&quot;Tier 2: Networking (Core Spines, BGP, Optics)&quot;]
+        T3[&quot;Tier 3: Cloud &amp; VPC (Flow Logs, CIDRs, FW, ALB)&quot;]
+        T4[&quot;Tier 4: K8s &amp; Containers (ETCD fsync, Control Plane, Pods)&quot;]
+        T5[&quot;Tier 5: Middleware &amp; DBs (Postgres, MySQL, Oracle, MSSQL, TiDB, Cassandra, Kafka, Redis)&quot;]
+        T6[&quot;Tier 6: APM &amp; Runtimes (Distributed Traces, JVM/Go GC, Synthetics)&quot;]
+        T7[&quot;Tier 7: Logs &amp; SIEM (RFC 5424, Auditd, eBPF Zero-Egress Watchdog)&quot;]
+    end
+
+    subgraph ENGINE[&quot;<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Autonomous Observer Engine (3-Node Raft Mesh)&quot;]
+        RING[&quot;Volatile Fixed-Capacity Ring Buffers (Sub-ms Latency)&quot;]
+        RULES[&quot;Operational Invariant Evaluator (Traffic Balance, Tail Percentiles, Consensus)&quot;]
+        FILTER[&quot;Sliding Window Dampener &amp; Deduplication Engine&quot;]
+    end
+
+    subgraph DISPATCH[&quot;In-Perimeter NOC &amp; Incident Routing Hub&quot;]
+        TICKETING[&quot;🎫 Enterprise Ticketing Tool (ServiceNow / Jira / Spool)&quot;]
+        NOC[&quot;📺 24/7 NOC Wallboard (PulseCast™)&quot;]
+        PAGER[&quot;📟 GSM Hardware Pager (Out-of-Band)&quot;]
+        SMTP[&quot;📧 SRE SMTP Gateway (In-VPC)&quot;]
+        SIEM[&quot;📜 Syslog RFC 5424 Forwarder&quot;]
+    end
+
+    INGESTION --&gt; ENGINE
+    ENGINE --&gt; DISPATCH
+</code></pre></div>
+<hr />
+<h1 id="part-ii-severity-policies-p1p4-sliding-evaluation-windows">Part II: Severity Policies (P1–P4) &amp; Sliding Evaluation Windows</h1>
+<h3 id="21-severity-level-hierarchy-response-targets">2.1 Severity Level Hierarchy &amp; Response Targets</h3>
+<p>Every monitored component in <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> maps to a formal internal operational severity level:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Severity Level</th>
+<th style="text-align:left">Target MTTA</th>
+<th style="text-align:left">Operational Scope</th>
+<th style="text-align:left">Routing Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">🚨 <strong>P1 - Critical</strong></td>
+<td style="text-align:left"><strong>&lt; 5 min</strong></td>
+<td style="text-align:left">Complete outage, active data corruption risk, redundant power loss, or security invariant breach.</td>
+<td style="text-align:left">Immediate phone paging, VoIP emergency broadcast, and SRE incident bridge creation.</td>
+</tr>
+<tr>
+<td style="text-align:left">⚠️ <strong>P2 - Major</strong></td>
+<td style="text-align:left"><strong>&lt; 15 min</strong></td>
+<td style="text-align:left">Subsystem degradation, database lock contention, severe network queue drops, or worker node starvation.</td>
+<td style="text-align:left">Automated Slack/Teams alerting and ticket creation in primary on-call queue.</td>
+</tr>
+<tr>
+<td style="text-align:left">🟡 <strong>P3 - Moderate</strong></td>
+<td style="text-align:left"><strong>&lt; 1 hour</strong></td>
+<td style="text-align:left">Capacity warning, slow storage latency drift, minor replication delay, or non-impacting worker restarts.</td>
+<td style="text-align:left">Business-hours queue dispatch; batched notification digest to prevent alert fatigue.</td>
+</tr>
+<tr>
+<td style="text-align:left">ℹ️ <strong>P4 - Info</strong></td>
+<td style="text-align:left"><strong>Next Biz Day</strong></td>
+<td style="text-align:left">Informational state drift, routine metrics, audit log events, or maintenance window milestones.</td>
+<td style="text-align:left">Recorded in audit feed without engineer paging.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="211-sla-governance-boundary-in-perimeter-metric-alerting-vs-dcouplr-commercial-vendor-support-sla">2.1.1 SLA Governance Boundary: In-Perimeter Metric Alerting vs. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Commercial Vendor Support SLA <a id="211-sla-governance-boundary-in-perimeter-metric-alerting-vs-dcouplr-commercial-vendor-support-sla"></a><a id="211-sla-governance-boundary-in-perimeter-metric-alerting-vs-varinull-commercial-support-sla"></a></h3>
+<blockquote>
+<p>[!IMPORTANT]
+<strong>GOVERNANCE DEMARCATION NOTE FOR OPERATING ENGINEERS: In-Perimeter Metric Policy vs. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Commercial Vendor Support SLA</strong><br />
+Do <strong>NOT</strong> conflate these two separate operational layers: How you configure the Severity Policy (P1–P4) and Sampling Evaluation Window (1m–30m) below governs your internal infrastructure telemetry filtering, rolling ring buffer noise rejection, and internal team on-call dispatching. It is completely independent of your contractual <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Commercial Vendor Support SLA (governed by Document ID <code>VA-SPEC-SUPPORT-SLA-001</code>). Setting a database, network, or server metric to P1 triggers your internal SRE paging queues—it does not open an incident ticket with <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Support, and your commercial support agreement does not constrain your internal evaluation windows.</p>
+<ol>
+<li><strong>In-Perimeter Metric Telemetry (Internal Customer Operation):</strong>
+<ul>
+<li>Governs how <em>your internal team</em> monitors your own infrastructure (servers, VPC networks, databases, Kubernetes clusters, apps).</li>
+<li>Selecting <code>P1 - Critical</code> with a <code>1m</code> evaluation window controls internal sliding ring buffers, noise rejection, and internal notification dispatch (paging internal on-call SREs via GSM Pagers, VoIP, or internal ticketing queues (e.g. <code>sre-tier1</code>)).</li>
+<li><strong>It does NOT create, trigger, or escalate an incident ticket with <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Support.</strong></li>
+</ul>
+</li>
+<li><strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Commercial Vendor Support SLA (Vendor Support Contract):</strong>
+<ul>
+<li>Governed by your commercial enterprise license contract (Document ID: <code>VA-SPEC-SUPPORT-SLA-001</code>).</li>
+<li>Dictates the contractual response time provided by Support Engineers (e.g., Tier 3: 2-Hour 24/7 P1 SLA, Tier 4: 1-Hour 24/7 P1 SLA, Tier 5: 15-Minute 24/7 P0/P1 SLA) for <strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> runtime software defects, AST compiler failures, Raft consensus partitions, and engine bugs</strong>.</li>
+<li>Tuning an internal metric alert to P1 does NOT dispatch a vendor incident to <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Support, nor does your vendor contract dictate internal sampling windows.</li>
+</ul>
+</li>
+</ol>
+</blockquote>
+<h3 id="22-in-memory-circular-buffers-evaluation-windows">2.2 In-Memory Circular Buffers &amp; Evaluation Windows <a id="22-in-memory-circular-buffers--evaluation-windows"></a><a id="22-sliding-window-ring-buffer-mathematics"></a></h3>
+<p>To prevent alert fatigue from transient workload spikes (such as brief compiler bursts or short garbage collection pauses), <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> evaluates metrics using <strong>fixed-capacity circular ring buffers</strong> across <strong>sliding evaluation windows</strong>:</p>
+<ol>
+<li><strong>Circular Ring Buffering:</strong> Metric samples are collected at fixed one-second intervals directly into pre-allocated memory rings. Because buffer capacity is fixed, memory consumption remains strictly bounded with zero garbage-collection overhead and zero memory fragmentation.</li>
+<li><strong>Sliding Window Evaluation:</strong> Rather than reacting to isolated momentary spikes, the observer evaluates metric state across the active duration window (1m, 3m, 5m, 10m, 15m, or 30m).</li>
+<li><strong>Deterministic State Transitions:</strong>
+<ul>
+<li><strong>NORMAL:</strong> Metric values operate within standard baseline boundaries.</li>
+<li><strong>PENDING:</strong> A threshold boundary has been crossed, but the breach has not yet persisted for the full duration of the configured evaluation window.</li>
+<li><strong>FIRING:</strong> The threshold breach has persisted continuously across the entire evaluation window. An incident is dispatched to internal SRE on-call channels.</li>
+<li><strong>CLEARED:</strong> Metric values have returned below threshold and remained stable for the full window duration, auto-resolving the incident.</li>
+</ul>
+</li>
+<li><strong>Noise Suppression:</strong> Brief fluctuations that quickly recover return from PENDING to NORMAL without waking or paging on-call engineers.</li>
+</ol>
+<h3 id="23-guiding-philosophy-threshold-trade-off-analysis">2.3 Guiding Philosophy: Threshold Trade-Off Analysis</h3>
+<p>When configuring components in <code>/configuration</code>, choose evaluation windows based on operational risk:</p>
+<ul>
+<li><strong>Shortening the Window (for example, 5 minutes down to 1 minute):</strong>
+<ul>
+<li><em>Best used for:</em> Hard system failures, primary power loss, host unreachable, disk 100% full, kernel panic.</li>
+<li><em>Trade-off:</em> Fast detection of real emergencies, but temporary spikes during routine batch jobs can trigger false alarms.</li>
+</ul>
+</li>
+<li><strong>Lengthening the Window (for example, 5 minutes up to 15 or 30 minutes):</strong>
+<ul>
+<li><em>Best used for:</em> Cache hit ratio drift, memory headroom depletion, slow replication lag, background tablespace growth.</li>
+<li><em>Trade-off:</em> High signal-to-noise ratio that guarantees only sustained degradation triggers an alert, but delays on-call notification for acute lock contention.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h1 id="part-iii-tier-by-tier-runbook-configuration-manual">Part III: Tier-by-Tier Runbook &amp; Configuration Manual</h1>
+<hr />
+<h2 id="tier-1-physical-data-center-infrastructure-bare-metal">Tier 1: Physical Data Center Infrastructure (Bare Metal)</h2>
+<h3 id="11-compute-bare-metal-servers">1.1 Compute / Bare Metal Servers</h3>
+<ul>
+<li><strong>Why It Was Built &amp; Importance:</strong> Physical server stability underpins all virtualization, containerization, and database software stacks. Unmonitored hardware errors (such as uncorrectable ECC memory flips or thermal throttling) cause random kernel panics and silent data corruption.</li>
+<li><strong>Failure Modes:</strong> Thermal trip causing unexpected server shutdown; single PSU failure overloading a redundant PDU circuit; ECC memory errors escalating into kernel panic.</li>
+<li><strong>Monitored Invariants:</strong> CPU core utilization, memory &amp; swap pressure, disk I/O throughput (IOPS), disk read/write latency, chassis &amp; core temperatures, cooling fan RPM, redundant PSU status, SMART / ECC error counts.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning Threshold: CPU utilization above 75%, Core temperature above 70°C, Cooling fan speed below 3,000 RPM, or redundant power supplies drop below 2 active.</li>
+<li>Critical Threshold: CPU utilization above 90%, Core temperature above 85°C, Cooling fan speed below 1,500 RPM, or power supplies drop below 1 active.</li>
+<li>Evaluation Window: <code>5m</code> (absorbs temporary compute compile bursts).</li>
+<li>Recommended Severity: <code>P2 - Major Degradation</code> (escalates to <code>P1</code> if redundant PSUs drop to 0).</li>
+</ul>
+</li>
+<li><strong>Underlying Collector Scripts &amp; Probes:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Query IPMI sensor readings (temperatures, fans, voltages)
+ipmitool -I lanplus -H 10.240.0.100 -U admin sdr type Temperature
+ipmitool -I lanplus -H 10.240.0.100 -U admin sensor get &quot;Power Supply 1&quot;
+
+# Kernel Machine Check Exception (MCE) &amp; EDAC memory checks
+dmesg -T | grep -E -i &quot;mce|edac|hardware error&quot;
+smartctl -H /dev/nvme0n1
+</code></pre></div>
+</li>
+<li><strong>Remediation Procedures:</strong>
+<ol>
+<li>If PSU count drops to 1, inspect datacenter PDU circuit breaker and dispatch on-site facilities to replace the faulted power supply module.</li>
+<li>If temperature exceeds 85°C, verify intake airflow and throttle CPU governor (<code>cpupower frequency-set -g powersave</code>) until HVAC is verified.</li>
+<li>If uncorrectable ECC errors occur, drain the node (<code>kubectl drain &lt;node&gt; --ignore-daemonsets</code>) and schedule memory DIMM replacement.</li>
+</ol>
+</li>
+</ul>
+<h3 id="12-power-environment-dcimipmi">1.2 Power &amp; Environment (DCIM/IPMI)</h3>
+<ul>
+<li><strong>Why It Was Built &amp; Importance:</strong> Datacenter environmental parameters (temperature, humidity, airflow, UPS power) are physical prerequisites for semiconductor operation. High temperatures accelerate silicon wear; power loss without battery buffer collapses the entire cluster.</li>
+<li><strong>Monitored Invariants:</strong> UPS inverter load, battery runtime remaining, PDU 3-phase current balance, rack cold-aisle temperature, relative humidity, CRAC/CRAH airflow displacement.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: UPS load above 75%, Battery runtime below 20 minutes, or Room temperature above 27°C.</li>
+<li>Critical: UPS load above 90%, Battery runtime below 10 minutes (🚨 <strong>P1 Critical</strong>), or Room temperature above 32°C.</li>
+</ul>
+</li>
+<li><strong>Collector Queries:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># SNMP Walk to APC / Eaton UPS MIB for battery runtime
+snmpget -v3 -u dcimUser -l authPriv -a SHA -A &quot;AuthPass&quot; -x AES -X &quot;PrivPass&quot;     10.240.10.1 1.3.6.1.4.1.318.1.1.1.2.2.2.0
+</code></pre></div>
+</li>
+</ul>
+<h3 id="13-storage-systems-san-nas-nvme-of">1.3 Storage Systems (SAN / NAS / NVMe-oF)</h3>
+<ul>
+<li><strong>Why It Was Built &amp; Importance:</strong> Enterprise databases and VM datastores rely on shared storage fabrics. High latency here ripples across every higher layer as application thread starvation.</li>
+<li><strong>Monitored Invariants:</strong> Volume capacity allocation, storage fabric aggregate IOPS, read/write latency, RAID controller health, degraded drive count, inline compression ratio.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: Pool capacity above 80%, Storage latency above 8.0 milliseconds, or 1 or more degraded drives.</li>
+<li>Critical: Pool capacity above 90%, Storage latency above 25.0 milliseconds, or 2 or more degraded drives (🚨 <strong>P1 Critical</strong>).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="tier-2-physical-virtual-networking">Tier 2: Physical &amp; Virtual Networking</h2>
+<h3 id="21-core-network-devices-spines-leaves-switches">2.1 Core Network Devices (Spines, Leaves &amp; Switches)</h3>
+<ul>
+<li><strong>Why It Was Built &amp; Importance:</strong> Top-of-Rack (ToR) and core spine switches route all East-West and North-South traffic. Dropped packets at this layer degrade TCP throughput exponentially via cubic congestion collapse.</li>
+<li><strong>Monitored Invariants:</strong> Switch ASIC/CPU utilization, TCAM buffer queue allocation, interface bandwidth throughput, packet loss percentage, FCS/CRC frame errors.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: Switch CPU utilization above 75%, Packet drop rate above 0.05%, or CRC frame errors exceeding 10 drops per second.</li>
+<li>Critical: Switch CPU utilization above 90%, Packet drop rate above 0.50%, or CRC frame errors exceeding 50 drops per second.</li>
+<li>Evaluation Window: <code>3m</code>.</li>
+</ul>
+</li>
+<li><strong>Collector Commands:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Poll switch interface CRC error counters via SNMP v3
+snmpnetstat -v 2c -c public -I eth1 10.240.1.1
+</code></pre></div>
+</li>
+<li><strong>Remediation:</strong> High CRC frame errors indicate a dirty fiber optic faceplate or degraded SFP+ transceiver. Clean or replace the optical module.</li>
+</ul>
+<h3 id="22-network-connectivity-jitter-bgpospf-routing-stability">2.2 Network Connectivity, Jitter &amp; BGP/OSPF Routing Stability</h3>
+<ul>
+<li><strong>Why It Was Built &amp; Importance:</strong> Dynamic routing convergence flaps cause packet blackholing and erratic connection resets across multi-cloud meshes.</li>
+<li><strong>Monitored Invariants:</strong> Inter-rack East-West latency, Anycast internal DNS response time, network jitter, BGP route flapping frequency, OSPF state convergence delay.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: Inter-rack round-trip latency above 2.0 milliseconds, DNS query time above 15.0 milliseconds, or 1 or more route flaps per hour.</li>
+<li>Critical: Inter-rack latency above 8.0 milliseconds, DNS query time above 50.0 milliseconds, or 3 or more route flaps per hour (🚨 <strong>P1 Critical</strong>).</li>
+</ul>
+</li>
+</ul>
+<h3 id="23-dedicated-interconnects-aws-directconnect-expressroute-ipsec">2.3 Dedicated Interconnects (AWS DirectConnect, ExpressRoute &amp; IPsec)</h3>
+<ul>
+<li><strong>Why It Was Built &amp; Importance:</strong> Enterprise hybrid cloud architectures link on-prem datacenters to cloud VPCs via dedicated physical cross-connects. Loss of primary links forces traffic over throttled VPN backup tunnels.</li>
+<li><strong>Monitored Invariants:</strong> IPsec tunnel operational state, IKEv2 rekey negotiation errors, DirectConnect dedicated circuit utilization, cross-connect packet discard ratio.</li>
+</ul>
+<hr />
+<h2 id="tier-3-vpc-cloud-infrastructure">Tier 3: VPC &amp; Cloud Infrastructure</h2>
+<h3 id="31-vpc-flow-logs-traffic-conservation-invariant">3.1 VPC Flow Logs &amp; Traffic Conservation Invariant</h3>
+<ul>
+<li><strong>Why It Was Built &amp; Importance:</strong> Continuous verification of network data isolation. By balancing ingress packet flow against egress traffic and host socket consumption, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> verifies that all network traffic remains strictly within approved VPC routes and catches rogue Internet Gateways, shadow NAT paths, or unexpected outbound data transfers.</li>
+<li><strong>Monitored Invariants:</strong> VPC ingress-to-egress flow balance ratio, rejected flow ratio, anomalous traffic spike multiplier, flow log ingestion velocity.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: Flow volume imbalance above 0.05%, or Rejected packet ratio above 5.0%.</li>
+<li>Critical: Flow volume imbalance above 0.50% (🚨 <strong>P1 Security Invariant</strong>), or Rejected packet ratio above 15.0%.</li>
+</ul>
+</li>
+<li><strong>Diagnostic Command:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Check active zero-egress VPC flow invariant
+dcouplr check --tier tier_3_cloud_vpc_infrastructure --component vpc_flow_logs --verbose
+</code></pre></div>
+</li>
+</ul>
+<h3 id="32-subnets-cidr-allocation-nat-gateway-snat">3.2 Subnets, CIDR Allocation &amp; NAT Gateway SNAT</h3>
+<ul>
+<li><strong>Why It Was Built &amp; Importance:</strong> Subnet IP exhaustion halts autoscaling (EKS/GKE cannot spawn worker nodes). NAT Gateway SNAT port exhaustion silently drops outbound API requests.</li>
+<li><strong>Monitored Invariants:</strong> Subnet IP address utilization, predictive CIDR exhaustion runway, managed NAT Gateway throughput, SNAT port allocation error drops.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: Subnet IP address utilization above 80%, Address runway under 30 days, or NAT Gateway SNAT port drops above 5.</li>
+<li>Critical: Subnet IP address utilization above 92%, Address runway under 7 days, or SNAT drops exceeding 50 (🚨 <strong>P1 Critical</strong>).</li>
+</ul>
+</li>
+</ul>
+<h3 id="33-cloud-firewalls-security-groups-network-acls">3.3 Cloud Firewalls, Security Groups &amp; Network ACLs</h3>
+<ul>
+<li><strong>Monitored Invariants:</strong> Stateful firewall dropped packet count, connection tracking (conntrack) table capacity, IDS/IPS signature hits, stateless subnet Network ACL drop ratio.</li>
+</ul>
+<h3 id="34-enterprise-load-balancers-alb-nlb-f5-big-ip">3.4 Enterprise Load Balancers (ALB, NLB, F5 BIG-IP)</h3>
+<ul>
+<li><strong>Monitored Invariants:</strong> Active ingress TCP connections, target processing latency, HTTP 5xx server error percentage, backend unhealthy host ratio, edge TLS certificate expiration days.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: Target latency above 25 milliseconds, HTTP 5xx errors above 1.0%, Unhealthy targets exceeding 10%, or SSL/TLS certificate expires in less than 30 days.</li>
+<li>Critical: Target latency above 100 milliseconds, HTTP 5xx errors above 5.0%, Unhealthy targets exceeding 33%, or SSL/TLS certificate expires in less than 7 days (🚨 <strong>P1 Critical</strong>).</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="tier-4-virtualization-container-platforms">Tier 4: Virtualization &amp; Container Platforms</h2>
+<h3 id="41-hypervisors-vmware-esxi-kvm-proxmox">4.1 Hypervisors (VMware ESXi, KVM, Proxmox)</h3>
+<ul>
+<li><strong>Monitored Invariants:</strong> Host vCPU:pCPU overcommit ratio, RAM allocation density, guest OS CPU ready wait time, VMFS/datastore queue latency, live migration / vMotion failures.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: Virtual machine CPU ready wait time above 5.0%, or Datastore queue latency above 10.0 milliseconds.</li>
+<li>Critical: CPU ready wait time above 10.0%, or Datastore queue latency above 30.0 milliseconds.</li>
+</ul>
+</li>
+<li><strong>Remediation:</strong> CPU ready time above 10% means virtual machines are starved of physical clock cycles. Enable aggressive Distributed Resource Scheduling (DRS) or redistribute workloads.</li>
+</ul>
+<h3 id="42-kubernetes-openshift-control-plane-etcd-fsync">4.2 Kubernetes &amp; OpenShift Control Plane &amp; ETCD Fsync</h3>
+<ul>
+<li><strong>Why It Was Built &amp; Importance:</strong> ETCD is the consensus brain of Kubernetes. Slow disk write synchronization (fsync) in ETCD causes leader election flaps and freezes all deployments, scaling, and pod scheduling.</li>
+<li><strong>Monitored Invariants:</strong> Nodes under memory/disk pressure, Kube-Apiserver P99 latency, ETCD WAL disk fsync P99 latency, ETCD Raft leader election flaps, cluster-wide pod restart velocity.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: ETCD disk write sync time above 10.0 milliseconds, Apiserver P99 latency above 50 milliseconds, or 1 or more leader flaps per hour.</li>
+<li>Critical: ETCD disk write sync time above 25.0 milliseconds (🚨 <strong>P1 Critical</strong>), Apiserver P99 latency above 200 milliseconds, or 3 or more leader flaps per hour.</li>
+</ul>
+</li>
+<li><strong>Remediation:</strong> Ensure ETCD is backed by dedicated high-IOPS NVMe SSD storage with prioritized cgroups I/O scheduling.</li>
+</ul>
+<h3 id="43-workload-health-kubelets-ingress-proxies">4.3 Workload Health, Kubelets &amp; Ingress Proxies</h3>
+<ul>
+<li><strong>Monitored Invariants:</strong> Deployment degraded replica count, CrashLoopBackOff pod velocity, CPU request-to-limit saturation, kernel OOM killer events, Ingress proxy P99 latency.</li>
+</ul>
+<hr />
+<h2 id="tier-5-middleware-databases-storage-layers">Tier 5: Middleware, Databases &amp; Storage Layers</h2>
+<h3 id="51-relational-databases-postgresql-mysql-oracle-ms-sql-server">5.1 Relational Databases (PostgreSQL, MySQL, Oracle, MS SQL Server)</h3>
+<ul>
+<li><strong>Why It Was Built &amp; Importance:</strong> The persistence tier is the most critical asset in enterprise infrastructure. Unchecked lock contention, connection starvation, or replication lag directly violates business transaction SLAs.</li>
+<li><strong>Monitored Invariants:</strong> Connection pool saturation, average query execution time, slow queries velocity (over 1 second), transaction deadlock rate, replication lag, buffer pool hit ratio, tablespace growth rate.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: Connection pool saturation above 80%, Replication delay exceeding 2.0 seconds, or Buffer pool hit ratio below 95%.</li>
+<li>Critical: Connection pool saturation above 92%, Replication delay exceeding 10.0 seconds (🚨 <strong>P1 Critical</strong>), or Buffer pool hit ratio below 90%.</li>
+<li>Evaluation Window: <code>5m</code> (absorbs index rebuilds and batch ETL flushes).</li>
+</ul>
+</li>
+<li><strong>Underlying Collector Scripts &amp; Queries:</strong><div class="code-box"><div class="code-box-header"><span>sql</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-sql">-- PostgreSQL: Query active locks and long-running blocked transactions
+SELECT pid, now() - query_start AS duration, query, state 
+FROM pg_stat_activity 
+WHERE wait_event_type = 'Lock' AND now() - query_start &gt; interval '5 seconds';
+
+-- MySQL: Check performance schema lock contention
+SELECT * FROM sys.schema_table_lock_waits;
+
+-- Oracle: Query session wait events and SGA buffer cache
+SELECT sid, serial#, event, seconds_in_wait, state 
+FROM v$session_wait 
+WHERE wait_class != 'Idle' AND seconds_in_wait &gt; 5;
+
+-- Microsoft SQL Server: Query blocked tasks and wait queues
+SELECT session_id, wait_duration_ms, wait_type, blocking_session_id 
+FROM sys.dm_os_waiting_tasks 
+WHERE blocking_session_id IS NOT NULL;
+</code></pre></div>
+</li>
+<li><strong>Remediation:</strong> If connection saturation exceeds 92%, inspect connection leaks in client pools (PgBouncer/HikariCP) and terminate orphaned <code>idle in transaction</code> sessions.</li>
+</ul>
+<h3 id="52-distributed-sql-nosql-tidb-apache-cassandra">5.2 Distributed SQL &amp; NoSQL (TiDB &amp; Apache Cassandra)</h3>
+<ul>
+<li><strong>Monitored Invariants:</strong> TiDB Placement Driver (PD) API health, TiKV thread CPU saturation, Apache Cassandra JMX PendingTasks compaction queue, cross-datacenter gossip status, read/write p99 latency.</li>
+<li><strong>Collector Queries:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Query TiDB PD cluster health
+curl -s http://127.0.0.1:2379/pd/api/v1/health
+
+# Check Cassandra compaction queue and pending tasks via nodetool
+nodetool tpstats
+</code></pre></div>
+</li>
+</ul>
+<h3 id="53-message-queues-event-streaming-apache-kafka-rabbitmq-sqs">5.3 Message Queues &amp; Event Streaming (Apache Kafka, RabbitMQ, SQS)</h3>
+<ul>
+<li><strong>Why It Was Built &amp; Importance:</strong> Event backlogs and consumer lag lead to data staleness, payment processing delays, and memory exhaustion in message brokers.</li>
+<li><strong>Monitored Invariants:</strong> Enqueued backlog depth, Kafka consumer group offset lag, broker ingestion throughput, unacknowledged AMQP messages, Under-Replicated Partitions (URP).</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: 1 or more Under-Replicated Partitions, or Consumer group lag exceeding 5,000 records.</li>
+<li>Critical: 2 or more Under-Replicated Partitions (🚨 <strong>P1 Critical</strong>), or Consumer group lag exceeding 25,000 records.</li>
+</ul>
+</li>
+</ul>
+<h3 id="54-in-memory-caching-redis-memcached">5.4 In-Memory Caching (Redis &amp; Memcached)</h3>
+<ul>
+<li><strong>Monitored Invariants:</strong> Cache hit efficiency, Jemalloc memory fragmentation ratio, volatile-LRU eviction velocity, blocked clients count (BLPOP/BRPOP), cache socket throughput.</li>
+</ul>
+<hr />
+<h2 id="tier-6-application-process-layer-apm-distributed-tracing">Tier 6: Application &amp; Process Layer (APM &amp; Distributed Tracing)</h2>
+<h3 id="61-distributed-apm-opentelemetry-tracing">6.1 Distributed APM &amp; OpenTelemetry Tracing</h3>
+<ul>
+<li><strong>Why It Was Built &amp; Importance:</strong> Provides granular transaction tracing across microservices to isolate the root-cause service responsible for user-facing latency spikes.</li>
+<li><strong>Monitored Invariants:</strong> Distributed trace spans, P50, P95, and P99 latency histograms, HTTP 5xx error rate, microservice throughput (requests per second).</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: P99 latency above 50 milliseconds, or HTTP error rate above 1.0%.</li>
+<li>Critical: P99 latency above 150 milliseconds (🚨 <strong>P1 Critical</strong>), or HTTP error rate above 5.0%.</li>
+</ul>
+</li>
+</ul>
+<h3 id="62-runtime-engines-jvm-go-nodejs-python-net">6.2 Runtime Engines (JVM, Go, Node.js, Python, .NET)</h3>
+<ul>
+<li><strong>Monitored Invariants:</strong> Stop-The-World (STW) garbage collection pause duration, thread deadlocks, heap allocation saturation, active OS kernel threads, open file descriptor utilization.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: Garbage collection pause above 100 milliseconds, or Heap saturation above 80%.</li>
+<li>Critical: Garbage collection pause above 500 milliseconds, 1 or more thread deadlocks detected (🚨 <strong>P1 Critical</strong>), or Heap saturation above 95%.</li>
+</ul>
+</li>
+</ul>
+<h3 id="63-synthetic-end-to-end-blackbox-probing">6.3 Synthetic End-to-End Blackbox Probing</h3>
+<ul>
+<li><strong>Monitored Invariants:</strong> Synthetic probe uptime ratio, multi-step transaction completion time, TLS 1.3 handshake negotiation delay, consecutive blackbox probe failures.</li>
+</ul>
+<hr />
+<h2 id="tier-7-logs-events-security-siem-auditing">Tier 7: Logs, Events &amp; Security (SIEM / Auditing)</h2>
+<h3 id="71-centralized-high-throughput-log-streaming">7.1 Centralized High-Throughput Log Streaming</h3>
+<ul>
+<li><strong>Monitored Invariants:</strong> Structured log events per second (EPS), JSON/Grok parse errors, fatal/panic error frequency, kernel oops/panics, circular ring buffer headroom.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: Ring buffer headroom below 20%.</li>
+<li>Critical: Ring buffer headroom below 10%.</li>
+</ul>
+</li>
+</ul>
+<h3 id="72-security-audit-iam-scim-privilege-escalation">7.2 Security Audit, IAM &amp; SCIM Privilege Escalation</h3>
+<ul>
+<li><strong>Monitored Invariants:</strong> Unauthorized HTTP 401/403 probes, interactive root/sudo escalations, privileged role/policy mutations, MFA token replay anomalies, audit trail tampering attempts.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Warning: 3 or more unauthorized access attempts per hour.</li>
+<li>Critical: Any detected tampering with audit logs (🚨 <strong>P1 Security Invariant</strong>).</li>
+</ul>
+</li>
+</ul>
+<h3 id="73-zero-egress-compliance-kernel-ebpf-enforcement">7.3 Zero-Egress Compliance &amp; Kernel eBPF Enforcement</h3>
+<ul>
+<li><strong>Why It Was Built &amp; Importance:</strong> Verification that zero unapproved packets leave the private network perimeter.</li>
+<li><strong>Monitored Invariants:</strong> Kernel eBPF blocked WAN packets, File Integrity Monitoring (FIM) binary checksum mismatches, detected High/Critical CVEs, cryptographic air-gap drift.</li>
+<li><strong>Recommended Configuration:</strong>
+<ul>
+<li>Critical: 1 or more eBPF blocked unauthorized WAN packets (🚨 <strong>P1 Critical</strong>), or 1 or more binary checksum mismatches.</li>
+</ul>
+</li>
+<li><strong>Verification Command:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Check active zero-egress kernel enforcement status
+dcouplr check --tier tier_7_logs_security_siem --component security_compliance
+</code></pre></div>
+</li>
+</ul>
+<hr />
+<h1 id="part-iv-incident-routing-local-spooling-enterprise-ticketing-integration">Part IV: Incident Routing, Local Spooling &amp; Enterprise Ticketing Integration</h1>
+<h3 id="41-in-perimeter-incident-dispatch">4.1 In-Perimeter Incident Dispatch</h3>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> operates completely standalone and autonomously within your private VPC with zero external dependencies. When operational thresholds are breached, alerts are dispatched directly to your team's internal <strong>enterprise ticketing tool</strong> (such as ServiceNow, Jira Service Management, or custom internal ticketing systems) via <strong>in-perimeter zero-WAN disk spooling and local network connectors</strong>:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">Local Spool Path: ./data/incident_spool/
+Ingest Bridge:    Local Webhook / REST Bridge or Atomic Disk Spool (Zero WAN)
+Target Queues:    hw-ops-dc, network-ops, cloud-infra, k8s-platform, dba-team, sre-tier1, secops-threat
+</code></pre></div>
+<p>When an alert triggers:</p>
+<ol>
+<li><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> generates a structured, cryptographically signed JSON event envelope.</li>
+<li>It writes the envelope atomically to the local disk spool (<code>./data/incident_spool/ticket-*.json</code>).</li>
+<li>Your enterprise ticketing tool or incident management pipeline ingests the incident via local webhook or disk pickup with <strong>zero outbound internet traffic</strong>.</li>
+</ol>
+<hr />
+<h1 id="part-v-core-operational-safety-invariants-verification-rules">Part V: Core Operational Safety Invariants &amp; Verification Rules</h1>
+<p>Instead of abstract theoretical equations, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> continuously evaluates three practical operational safety rules:</p>
+<h3 id="51-invariant-1-vpc-network-traffic-conservation">5.1 Invariant 1: VPC Network Traffic Conservation</h3>
+<ul>
+<li><strong>What it checks:</strong> Measures all traffic entering and exiting the VPC perimeter interfaces and compares it against active application socket buffers.</li>
+<li><strong>Why it matters:</strong> If outgoing network traffic significantly exceeds incoming traffic and established host socket buffers for more than 5 consecutive seconds, the engine flags an unapproved outbound data transfer, rogue NAT route, or asymmetric network leak.</li>
+<li><strong>Operational Action:</strong> Run <code>dcouplr check --tier tier_3_cloud_vpc_infrastructure --component vpc_flow_logs</code> and review VPC flow log rejection counts and top destination IP addresses.</li>
+</ul>
+<h3 id="52-invariant-2-constant-memory-p99-latency-histogram-tracking">5.2 Invariant 2: Constant-Memory P99 Latency Histogram Tracking</h3>
+<ul>
+<li><strong>What it checks:</strong> Calculates continuous P50, P95, and P99 latency percentiles across millions of spans using fixed-size logarithmic histogram buckets in memory.</li>
+<li><strong>Why it matters:</strong> Storing raw latency timestamps in an unbounded list causes memory leaks and heavy garbage collection pauses. Fixed-capacity buckets maintain sub-millisecond precision with less than 11 KiB of RAM per metric, guaranteeing zero GC interruptions for production applications.</li>
+<li><strong>Operational Action:</strong> When P99 latency exceeds threshold, inspect database query locks and upstream microservice dependency response times in the APM trace view.</li>
+</ul>
+<h3 id="53-invariant-3-cluster-consensus-split-brain-prevention">5.3 Invariant 3: Cluster Consensus &amp; Split-Brain Prevention</h3>
+<ul>
+<li><strong>What it checks:</strong> Ensures that <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> observer daemons maintain a strict majority quorum across the cluster using Raft consensus.</li>
+<li><strong>Why it matters:</strong> If a network partition isolates part of the datacenter, only the side with a strict majority of nodes (for example, 2 out of 3, or 3 out of 5) can elect a leader and commit threshold changes. The isolated partition stands down into read-only mode, completely preventing split-brain conflicts.</li>
+<li><strong>Operational Action:</strong> Verify node reachability on port 9443 and run <code>dcouplr cluster status</code> to inspect active Raft leader and follower states.</li>
+</ul>
+<hr />
+<h1 id="part-vi-synthetic-test-verification-api-manual">Part VI: Synthetic Test Verification &amp; API Manual</h1>
+<p>NOC engineers and automation pipelines can verify any component or trigger test notifications using the internal REST API:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># 1. Fetch live 7-tier monitoring matrix status
+curl -s http://localhost:8000/v1/telemetry/monitoring/matrix | jq .status_summary
+
+# 2. Update component threshold &amp; alert level
+curl -s -X POST http://localhost:8000/v1/telemetry/monitoring/matrix/configure \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;tier_id&quot;: &quot;tier_5_middleware_databases&quot;,
+    &quot;component_id&quot;: &quot;databases_relational&quot;,
+    &quot;alert_level&quot;: &quot;P1&quot;,
+    &quot;evaluation_window&quot;: &quot;5m&quot;,
+    &quot;notification_channels&quot;: [&quot;noc_pulsecast&quot;, &quot;sre_email&quot;]
+  }' | jq .status
+
+# 3. Dispatch a synthetic test alert to NOC channels
+curl -s -X POST http://localhost:8000/v1/telemetry/monitoring/matrix/test-notification \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;tier_id&quot;: &quot;tier_5_middleware_databases&quot;,
+    &quot;component_id&quot;: &quot;databases_relational&quot;,
+    &quot;test_level&quot;: &quot;P1&quot;,
+    &quot;channels&quot;: [&quot;noc_pulsecast&quot;, &quot;servicenow&quot;]
+  }' | jq .
+
+# 4. Inspect notification audit receipts
+curl -s http://localhost:8000/v1/telemetry/monitoring/matrix/history | jq .history[0]
+</code></pre></div>
+<hr />
+<p><em>Document Author: <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Core Architecture &amp; SRE Reliability Engineering Board</em><br />
+<em>Online Browser Version: <code>http://localhost:8000/docs/runbooks/RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.html</code></em></p>
+</div>
+      <pre id="raw-view"><code># [SRE RUNBOOK] 7-Tier Full-Stack Datacenter &amp; Cloud VPC Monitoring Architecture &amp; NOC Hub
+## Authoritative Operating Manual: Health Checks, Threshold Tuning, Remediation &amp; Incident Triage
+
+&gt; **Document ID:** `RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING`  
+&gt; **Classification:** Engineering Operational Standard Operating Procedure (SOP) &amp; Systems Runbook  
+&gt; **Target Audience:** Site Reliability Engineers (SREs), NOC Operators, Systems Administrators, DBAs, SecOps  
+&gt; **Applies to:** `&lt;dcouplr/&gt;` Full-Stack Suite, Bare Metal, Hybrid On-Prem &amp; Multi-Cloud VPCs  
+&gt; **Zero-Egress Invariant:** 100% In-Perimeter Telemetry • Zero Cloud WAN Bandwidth Egress • Hardware Memory Buffers  
+&gt; **Live Online Console:** `http://localhost:8000/docs/runbooks/RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.html`
+
+---
+
+## 📑 Interactive Table of Contents &amp; Navigation Outline
+
+* **[Part I: Telemetry Pipeline &amp; Operating Principles](#part-i-telemetry-pipeline--operating-principles)**
+  * [1.1 In-Perimeter Architecture](#11-in-perimeter-architecture)
+  * [1.2 Global 7-Tier Topology Flowchart](#12-global-7-tier-topology-flowchart)
+* **[Part II: Severity Policies (P1–P4) &amp; Sliding Evaluation Windows](#part-ii-severity-policies-p1p4--sliding-evaluation-windows)**
+  * [2.1 Severity Level Hierarchy &amp; Response Targets](#21-severity-level-hierarchy--response-targets)
+  * [2.1.1 SLA Governance Boundary: In-Perimeter Metric Alerting vs. `&lt;dcouplr/&gt;` Commercial Vendor Support SLA](#211-sla-governance-boundary-in-perimeter-metric-alerting-vs-dcouplr-commercial-vendor-support-sla)
+  * [2.2 In-Memory Circular Buffers &amp; Evaluation Windows](#22-in-memory-circular-buffers--evaluation-windows)
+  * [2.3 Guiding Philosophy: Threshold Trade-Off Analysis](#23-guiding-philosophy-threshold-trade-off-analysis)
+* **[Part III: Tier-by-Tier Runbook &amp; Configuration Manual](#part-iii-tier-by-tier-runbook--configuration-manual)**
+  * **[Tier 1: Physical Data Center Infrastructure (Bare Metal)](#tier-1-physical-data-center-infrastructure-bare-metal)**
+    * [1.1 Compute / Bare Metal Servers](#11-compute--bare-metal-servers)
+    * [1.2 Power &amp; Environment (DCIM/IPMI)](#12-power--environment-dcimipmi)
+    * [1.3 Storage Systems (SAN / NAS / NVMe-oF)](#13-storage-systems-san--nas--nvme-of)
+  * **[Tier 2: Physical &amp; Virtual Networking](#tier-2-physical--virtual-networking)**
+    * [2.1 Core Network Devices (Spines, Leaves &amp; Switches)](#21-core-network-devices-spines-leaves--switches)
+    * [2.2 Network Connectivity, Jitter &amp; BGP/OSPF Routing Stability](#22-network-connectivity-jitter--bgpospf-routing-stability)
+    * [2.3 Dedicated Interconnects (AWS DirectConnect, ExpressRoute &amp; IPsec)](#23-dedicated-interconnects-aws-directconnect-expressroute--ipsec)
+  * **[Tier 3: VPC &amp; Cloud Infrastructure](#tier-3-vpc--cloud-infrastructure)**
+    * [3.1 VPC Flow Logs &amp; Traffic Conservation Invariant](#31-vpc-flow-logs--traffic-conservation-invariant)
+    * [3.2 Subnets, CIDR Allocation &amp; NAT Gateway SNAT](#32-subnets-cidr-allocation--nat-gateway-snat)
+    * [3.3 Cloud Firewalls, Security Groups &amp; Network ACLs](#33-cloud-firewalls-security-groups--network-acls)
+    * [3.4 Enterprise Load Balancers (ALB, NLB, F5 BIG-IP)](#34-enterprise-load-balancers-alb-nlb-f5-big-ip)
+  * **[Tier 4: Virtualization &amp; Container Platforms](#tier-4-virtualization--container-platforms)**
+    * [4.1 Hypervisors (VMware ESXi, KVM, Proxmox)](#41-hypervisors-vmware-esxi-kvm-proxmox)
+    * [4.2 Kubernetes &amp; OpenShift Control Plane &amp; ETCD Fsync](#42-kubernetes--openshift-control-plane--etcd-fsync)
+    * [4.3 Workload Health, Kubelets &amp; Ingress Proxies](#43-workload-health-kubelets--ingress-proxies)
+  * **[Tier 5: Middleware, Databases &amp; Storage Layers](#tier-5-middleware-databases--storage-layers)**
+    * [5.1 Relational Databases (PostgreSQL, MySQL, Oracle, MS SQL Server)](#51-relational-databases-postgresql-mysql-oracle-ms-sql-server)
+    * [5.2 Distributed SQL &amp; NoSQL (TiDB &amp; Apache Cassandra)](#52-distributed-sql--nosql-tidb--apache-cassandra)
+    * [5.3 Message Queues &amp; Event Streaming (Apache Kafka, RabbitMQ, SQS)](#53-message-queues--event-streaming-apache-kafka-rabbitmq-sqs)
+    * [5.4 In-Memory Caching (Redis &amp; Memcached)](#54-in-memory-caching-redis--memcached)
+  * **[Tier 6: Application &amp; Process Layer (APM &amp; Distributed Tracing)](#tier-6-application--process-layer-apm--distributed-tracing)**
+    * [6.1 Distributed APM &amp; OpenTelemetry Tracing](#61-distributed-apm--opentelemetry-tracing)
+    * [6.2 Runtime Engines (JVM, Go, Node.js, Python, .NET)](#62-runtime-engines-jvm-go-nodejs-python-net)
+    * [6.3 Synthetic End-to-End Blackbox Probing](#63-synthetic-end-to-end-blackbox-probing)
+  * **[Tier 7: Logs, Events &amp; Security (SIEM / Auditing)](#tier-7-logs-events--security-siem--auditing)**
+    * [7.1 Centralized High-Throughput Log Streaming](#71-centralized-high-throughput-log-streaming)
+    * [7.2 Security Audit, IAM &amp; SCIM Privilege Escalation](#72-security-audit-iam--scim-privilege-escalation)
+    * [7.3 Zero-Egress Compliance &amp; Kernel eBPF Enforcement](#73-zero-egress-compliance--kernel-ebpf-enforcement)
+* **[Part IV: Incident Routing, Local Spooling &amp; Enterprise Ticketing Integration](#part-iv-incident-routing-local-spooling--enterprise-ticketing-integration)**
+* **[Part V: Core Operational Safety Invariants &amp; Verification Rules](#part-v-core-operational-safety-invariants--verification-rules)**
+* **[Part VI: Synthetic Test Verification &amp; API Manual](#part-vi-synthetic-test-verification--api-manual)**
+
+---
+
+# Part I: Telemetry Pipeline &amp; Operating Principles
+
+### 1.1 In-Perimeter Architecture
+`&lt;dcouplr/&gt;` operates as an autonomous, in-perimeter telemetry daemon deployed directly inside your private cloud VPCs and on-premises datacenter networks. It collects, correlates, and evaluates metrics, application traces, and audit logs locally without routing telemetry traffic over public internet gateways:
+
+1. **Zero External Bandwidth:** All telemetry evaluation happens in volatile RAM on your instances. No metrics, logs, or traces leave the VPC boundary.
+2. **Data Isolation:** Sensitive connection strings, database schemas, internal IP topologies, and customer payloads remain within your security enclave.
+3. **Local High Availability:** The monitoring mesh runs independently of external network connectivity. If the public WAN or third-party cloud services experience outages, internal telemetry, alerting, and NOC displays remain fully operational.
+
+Each daemon consumes less than 50 MiB of RAM per node by utilizing circular in-memory ring buffers with strict fixed-capacity bounds.
+
+### 1.2 Global 7-Tier Topology Flowchart
+
+```mermaid
+flowchart TD
+    subgraph INGESTION[&quot;7-Tier In-Perimeter Ingestion Fabric&quot;]
+        T1[&quot;Tier 1: Physical DC (Compute, DCIM, SAN/NAS)&quot;]
+        T2[&quot;Tier 2: Networking (Core Spines, BGP, Optics)&quot;]
+        T3[&quot;Tier 3: Cloud &amp; VPC (Flow Logs, CIDRs, FW, ALB)&quot;]
+        T4[&quot;Tier 4: K8s &amp; Containers (ETCD fsync, Control Plane, Pods)&quot;]
+        T5[&quot;Tier 5: Middleware &amp; DBs (Postgres, MySQL, Oracle, MSSQL, TiDB, Cassandra, Kafka, Redis)&quot;]
+        T6[&quot;Tier 6: APM &amp; Runtimes (Distributed Traces, JVM/Go GC, Synthetics)&quot;]
+        T7[&quot;Tier 7: Logs &amp; SIEM (RFC 5424, Auditd, eBPF Zero-Egress Watchdog)&quot;]
+    end
+
+    subgraph ENGINE[&quot;&lt;dcouplr/&gt; Autonomous Observer Engine (3-Node Raft Mesh)&quot;]
+        RING[&quot;Volatile Fixed-Capacity Ring Buffers (Sub-ms Latency)&quot;]
+        RULES[&quot;Operational Invariant Evaluator (Traffic Balance, Tail Percentiles, Consensus)&quot;]
+        FILTER[&quot;Sliding Window Dampener &amp; Deduplication Engine&quot;]
+    end
+
+    subgraph DISPATCH[&quot;In-Perimeter NOC &amp; Incident Routing Hub&quot;]
+        TICKETING[&quot;🎫 Enterprise Ticketing Tool (ServiceNow / Jira / Spool)&quot;]
+        NOC[&quot;📺 24/7 NOC Wallboard (PulseCast™)&quot;]
+        PAGER[&quot;📟 GSM Hardware Pager (Out-of-Band)&quot;]
+        SMTP[&quot;📧 SRE SMTP Gateway (In-VPC)&quot;]
+        SIEM[&quot;📜 Syslog RFC 5424 Forwarder&quot;]
+    end
+
+    INGESTION --&gt; ENGINE
+    ENGINE --&gt; DISPATCH
+```
+
+---
+
+# Part II: Severity Policies (P1–P4) &amp; Sliding Evaluation Windows
+
+### 2.1 Severity Level Hierarchy &amp; Response Targets
+Every monitored component in `&lt;dcouplr/&gt;` maps to a formal internal operational severity level:
+
+| Severity Level | Target MTTA | Operational Scope | Routing Action |
+| :--- | :--- | :--- | :--- |
+| 🚨 **P1 - Critical** | **&lt; 5 min** | Complete outage, active data corruption risk, redundant power loss, or security invariant breach. | Immediate phone paging, VoIP emergency broadcast, and SRE incident bridge creation. |
+| ⚠️ **P2 - Major** | **&lt; 15 min** | Subsystem degradation, database lock contention, severe network queue drops, or worker node starvation. | Automated Slack/Teams alerting and ticket creation in primary on-call queue. |
+| 🟡 **P3 - Moderate** | **&lt; 1 hour** | Capacity warning, slow storage latency drift, minor replication delay, or non-impacting worker restarts. | Business-hours queue dispatch; batched notification digest to prevent alert fatigue. |
+| ℹ️ **P4 - Info** | **Next Biz Day** | Informational state drift, routine metrics, audit log events, or maintenance window milestones. | Recorded in audit feed without engineer paging. |
+
+### 2.1.1 SLA Governance Boundary: In-Perimeter Metric Alerting vs. `&lt;dcouplr/&gt;` Commercial Vendor Support SLA &lt;a id=&quot;211-sla-governance-boundary-in-perimeter-metric-alerting-vs-dcouplr-commercial-vendor-support-sla&quot;&gt;&lt;/a&gt;&lt;a id=&quot;211-sla-governance-boundary-in-perimeter-metric-alerting-vs-varinull-commercial-support-sla&quot;&gt;&lt;/a&gt;
+
+&gt; [!IMPORTANT]
+&gt; **GOVERNANCE DEMARCATION NOTE FOR OPERATING ENGINEERS: In-Perimeter Metric Policy vs. `&lt;dcouplr/&gt;` Commercial Vendor Support SLA**  
+&gt; Do **NOT** conflate these two separate operational layers: How you configure the Severity Policy (P1–P4) and Sampling Evaluation Window (1m–30m) below governs your internal infrastructure telemetry filtering, rolling ring buffer noise rejection, and internal team on-call dispatching. It is completely independent of your contractual `&lt;dcouplr/&gt;` Commercial Vendor Support SLA (governed by Document ID `VA-SPEC-SUPPORT-SLA-001`). Setting a database, network, or server metric to P1 triggers your internal SRE paging queues—it does not open an incident ticket with `&lt;dcouplr/&gt;` Support, and your commercial support agreement does not constrain your internal evaluation windows.
+&gt;
+&gt; 1. **In-Perimeter Metric Telemetry (Internal Customer Operation):**
+&gt;    - Governs how *your internal team* monitors your own infrastructure (servers, VPC networks, databases, Kubernetes clusters, apps).
+&gt;    - Selecting `P1 - Critical` with a `1m` evaluation window controls internal sliding ring buffers, noise rejection, and internal notification dispatch (paging internal on-call SREs via GSM Pagers, VoIP, or internal ticketing queues (e.g. `sre-tier1`)).
+&gt;    - **It does NOT create, trigger, or escalate an incident ticket with `&lt;dcouplr/&gt;` Support.**
+&gt; 2. **`&lt;dcouplr/&gt;` Commercial Vendor Support SLA (Vendor Support Contract):**
+&gt;    - Governed by your commercial enterprise license contract (Document ID: `VA-SPEC-SUPPORT-SLA-001`).
+&gt;    - Dictates the contractual response time provided by Support Engineers (e.g., Tier 3: 2-Hour 24/7 P1 SLA, Tier 4: 1-Hour 24/7 P1 SLA, Tier 5: 15-Minute 24/7 P0/P1 SLA) for **`&lt;dcouplr/&gt;` runtime software defects, AST compiler failures, Raft consensus partitions, and engine bugs**.
+&gt;    - Tuning an internal metric alert to P1 does NOT dispatch a vendor incident to `&lt;dcouplr/&gt;` Support, nor does your vendor contract dictate internal sampling windows.
+
+### 2.2 In-Memory Circular Buffers &amp; Evaluation Windows &lt;a id=&quot;22-in-memory-circular-buffers--evaluation-windows&quot;&gt;&lt;/a&gt;&lt;a id=&quot;22-sliding-window-ring-buffer-mathematics&quot;&gt;&lt;/a&gt;
+
+To prevent alert fatigue from transient workload spikes (such as brief compiler bursts or short garbage collection pauses), `&lt;dcouplr/&gt;` evaluates metrics using **fixed-capacity circular ring buffers** across **sliding evaluation windows**:
+
+1. **Circular Ring Buffering:** Metric samples are collected at fixed one-second intervals directly into pre-allocated memory rings. Because buffer capacity is fixed, memory consumption remains strictly bounded with zero garbage-collection overhead and zero memory fragmentation.
+2. **Sliding Window Evaluation:** Rather than reacting to isolated momentary spikes, the observer evaluates metric state across the active duration window (1m, 3m, 5m, 10m, 15m, or 30m).
+3. **Deterministic State Transitions:**
+   * **NORMAL:** Metric values operate within standard baseline boundaries.
+   * **PENDING:** A threshold boundary has been crossed, but the breach has not yet persisted for the full duration of the configured evaluation window.
+   * **FIRING:** The threshold breach has persisted continuously across the entire evaluation window. An incident is dispatched to internal SRE on-call channels.
+   * **CLEARED:** Metric values have returned below threshold and remained stable for the full window duration, auto-resolving the incident.
+4. **Noise Suppression:** Brief fluctuations that quickly recover return from PENDING to NORMAL without waking or paging on-call engineers.
+
+### 2.3 Guiding Philosophy: Threshold Trade-Off Analysis
+
+When configuring components in `/configuration`, choose evaluation windows based on operational risk:
+
+* **Shortening the Window (for example, 5 minutes down to 1 minute):**
+  * *Best used for:* Hard system failures, primary power loss, host unreachable, disk 100% full, kernel panic.
+  * *Trade-off:* Fast detection of real emergencies, but temporary spikes during routine batch jobs can trigger false alarms.
+* **Lengthening the Window (for example, 5 minutes up to 15 or 30 minutes):**
+  * *Best used for:* Cache hit ratio drift, memory headroom depletion, slow replication lag, background tablespace growth.
+  * *Trade-off:* High signal-to-noise ratio that guarantees only sustained degradation triggers an alert, but delays on-call notification for acute lock contention.
+
+---
+
+# Part III: Tier-by-Tier Runbook &amp; Configuration Manual
+
+---
+
+## Tier 1: Physical Data Center Infrastructure (Bare Metal)
+
+### 1.1 Compute / Bare Metal Servers
+* **Why It Was Built &amp; Importance:** Physical server stability underpins all virtualization, containerization, and database software stacks. Unmonitored hardware errors (such as uncorrectable ECC memory flips or thermal throttling) cause random kernel panics and silent data corruption.
+* **Failure Modes:** Thermal trip causing unexpected server shutdown; single PSU failure overloading a redundant PDU circuit; ECC memory errors escalating into kernel panic.
+* **Monitored Invariants:** CPU core utilization, memory &amp; swap pressure, disk I/O throughput (IOPS), disk read/write latency, chassis &amp; core temperatures, cooling fan RPM, redundant PSU status, SMART / ECC error counts.
+* **Recommended Configuration:**
+  * Warning Threshold: CPU utilization above 75%, Core temperature above 70°C, Cooling fan speed below 3,000 RPM, or redundant power supplies drop below 2 active.
+  * Critical Threshold: CPU utilization above 90%, Core temperature above 85°C, Cooling fan speed below 1,500 RPM, or power supplies drop below 1 active.
+  * Evaluation Window: `5m` (absorbs temporary compute compile bursts).
+  * Recommended Severity: `P2 - Major Degradation` (escalates to `P1` if redundant PSUs drop to 0).
+* **Underlying Collector Scripts &amp; Probes:**
+  ```bash
+  # Query IPMI sensor readings (temperatures, fans, voltages)
+  ipmitool -I lanplus -H 10.240.0.100 -U admin sdr type Temperature
+  ipmitool -I lanplus -H 10.240.0.100 -U admin sensor get &quot;Power Supply 1&quot;
+
+  # Kernel Machine Check Exception (MCE) &amp; EDAC memory checks
+  dmesg -T | grep -E -i &quot;mce|edac|hardware error&quot;
+  smartctl -H /dev/nvme0n1
+  ```
+* **Remediation Procedures:**
+  1. If PSU count drops to 1, inspect datacenter PDU circuit breaker and dispatch on-site facilities to replace the faulted power supply module.
+  2. If temperature exceeds 85°C, verify intake airflow and throttle CPU governor (`cpupower frequency-set -g powersave`) until HVAC is verified.
+  3. If uncorrectable ECC errors occur, drain the node (`kubectl drain &lt;node&gt; --ignore-daemonsets`) and schedule memory DIMM replacement.
+
+### 1.2 Power &amp; Environment (DCIM/IPMI)
+* **Why It Was Built &amp; Importance:** Datacenter environmental parameters (temperature, humidity, airflow, UPS power) are physical prerequisites for semiconductor operation. High temperatures accelerate silicon wear; power loss without battery buffer collapses the entire cluster.
+* **Monitored Invariants:** UPS inverter load, battery runtime remaining, PDU 3-phase current balance, rack cold-aisle temperature, relative humidity, CRAC/CRAH airflow displacement.
+* **Recommended Configuration:**
+  * Warning: UPS load above 75%, Battery runtime below 20 minutes, or Room temperature above 27°C.
+  * Critical: UPS load above 90%, Battery runtime below 10 minutes (🚨 **P1 Critical**), or Room temperature above 32°C.
+* **Collector Queries:**
+  ```bash
+  # SNMP Walk to APC / Eaton UPS MIB for battery runtime
+  snmpget -v3 -u dcimUser -l authPriv -a SHA -A &quot;AuthPass&quot; -x AES -X &quot;PrivPass&quot;     10.240.10.1 1.3.6.1.4.1.318.1.1.1.2.2.2.0
+  ```
+
+### 1.3 Storage Systems (SAN / NAS / NVMe-oF)
+* **Why It Was Built &amp; Importance:** Enterprise databases and VM datastores rely on shared storage fabrics. High latency here ripples across every higher layer as application thread starvation.
+* **Monitored Invariants:** Volume capacity allocation, storage fabric aggregate IOPS, read/write latency, RAID controller health, degraded drive count, inline compression ratio.
+* **Recommended Configuration:**
+  * Warning: Pool capacity above 80%, Storage latency above 8.0 milliseconds, or 1 or more degraded drives.
+  * Critical: Pool capacity above 90%, Storage latency above 25.0 milliseconds, or 2 or more degraded drives (🚨 **P1 Critical**).
+
+---
+
+## Tier 2: Physical &amp; Virtual Networking
+
+### 2.1 Core Network Devices (Spines, Leaves &amp; Switches)
+* **Why It Was Built &amp; Importance:** Top-of-Rack (ToR) and core spine switches route all East-West and North-South traffic. Dropped packets at this layer degrade TCP throughput exponentially via cubic congestion collapse.
+* **Monitored Invariants:** Switch ASIC/CPU utilization, TCAM buffer queue allocation, interface bandwidth throughput, packet loss percentage, FCS/CRC frame errors.
+* **Recommended Configuration:**
+  * Warning: Switch CPU utilization above 75%, Packet drop rate above 0.05%, or CRC frame errors exceeding 10 drops per second.
+  * Critical: Switch CPU utilization above 90%, Packet drop rate above 0.50%, or CRC frame errors exceeding 50 drops per second.
+  * Evaluation Window: `3m`.
+* **Collector Commands:**
+  ```bash
+  # Poll switch interface CRC error counters via SNMP v3
+  snmpnetstat -v 2c -c public -I eth1 10.240.1.1
+  ```
+* **Remediation:** High CRC frame errors indicate a dirty fiber optic faceplate or degraded SFP+ transceiver. Clean or replace the optical module.
+
+### 2.2 Network Connectivity, Jitter &amp; BGP/OSPF Routing Stability
+* **Why It Was Built &amp; Importance:** Dynamic routing convergence flaps cause packet blackholing and erratic connection resets across multi-cloud meshes.
+* **Monitored Invariants:** Inter-rack East-West latency, Anycast internal DNS response time, network jitter, BGP route flapping frequency, OSPF state convergence delay.
+* **Recommended Configuration:**
+  * Warning: Inter-rack round-trip latency above 2.0 milliseconds, DNS query time above 15.0 milliseconds, or 1 or more route flaps per hour.
+  * Critical: Inter-rack latency above 8.0 milliseconds, DNS query time above 50.0 milliseconds, or 3 or more route flaps per hour (🚨 **P1 Critical**).
+
+### 2.3 Dedicated Interconnects (AWS DirectConnect, ExpressRoute &amp; IPsec)
+* **Why It Was Built &amp; Importance:** Enterprise hybrid cloud architectures link on-prem datacenters to cloud VPCs via dedicated physical cross-connects. Loss of primary links forces traffic over throttled VPN backup tunnels.
+* **Monitored Invariants:** IPsec tunnel operational state, IKEv2 rekey negotiation errors, DirectConnect dedicated circuit utilization, cross-connect packet discard ratio.
+
+---
+
+## Tier 3: VPC &amp; Cloud Infrastructure
+
+### 3.1 VPC Flow Logs &amp; Traffic Conservation Invariant
+* **Why It Was Built &amp; Importance:** Continuous verification of network data isolation. By balancing ingress packet flow against egress traffic and host socket consumption, `&lt;dcouplr/&gt;` verifies that all network traffic remains strictly within approved VPC routes and catches rogue Internet Gateways, shadow NAT paths, or unexpected outbound data transfers.
+* **Monitored Invariants:** VPC ingress-to-egress flow balance ratio, rejected flow ratio, anomalous traffic spike multiplier, flow log ingestion velocity.
+* **Recommended Configuration:**
+  * Warning: Flow volume imbalance above 0.05%, or Rejected packet ratio above 5.0%.
+  * Critical: Flow volume imbalance above 0.50% (🚨 **P1 Security Invariant**), or Rejected packet ratio above 15.0%.
+* **Diagnostic Command:**
+  ```bash
+  # Check active zero-egress VPC flow invariant
+  dcouplr check --tier tier_3_cloud_vpc_infrastructure --component vpc_flow_logs --verbose
+  ```
+
+### 3.2 Subnets, CIDR Allocation &amp; NAT Gateway SNAT
+* **Why It Was Built &amp; Importance:** Subnet IP exhaustion halts autoscaling (EKS/GKE cannot spawn worker nodes). NAT Gateway SNAT port exhaustion silently drops outbound API requests.
+* **Monitored Invariants:** Subnet IP address utilization, predictive CIDR exhaustion runway, managed NAT Gateway throughput, SNAT port allocation error drops.
+* **Recommended Configuration:**
+  * Warning: Subnet IP address utilization above 80%, Address runway under 30 days, or NAT Gateway SNAT port drops above 5.
+  * Critical: Subnet IP address utilization above 92%, Address runway under 7 days, or SNAT drops exceeding 50 (🚨 **P1 Critical**).
+
+### 3.3 Cloud Firewalls, Security Groups &amp; Network ACLs
+* **Monitored Invariants:** Stateful firewall dropped packet count, connection tracking (conntrack) table capacity, IDS/IPS signature hits, stateless subnet Network ACL drop ratio.
+
+### 3.4 Enterprise Load Balancers (ALB, NLB, F5 BIG-IP)
+* **Monitored Invariants:** Active ingress TCP connections, target processing latency, HTTP 5xx server error percentage, backend unhealthy host ratio, edge TLS certificate expiration days.
+* **Recommended Configuration:**
+  * Warning: Target latency above 25 milliseconds, HTTP 5xx errors above 1.0%, Unhealthy targets exceeding 10%, or SSL/TLS certificate expires in less than 30 days.
+  * Critical: Target latency above 100 milliseconds, HTTP 5xx errors above 5.0%, Unhealthy targets exceeding 33%, or SSL/TLS certificate expires in less than 7 days (🚨 **P1 Critical**).
+
+---
+
+## Tier 4: Virtualization &amp; Container Platforms
+
+### 4.1 Hypervisors (VMware ESXi, KVM, Proxmox)
+* **Monitored Invariants:** Host vCPU:pCPU overcommit ratio, RAM allocation density, guest OS CPU ready wait time, VMFS/datastore queue latency, live migration / vMotion failures.
+* **Recommended Configuration:**
+  * Warning: Virtual machine CPU ready wait time above 5.0%, or Datastore queue latency above 10.0 milliseconds.
+  * Critical: CPU ready wait time above 10.0%, or Datastore queue latency above 30.0 milliseconds.
+* **Remediation:** CPU ready time above 10% means virtual machines are starved of physical clock cycles. Enable aggressive Distributed Resource Scheduling (DRS) or redistribute workloads.
+
+### 4.2 Kubernetes &amp; OpenShift Control Plane &amp; ETCD Fsync
+* **Why It Was Built &amp; Importance:** ETCD is the consensus brain of Kubernetes. Slow disk write synchronization (fsync) in ETCD causes leader election flaps and freezes all deployments, scaling, and pod scheduling.
+* **Monitored Invariants:** Nodes under memory/disk pressure, Kube-Apiserver P99 latency, ETCD WAL disk fsync P99 latency, ETCD Raft leader election flaps, cluster-wide pod restart velocity.
+* **Recommended Configuration:**
+  * Warning: ETCD disk write sync time above 10.0 milliseconds, Apiserver P99 latency above 50 milliseconds, or 1 or more leader flaps per hour.
+  * Critical: ETCD disk write sync time above 25.0 milliseconds (🚨 **P1 Critical**), Apiserver P99 latency above 200 milliseconds, or 3 or more leader flaps per hour.
+* **Remediation:** Ensure ETCD is backed by dedicated high-IOPS NVMe SSD storage with prioritized cgroups I/O scheduling.
+
+### 4.3 Workload Health, Kubelets &amp; Ingress Proxies
+* **Monitored Invariants:** Deployment degraded replica count, CrashLoopBackOff pod velocity, CPU request-to-limit saturation, kernel OOM killer events, Ingress proxy P99 latency.
+
+---
+
+## Tier 5: Middleware, Databases &amp; Storage Layers
+
+### 5.1 Relational Databases (PostgreSQL, MySQL, Oracle, MS SQL Server)
+* **Why It Was Built &amp; Importance:** The persistence tier is the most critical asset in enterprise infrastructure. Unchecked lock contention, connection starvation, or replication lag directly violates business transaction SLAs.
+* **Monitored Invariants:** Connection pool saturation, average query execution time, slow queries velocity (over 1 second), transaction deadlock rate, replication lag, buffer pool hit ratio, tablespace growth rate.
+* **Recommended Configuration:**
+  * Warning: Connection pool saturation above 80%, Replication delay exceeding 2.0 seconds, or Buffer pool hit ratio below 95%.
+  * Critical: Connection pool saturation above 92%, Replication delay exceeding 10.0 seconds (🚨 **P1 Critical**), or Buffer pool hit ratio below 90%.
+  * Evaluation Window: `5m` (absorbs index rebuilds and batch ETL flushes).
+* **Underlying Collector Scripts &amp; Queries:**
+  ```sql
+  -- PostgreSQL: Query active locks and long-running blocked transactions
+  SELECT pid, now() - query_start AS duration, query, state 
+  FROM pg_stat_activity 
+  WHERE wait_event_type = &#x27;Lock&#x27; AND now() - query_start &gt; interval &#x27;5 seconds&#x27;;
+
+  -- MySQL: Check performance schema lock contention
+  SELECT * FROM sys.schema_table_lock_waits;
+
+  -- Oracle: Query session wait events and SGA buffer cache
+  SELECT sid, serial#, event, seconds_in_wait, state 
+  FROM v$session_wait 
+  WHERE wait_class != &#x27;Idle&#x27; AND seconds_in_wait &gt; 5;
+
+  -- Microsoft SQL Server: Query blocked tasks and wait queues
+  SELECT session_id, wait_duration_ms, wait_type, blocking_session_id 
+  FROM sys.dm_os_waiting_tasks 
+  WHERE blocking_session_id IS NOT NULL;
+  ```
+* **Remediation:** If connection saturation exceeds 92%, inspect connection leaks in client pools (PgBouncer/HikariCP) and terminate orphaned `idle in transaction` sessions.
+
+### 5.2 Distributed SQL &amp; NoSQL (TiDB &amp; Apache Cassandra)
+* **Monitored Invariants:** TiDB Placement Driver (PD) API health, TiKV thread CPU saturation, Apache Cassandra JMX PendingTasks compaction queue, cross-datacenter gossip status, read/write p99 latency.
+* **Collector Queries:**
+  ```bash
+  # Query TiDB PD cluster health
+  curl -s http://127.0.0.1:2379/pd/api/v1/health
+
+  # Check Cassandra compaction queue and pending tasks via nodetool
+  nodetool tpstats
+  ```
+
+### 5.3 Message Queues &amp; Event Streaming (Apache Kafka, RabbitMQ, SQS)
+* **Why It Was Built &amp; Importance:** Event backlogs and consumer lag lead to data staleness, payment processing delays, and memory exhaustion in message brokers.
+* **Monitored Invariants:** Enqueued backlog depth, Kafka consumer group offset lag, broker ingestion throughput, unacknowledged AMQP messages, Under-Replicated Partitions (URP).
+* **Recommended Configuration:**
+  * Warning: 1 or more Under-Replicated Partitions, or Consumer group lag exceeding 5,000 records.
+  * Critical: 2 or more Under-Replicated Partitions (🚨 **P1 Critical**), or Consumer group lag exceeding 25,000 records.
+
+### 5.4 In-Memory Caching (Redis &amp; Memcached)
+* **Monitored Invariants:** Cache hit efficiency, Jemalloc memory fragmentation ratio, volatile-LRU eviction velocity, blocked clients count (BLPOP/BRPOP), cache socket throughput.
+
+---
+
+## Tier 6: Application &amp; Process Layer (APM &amp; Distributed Tracing)
+
+### 6.1 Distributed APM &amp; OpenTelemetry Tracing
+* **Why It Was Built &amp; Importance:** Provides granular transaction tracing across microservices to isolate the root-cause service responsible for user-facing latency spikes.
+* **Monitored Invariants:** Distributed trace spans, P50, P95, and P99 latency histograms, HTTP 5xx error rate, microservice throughput (requests per second).
+* **Recommended Configuration:**
+  * Warning: P99 latency above 50 milliseconds, or HTTP error rate above 1.0%.
+  * Critical: P99 latency above 150 milliseconds (🚨 **P1 Critical**), or HTTP error rate above 5.0%.
+
+### 6.2 Runtime Engines (JVM, Go, Node.js, Python, .NET)
+* **Monitored Invariants:** Stop-The-World (STW) garbage collection pause duration, thread deadlocks, heap allocation saturation, active OS kernel threads, open file descriptor utilization.
+* **Recommended Configuration:**
+  * Warning: Garbage collection pause above 100 milliseconds, or Heap saturation above 80%.
+  * Critical: Garbage collection pause above 500 milliseconds, 1 or more thread deadlocks detected (🚨 **P1 Critical**), or Heap saturation above 95%.
+
+### 6.3 Synthetic End-to-End Blackbox Probing
+* **Monitored Invariants:** Synthetic probe uptime ratio, multi-step transaction completion time, TLS 1.3 handshake negotiation delay, consecutive blackbox probe failures.
+
+---
+
+## Tier 7: Logs, Events &amp; Security (SIEM / Auditing)
+
+### 7.1 Centralized High-Throughput Log Streaming
+* **Monitored Invariants:** Structured log events per second (EPS), JSON/Grok parse errors, fatal/panic error frequency, kernel oops/panics, circular ring buffer headroom.
+* **Recommended Configuration:**
+  * Warning: Ring buffer headroom below 20%.
+  * Critical: Ring buffer headroom below 10%.
+
+### 7.2 Security Audit, IAM &amp; SCIM Privilege Escalation
+* **Monitored Invariants:** Unauthorized HTTP 401/403 probes, interactive root/sudo escalations, privileged role/policy mutations, MFA token replay anomalies, audit trail tampering attempts.
+* **Recommended Configuration:**
+  * Warning: 3 or more unauthorized access attempts per hour.
+  * Critical: Any detected tampering with audit logs (🚨 **P1 Security Invariant**).
+
+### 7.3 Zero-Egress Compliance &amp; Kernel eBPF Enforcement
+* **Why It Was Built &amp; Importance:** Verification that zero unapproved packets leave the private network perimeter.
+* **Monitored Invariants:** Kernel eBPF blocked WAN packets, File Integrity Monitoring (FIM) binary checksum mismatches, detected High/Critical CVEs, cryptographic air-gap drift.
+* **Recommended Configuration:**
+  * Critical: 1 or more eBPF blocked unauthorized WAN packets (🚨 **P1 Critical**), or 1 or more binary checksum mismatches.
+* **Verification Command:**
+  ```bash
+  # Check active zero-egress kernel enforcement status
+  dcouplr check --tier tier_7_logs_security_siem --component security_compliance
+  ```
+
+---
+
+# Part IV: Incident Routing, Local Spooling &amp; Enterprise Ticketing Integration
+
+### 4.1 In-Perimeter Incident Dispatch
+`&lt;dcouplr/&gt;` operates completely standalone and autonomously within your private VPC with zero external dependencies. When operational thresholds are breached, alerts are dispatched directly to your team&#x27;s internal **enterprise ticketing tool** (such as ServiceNow, Jira Service Management, or custom internal ticketing systems) via **in-perimeter zero-WAN disk spooling and local network connectors**:
+
+```
+Local Spool Path: ./data/incident_spool/
+Ingest Bridge:    Local Webhook / REST Bridge or Atomic Disk Spool (Zero WAN)
+Target Queues:    hw-ops-dc, network-ops, cloud-infra, k8s-platform, dba-team, sre-tier1, secops-threat
+```
+
+When an alert triggers:
+1. `&lt;dcouplr/&gt;` generates a structured, cryptographically signed JSON event envelope.
+2. It writes the envelope atomically to the local disk spool (`./data/incident_spool/ticket-*.json`).
+3. Your enterprise ticketing tool or incident management pipeline ingests the incident via local webhook or disk pickup with **zero outbound internet traffic**.
+
+---
+
+# Part V: Core Operational Safety Invariants &amp; Verification Rules
+
+Instead of abstract theoretical equations, `&lt;dcouplr/&gt;` continuously evaluates three practical operational safety rules:
+
+### 5.1 Invariant 1: VPC Network Traffic Conservation
+* **What it checks:** Measures all traffic entering and exiting the VPC perimeter interfaces and compares it against active application socket buffers.
+* **Why it matters:** If outgoing network traffic significantly exceeds incoming traffic and established host socket buffers for more than 5 consecutive seconds, the engine flags an unapproved outbound data transfer, rogue NAT route, or asymmetric network leak.
+* **Operational Action:** Run `dcouplr check --tier tier_3_cloud_vpc_infrastructure --component vpc_flow_logs` and review VPC flow log rejection counts and top destination IP addresses.
+
+### 5.2 Invariant 2: Constant-Memory P99 Latency Histogram Tracking
+* **What it checks:** Calculates continuous P50, P95, and P99 latency percentiles across millions of spans using fixed-size logarithmic histogram buckets in memory.
+* **Why it matters:** Storing raw latency timestamps in an unbounded list causes memory leaks and heavy garbage collection pauses. Fixed-capacity buckets maintain sub-millisecond precision with less than 11 KiB of RAM per metric, guaranteeing zero GC interruptions for production applications.
+* **Operational Action:** When P99 latency exceeds threshold, inspect database query locks and upstream microservice dependency response times in the APM trace view.
+
+### 5.3 Invariant 3: Cluster Consensus &amp; Split-Brain Prevention
+* **What it checks:** Ensures that `&lt;dcouplr/&gt;` observer daemons maintain a strict majority quorum across the cluster using Raft consensus.
+* **Why it matters:** If a network partition isolates part of the datacenter, only the side with a strict majority of nodes (for example, 2 out of 3, or 3 out of 5) can elect a leader and commit threshold changes. The isolated partition stands down into read-only mode, completely preventing split-brain conflicts.
+* **Operational Action:** Verify node reachability on port 9443 and run `dcouplr cluster status` to inspect active Raft leader and follower states.
+
+---
+
+# Part VI: Synthetic Test Verification &amp; API Manual
+
+NOC engineers and automation pipelines can verify any component or trigger test notifications using the internal REST API:
+
+```bash
+# 1. Fetch live 7-tier monitoring matrix status
+curl -s http://localhost:8000/v1/telemetry/monitoring/matrix | jq .status_summary
+
+# 2. Update component threshold &amp; alert level
+curl -s -X POST http://localhost:8000/v1/telemetry/monitoring/matrix/configure \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;tier_id&quot;: &quot;tier_5_middleware_databases&quot;,
+    &quot;component_id&quot;: &quot;databases_relational&quot;,
+    &quot;alert_level&quot;: &quot;P1&quot;,
+    &quot;evaluation_window&quot;: &quot;5m&quot;,
+    &quot;notification_channels&quot;: [&quot;noc_pulsecast&quot;, &quot;sre_email&quot;]
+  }&#x27; | jq .status
+
+# 3. Dispatch a synthetic test alert to NOC channels
+curl -s -X POST http://localhost:8000/v1/telemetry/monitoring/matrix/test-notification \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;tier_id&quot;: &quot;tier_5_middleware_databases&quot;,
+    &quot;component_id&quot;: &quot;databases_relational&quot;,
+    &quot;test_level&quot;: &quot;P1&quot;,
+    &quot;channels&quot;: [&quot;noc_pulsecast&quot;, &quot;servicenow&quot;]
+  }&#x27; | jq .
+
+# 4. Inspect notification audit receipts
+curl -s http://localhost:8000/v1/telemetry/monitoring/matrix/history | jq .history[0]
+```
+
+---
+
+*Document Author: `&lt;dcouplr/&gt;` Core Architecture &amp; SRE Reliability Engineering Board*  
+*Online Browser Version: `http://localhost:8000/docs/runbooks/RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.html`*
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># [SRE RUNBOOK] 7-Tier Full-Stack Datacenter &amp; Cloud VPC Monitoring Architecture &amp; NOC Hub
+## Authoritative Operating Manual: Health Checks, Threshold Tuning, Remediation &amp; Incident Triage
+
+&gt; **Document ID:** `RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING`  
+&gt; **Classification:** Engineering Operational Standard Operating Procedure (SOP) &amp; Systems Runbook  
+&gt; **Target Audience:** Site Reliability Engineers (SREs), NOC Operators, Systems Administrators, DBAs, SecOps  
+&gt; **Applies to:** `&lt;dcouplr/&gt;` Full-Stack Suite, Bare Metal, Hybrid On-Prem &amp; Multi-Cloud VPCs  
+&gt; **Zero-Egress Invariant:** 100% In-Perimeter Telemetry • Zero Cloud WAN Bandwidth Egress • Hardware Memory Buffers  
+&gt; **Live Online Console:** `http://localhost:8000/docs/runbooks/RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.html`
+
+---
+
+## 📑 Interactive Table of Contents &amp; Navigation Outline
+
+* **[Part I: Telemetry Pipeline &amp; Operating Principles](#part-i-telemetry-pipeline--operating-principles)**
+  * [1.1 In-Perimeter Architecture](#11-in-perimeter-architecture)
+  * [1.2 Global 7-Tier Topology Flowchart](#12-global-7-tier-topology-flowchart)
+* **[Part II: Severity Policies (P1–P4) &amp; Sliding Evaluation Windows](#part-ii-severity-policies-p1p4--sliding-evaluation-windows)**
+  * [2.1 Severity Level Hierarchy &amp; Response Targets](#21-severity-level-hierarchy--response-targets)
+  * [2.1.1 SLA Governance Boundary: In-Perimeter Metric Alerting vs. `&lt;dcouplr/&gt;` Commercial Vendor Support SLA](#211-sla-governance-boundary-in-perimeter-metric-alerting-vs-dcouplr-commercial-vendor-support-sla)
+  * [2.2 In-Memory Circular Buffers &amp; Evaluation Windows](#22-in-memory-circular-buffers--evaluation-windows)
+  * [2.3 Guiding Philosophy: Threshold Trade-Off Analysis](#23-guiding-philosophy-threshold-trade-off-analysis)
+* **[Part III: Tier-by-Tier Runbook &amp; Configuration Manual](#part-iii-tier-by-tier-runbook--configuration-manual)**
+  * **[Tier 1: Physical Data Center Infrastructure (Bare Metal)](#tier-1-physical-data-center-infrastructure-bare-metal)**
+    * [1.1 Compute / Bare Metal Servers](#11-compute--bare-metal-servers)
+    * [1.2 Power &amp; Environment (DCIM/IPMI)](#12-power--environment-dcimipmi)
+    * [1.3 Storage Systems (SAN / NAS / NVMe-oF)](#13-storage-systems-san--nas--nvme-of)
+  * **[Tier 2: Physical &amp; Virtual Networking](#tier-2-physical--virtual-networking)**
+    * [2.1 Core Network Devices (Spines, Leaves &amp; Switches)](#21-core-network-devices-spines-leaves--switches)
+    * [2.2 Network Connectivity, Jitter &amp; BGP/OSPF Routing Stability](#22-network-connectivity-jitter--bgpospf-routing-stability)
+    * [2.3 Dedicated Interconnects (AWS DirectConnect, ExpressRoute &amp; IPsec)](#23-dedicated-interconnects-aws-directconnect-expressroute--ipsec)
+  * **[Tier 3: VPC &amp; Cloud Infrastructure](#tier-3-vpc--cloud-infrastructure)**
+    * [3.1 VPC Flow Logs &amp; Traffic Conservation Invariant](#31-vpc-flow-logs--traffic-conservation-invariant)
+    * [3.2 Subnets, CIDR Allocation &amp; NAT Gateway SNAT](#32-subnets-cidr-allocation--nat-gateway-snat)
+    * [3.3 Cloud Firewalls, Security Groups &amp; Network ACLs](#33-cloud-firewalls-security-groups--network-acls)
+    * [3.4 Enterprise Load Balancers (ALB, NLB, F5 BIG-IP)](#34-enterprise-load-balancers-alb-nlb-f5-big-ip)
+  * **[Tier 4: Virtualization &amp; Container Platforms](#tier-4-virtualization--container-platforms)**
+    * [4.1 Hypervisors (VMware ESXi, KVM, Proxmox)](#41-hypervisors-vmware-esxi-kvm-proxmox)
+    * [4.2 Kubernetes &amp; OpenShift Control Plane &amp; ETCD Fsync](#42-kubernetes--openshift-control-plane--etcd-fsync)
+    * [4.3 Workload Health, Kubelets &amp; Ingress Proxies](#43-workload-health-kubelets--ingress-proxies)
+  * **[Tier 5: Middleware, Databases &amp; Storage Layers](#tier-5-middleware-databases--storage-layers)**
+    * [5.1 Relational Databases (PostgreSQL, MySQL, Oracle, MS SQL Server)](#51-relational-databases-postgresql-mysql-oracle-ms-sql-server)
+    * [5.2 Distributed SQL &amp; NoSQL (TiDB &amp; Apache Cassandra)](#52-distributed-sql--nosql-tidb--apache-cassandra)
+    * [5.3 Message Queues &amp; Event Streaming (Apache Kafka, RabbitMQ, SQS)](#53-message-queues--event-streaming-apache-kafka-rabbitmq-sqs)
+    * [5.4 In-Memory Caching (Redis &amp; Memcached)](#54-in-memory-caching-redis--memcached)
+  * **[Tier 6: Application &amp; Process Layer (APM &amp; Distributed Tracing)](#tier-6-application--process-layer-apm--distributed-tracing)**
+    * [6.1 Distributed APM &amp; OpenTelemetry Tracing](#61-distributed-apm--opentelemetry-tracing)
+    * [6.2 Runtime Engines (JVM, Go, Node.js, Python, .NET)](#62-runtime-engines-jvm-go-nodejs-python-net)
+    * [6.3 Synthetic End-to-End Blackbox Probing](#63-synthetic-end-to-end-blackbox-probing)
+  * **[Tier 7: Logs, Events &amp; Security (SIEM / Auditing)](#tier-7-logs-events--security-siem--auditing)**
+    * [7.1 Centralized High-Throughput Log Streaming](#71-centralized-high-throughput-log-streaming)
+    * [7.2 Security Audit, IAM &amp; SCIM Privilege Escalation](#72-security-audit-iam--scim-privilege-escalation)
+    * [7.3 Zero-Egress Compliance &amp; Kernel eBPF Enforcement](#73-zero-egress-compliance--kernel-ebpf-enforcement)
+* **[Part IV: Incident Routing, Local Spooling &amp; Enterprise Ticketing Integration](#part-iv-incident-routing-local-spooling--enterprise-ticketing-integration)**
+* **[Part V: Core Operational Safety Invariants &amp; Verification Rules](#part-v-core-operational-safety-invariants--verification-rules)**
+* **[Part VI: Synthetic Test Verification &amp; API Manual](#part-vi-synthetic-test-verification--api-manual)**
+
+---
+
+# Part I: Telemetry Pipeline &amp; Operating Principles
+
+### 1.1 In-Perimeter Architecture
+`&lt;dcouplr/&gt;` operates as an autonomous, in-perimeter telemetry daemon deployed directly inside your private cloud VPCs and on-premises datacenter networks. It collects, correlates, and evaluates metrics, application traces, and audit logs locally without routing telemetry traffic over public internet gateways:
+
+1. **Zero External Bandwidth:** All telemetry evaluation happens in volatile RAM on your instances. No metrics, logs, or traces leave the VPC boundary.
+2. **Data Isolation:** Sensitive connection strings, database schemas, internal IP topologies, and customer payloads remain within your security enclave.
+3. **Local High Availability:** The monitoring mesh runs independently of external network connectivity. If the public WAN or third-party cloud services experience outages, internal telemetry, alerting, and NOC displays remain fully operational.
+
+Each daemon consumes less than 50 MiB of RAM per node by utilizing circular in-memory ring buffers with strict fixed-capacity bounds.
+
+### 1.2 Global 7-Tier Topology Flowchart
+
+```mermaid
+flowchart TD
+    subgraph INGESTION[&quot;7-Tier In-Perimeter Ingestion Fabric&quot;]
+        T1[&quot;Tier 1: Physical DC (Compute, DCIM, SAN/NAS)&quot;]
+        T2[&quot;Tier 2: Networking (Core Spines, BGP, Optics)&quot;]
+        T3[&quot;Tier 3: Cloud &amp; VPC (Flow Logs, CIDRs, FW, ALB)&quot;]
+        T4[&quot;Tier 4: K8s &amp; Containers (ETCD fsync, Control Plane, Pods)&quot;]
+        T5[&quot;Tier 5: Middleware &amp; DBs (Postgres, MySQL, Oracle, MSSQL, TiDB, Cassandra, Kafka, Redis)&quot;]
+        T6[&quot;Tier 6: APM &amp; Runtimes (Distributed Traces, JVM/Go GC, Synthetics)&quot;]
+        T7[&quot;Tier 7: Logs &amp; SIEM (RFC 5424, Auditd, eBPF Zero-Egress Watchdog)&quot;]
+    end
+
+    subgraph ENGINE[&quot;&lt;dcouplr/&gt; Autonomous Observer Engine (3-Node Raft Mesh)&quot;]
+        RING[&quot;Volatile Fixed-Capacity Ring Buffers (Sub-ms Latency)&quot;]
+        RULES[&quot;Operational Invariant Evaluator (Traffic Balance, Tail Percentiles, Consensus)&quot;]
+        FILTER[&quot;Sliding Window Dampener &amp; Deduplication Engine&quot;]
+    end
+
+    subgraph DISPATCH[&quot;In-Perimeter NOC &amp; Incident Routing Hub&quot;]
+        TICKETING[&quot;🎫 Enterprise Ticketing Tool (ServiceNow / Jira / Spool)&quot;]
+        NOC[&quot;📺 24/7 NOC Wallboard (PulseCast™)&quot;]
+        PAGER[&quot;📟 GSM Hardware Pager (Out-of-Band)&quot;]
+        SMTP[&quot;📧 SRE SMTP Gateway (In-VPC)&quot;]
+        SIEM[&quot;📜 Syslog RFC 5424 Forwarder&quot;]
+    end
+
+    INGESTION --&gt; ENGINE
+    ENGINE --&gt; DISPATCH
+```
+
+---
+
+# Part II: Severity Policies (P1–P4) &amp; Sliding Evaluation Windows
+
+### 2.1 Severity Level Hierarchy &amp; Response Targets
+Every monitored component in `&lt;dcouplr/&gt;` maps to a formal internal operational severity level:
+
+| Severity Level | Target MTTA | Operational Scope | Routing Action |
+| :--- | :--- | :--- | :--- |
+| 🚨 **P1 - Critical** | **&lt; 5 min** | Complete outage, active data corruption risk, redundant power loss, or security invariant breach. | Immediate phone paging, VoIP emergency broadcast, and SRE incident bridge creation. |
+| ⚠️ **P2 - Major** | **&lt; 15 min** | Subsystem degradation, database lock contention, severe network queue drops, or worker node starvation. | Automated Slack/Teams alerting and ticket creation in primary on-call queue. |
+| 🟡 **P3 - Moderate** | **&lt; 1 hour** | Capacity warning, slow storage latency drift, minor replication delay, or non-impacting worker restarts. | Business-hours queue dispatch; batched notification digest to prevent alert fatigue. |
+| ℹ️ **P4 - Info** | **Next Biz Day** | Informational state drift, routine metrics, audit log events, or maintenance window milestones. | Recorded in audit feed without engineer paging. |
+
+### 2.1.1 SLA Governance Boundary: In-Perimeter Metric Alerting vs. `&lt;dcouplr/&gt;` Commercial Vendor Support SLA &lt;a id=&quot;211-sla-governance-boundary-in-perimeter-metric-alerting-vs-dcouplr-commercial-vendor-support-sla&quot;&gt;&lt;/a&gt;&lt;a id=&quot;211-sla-governance-boundary-in-perimeter-metric-alerting-vs-varinull-commercial-support-sla&quot;&gt;&lt;/a&gt;
+
+&gt; [!IMPORTANT]
+&gt; **GOVERNANCE DEMARCATION NOTE FOR OPERATING ENGINEERS: In-Perimeter Metric Policy vs. `&lt;dcouplr/&gt;` Commercial Vendor Support SLA**  
+&gt; Do **NOT** conflate these two separate operational layers: How you configure the Severity Policy (P1–P4) and Sampling Evaluation Window (1m–30m) below governs your internal infrastructure telemetry filtering, rolling ring buffer noise rejection, and internal team on-call dispatching. It is completely independent of your contractual `&lt;dcouplr/&gt;` Commercial Vendor Support SLA (governed by Document ID `VA-SPEC-SUPPORT-SLA-001`). Setting a database, network, or server metric to P1 triggers your internal SRE paging queues—it does not open an incident ticket with `&lt;dcouplr/&gt;` Support, and your commercial support agreement does not constrain your internal evaluation windows.
+&gt;
+&gt; 1. **In-Perimeter Metric Telemetry (Internal Customer Operation):**
+&gt;    - Governs how *your internal team* monitors your own infrastructure (servers, VPC networks, databases, Kubernetes clusters, apps).
+&gt;    - Selecting `P1 - Critical` with a `1m` evaluation window controls internal sliding ring buffers, noise rejection, and internal notification dispatch (paging internal on-call SREs via GSM Pagers, VoIP, or internal ticketing queues (e.g. `sre-tier1`)).
+&gt;    - **It does NOT create, trigger, or escalate an incident ticket with `&lt;dcouplr/&gt;` Support.**
+&gt; 2. **`&lt;dcouplr/&gt;` Commercial Vendor Support SLA (Vendor Support Contract):**
+&gt;    - Governed by your commercial enterprise license contract (Document ID: `VA-SPEC-SUPPORT-SLA-001`).
+&gt;    - Dictates the contractual response time provided by Support Engineers (e.g., Tier 3: 2-Hour 24/7 P1 SLA, Tier 4: 1-Hour 24/7 P1 SLA, Tier 5: 15-Minute 24/7 P0/P1 SLA) for **`&lt;dcouplr/&gt;` runtime software defects, AST compiler failures, Raft consensus partitions, and engine bugs**.
+&gt;    - Tuning an internal metric alert to P1 does NOT dispatch a vendor incident to `&lt;dcouplr/&gt;` Support, nor does your vendor contract dictate internal sampling windows.
+
+### 2.2 In-Memory Circular Buffers &amp; Evaluation Windows &lt;a id=&quot;22-in-memory-circular-buffers--evaluation-windows&quot;&gt;&lt;/a&gt;&lt;a id=&quot;22-sliding-window-ring-buffer-mathematics&quot;&gt;&lt;/a&gt;
+
+To prevent alert fatigue from transient workload spikes (such as brief compiler bursts or short garbage collection pauses), `&lt;dcouplr/&gt;` evaluates metrics using **fixed-capacity circular ring buffers** across **sliding evaluation windows**:
+
+1. **Circular Ring Buffering:** Metric samples are collected at fixed one-second intervals directly into pre-allocated memory rings. Because buffer capacity is fixed, memory consumption remains strictly bounded with zero garbage-collection overhead and zero memory fragmentation.
+2. **Sliding Window Evaluation:** Rather than reacting to isolated momentary spikes, the observer evaluates metric state across the active duration window (1m, 3m, 5m, 10m, 15m, or 30m).
+3. **Deterministic State Transitions:**
+   * **NORMAL:** Metric values operate within standard baseline boundaries.
+   * **PENDING:** A threshold boundary has been crossed, but the breach has not yet persisted for the full duration of the configured evaluation window.
+   * **FIRING:** The threshold breach has persisted continuously across the entire evaluation window. An incident is dispatched to internal SRE on-call channels.
+   * **CLEARED:** Metric values have returned below threshold and remained stable for the full window duration, auto-resolving the incident.
+4. **Noise Suppression:** Brief fluctuations that quickly recover return from PENDING to NORMAL without waking or paging on-call engineers.
+
+### 2.3 Guiding Philosophy: Threshold Trade-Off Analysis
+
+When configuring components in `/configuration`, choose evaluation windows based on operational risk:
+
+* **Shortening the Window (for example, 5 minutes down to 1 minute):**
+  * *Best used for:* Hard system failures, primary power loss, host unreachable, disk 100% full, kernel panic.
+  * *Trade-off:* Fast detection of real emergencies, but temporary spikes during routine batch jobs can trigger false alarms.
+* **Lengthening the Window (for example, 5 minutes up to 15 or 30 minutes):**
+  * *Best used for:* Cache hit ratio drift, memory headroom depletion, slow replication lag, background tablespace growth.
+  * *Trade-off:* High signal-to-noise ratio that guarantees only sustained degradation triggers an alert, but delays on-call notification for acute lock contention.
+
+---
+
+# Part III: Tier-by-Tier Runbook &amp; Configuration Manual
+
+---
+
+## Tier 1: Physical Data Center Infrastructure (Bare Metal)
+
+### 1.1 Compute / Bare Metal Servers
+* **Why It Was Built &amp; Importance:** Physical server stability underpins all virtualization, containerization, and database software stacks. Unmonitored hardware errors (such as uncorrectable ECC memory flips or thermal throttling) cause random kernel panics and silent data corruption.
+* **Failure Modes:** Thermal trip causing unexpected server shutdown; single PSU failure overloading a redundant PDU circuit; ECC memory errors escalating into kernel panic.
+* **Monitored Invariants:** CPU core utilization, memory &amp; swap pressure, disk I/O throughput (IOPS), disk read/write latency, chassis &amp; core temperatures, cooling fan RPM, redundant PSU status, SMART / ECC error counts.
+* **Recommended Configuration:**
+  * Warning Threshold: CPU utilization above 75%, Core temperature above 70°C, Cooling fan speed below 3,000 RPM, or redundant power supplies drop below 2 active.
+  * Critical Threshold: CPU utilization above 90%, Core temperature above 85°C, Cooling fan speed below 1,500 RPM, or power supplies drop below 1 active.
+  * Evaluation Window: `5m` (absorbs temporary compute compile bursts).
+  * Recommended Severity: `P2 - Major Degradation` (escalates to `P1` if redundant PSUs drop to 0).
+* **Underlying Collector Scripts &amp; Probes:**
+  ```bash
+  # Query IPMI sensor readings (temperatures, fans, voltages)
+  ipmitool -I lanplus -H 10.240.0.100 -U admin sdr type Temperature
+  ipmitool -I lanplus -H 10.240.0.100 -U admin sensor get &quot;Power Supply 1&quot;
+
+  # Kernel Machine Check Exception (MCE) &amp; EDAC memory checks
+  dmesg -T | grep -E -i &quot;mce|edac|hardware error&quot;
+  smartctl -H /dev/nvme0n1
+  ```
+* **Remediation Procedures:**
+  1. If PSU count drops to 1, inspect datacenter PDU circuit breaker and dispatch on-site facilities to replace the faulted power supply module.
+  2. If temperature exceeds 85°C, verify intake airflow and throttle CPU governor (`cpupower frequency-set -g powersave`) until HVAC is verified.
+  3. If uncorrectable ECC errors occur, drain the node (`kubectl drain &lt;node&gt; --ignore-daemonsets`) and schedule memory DIMM replacement.
+
+### 1.2 Power &amp; Environment (DCIM/IPMI)
+* **Why It Was Built &amp; Importance:** Datacenter environmental parameters (temperature, humidity, airflow, UPS power) are physical prerequisites for semiconductor operation. High temperatures accelerate silicon wear; power loss without battery buffer collapses the entire cluster.
+* **Monitored Invariants:** UPS inverter load, battery runtime remaining, PDU 3-phase current balance, rack cold-aisle temperature, relative humidity, CRAC/CRAH airflow displacement.
+* **Recommended Configuration:**
+  * Warning: UPS load above 75%, Battery runtime below 20 minutes, or Room temperature above 27°C.
+  * Critical: UPS load above 90%, Battery runtime below 10 minutes (🚨 **P1 Critical**), or Room temperature above 32°C.
+* **Collector Queries:**
+  ```bash
+  # SNMP Walk to APC / Eaton UPS MIB for battery runtime
+  snmpget -v3 -u dcimUser -l authPriv -a SHA -A &quot;AuthPass&quot; -x AES -X &quot;PrivPass&quot;     10.240.10.1 1.3.6.1.4.1.318.1.1.1.2.2.2.0
+  ```
+
+### 1.3 Storage Systems (SAN / NAS / NVMe-oF)
+* **Why It Was Built &amp; Importance:** Enterprise databases and VM datastores rely on shared storage fabrics. High latency here ripples across every higher layer as application thread starvation.
+* **Monitored Invariants:** Volume capacity allocation, storage fabric aggregate IOPS, read/write latency, RAID controller health, degraded drive count, inline compression ratio.
+* **Recommended Configuration:**
+  * Warning: Pool capacity above 80%, Storage latency above 8.0 milliseconds, or 1 or more degraded drives.
+  * Critical: Pool capacity above 90%, Storage latency above 25.0 milliseconds, or 2 or more degraded drives (🚨 **P1 Critical**).
+
+---
+
+## Tier 2: Physical &amp; Virtual Networking
+
+### 2.1 Core Network Devices (Spines, Leaves &amp; Switches)
+* **Why It Was Built &amp; Importance:** Top-of-Rack (ToR) and core spine switches route all East-West and North-South traffic. Dropped packets at this layer degrade TCP throughput exponentially via cubic congestion collapse.
+* **Monitored Invariants:** Switch ASIC/CPU utilization, TCAM buffer queue allocation, interface bandwidth throughput, packet loss percentage, FCS/CRC frame errors.
+* **Recommended Configuration:**
+  * Warning: Switch CPU utilization above 75%, Packet drop rate above 0.05%, or CRC frame errors exceeding 10 drops per second.
+  * Critical: Switch CPU utilization above 90%, Packet drop rate above 0.50%, or CRC frame errors exceeding 50 drops per second.
+  * Evaluation Window: `3m`.
+* **Collector Commands:**
+  ```bash
+  # Poll switch interface CRC error counters via SNMP v3
+  snmpnetstat -v 2c -c public -I eth1 10.240.1.1
+  ```
+* **Remediation:** High CRC frame errors indicate a dirty fiber optic faceplate or degraded SFP+ transceiver. Clean or replace the optical module.
+
+### 2.2 Network Connectivity, Jitter &amp; BGP/OSPF Routing Stability
+* **Why It Was Built &amp; Importance:** Dynamic routing convergence flaps cause packet blackholing and erratic connection resets across multi-cloud meshes.
+* **Monitored Invariants:** Inter-rack East-West latency, Anycast internal DNS response time, network jitter, BGP route flapping frequency, OSPF state convergence delay.
+* **Recommended Configuration:**
+  * Warning: Inter-rack round-trip latency above 2.0 milliseconds, DNS query time above 15.0 milliseconds, or 1 or more route flaps per hour.
+  * Critical: Inter-rack latency above 8.0 milliseconds, DNS query time above 50.0 milliseconds, or 3 or more route flaps per hour (🚨 **P1 Critical**).
+
+### 2.3 Dedicated Interconnects (AWS DirectConnect, ExpressRoute &amp; IPsec)
+* **Why It Was Built &amp; Importance:** Enterprise hybrid cloud architectures link on-prem datacenters to cloud VPCs via dedicated physical cross-connects. Loss of primary links forces traffic over throttled VPN backup tunnels.
+* **Monitored Invariants:** IPsec tunnel operational state, IKEv2 rekey negotiation errors, DirectConnect dedicated circuit utilization, cross-connect packet discard ratio.
+
+---
+
+## Tier 3: VPC &amp; Cloud Infrastructure
+
+### 3.1 VPC Flow Logs &amp; Traffic Conservation Invariant
+* **Why It Was Built &amp; Importance:** Continuous verification of network data isolation. By balancing ingress packet flow against egress traffic and host socket consumption, `&lt;dcouplr/&gt;` verifies that all network traffic remains strictly within approved VPC routes and catches rogue Internet Gateways, shadow NAT paths, or unexpected outbound data transfers.
+* **Monitored Invariants:** VPC ingress-to-egress flow balance ratio, rejected flow ratio, anomalous traffic spike multiplier, flow log ingestion velocity.
+* **Recommended Configuration:**
+  * Warning: Flow volume imbalance above 0.05%, or Rejected packet ratio above 5.0%.
+  * Critical: Flow volume imbalance above 0.50% (🚨 **P1 Security Invariant**), or Rejected packet ratio above 15.0%.
+* **Diagnostic Command:**
+  ```bash
+  # Check active zero-egress VPC flow invariant
+  dcouplr check --tier tier_3_cloud_vpc_infrastructure --component vpc_flow_logs --verbose
+  ```
+
+### 3.2 Subnets, CIDR Allocation &amp; NAT Gateway SNAT
+* **Why It Was Built &amp; Importance:** Subnet IP exhaustion halts autoscaling (EKS/GKE cannot spawn worker nodes). NAT Gateway SNAT port exhaustion silently drops outbound API requests.
+* **Monitored Invariants:** Subnet IP address utilization, predictive CIDR exhaustion runway, managed NAT Gateway throughput, SNAT port allocation error drops.
+* **Recommended Configuration:**
+  * Warning: Subnet IP address utilization above 80%, Address runway under 30 days, or NAT Gateway SNAT port drops above 5.
+  * Critical: Subnet IP address utilization above 92%, Address runway under 7 days, or SNAT drops exceeding 50 (🚨 **P1 Critical**).
+
+### 3.3 Cloud Firewalls, Security Groups &amp; Network ACLs
+* **Monitored Invariants:** Stateful firewall dropped packet count, connection tracking (conntrack) table capacity, IDS/IPS signature hits, stateless subnet Network ACL drop ratio.
+
+### 3.4 Enterprise Load Balancers (ALB, NLB, F5 BIG-IP)
+* **Monitored Invariants:** Active ingress TCP connections, target processing latency, HTTP 5xx server error percentage, backend unhealthy host ratio, edge TLS certificate expiration days.
+* **Recommended Configuration:**
+  * Warning: Target latency above 25 milliseconds, HTTP 5xx errors above 1.0%, Unhealthy targets exceeding 10%, or SSL/TLS certificate expires in less than 30 days.
+  * Critical: Target latency above 100 milliseconds, HTTP 5xx errors above 5.0%, Unhealthy targets exceeding 33%, or SSL/TLS certificate expires in less than 7 days (🚨 **P1 Critical**).
+
+---
+
+## Tier 4: Virtualization &amp; Container Platforms
+
+### 4.1 Hypervisors (VMware ESXi, KVM, Proxmox)
+* **Monitored Invariants:** Host vCPU:pCPU overcommit ratio, RAM allocation density, guest OS CPU ready wait time, VMFS/datastore queue latency, live migration / vMotion failures.
+* **Recommended Configuration:**
+  * Warning: Virtual machine CPU ready wait time above 5.0%, or Datastore queue latency above 10.0 milliseconds.
+  * Critical: CPU ready wait time above 10.0%, or Datastore queue latency above 30.0 milliseconds.
+* **Remediation:** CPU ready time above 10% means virtual machines are starved of physical clock cycles. Enable aggressive Distributed Resource Scheduling (DRS) or redistribute workloads.
+
+### 4.2 Kubernetes &amp; OpenShift Control Plane &amp; ETCD Fsync
+* **Why It Was Built &amp; Importance:** ETCD is the consensus brain of Kubernetes. Slow disk write synchronization (fsync) in ETCD causes leader election flaps and freezes all deployments, scaling, and pod scheduling.
+* **Monitored Invariants:** Nodes under memory/disk pressure, Kube-Apiserver P99 latency, ETCD WAL disk fsync P99 latency, ETCD Raft leader election flaps, cluster-wide pod restart velocity.
+* **Recommended Configuration:**
+  * Warning: ETCD disk write sync time above 10.0 milliseconds, Apiserver P99 latency above 50 milliseconds, or 1 or more leader flaps per hour.
+  * Critical: ETCD disk write sync time above 25.0 milliseconds (🚨 **P1 Critical**), Apiserver P99 latency above 200 milliseconds, or 3 or more leader flaps per hour.
+* **Remediation:** Ensure ETCD is backed by dedicated high-IOPS NVMe SSD storage with prioritized cgroups I/O scheduling.
+
+### 4.3 Workload Health, Kubelets &amp; Ingress Proxies
+* **Monitored Invariants:** Deployment degraded replica count, CrashLoopBackOff pod velocity, CPU request-to-limit saturation, kernel OOM killer events, Ingress proxy P99 latency.
+
+---
+
+## Tier 5: Middleware, Databases &amp; Storage Layers
+
+### 5.1 Relational Databases (PostgreSQL, MySQL, Oracle, MS SQL Server)
+* **Why It Was Built &amp; Importance:** The persistence tier is the most critical asset in enterprise infrastructure. Unchecked lock contention, connection starvation, or replication lag directly violates business transaction SLAs.
+* **Monitored Invariants:** Connection pool saturation, average query execution time, slow queries velocity (over 1 second), transaction deadlock rate, replication lag, buffer pool hit ratio, tablespace growth rate.
+* **Recommended Configuration:**
+  * Warning: Connection pool saturation above 80%, Replication delay exceeding 2.0 seconds, or Buffer pool hit ratio below 95%.
+  * Critical: Connection pool saturation above 92%, Replication delay exceeding 10.0 seconds (🚨 **P1 Critical**), or Buffer pool hit ratio below 90%.
+  * Evaluation Window: `5m` (absorbs index rebuilds and batch ETL flushes).
+* **Underlying Collector Scripts &amp; Queries:**
+  ```sql
+  -- PostgreSQL: Query active locks and long-running blocked transactions
+  SELECT pid, now() - query_start AS duration, query, state 
+  FROM pg_stat_activity 
+  WHERE wait_event_type = &#x27;Lock&#x27; AND now() - query_start &gt; interval &#x27;5 seconds&#x27;;
+
+  -- MySQL: Check performance schema lock contention
+  SELECT * FROM sys.schema_table_lock_waits;
+
+  -- Oracle: Query session wait events and SGA buffer cache
+  SELECT sid, serial#, event, seconds_in_wait, state 
+  FROM v$session_wait 
+  WHERE wait_class != &#x27;Idle&#x27; AND seconds_in_wait &gt; 5;
+
+  -- Microsoft SQL Server: Query blocked tasks and wait queues
+  SELECT session_id, wait_duration_ms, wait_type, blocking_session_id 
+  FROM sys.dm_os_waiting_tasks 
+  WHERE blocking_session_id IS NOT NULL;
+  ```
+* **Remediation:** If connection saturation exceeds 92%, inspect connection leaks in client pools (PgBouncer/HikariCP) and terminate orphaned `idle in transaction` sessions.
+
+### 5.2 Distributed SQL &amp; NoSQL (TiDB &amp; Apache Cassandra)
+* **Monitored Invariants:** TiDB Placement Driver (PD) API health, TiKV thread CPU saturation, Apache Cassandra JMX PendingTasks compaction queue, cross-datacenter gossip status, read/write p99 latency.
+* **Collector Queries:**
+  ```bash
+  # Query TiDB PD cluster health
+  curl -s http://127.0.0.1:2379/pd/api/v1/health
+
+  # Check Cassandra compaction queue and pending tasks via nodetool
+  nodetool tpstats
+  ```
+
+### 5.3 Message Queues &amp; Event Streaming (Apache Kafka, RabbitMQ, SQS)
+* **Why It Was Built &amp; Importance:** Event backlogs and consumer lag lead to data staleness, payment processing delays, and memory exhaustion in message brokers.
+* **Monitored Invariants:** Enqueued backlog depth, Kafka consumer group offset lag, broker ingestion throughput, unacknowledged AMQP messages, Under-Replicated Partitions (URP).
+* **Recommended Configuration:**
+  * Warning: 1 or more Under-Replicated Partitions, or Consumer group lag exceeding 5,000 records.
+  * Critical: 2 or more Under-Replicated Partitions (🚨 **P1 Critical**), or Consumer group lag exceeding 25,000 records.
+
+### 5.4 In-Memory Caching (Redis &amp; Memcached)
+* **Monitored Invariants:** Cache hit efficiency, Jemalloc memory fragmentation ratio, volatile-LRU eviction velocity, blocked clients count (BLPOP/BRPOP), cache socket throughput.
+
+---
+
+## Tier 6: Application &amp; Process Layer (APM &amp; Distributed Tracing)
+
+### 6.1 Distributed APM &amp; OpenTelemetry Tracing
+* **Why It Was Built &amp; Importance:** Provides granular transaction tracing across microservices to isolate the root-cause service responsible for user-facing latency spikes.
+* **Monitored Invariants:** Distributed trace spans, P50, P95, and P99 latency histograms, HTTP 5xx error rate, microservice throughput (requests per second).
+* **Recommended Configuration:**
+  * Warning: P99 latency above 50 milliseconds, or HTTP error rate above 1.0%.
+  * Critical: P99 latency above 150 milliseconds (🚨 **P1 Critical**), or HTTP error rate above 5.0%.
+
+### 6.2 Runtime Engines (JVM, Go, Node.js, Python, .NET)
+* **Monitored Invariants:** Stop-The-World (STW) garbage collection pause duration, thread deadlocks, heap allocation saturation, active OS kernel threads, open file descriptor utilization.
+* **Recommended Configuration:**
+  * Warning: Garbage collection pause above 100 milliseconds, or Heap saturation above 80%.
+  * Critical: Garbage collection pause above 500 milliseconds, 1 or more thread deadlocks detected (🚨 **P1 Critical**), or Heap saturation above 95%.
+
+### 6.3 Synthetic End-to-End Blackbox Probing
+* **Monitored Invariants:** Synthetic probe uptime ratio, multi-step transaction completion time, TLS 1.3 handshake negotiation delay, consecutive blackbox probe failures.
+
+---
+
+## Tier 7: Logs, Events &amp; Security (SIEM / Auditing)
+
+### 7.1 Centralized High-Throughput Log Streaming
+* **Monitored Invariants:** Structured log events per second (EPS), JSON/Grok parse errors, fatal/panic error frequency, kernel oops/panics, circular ring buffer headroom.
+* **Recommended Configuration:**
+  * Warning: Ring buffer headroom below 20%.
+  * Critical: Ring buffer headroom below 10%.
+
+### 7.2 Security Audit, IAM &amp; SCIM Privilege Escalation
+* **Monitored Invariants:** Unauthorized HTTP 401/403 probes, interactive root/sudo escalations, privileged role/policy mutations, MFA token replay anomalies, audit trail tampering attempts.
+* **Recommended Configuration:**
+  * Warning: 3 or more unauthorized access attempts per hour.
+  * Critical: Any detected tampering with audit logs (🚨 **P1 Security Invariant**).
+
+### 7.3 Zero-Egress Compliance &amp; Kernel eBPF Enforcement
+* **Why It Was Built &amp; Importance:** Verification that zero unapproved packets leave the private network perimeter.
+* **Monitored Invariants:** Kernel eBPF blocked WAN packets, File Integrity Monitoring (FIM) binary checksum mismatches, detected High/Critical CVEs, cryptographic air-gap drift.
+* **Recommended Configuration:**
+  * Critical: 1 or more eBPF blocked unauthorized WAN packets (🚨 **P1 Critical**), or 1 or more binary checksum mismatches.
+* **Verification Command:**
+  ```bash
+  # Check active zero-egress kernel enforcement status
+  dcouplr check --tier tier_7_logs_security_siem --component security_compliance
+  ```
+
+---
+
+# Part IV: Incident Routing, Local Spooling &amp; Enterprise Ticketing Integration
+
+### 4.1 In-Perimeter Incident Dispatch
+`&lt;dcouplr/&gt;` operates completely standalone and autonomously within your private VPC with zero external dependencies. When operational thresholds are breached, alerts are dispatched directly to your team&#x27;s internal **enterprise ticketing tool** (such as ServiceNow, Jira Service Management, or custom internal ticketing systems) via **in-perimeter zero-WAN disk spooling and local network connectors**:
+
+```
+Local Spool Path: ./data/incident_spool/
+Ingest Bridge:    Local Webhook / REST Bridge or Atomic Disk Spool (Zero WAN)
+Target Queues:    hw-ops-dc, network-ops, cloud-infra, k8s-platform, dba-team, sre-tier1, secops-threat
+```
+
+When an alert triggers:
+1. `&lt;dcouplr/&gt;` generates a structured, cryptographically signed JSON event envelope.
+2. It writes the envelope atomically to the local disk spool (`./data/incident_spool/ticket-*.json`).
+3. Your enterprise ticketing tool or incident management pipeline ingests the incident via local webhook or disk pickup with **zero outbound internet traffic**.
+
+---
+
+# Part V: Core Operational Safety Invariants &amp; Verification Rules
+
+Instead of abstract theoretical equations, `&lt;dcouplr/&gt;` continuously evaluates three practical operational safety rules:
+
+### 5.1 Invariant 1: VPC Network Traffic Conservation
+* **What it checks:** Measures all traffic entering and exiting the VPC perimeter interfaces and compares it against active application socket buffers.
+* **Why it matters:** If outgoing network traffic significantly exceeds incoming traffic and established host socket buffers for more than 5 consecutive seconds, the engine flags an unapproved outbound data transfer, rogue NAT route, or asymmetric network leak.
+* **Operational Action:** Run `dcouplr check --tier tier_3_cloud_vpc_infrastructure --component vpc_flow_logs` and review VPC flow log rejection counts and top destination IP addresses.
+
+### 5.2 Invariant 2: Constant-Memory P99 Latency Histogram Tracking
+* **What it checks:** Calculates continuous P50, P95, and P99 latency percentiles across millions of spans using fixed-size logarithmic histogram buckets in memory.
+* **Why it matters:** Storing raw latency timestamps in an unbounded list causes memory leaks and heavy garbage collection pauses. Fixed-capacity buckets maintain sub-millisecond precision with less than 11 KiB of RAM per metric, guaranteeing zero GC interruptions for production applications.
+* **Operational Action:** When P99 latency exceeds threshold, inspect database query locks and upstream microservice dependency response times in the APM trace view.
+
+### 5.3 Invariant 3: Cluster Consensus &amp; Split-Brain Prevention
+* **What it checks:** Ensures that `&lt;dcouplr/&gt;` observer daemons maintain a strict majority quorum across the cluster using Raft consensus.
+* **Why it matters:** If a network partition isolates part of the datacenter, only the side with a strict majority of nodes (for example, 2 out of 3, or 3 out of 5) can elect a leader and commit threshold changes. The isolated partition stands down into read-only mode, completely preventing split-brain conflicts.
+* **Operational Action:** Verify node reachability on port 9443 and run `dcouplr cluster status` to inspect active Raft leader and follower states.
+
+---
+
+# Part VI: Synthetic Test Verification &amp; API Manual
+
+NOC engineers and automation pipelines can verify any component or trigger test notifications using the internal REST API:
+
+```bash
+# 1. Fetch live 7-tier monitoring matrix status
+curl -s http://localhost:8000/v1/telemetry/monitoring/matrix | jq .status_summary
+
+# 2. Update component threshold &amp; alert level
+curl -s -X POST http://localhost:8000/v1/telemetry/monitoring/matrix/configure \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;tier_id&quot;: &quot;tier_5_middleware_databases&quot;,
+    &quot;component_id&quot;: &quot;databases_relational&quot;,
+    &quot;alert_level&quot;: &quot;P1&quot;,
+    &quot;evaluation_window&quot;: &quot;5m&quot;,
+    &quot;notification_channels&quot;: [&quot;noc_pulsecast&quot;, &quot;sre_email&quot;]
+  }&#x27; | jq .status
+
+# 3. Dispatch a synthetic test alert to NOC channels
+curl -s -X POST http://localhost:8000/v1/telemetry/monitoring/matrix/test-notification \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;tier_id&quot;: &quot;tier_5_middleware_databases&quot;,
+    &quot;component_id&quot;: &quot;databases_relational&quot;,
+    &quot;test_level&quot;: &quot;P1&quot;,
+    &quot;channels&quot;: [&quot;noc_pulsecast&quot;, &quot;servicenow&quot;]
+  }&#x27; | jq .
+
+# 4. Inspect notification audit receipts
+curl -s http://localhost:8000/v1/telemetry/monitoring/matrix/history | jq .history[0]
+```
+
+---
+
+*Document Author: `&lt;dcouplr/&gt;` Core Architecture &amp; SRE Reliability Engineering Board*  
+*Online Browser Version: `http://localhost:8000/docs/runbooks/RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.html`*
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

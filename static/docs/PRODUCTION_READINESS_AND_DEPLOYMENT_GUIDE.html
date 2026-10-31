@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - PRODUCTION_READINESS_AND_DEPLOYMENT_GUIDE.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/PRODUCTION_READINESS_AND_DEPLOYMENT_GUIDE.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="PRODUCTION_READINESS_AND_DEPLOYMENT_GUIDE.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="production-readiness-deployment-guide-enterprise-engine">Production Readiness &amp; Deployment Guide: <dcouplr/> Enterprise Engine</h1>
+<p><strong>Classification:</strong> Engineering Architecture &amp; Operations Manual<br />
+<strong>Version:</strong> 1.0.0 GA<br />
+<strong>Security Model:</strong> 100% In-VPC Volatile RAM &amp; Zero Cloud Egress<br />
+<strong>Target Environments:</strong> Hostinger (Static Edge), Private Cloud VPCs (AWS, GCP, Azure, Bare-Metal)</p>
+<hr />
+<h2 id="1-executive-summary-architecture-decoupling">1. Executive Summary &amp; Architecture Decoupling</h2>
+<p>To achieve maximum reliability, low operating expenses, and uncompromising security, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> is split into two cleanly decoupled architectural tiers:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+-----------------------------------------------------------------------------------+
+|                           TIER 1: STATIC EDGE (HOSTINGER)                        |
+|                                                                                   |
+|  - Marketing Landing Page (index.html, styles.css, app.js)                        |
+|  - Universal Download Hub &amp; Checksums (#download-hub)                              |
+|  - Interactive Client Support Desk (support.html, support.js, support.css)        |
+|  - Turnkey CLI Installers (install.sh, install.ps1)                               |
+|  - Legal, Privacy &amp; Compliance Disclaimers (legal_*.html)                         |
+|  - Apache / LiteSpeed Rewrite Engine (.htaccess with HSTS &amp; CSP)                  |
++-----------------------------------------------------------------------------------+
+                                         │
+                                         ▼ (Customer Downloads CLI / Obtains License)
++-----------------------------------------------------------------------------------+
+|                 TIER 2: HERMETIC IN-VPC RUNTIME ENGINE (CUSTOMER CLOUD)           |
+|                                                                                   |
+|  - CLI Binary: dcouplr (translate, inspect, state-plan, doctor, auth, lint)      |
+|  - FastAPI Backend Engine: port 8000 (Multi-VPC Telemetry, AST Transpilation)     |
+|  - Consensus Cluster: Raft gRPC (Multi-node state synchronization)                |
+|  - Storage Engine: TiDB WAL Compaction &amp; Snapshotting (In-Memory / Zero-Egress)   |
+|  - Exporter: Prometheus remote_write TSDB Forwarder                               |
++-----------------------------------------------------------------------------------+
+</code></pre></div>
+<h3 id="why-this-split-is-production-ready">Why This Split Is Production-Ready:</h3>
+<ol>
+<li><strong>Zero Infrastructure Cost for Edge:</strong> The landing page, download hub, and customer support desk run statically on Hostinger with 99.9% uptime, global CDN distribution, and zero server maintenance.</li>
+<li><strong>True Air-Gap Hermetic Isolation:</strong> The actual configuration transpilation and telemetry ingestion run 100% inside the customer's private VPC. No customer code, telemetry, or credentials ever touch Hostinger or external cloud servers.</li>
+<li><strong>Resilient Failover:</strong> If the customer's backend is in maintenance, the Hostinger support console automatically falls back to client-side ticket caching and secure <code>mailto:support@dcouplr.com</code> routing.</li>
+</ol>
+<hr />
+<h2 id="2-cli-availability-distribution-architecture">2. CLI Availability &amp; Distribution Architecture</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> is distributed across both <strong>Free Open-Core</strong> and <strong>Paid Commercial</strong> tiers using industry-standard package managers, precompiled binaries, and offline air-gap tarballs.</p>
+<h3 id="21-free-community-core-v100-ga">2.1 Free Community Core (v1.0.0 GA)</h3>
+<p>The Free Community Core is permanently available under Apache 2.0 with a 10-monitored-node ceiling, local system doctor, AST transpilation, and community support.</p>
+<h4 id="distribution-channels">Distribution Channels:</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Platform</th>
+<th style="text-align:left">Distribution Format</th>
+<th style="text-align:left">Quick Installation Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Linux (x86_64 / ARM64)</strong></td>
+<td style="text-align:left">Statically linked standalone ELF binary (<code>.tar.gz</code>)</td>
+<td style="text-align:left"><code>curl -fsSL https://get.dcouplr.com | sh</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>macOS (Apple Silicon &amp; Intel)</strong></td>
+<td style="text-align:left">Universal Mach-O binary (<code>.tar.gz</code>) / Homebrew</td>
+<td style="text-align:left"><code>brew install dcouplr/tap/dcouplr</code> or <code>curl -fsSL https://get.dcouplr.com | sh</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Windows (x64)</strong></td>
+<td style="text-align:left">Self-contained ZIP with <code>dcouplr.exe</code></td>
+<td style="text-align:left"><code>irm https://get.dcouplr.com/install.ps1 | iex</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Python / PyPI</strong></td>
+<td style="text-align:left">Wheel &amp; sdist via PyPI (<code>dcouplr</code>)</td>
+<td style="text-align:left"><code>pip install dcouplr</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Container / OCI</strong></td>
+<td style="text-align:left">Multi-arch Docker image</td>
+<td style="text-align:left"><code>docker pull ghcr.io/varinull/dcouplr:v1.0.0</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="cryptographic-attestation-integrity">Cryptographic Attestation &amp; Integrity:</h4>
+<ul>
+<li>Every binary release includes a cryptographic <code>SHA256SUMS</code> manifest.</li>
+<li>All release artifacts are signed with <strong>Sigstore Cosign</strong> and certified under <strong>SLSA Level 3</strong> In-toto provenance.</li>
+<li>Verification command:<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">cosign verify-blob \
+  --key https://dcouplr.com/cosign.pub \
+  --signature dcouplr.sig \
+  dcouplr
+</code></pre></div>
+</li>
+</ul>
+<hr />
+<h3 id="22-paid-commercial-enterprise-tier-distribution">2.2 Paid Commercial &amp; Enterprise Tier Distribution</h3>
+<p>When customers upgrade to <strong>Developer Pro ($300/mo)</strong>, <strong>Cluster Small ($1,500/mo)</strong>, <strong>Cluster Medium ($3,500/mo)</strong>, <strong>Cluster Large ($45/node/mo)</strong>, or <strong>Custom Enterprise</strong>, they unlock expanded node capacities, automated VPC discovery, and contractual SLAs (P0 in 15m to 1 hour).</p>
+<h4 id="the-commercial-customer-journey">The Commercial Customer Journey:</h4>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">[Customer Selects Tier on Landing Page]
+                   │
+                   ▼
+[Payment via Stripe / AWS / GCP Marketplace]
+                   │
+                   ▼
+[Cryptographic Ed25519 License Key Issued]
+ Example: DCL-CLUS-MD-FINTECH-991A-PROD
+                   │
+         ┌─────────┴─────────┐
+         ▼                   ▼
+[CLI Authentication]    [Air-Gapped Enterprise Bundle]
+ dcouplr auth login      dcouplr-enterprise-v1.0.0.tar.gz
+ (Offline verification)  (Pre-cached images, Helm, SBOM)
+</code></pre></div>
+<h4 id="step-1-instant-entitlement-generation">Step 1: Instant Entitlement Generation</h4>
+<p>Upon subscription, the customer is issued an offline cryptographic entitlement key (e.g., <code>DCL-PRO-ACME-8821B47C9</code> or signed JWT token). The token encodes:</p>
+<ul>
+<li>Organization Name</li>
+<li>Licensed Tier (Developer Pro, Cluster Medium, etc.)</li>
+<li>Monitored Node Ceiling (25 to Unlimited)</li>
+<li>Guaranteed Support SLA (48h Email, 4h Priority, 2h 24/7, 1h War-Room, 15m Instant)</li>
+<li>Expiration Date</li>
+</ul>
+<h4 id="step-2-one-line-zero-egress-cli-activation">Step 2: One-Line Zero-Egress CLI Activation</h4>
+<p>The customer runs:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">dcouplr auth login --license-key &lt;DCOUPLR_LICENSE_KEY&gt;
+</code></pre></div>
+<p>Or exports the environment variable in their CI/CD runner:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">export DCOUPLR_LICENSE_KEY=&quot;DCL-CLUS-MD-FINTECH-991A&quot;
+</code></pre></div>
+<p><strong>Zero-Egress Guarantee:</strong> The binary contains an embedded public key anchor. It validates the license mathematically in volatile RAM without making any outbound HTTP network calls.</p>
+<h4 id="step-3-inspecting-entitlement-status">Step 3: Inspecting Entitlement Status</h4>
+<p>To verify active entitlements, customers run:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">dcouplr auth status
+</code></pre></div>
+<p>Output:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">           <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> License &amp; Entitlement Status (COMMERCIAL)            
++------------------------------------------------------------------------+
+| Property                   | Value                                     |
+|----------------------------+-------------------------------------------|
+| Tier                       | Cluster Medium                            |
+| Organization               | Fintech Payments Global                   |
+| Node Capacity Limit        | 150 Nodes                                 |
+| Commercial Licensed        | Yes                                       |
+| Guaranteed Support SLA     | Critical SRE 24/7 (2h SLA)                |
+| Support Channel            | Dedicated SRE Bridge &amp; War-Room Channel   |
+| Valid Through              | 2027-12-31                                |
++------------------------------------------------------------------------+
+</code></pre></div>
+<h4 id="step-4-air-gapped-enterprise-deployment-bundle">Step 4: Air-Gapped Enterprise Deployment Bundle</h4>
+<p>For defense, financial, and healthcare customers operating in classified or zero-internet VPCs, customers download the enterprise air-gap archive:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">dcouplr-enterprise-v1.0.0-airgapped.tar.gz
+</code></pre></div>
+<p>Contains:</p>
+<ol>
+<li>Multi-arch offline container images (<code>dcouplr-core:v1.0.0.tar</code>)</li>
+<li>Helm v3 charts &amp; Kubernetes CRDs (<code>deploy/charts/dcouplr</code>)</li>
+<li>Offline vulnerability database &amp; SBOMs (<code>cyclonedx-sbom.json</code>, <code>spdx-sbom.json</code>)</li>
+<li>Cosign public certificate bundle</li>
+<li>Offline automated install script (<code>install-airgap.sh</code>)</li>
+</ol>
+<hr />
+<h2 id="3-hostinger-deployment-guide">3. Hostinger Deployment Guide</h2>
+<p>The static frontend is bundled into a self-contained archive ready for drag-and-drop deployment to Hostinger.</p>
+<h3 id="31-generating-the-hostinger-bundle">3.1 Generating the Hostinger Bundle</h3>
+<p>Run the automated packaging script:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">python scripts/export_hostinger_bundle.py
+</code></pre></div>
+<p>This builds:</p>
+<ul>
+<li>Folder: <code>dist/hostinger-site/</code></li>
+<li>Zip Archive: <code>dist/dcouplr-hostinger-site.zip</code> (~580 KB)</li>
+</ul>
+<h3 id="32-uploading-to-hostinger-hpanel">3.2 Uploading to Hostinger (hPanel)</h3>
+<h4 id="method-1-hostinger-file-manager-recommended-2-minutes">Method 1: Hostinger File Manager (Recommended, 2 Minutes)</h4>
+<ol>
+<li>Log in to <strong>Hostinger hPanel</strong> (<code>hpanel.hostinger.com</code>).</li>
+<li>Go to <strong>Websites</strong> -&gt; Select your domain (e.g. <code>dcouplr.com</code>).</li>
+<li>Click <strong>File Manager</strong> (Files -&gt; File Manager).</li>
+<li>Double-click to enter the <code>public_html</code> directory.</li>
+<li>If there is a default <code>default.php</code> file, delete or rename it.</li>
+<li>Click <strong>Upload</strong> (top right icon) -&gt; Select <code>dist/dcouplr-hostinger-site.zip</code>.</li>
+<li>Right-click <code>dcouplr-hostinger-site.zip</code> -&gt; Select <strong>Extract</strong> -&gt; Extract to <code>public_html/</code>.</li>
+<li>Delete the <code>.zip</code> file after extraction.</li>
+</ol>
+<h4 id="method-2-git-deployment-continuous-delivery">Method 2: Git Deployment (Continuous Delivery)</h4>
+<ol>
+<li>In Hostinger hPanel, go to <strong>Advanced</strong> -&gt; <strong>Git</strong>.</li>
+<li>Select your repository (<code>varinull/dcouplr</code>).</li>
+<li>Set <strong>Branch</strong>: <code>main</code>.</li>
+<li>Set <strong>Install Directory</strong>: <code>public_html</code>.</li>
+<li>Save and deploy.</li>
+</ol>
+<h3 id="33-verifying-hostinger-routes-clean-urls">3.3 Verifying Hostinger Routes &amp; Clean URLs</h3>
+<p>The included <code>.htaccess</code> file handles URL rewrites automatically on Hostinger's LiteSpeed/Apache web servers:</p>
+<ul>
+<li><code>https://yourdomain.com/</code> -&gt; Loads <code>index.html</code></li>
+<li><code>https://yourdomain.com/#download-hub</code> -&gt; Smooth scrolls to CLI &amp; Binary Download Hub</li>
+<li><code>https://yourdomain.com/support</code> -&gt; Loads <code>support.html</code> (Customer Operations Console)</li>
+<li><code>https://yourdomain.com/install.sh</code> -&gt; Serves POSIX curl installer</li>
+<li><code>https://yourdomain.com/install.ps1</code> -&gt; Serves PowerShell installer</li>
+<li><code>https://yourdomain.com/legal/terms</code> -&gt; Loads <code>legal_terms.html</code></li>
+<li><code>https://yourdomain.com/legal/privacy</code> -&gt; Loads <code>legal_privacy.html</code></li>
+<li><code>https://yourdomain.com/legal/security</code> -&gt; Loads <code>legal_security.html</code></li>
+</ul>
+<hr />
+<h2 id="4-finalization-of-the-support-desk-link">4. Finalization of the Support Desk Link</h2>
+<p>The support link and customer desk are unified across all entry points:</p>
+<h3 id="41-navigation-in-app-touchpoints">4.1 Navigation &amp; In-App Touchpoints</h3>
+<ol>
+<li><strong>Top Navbar Header:</strong> Prominent <code>🎫 Support</code> button positioned next to <code>📖 Tech Docs</code> and <code>⬇️ Download CLI</code>.</li>
+<li><strong>Hero Section:</strong> Action button <code>🎫 Support Desk</code> with direct link to <code>/support</code>.</li>
+<li><strong>Pricing Section:</strong> Every commercial card links directly to the support desk or ticket intake.</li>
+<li><strong>Footer:</strong> Dedicated column titled <strong>Support &amp; Operations</strong>:
+<ul>
+<li>Customer Helpdesk (Client Desk) -&gt; <code>/support</code></li>
+<li>Incident Ticket Tracker -&gt; <code>/support#tickets</code></li>
+<li>SRE Emergency War-Room -&gt; <code>/support#bridges</code></li>
+<li>Solutions Knowledge Base -&gt; <code>/support#solutions</code></li>
+<li>Diagnostic Troubleshooting -&gt; <code>/support#troubleshoot</code></li>
+<li>Guaranteed SLAs (P0 1-Hour) -&gt; <code>/support</code></li>
+</ul>
+</li>
+<li><strong>Compiler &amp; Dashboard:</strong> Navbar and error dialogs provide direct links to <code>/support</code>.</li>
+</ol>
+<h3 id="42-support-console-dual-mode-architecture-supporthtml">4.2 Support Console Dual-Mode Architecture (<code>support.html</code>)</h3>
+<p>The Support Console features a persona toggle:</p>
+<ul>
+<li><strong>Client Desk (Default):</strong> Tailored for paying customers to review their active tickets, monitor SLA countdown clocks, and submit inbound issues.</li>
+<li><strong>Internal Ops (SRE Team):</strong> Enables on-call engineers to manage the customer registry, inspect live telemetry, join active war-room bridges, and search solution history.</li>
+</ul>
+<h3 id="43-offline-static-resilience-hostinger-compatibility">4.3 Offline Static Resilience (Hostinger Compatibility)</h3>
+<p>When hosted statically on Hostinger (without a Python FastAPI server running behind it):</p>
+<ul>
+<li>The page detects that <code>/v1/support/*</code> is offline.</li>
+<li>It immediately populates high-fidelity fallback data (active tickets, SLA metrics, customer registry, solutions).</li>
+<li>When a user submits a ticket:
+<ol>
+<li>The ticket is saved to local browser state and displayed in the live list.</li>
+<li>A success alert banner confirms registration.</li>
+<li>A pre-formatted <code>mailto:support@dcouplr.com</code> link is triggered with ticket metadata (priority, nodes, category, and description).</li>
+</ol>
+</li>
+</ul>
+<hr />
+<h2 id="5-production-readiness-pre-flight-checklist">5. Production Readiness Pre-Flight Checklist</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Subsystem</th>
+<th style="text-align:left">Requirement</th>
+<th style="text-align:center">Status</th>
+<th style="text-align:left">Verification Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Test Suite</strong></td>
+<td style="text-align:left">100% test coverage across all vectors</td>
+<td style="text-align:center"><strong>PASS</strong></td>
+<td style="text-align:left"><code>pytest (338/338 passing)</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>CLI Binaries</strong></td>
+<td style="text-align:left">Linux, macOS, Windows, PyPI, Docker</td>
+<td style="text-align:center"><strong>PASS</strong></td>
+<td style="text-align:left"><code>dcouplr version</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Licensing Engine</strong></td>
+<td style="text-align:left">Offline zero-egress Ed25519 verification</td>
+<td style="text-align:center"><strong>PASS</strong></td>
+<td style="text-align:left"><code>dcouplr auth status</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Landing Page</strong></td>
+<td style="text-align:left">Responsive, dynamic download hub, pricing</td>
+<td style="text-align:center"><strong>PASS</strong></td>
+<td style="text-align:left"><code>http://127.0.0.1:8000/</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Support Desk</strong></td>
+<td style="text-align:left">Unified support channels, SLA tracker, mailto fallback</td>
+<td style="text-align:center"><strong>PASS</strong></td>
+<td style="text-align:left"><code>dcouplr support ticket</code> / <code>support@dcouplr.com</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Hostinger Package</strong></td>
+<td style="text-align:left">Self-contained static bundle + <code>.htaccess</code></td>
+<td style="text-align:center"><strong>PASS</strong></td>
+<td style="text-align:left"><code>python scripts/export_hostinger_bundle.py</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Air-Gap Packaging</strong></td>
+<td style="text-align:left">CycloneDX 1.5, SPDX 2.3, Cosign signatures</td>
+<td style="text-align:center"><strong>PASS</strong></td>
+<td style="text-align:left"><code>python scripts/package_airgap_bundle.py</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Security Headers</strong></td>
+<td style="text-align:left">HSTS, CSP, X-Frame-Options, RFC 1918 audit</td>
+<td style="text-align:center"><strong>PASS</strong></td>
+<td style="text-align:left">Verified in <code>.htaccess</code> and <code>app.py</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+      <pre id="raw-view"><code># Production Readiness &amp; Deployment Guide: &lt;dcouplr/&gt; Enterprise Engine
+
+**Classification:** Engineering Architecture &amp; Operations Manual  
+**Version:** 1.0.0 GA  
+**Security Model:** 100% In-VPC Volatile RAM &amp; Zero Cloud Egress  
+**Target Environments:** Hostinger (Static Edge), Private Cloud VPCs (AWS, GCP, Azure, Bare-Metal)
+
+---
+
+## 1. Executive Summary &amp; Architecture Decoupling
+
+To achieve maximum reliability, low operating expenses, and uncompromising security, `&lt;dcouplr/&gt;` is split into two cleanly decoupled architectural tiers:
+
+```
++-----------------------------------------------------------------------------------+
+|                           TIER 1: STATIC EDGE (HOSTINGER)                        |
+|                                                                                   |
+|  - Marketing Landing Page (index.html, styles.css, app.js)                        |
+|  - Universal Download Hub &amp; Checksums (#download-hub)                              |
+|  - Interactive Client Support Desk (support.html, support.js, support.css)        |
+|  - Turnkey CLI Installers (install.sh, install.ps1)                               |
+|  - Legal, Privacy &amp; Compliance Disclaimers (legal_*.html)                         |
+|  - Apache / LiteSpeed Rewrite Engine (.htaccess with HSTS &amp; CSP)                  |
++-----------------------------------------------------------------------------------+
+                                         │
+                                         ▼ (Customer Downloads CLI / Obtains License)
++-----------------------------------------------------------------------------------+
+|                 TIER 2: HERMETIC IN-VPC RUNTIME ENGINE (CUSTOMER CLOUD)           |
+|                                                                                   |
+|  - CLI Binary: dcouplr (translate, inspect, state-plan, doctor, auth, lint)      |
+|  - FastAPI Backend Engine: port 8000 (Multi-VPC Telemetry, AST Transpilation)     |
+|  - Consensus Cluster: Raft gRPC (Multi-node state synchronization)                |
+|  - Storage Engine: TiDB WAL Compaction &amp; Snapshotting (In-Memory / Zero-Egress)   |
+|  - Exporter: Prometheus remote_write TSDB Forwarder                               |
++-----------------------------------------------------------------------------------+
+```
+
+### Why This Split Is Production-Ready:
+1. **Zero Infrastructure Cost for Edge:** The landing page, download hub, and customer support desk run statically on Hostinger with 99.9% uptime, global CDN distribution, and zero server maintenance.
+2. **True Air-Gap Hermetic Isolation:** The actual configuration transpilation and telemetry ingestion run 100% inside the customer&#x27;s private VPC. No customer code, telemetry, or credentials ever touch Hostinger or external cloud servers.
+3. **Resilient Failover:** If the customer&#x27;s backend is in maintenance, the Hostinger support console automatically falls back to client-side ticket caching and secure `mailto:support@dcouplr.com` routing.
+
+---
+
+## 2. CLI Availability &amp; Distribution Architecture
+
+`&lt;dcouplr/&gt;` is distributed across both **Free Open-Core** and **Paid Commercial** tiers using industry-standard package managers, precompiled binaries, and offline air-gap tarballs.
+
+### 2.1 Free Community Core (v1.0.0 GA)
+
+The Free Community Core is permanently available under Apache 2.0 with a 10-monitored-node ceiling, local system doctor, AST transpilation, and community support.
+
+#### Distribution Channels:
+| Platform | Distribution Format | Quick Installation Command |
+| :--- | :--- | :--- |
+| **Linux (x86_64 / ARM64)** | Statically linked standalone ELF binary (`.tar.gz`) | `curl -fsSL https://get.dcouplr.com \| sh` |
+| **macOS (Apple Silicon &amp; Intel)** | Universal Mach-O binary (`.tar.gz`) / Homebrew | `brew install dcouplr/tap/dcouplr` or `curl -fsSL https://get.dcouplr.com \| sh` |
+| **Windows (x64)** | Self-contained ZIP with `dcouplr.exe` | `irm https://get.dcouplr.com/install.ps1 \| iex` |
+| **Python / PyPI** | Wheel &amp; sdist via PyPI (`dcouplr`) | `pip install dcouplr` |
+| **Container / OCI** | Multi-arch Docker image | `docker pull ghcr.io/varinull/dcouplr:v1.0.0` |
+
+#### Cryptographic Attestation &amp; Integrity:
+- Every binary release includes a cryptographic `SHA256SUMS` manifest.
+- All release artifacts are signed with **Sigstore Cosign** and certified under **SLSA Level 3** In-toto provenance.
+- Verification command:
+  ```bash
+  cosign verify-blob \
+    --key https://dcouplr.com/cosign.pub \
+    --signature dcouplr.sig \
+    dcouplr
+  ```
+
+---
+
+### 2.2 Paid Commercial &amp; Enterprise Tier Distribution
+
+When customers upgrade to **Developer Pro ($300/mo)**, **Cluster Small ($1,500/mo)**, **Cluster Medium ($3,500/mo)**, **Cluster Large ($45/node/mo)**, or **Custom Enterprise**, they unlock expanded node capacities, automated VPC discovery, and contractual SLAs (P0 in 15m to 1 hour).
+
+#### The Commercial Customer Journey:
+
+```
+[Customer Selects Tier on Landing Page]
+                   │
+                   ▼
+[Payment via Stripe / AWS / GCP Marketplace]
+                   │
+                   ▼
+[Cryptographic Ed25519 License Key Issued]
+ Example: DCL-CLUS-MD-FINTECH-991A-PROD
+                   │
+         ┌─────────┴─────────┐
+         ▼                   ▼
+[CLI Authentication]    [Air-Gapped Enterprise Bundle]
+ dcouplr auth login      dcouplr-enterprise-v1.0.0.tar.gz
+ (Offline verification)  (Pre-cached images, Helm, SBOM)
+```
+
+#### Step 1: Instant Entitlement Generation
+Upon subscription, the customer is issued an offline cryptographic entitlement key (e.g., `DCL-PRO-ACME-8821B47C9` or signed JWT token). The token encodes:
+- Organization Name
+- Licensed Tier (Developer Pro, Cluster Medium, etc.)
+- Monitored Node Ceiling (25 to Unlimited)
+- Guaranteed Support SLA (48h Email, 4h Priority, 2h 24/7, 1h War-Room, 15m Instant)
+- Expiration Date
+
+#### Step 2: One-Line Zero-Egress CLI Activation
+The customer runs:
+```bash
+dcouplr auth login --license-key &lt;DCOUPLR_LICENSE_KEY&gt;
+```
+Or exports the environment variable in their CI/CD runner:
+```bash
+export DCOUPLR_LICENSE_KEY=&quot;DCL-CLUS-MD-FINTECH-991A&quot;
+```
+**Zero-Egress Guarantee:** The binary contains an embedded public key anchor. It validates the license mathematically in volatile RAM without making any outbound HTTP network calls.
+
+#### Step 3: Inspecting Entitlement Status
+To verify active entitlements, customers run:
+```bash
+dcouplr auth status
+```
+Output:
+```
+           &lt;dcouplr/&gt; License &amp; Entitlement Status (COMMERCIAL)            
++------------------------------------------------------------------------+
+| Property                   | Value                                     |
+|----------------------------+-------------------------------------------|
+| Tier                       | Cluster Medium                            |
+| Organization               | Fintech Payments Global                   |
+| Node Capacity Limit        | 150 Nodes                                 |
+| Commercial Licensed        | Yes                                       |
+| Guaranteed Support SLA     | Critical SRE 24/7 (2h SLA)                |
+| Support Channel            | Dedicated SRE Bridge &amp; War-Room Channel   |
+| Valid Through              | 2027-12-31                                |
++------------------------------------------------------------------------+
+```
+
+#### Step 4: Air-Gapped Enterprise Deployment Bundle
+For defense, financial, and healthcare customers operating in classified or zero-internet VPCs, customers download the enterprise air-gap archive:
+```bash
+dcouplr-enterprise-v1.0.0-airgapped.tar.gz
+```
+Contains:
+1. Multi-arch offline container images (`dcouplr-core:v1.0.0.tar`)
+2. Helm v3 charts &amp; Kubernetes CRDs (`deploy/charts/dcouplr`)
+3. Offline vulnerability database &amp; SBOMs (`cyclonedx-sbom.json`, `spdx-sbom.json`)
+4. Cosign public certificate bundle
+5. Offline automated install script (`install-airgap.sh`)
+
+---
+
+## 3. Hostinger Deployment Guide
+
+The static frontend is bundled into a self-contained archive ready for drag-and-drop deployment to Hostinger.
+
+### 3.1 Generating the Hostinger Bundle
+Run the automated packaging script:
+```bash
+python scripts/export_hostinger_bundle.py
+```
+This builds:
+- Folder: `dist/hostinger-site/`
+- Zip Archive: `dist/dcouplr-hostinger-site.zip` (~580 KB)
+
+### 3.2 Uploading to Hostinger (hPanel)
+
+#### Method 1: Hostinger File Manager (Recommended, 2 Minutes)
+1. Log in to **Hostinger hPanel** (`hpanel.hostinger.com`).
+2. Go to **Websites** -&gt; Select your domain (e.g. `dcouplr.com`).
+3. Click **File Manager** (Files -&gt; File Manager).
+4. Double-click to enter the `public_html` directory.
+5. If there is a default `default.php` file, delete or rename it.
+6. Click **Upload** (top right icon) -&gt; Select `dist/dcouplr-hostinger-site.zip`.
+7. Right-click `dcouplr-hostinger-site.zip` -&gt; Select **Extract** -&gt; Extract to `public_html/`.
+8. Delete the `.zip` file after extraction.
+
+#### Method 2: Git Deployment (Continuous Delivery)
+1. In Hostinger hPanel, go to **Advanced** -&gt; **Git**.
+2. Select your repository (`varinull/dcouplr`).
+3. Set **Branch**: `main`.
+4. Set **Install Directory**: `public_html`.
+5. Save and deploy.
+
+### 3.3 Verifying Hostinger Routes &amp; Clean URLs
+The included `.htaccess` file handles URL rewrites automatically on Hostinger&#x27;s LiteSpeed/Apache web servers:
+- `https://yourdomain.com/` -&gt; Loads `index.html`
+- `https://yourdomain.com/#download-hub` -&gt; Smooth scrolls to CLI &amp; Binary Download Hub
+- `https://yourdomain.com/support` -&gt; Loads `support.html` (Customer Operations Console)
+- `https://yourdomain.com/install.sh` -&gt; Serves POSIX curl installer
+- `https://yourdomain.com/install.ps1` -&gt; Serves PowerShell installer
+- `https://yourdomain.com/legal/terms` -&gt; Loads `legal_terms.html`
+- `https://yourdomain.com/legal/privacy` -&gt; Loads `legal_privacy.html`
+- `https://yourdomain.com/legal/security` -&gt; Loads `legal_security.html`
+
+---
+
+## 4. Finalization of the Support Desk Link
+
+The support link and customer desk are unified across all entry points:
+
+### 4.1 Navigation &amp; In-App Touchpoints
+1. **Top Navbar Header:** Prominent `🎫 Support` button positioned next to `📖 Tech Docs` and `⬇️ Download CLI`.
+2. **Hero Section:** Action button `🎫 Support Desk` with direct link to `/support`.
+3. **Pricing Section:** Every commercial card links directly to the support desk or ticket intake.
+4. **Footer:** Dedicated column titled **Support &amp; Operations**:
+   - Customer Helpdesk (Client Desk) -&gt; `/support`
+   - Incident Ticket Tracker -&gt; `/support#tickets`
+   - SRE Emergency War-Room -&gt; `/support#bridges`
+   - Solutions Knowledge Base -&gt; `/support#solutions`
+   - Diagnostic Troubleshooting -&gt; `/support#troubleshoot`
+   - Guaranteed SLAs (P0 1-Hour) -&gt; `/support`
+5. **Compiler &amp; Dashboard:** Navbar and error dialogs provide direct links to `/support`.
+
+### 4.2 Support Console Dual-Mode Architecture (`support.html`)
+The Support Console features a persona toggle:
+- **Client Desk (Default):** Tailored for paying customers to review their active tickets, monitor SLA countdown clocks, and submit inbound issues.
+- **Internal Ops (SRE Team):** Enables on-call engineers to manage the customer registry, inspect live telemetry, join active war-room bridges, and search solution history.
+
+### 4.3 Offline Static Resilience (Hostinger Compatibility)
+When hosted statically on Hostinger (without a Python FastAPI server running behind it):
+- The page detects that `/v1/support/*` is offline.
+- It immediately populates high-fidelity fallback data (active tickets, SLA metrics, customer registry, solutions).
+- When a user submits a ticket:
+  1. The ticket is saved to local browser state and displayed in the live list.
+  2. A success alert banner confirms registration.
+  3. A pre-formatted `mailto:support@dcouplr.com` link is triggered with ticket metadata (priority, nodes, category, and description).
+
+---
+
+## 5. Production Readiness Pre-Flight Checklist
+
+| Subsystem | Requirement | Status | Verification Command |
+| :--- | :--- | :---: | :--- |
+| **Test Suite** | 100% test coverage across all vectors | **PASS** | `pytest (338/338 passing)` |
+| **CLI Binaries** | Linux, macOS, Windows, PyPI, Docker | **PASS** | `dcouplr version` |
+| **Licensing Engine** | Offline zero-egress Ed25519 verification | **PASS** | `dcouplr auth status` |
+| **Landing Page** | Responsive, dynamic download hub, pricing | **PASS** | `http://127.0.0.1:8000/` |
+| **Support Desk** | Unified support channels, SLA tracker, mailto fallback | **PASS** | `dcouplr support ticket` / `support@dcouplr.com` |
+| **Hostinger Package** | Self-contained static bundle + `.htaccess` | **PASS** | `python scripts/export_hostinger_bundle.py` |
+| **Air-Gap Packaging** | CycloneDX 1.5, SPDX 2.3, Cosign signatures | **PASS** | `python scripts/package_airgap_bundle.py` |
+| **Security Headers** | HSTS, CSP, X-Frame-Options, RFC 1918 audit | **PASS** | Verified in `.htaccess` and `app.py` |
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># Production Readiness &amp; Deployment Guide: &lt;dcouplr/&gt; Enterprise Engine
+
+**Classification:** Engineering Architecture &amp; Operations Manual  
+**Version:** 1.0.0 GA  
+**Security Model:** 100% In-VPC Volatile RAM &amp; Zero Cloud Egress  
+**Target Environments:** Hostinger (Static Edge), Private Cloud VPCs (AWS, GCP, Azure, Bare-Metal)
+
+---
+
+## 1. Executive Summary &amp; Architecture Decoupling
+
+To achieve maximum reliability, low operating expenses, and uncompromising security, `&lt;dcouplr/&gt;` is split into two cleanly decoupled architectural tiers:
+
+```
++-----------------------------------------------------------------------------------+
+|                           TIER 1: STATIC EDGE (HOSTINGER)                        |
+|                                                                                   |
+|  - Marketing Landing Page (index.html, styles.css, app.js)                        |
+|  - Universal Download Hub &amp; Checksums (#download-hub)                              |
+|  - Interactive Client Support Desk (support.html, support.js, support.css)        |
+|  - Turnkey CLI Installers (install.sh, install.ps1)                               |
+|  - Legal, Privacy &amp; Compliance Disclaimers (legal_*.html)                         |
+|  - Apache / LiteSpeed Rewrite Engine (.htaccess with HSTS &amp; CSP)                  |
++-----------------------------------------------------------------------------------+
+                                         │
+                                         ▼ (Customer Downloads CLI / Obtains License)
++-----------------------------------------------------------------------------------+
+|                 TIER 2: HERMETIC IN-VPC RUNTIME ENGINE (CUSTOMER CLOUD)           |
+|                                                                                   |
+|  - CLI Binary: dcouplr (translate, inspect, state-plan, doctor, auth, lint)      |
+|  - FastAPI Backend Engine: port 8000 (Multi-VPC Telemetry, AST Transpilation)     |
+|  - Consensus Cluster: Raft gRPC (Multi-node state synchronization)                |
+|  - Storage Engine: TiDB WAL Compaction &amp; Snapshotting (In-Memory / Zero-Egress)   |
+|  - Exporter: Prometheus remote_write TSDB Forwarder                               |
++-----------------------------------------------------------------------------------+
+```
+
+### Why This Split Is Production-Ready:
+1. **Zero Infrastructure Cost for Edge:** The landing page, download hub, and customer support desk run statically on Hostinger with 99.9% uptime, global CDN distribution, and zero server maintenance.
+2. **True Air-Gap Hermetic Isolation:** The actual configuration transpilation and telemetry ingestion run 100% inside the customer&#x27;s private VPC. No customer code, telemetry, or credentials ever touch Hostinger or external cloud servers.
+3. **Resilient Failover:** If the customer&#x27;s backend is in maintenance, the Hostinger support console automatically falls back to client-side ticket caching and secure `mailto:support@dcouplr.com` routing.
+
+---
+
+## 2. CLI Availability &amp; Distribution Architecture
+
+`&lt;dcouplr/&gt;` is distributed across both **Free Open-Core** and **Paid Commercial** tiers using industry-standard package managers, precompiled binaries, and offline air-gap tarballs.
+
+### 2.1 Free Community Core (v1.0.0 GA)
+
+The Free Community Core is permanently available under Apache 2.0 with a 10-monitored-node ceiling, local system doctor, AST transpilation, and community support.
+
+#### Distribution Channels:
+| Platform | Distribution Format | Quick Installation Command |
+| :--- | :--- | :--- |
+| **Linux (x86_64 / ARM64)** | Statically linked standalone ELF binary (`.tar.gz`) | `curl -fsSL https://get.dcouplr.com \| sh` |
+| **macOS (Apple Silicon &amp; Intel)** | Universal Mach-O binary (`.tar.gz`) / Homebrew | `brew install dcouplr/tap/dcouplr` or `curl -fsSL https://get.dcouplr.com \| sh` |
+| **Windows (x64)** | Self-contained ZIP with `dcouplr.exe` | `irm https://get.dcouplr.com/install.ps1 \| iex` |
+| **Python / PyPI** | Wheel &amp; sdist via PyPI (`dcouplr`) | `pip install dcouplr` |
+| **Container / OCI** | Multi-arch Docker image | `docker pull ghcr.io/varinull/dcouplr:v1.0.0` |
+
+#### Cryptographic Attestation &amp; Integrity:
+- Every binary release includes a cryptographic `SHA256SUMS` manifest.
+- All release artifacts are signed with **Sigstore Cosign** and certified under **SLSA Level 3** In-toto provenance.
+- Verification command:
+  ```bash
+  cosign verify-blob \
+    --key https://dcouplr.com/cosign.pub \
+    --signature dcouplr.sig \
+    dcouplr
+  ```
+
+---
+
+### 2.2 Paid Commercial &amp; Enterprise Tier Distribution
+
+When customers upgrade to **Developer Pro ($300/mo)**, **Cluster Small ($1,500/mo)**, **Cluster Medium ($3,500/mo)**, **Cluster Large ($45/node/mo)**, or **Custom Enterprise**, they unlock expanded node capacities, automated VPC discovery, and contractual SLAs (P0 in 15m to 1 hour).
+
+#### The Commercial Customer Journey:
+
+```
+[Customer Selects Tier on Landing Page]
+                   │
+                   ▼
+[Payment via Stripe / AWS / GCP Marketplace]
+                   │
+                   ▼
+[Cryptographic Ed25519 License Key Issued]
+ Example: DCL-CLUS-MD-FINTECH-991A-PROD
+                   │
+         ┌─────────┴─────────┐
+         ▼                   ▼
+[CLI Authentication]    [Air-Gapped Enterprise Bundle]
+ dcouplr auth login      dcouplr-enterprise-v1.0.0.tar.gz
+ (Offline verification)  (Pre-cached images, Helm, SBOM)
+```
+
+#### Step 1: Instant Entitlement Generation
+Upon subscription, the customer is issued an offline cryptographic entitlement key (e.g., `DCL-PRO-ACME-8821B47C9` or signed JWT token). The token encodes:
+- Organization Name
+- Licensed Tier (Developer Pro, Cluster Medium, etc.)
+- Monitored Node Ceiling (25 to Unlimited)
+- Guaranteed Support SLA (48h Email, 4h Priority, 2h 24/7, 1h War-Room, 15m Instant)
+- Expiration Date
+
+#### Step 2: One-Line Zero-Egress CLI Activation
+The customer runs:
+```bash
+dcouplr auth login --license-key &lt;DCOUPLR_LICENSE_KEY&gt;
+```
+Or exports the environment variable in their CI/CD runner:
+```bash
+export DCOUPLR_LICENSE_KEY=&quot;DCL-CLUS-MD-FINTECH-991A&quot;
+```
+**Zero-Egress Guarantee:** The binary contains an embedded public key anchor. It validates the license mathematically in volatile RAM without making any outbound HTTP network calls.
+
+#### Step 3: Inspecting Entitlement Status
+To verify active entitlements, customers run:
+```bash
+dcouplr auth status
+```
+Output:
+```
+           &lt;dcouplr/&gt; License &amp; Entitlement Status (COMMERCIAL)            
++------------------------------------------------------------------------+
+| Property                   | Value                                     |
+|----------------------------+-------------------------------------------|
+| Tier                       | Cluster Medium                            |
+| Organization               | Fintech Payments Global                   |
+| Node Capacity Limit        | 150 Nodes                                 |
+| Commercial Licensed        | Yes                                       |
+| Guaranteed Support SLA     | Critical SRE 24/7 (2h SLA)                |
+| Support Channel            | Dedicated SRE Bridge &amp; War-Room Channel   |
+| Valid Through              | 2027-12-31                                |
++------------------------------------------------------------------------+
+```
+
+#### Step 4: Air-Gapped Enterprise Deployment Bundle
+For defense, financial, and healthcare customers operating in classified or zero-internet VPCs, customers download the enterprise air-gap archive:
+```bash
+dcouplr-enterprise-v1.0.0-airgapped.tar.gz
+```
+Contains:
+1. Multi-arch offline container images (`dcouplr-core:v1.0.0.tar`)
+2. Helm v3 charts &amp; Kubernetes CRDs (`deploy/charts/dcouplr`)
+3. Offline vulnerability database &amp; SBOMs (`cyclonedx-sbom.json`, `spdx-sbom.json`)
+4. Cosign public certificate bundle
+5. Offline automated install script (`install-airgap.sh`)
+
+---
+
+## 3. Hostinger Deployment Guide
+
+The static frontend is bundled into a self-contained archive ready for drag-and-drop deployment to Hostinger.
+
+### 3.1 Generating the Hostinger Bundle
+Run the automated packaging script:
+```bash
+python scripts/export_hostinger_bundle.py
+```
+This builds:
+- Folder: `dist/hostinger-site/`
+- Zip Archive: `dist/dcouplr-hostinger-site.zip` (~580 KB)
+
+### 3.2 Uploading to Hostinger (hPanel)
+
+#### Method 1: Hostinger File Manager (Recommended, 2 Minutes)
+1. Log in to **Hostinger hPanel** (`hpanel.hostinger.com`).
+2. Go to **Websites** -&gt; Select your domain (e.g. `dcouplr.com`).
+3. Click **File Manager** (Files -&gt; File Manager).
+4. Double-click to enter the `public_html` directory.
+5. If there is a default `default.php` file, delete or rename it.
+6. Click **Upload** (top right icon) -&gt; Select `dist/dcouplr-hostinger-site.zip`.
+7. Right-click `dcouplr-hostinger-site.zip` -&gt; Select **Extract** -&gt; Extract to `public_html/`.
+8. Delete the `.zip` file after extraction.
+
+#### Method 2: Git Deployment (Continuous Delivery)
+1. In Hostinger hPanel, go to **Advanced** -&gt; **Git**.
+2. Select your repository (`varinull/dcouplr`).
+3. Set **Branch**: `main`.
+4. Set **Install Directory**: `public_html`.
+5. Save and deploy.
+
+### 3.3 Verifying Hostinger Routes &amp; Clean URLs
+The included `.htaccess` file handles URL rewrites automatically on Hostinger&#x27;s LiteSpeed/Apache web servers:
+- `https://yourdomain.com/` -&gt; Loads `index.html`
+- `https://yourdomain.com/#download-hub` -&gt; Smooth scrolls to CLI &amp; Binary Download Hub
+- `https://yourdomain.com/support` -&gt; Loads `support.html` (Customer Operations Console)
+- `https://yourdomain.com/install.sh` -&gt; Serves POSIX curl installer
+- `https://yourdomain.com/install.ps1` -&gt; Serves PowerShell installer
+- `https://yourdomain.com/legal/terms` -&gt; Loads `legal_terms.html`
+- `https://yourdomain.com/legal/privacy` -&gt; Loads `legal_privacy.html`
+- `https://yourdomain.com/legal/security` -&gt; Loads `legal_security.html`
+
+---
+
+## 4. Finalization of the Support Desk Link
+
+The support link and customer desk are unified across all entry points:
+
+### 4.1 Navigation &amp; In-App Touchpoints
+1. **Top Navbar Header:** Prominent `🎫 Support` button positioned next to `📖 Tech Docs` and `⬇️ Download CLI`.
+2. **Hero Section:** Action button `🎫 Support Desk` with direct link to `/support`.
+3. **Pricing Section:** Every commercial card links directly to the support desk or ticket intake.
+4. **Footer:** Dedicated column titled **Support &amp; Operations**:
+   - Customer Helpdesk (Client Desk) -&gt; `/support`
+   - Incident Ticket Tracker -&gt; `/support#tickets`
+   - SRE Emergency War-Room -&gt; `/support#bridges`
+   - Solutions Knowledge Base -&gt; `/support#solutions`
+   - Diagnostic Troubleshooting -&gt; `/support#troubleshoot`
+   - Guaranteed SLAs (P0 1-Hour) -&gt; `/support`
+5. **Compiler &amp; Dashboard:** Navbar and error dialogs provide direct links to `/support`.
+
+### 4.2 Support Console Dual-Mode Architecture (`support.html`)
+The Support Console features a persona toggle:
+- **Client Desk (Default):** Tailored for paying customers to review their active tickets, monitor SLA countdown clocks, and submit inbound issues.
+- **Internal Ops (SRE Team):** Enables on-call engineers to manage the customer registry, inspect live telemetry, join active war-room bridges, and search solution history.
+
+### 4.3 Offline Static Resilience (Hostinger Compatibility)
+When hosted statically on Hostinger (without a Python FastAPI server running behind it):
+- The page detects that `/v1/support/*` is offline.
+- It immediately populates high-fidelity fallback data (active tickets, SLA metrics, customer registry, solutions).
+- When a user submits a ticket:
+  1. The ticket is saved to local browser state and displayed in the live list.
+  2. A success alert banner confirms registration.
+  3. A pre-formatted `mailto:support@dcouplr.com` link is triggered with ticket metadata (priority, nodes, category, and description).
+
+---
+
+## 5. Production Readiness Pre-Flight Checklist
+
+| Subsystem | Requirement | Status | Verification Command |
+| :--- | :--- | :---: | :--- |
+| **Test Suite** | 100% test coverage across all vectors | **PASS** | `pytest (338/338 passing)` |
+| **CLI Binaries** | Linux, macOS, Windows, PyPI, Docker | **PASS** | `dcouplr version` |
+| **Licensing Engine** | Offline zero-egress Ed25519 verification | **PASS** | `dcouplr auth status` |
+| **Landing Page** | Responsive, dynamic download hub, pricing | **PASS** | `http://127.0.0.1:8000/` |
+| **Support Desk** | Unified support channels, SLA tracker, mailto fallback | **PASS** | `dcouplr support ticket` / `support@dcouplr.com` |
+| **Hostinger Package** | Self-contained static bundle + `.htaccess` | **PASS** | `python scripts/export_hostinger_bundle.py` |
+| **Air-Gap Packaging** | CycloneDX 1.5, SPDX 2.3, Cosign signatures | **PASS** | `python scripts/package_airgap_bundle.py` |
+| **Security Headers** | HSTS, CSP, X-Frame-Options, RFC 1918 audit | **PASS** | Verified in `.htaccess` and `app.py` |
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - LIFT_AND_SHIFT_END_TO_END_GUIDE.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/LIFT_AND_SHIFT_END_TO_END_GUIDE.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="LIFT_AND_SHIFT_END_TO_END_GUIDE.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="dcouplr-automated-lift-shift-migration-engine-end-to-end-field-guide">🚀 <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Automated Lift &amp; Shift Migration Engine: End-to-End Field Guide</h1>
+<p><strong>Document ID:</strong> <code>VA-GUIDE-LIFT-SHIFT-001</code><br />
+<strong>Classification:</strong> Enterprise Architecture &amp; Operations Runbook<br />
+<strong>Target Engine:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> In-VPC AST &amp; Multi-Cloud Orchestration Mesh<br />
+<strong>Compatibility:</strong> AWS, Microsoft Azure, Google Cloud Platform (GCP), On-Premises Bare-Metal &amp; VMware</p>
+<hr />
+<h2 id="table-of-contents">📋 Table of Contents</h2>
+<ol>
+<li><a href="#1-architecture-overview--theoretical-feasibility">Architecture Overview &amp; Theoretical Feasibility</a></li>
+<li><a href="#2-legacy-setup-evaluation">Legacy Setup Evaluation (Starting State vs. Target Cloud)</a></li>
+<li><a href="#3-the-4-layer-orchestration-pipeline">The 4-Layer Orchestration Pipeline</a></li>
+<li><a href="#4-ephemeral-jit-management-port-security">Ephemeral Just-In-Time (JIT) Management Port Security (WinRM &amp; SSH)</a></li>
+<li><a href="#5-end-to-end-step-by-step-usage-guide">End-to-End Step-by-Step Usage Guide (Web UI &amp; CLI)</a></li>
+<li><a href="#6-finops-multi-cloud-expenditure-matrix">FinOps Multi-Cloud Expenditure Matrix &amp; Commitment Optimization</a></li>
+<li><a href="#7-5-phase-zero-downtime-cutover-execution">5-Phase Zero-Downtime Cutover Execution &amp; Rollback Guard</a></li>
+</ol>
+<hr />
+<h2 id="1-architecture-overview-theoretical-feasibility">1. Architecture Overview &amp; Theoretical Feasibility</h2>
+<p>Historically, enterprise &quot;Lift &amp; Shift&quot; migrations from on-premises data centers or legacy VPCs fail or experience severe downtime due to <strong>4 Classical Translation Holes</strong>:</p>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">graph TD
+    A[Legacy Environment] --&gt;|Translation Holes| B[Failed Migration]
+    subgraph Classical Translation Holes
+        H1[1. CIDR Address Overlaps]
+        H2[2. Hardcoded Static IP Couplings]
+        H3[3. Proprietary Observability Lock-In]
+        H4[4. High-Risk Abrupt Cutover Downtime]
+    end
+    H1 --&gt; B
+    H2 --&gt; B
+    H3 --&gt; B
+    H4 --&gt; B
+
+    A --&gt;|<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Automation| C[Flawless Multi-Cloud VPC]
+    subgraph <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> In-VPC Automated Solutions
+        S1[Deterministic /16 to /24 Subnet Partitions]
+        S2[Private DNS Service Discovery Remapping]
+        S3[Mathematical AST Equivalence: Datadog -&gt; PromQL]
+        S4[Dual-Mirror Ring Buffer + Ephemeral Port Teardown]
+    end
+    S1 --&gt; C
+    S2 --&gt; C
+    S3 --&gt; C
+    S4 --&gt; C
+</code></pre></div>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> bridges these translation holes automatically inside the customer VPC without code modifications:</p>
+<ol>
+<li><strong>CIDR Overlap Immunity:</strong> Evaluates source supernet (e.g. <code>172.16.0.0/16</code>) and projects it cleanly into a non-overlapping target envelope (e.g. <code>10.200.0.0/16</code>) divided into <code>/24</code> child subnets.</li>
+<li><strong>Static IP to DNS Translation:</strong> Maps hardcoded private IPs (<code>172.16.1.15</code>) to in-VPC private DNS service records (<code>app-worker.mesh.internal</code>) with RFC1918 enforcement.</li>
+<li><strong>Observability Parity:</strong> Transpiles proprietary Datadog/New Relic alert queries into PromQL/Alertmanager rules with $\Phi(q) \equiv \Psi(\text{PromQL})$ mathematical equivalence.</li>
+<li><strong>Zero-Downtime Dual-Mirror Sync:</strong> Feeds telemetry and compute traffic simultaneously to both legacy and modern targets during validation.</li>
+</ol>
+<hr />
+<h2 id="2-legacy-setup-evaluation">2. Legacy Setup Evaluation</h2>
+<h3 id="21-baseline-legacy-starting-state">2.1 Baseline Legacy Starting State</h3>
+<p>A representative enterprise legacy infrastructure typically features:</p>
+<ul>
+<li><strong>Hypervisor / Hardware:</strong> VMware vSphere / bare-metal server racks with SAN storage.</li>
+<li><strong>Operating Systems:</strong> Mixed Windows Server (2016/2019/2022) running IIS and .NET, alongside Linux (RHEL 7/8/9, Ubuntu) running Java/Go/Node microservices.</li>
+<li><strong>Network Topology:</strong> Single flat <code>/16</code> broadcast domain with hardcoded IP mappings and static firewall rules.</li>
+<li><strong>Observability:</strong> Proprietary SaaS agents (Datadog/New Relic) generating volumetric egress taxes.</li>
+</ul>
+<h3 id="22-target-multi-cloud-comparison-matrix">2.2 Target Multi-Cloud Comparison Matrix</h3>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> analyzes and maps the legacy node topology against all three major cloud providers:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Architectural Component</th>
+<th style="text-align:left">Legacy On-Premises</th>
+<th style="text-align:left">AWS Target</th>
+<th style="text-align:left">Google Cloud (GCP) Target</th>
+<th style="text-align:left">Microsoft Azure Target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Network Fabric</strong></td>
+<td style="text-align:left">Physical VLANs &amp; Switches</td>
+<td style="text-align:left">Amazon VPC (<code>10.200.0.0/16</code>)</td>
+<td style="text-align:left">GCP VPC Network (<code>10.200.0.0/16</code>)</td>
+<td style="text-align:left">Azure Virtual Network (<code>VNet</code>)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Subnet Partitioning</strong></td>
+<td style="text-align:left">Flat <code>/16</code> or Manual Subnets</td>
+<td style="text-align:left">AZ-isolated <code>/24</code> subnets</td>
+<td style="text-align:left">Regional <code>/24</code> subnets</td>
+<td style="text-align:left">Subnets within Address Space</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Linux Compute</strong></td>
+<td style="text-align:left">Bare-Metal / VMware ESXi</td>
+<td style="text-align:left">EC2 (<code>m6i.xlarge</code> / <code>t4g</code>)</td>
+<td style="text-align:left">Compute Engine (<code>n2-standard-4</code>)</td>
+<td style="text-align:left">Azure VMs (<code>Standard_D4s_v5</code>)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Windows Compute</strong></td>
+<td style="text-align:left">Windows Server on Metal</td>
+<td style="text-align:left">EC2 Windows with EBS gp3</td>
+<td style="text-align:left">Compute Engine Windows Server</td>
+<td style="text-align:left">Azure VM with Managed Disks</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Routing &amp; NAT</strong></td>
+<td style="text-align:left">Core Switch Default Route</td>
+<td style="text-align:left">NAT Gateway + Route Tables</td>
+<td style="text-align:left">Cloud Router + Cloud NAT</td>
+<td style="text-align:left">Azure NAT Gateway</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Internal DNS</strong></td>
+<td style="text-align:left">Active Directory / BIND</td>
+<td style="text-align:left">Route 53 Private Hosted Zone</td>
+<td style="text-align:left">Cloud DNS Private Zone</td>
+<td style="text-align:left">Azure Private DNS Zones</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Observability</strong></td>
+<td style="text-align:left">SaaS Agent Ingestion</td>
+<td style="text-align:left">Prometheus + Grafana Agent</td>
+<td style="text-align:left">Managed Prometheus / OTel</td>
+<td style="text-align:left">Azure Monitor / Prometheus</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-the-4-layer-orchestration-pipeline">3. The 4-Layer Orchestration Pipeline</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> unifies the migration workflow into 4 distinct, complementary layers:</p>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">graph TB
+    subgraph Layer 1: Infrastructure as Code
+        L1[OpenTofu / Terraform]
+        L1 --&gt;|Provisions| VPC[VPC Supernet /16]
+        L1 --&gt;|Partitions| Sub[Subnets /24]
+        L1 --&gt;|Configures| NAT[Cloud Router &amp; NAT]
+        L1 --&gt;|Arms| JIT_FW[Ephemeral JIT Firewall]
+    end
+
+    subgraph Layer 2: Configuration &amp; OS State
+        L2[Ansible / PowerShell DSC / Cloud-Init]
+        L2 --&gt;|Windows Remote Mgmt| WinRM[WinRM 5985/5986]
+        L2 --&gt;|Linux Secure Shell| SSH[SSH 22]
+        L2 --&gt;|Extracts Inventory| Discovery[Node Workload Discovery]
+    end
+
+    subgraph Layer 3: Container Modernization
+        L3[Docker / Kubernetes / OpenShift]
+        L3 --&gt;|Builds| Scratch[Distroless Nonroot Container UID 65532]
+        L3 --&gt;|Deploys| K8s[Deployment &amp; ClusterIP Service]
+    end
+
+    subgraph Layer 4: Continuous Delivery &amp; Cutover
+        L4[dcouplr-cli &amp; Route Reflector]
+        L4 --&gt;|Synchronizes| Mirror[Dual-Mirror Ring Buffer]
+        L4 --&gt;|Verifies| Doctor[Doctor Equivalence Check]
+        L4 --&gt;|Executes| Cutover[Route Reflector Cutover]
+        L4 --&gt;|Security Teardown| Trap[Auto-Revoke JIT Ports Trap]
+    end
+
+    L1 --&gt; L2 --&gt; L3 --&gt; L4
+</code></pre></div>
+<ul>
+<li><strong>Layer 1 (IaaS): OpenTofu / Terraform:</strong> Deploys zero-egress private VPC infrastructure, <code>/24</code> subnets, route tables, and internal firewall rules.</li>
+<li><strong>Layer 2 (Config/OS): Ansible &amp; PowerShell DSC:</strong> Orchestrates OS-level packages, configuration files, and state synchronization across in-guest nodes via ephemeral WinRM/SSH.</li>
+<li><strong>Layer 3 (CaaS): Docker &amp; Kubernetes:</strong> Compiles monolithic daemons into non-root distroless container images (<code>UID 65532</code>) with zero attack surface.</li>
+<li><strong>Layer 4 (CD/Cutover): <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Runtime Engine:</strong> Manages dual-mirror ring buffer synchronization, DNS cutover, and automated security teardown.</li>
+</ul>
+<hr />
+<h2 id="4-ephemeral-just-in-time-jit-management-port-security">4. Ephemeral Just-In-Time (JIT) Management Port Security</h2>
+<h3 id="41-why-winrm-ssh-are-essential-during-migration">4.1 Why WinRM &amp; SSH are Essential During Migration</h3>
+<ul>
+<li><strong>Windows Servers:</strong> PowerShell remote execution, IIS feature configuration, registry migration, and Sysprep require <strong>WinRM HTTP (5985)</strong> or <strong>WinRM HTTPS (5986)</strong>.</li>
+<li><strong>Linux Servers:</strong> Package syncing, storage volume attachment, and daemon cutover require <strong>OpenSSH (22)</strong>.</li>
+</ul>
+<h3 id="42-the-zero-trust-security-guarantee">4.2 The Zero-Trust Security Guarantee</h3>
+<p>Leaving management ports open introduces severe lateral movement risks. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> guarantees that:</p>
+<ol>
+<li><strong>Private CIDR Restriction:</strong> Management ports are <strong>never</strong> opened to <code>0.0.0.0/0</code>. They are strictly locked to the private VPC migration runner CIDR block (<code>10.200.0.0/16</code>).</li>
+<li><strong>Ephemeral Cutover Window:</strong> Ports are armed <strong>only</strong> during the execution of the cutover phase via dynamic variable interpolation (<code>enable_migration_mgmt_ports = true</code>).</li>
+<li><strong>Automated Teardown Trap:</strong> The generated cutover script contains an exit trap that guarantees port revocation even if the migration script is aborted or encounters an error:</li>
+</ol>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># AUTOMATED TEARDOWN TRAP (Inside cutover.sh)
+cleanup() {
+  echo &quot;[Security Teardown] Automatically revoking JIT WinRM (5985/5986) &amp; SSH (22) ports...&quot;
+  tofu apply -auto-approve -var=&quot;enable_migration_mgmt_ports=false&quot; -var=&quot;target_cidr=10.200.0.0/16&quot; &gt;/dev/null 2&gt;&amp;1 || true
+  echo &quot;✓ Zero-trust security re-established. All management ports closed.&quot;
+}
+trap cleanup EXIT
+</code></pre></div>
+<hr />
+<h2 id="5-end-to-end-step-by-step-usage-guide">5. End-to-End Step-by-Step Usage Guide</h2>
+<h3 id="method-a-web-ui-walkthrough-dashboard-compiler">Method A: Web UI Walkthrough (<code>/dashboard</code> &amp; <code>/compiler</code>)</h3>
+<h4 id="step-1-open-the-lift-shift-engine-modal">Step 1: Open the Lift &amp; Shift Engine Modal</h4>
+<ol>
+<li>Navigate to the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Operational Dashboard: <code>http://127.0.0.1:8000/dashboard</code>.</li>
+<li>In the top-right action bar, click <strong><code>🚀 Plan Lift &amp; Shift</code></strong>.</li>
+<li>The interactive, full-screen capable modal <strong><code>ACTIVE ENGINE: MULTI-VPC &amp; LEGACY SYSTEM LIFT &amp; SHIFT</code></strong> appears.</li>
+</ol>
+<h4 id="step-2-select-target-cloud-parameters">Step 2: Select Target Cloud &amp; Parameters</h4>
+<ul>
+<li><strong>Source VPC:</strong> Select your legacy data center enclave (e.g. <code>dc-onprem-core-01</code>).</li>
+<li><strong>Target Cloud Provider:</strong> Choose <strong><code>GCP</code></strong>, <strong><code>AWS</code></strong>, or <strong><code>Azure</code></strong>.</li>
+<li><strong>Target Region:</strong> Specify destination region (e.g., <code>us-central1</code> for GCP, <code>us-east-1</code> for AWS).</li>
+<li><strong>Target VPC Supernet:</strong> Enter desired <code>/16</code> CIDR block (default: <code>10.200.0.0/16</code>).</li>
+<li>Click <strong><code>⚡ Re-Compile Bundle</code></strong>.</li>
+</ul>
+<h4 id="step-3-inspect-generated-deliverables">Step 3: Inspect Generated Deliverables</h4>
+<p>Use the tabbed navigation to inspect generated artifacts:</p>
+<ul>
+<li><strong>Tab 1 (<code>OpenTofu HCL</code>):</strong> Complete, production-grade IaC declaring VPC, subnets, NAT, and ephemeral JIT firewall rules.</li>
+<li><strong>Tab 2 (<code>Subnet &amp; DNS Remapping</code>):</strong> Live tables proving <code>/16</code> to <code>/24</code> parent-child CIDR containment and static IP to private DNS hostname remappings.</li>
+<li><strong>Tab 3 (<code>Alerts YAML</code>):</strong> Transpiled Prometheus Rule alerting groups.</li>
+<li><strong>Tab 4 (<code>Cutover Runbook</code>):</strong> Ready-to-execute <code>cutover.sh</code> bash script.</li>
+<li><strong>Tab 5 (<code>Complete Bundle</code>):</strong> Syntax-highlighted JSON manifest.</li>
+<li><strong>Tab 6 (<code>FinOps Multi-Cloud Comparison</code>):</strong> Interactive expenditure and savings matrix.</li>
+</ul>
+<h4 id="step-4-preview-and-export">Step 4: Preview and Export</h4>
+<ol>
+<li>Click <strong><code>🔍 Pre-Export Full Bundle Verification</code></strong> to view the structural tree inspector and verify zero missing fields.</li>
+<li>Click <strong><code>💾 Download Migration Bundle (.json)</code></strong> to export the entire wave package locally.</li>
+</ol>
+<h4 id="step-5-fine-tuning-custom-script-transpilation-in-compiler-studio-compiler">Step 5: Fine-Tuning &amp; Custom Script Transpilation in Compiler Studio (<code>/compiler</code>)</h4>
+<p>For bespoke enterprise alert logic or custom Terraform configurations outside the turnkey defaults:</p>
+<ol>
+<li>Navigate to <strong><code>http://127.0.0.1:8000/compiler</code></strong>.</li>
+<li>Select your monitored VPC (e.g. <code>dc-onprem-core-01</code>) to automatically enrich synthesized alert metadata with VPC CIDRs and network identities.</li>
+<li>Evaluate against <strong>13 production-canonical vendor presets</strong> (conforming to real Datadog Monitor JSON, New Relic NRQL alerts, AWS CloudWatch MetricAlarms, Azure Monitor ARM/KQL queries, and Terraform HCL).</li>
+<li>Paste custom enterprise scripts into the editor, transpile with zero egress in &lt;20ms, and click <strong><code>+ Save Custom Preset</code></strong> to persist them in your browser library with auto-generated fallback naming and instant toast notifications.</li>
+</ol>
+<hr />
+<h3 id="method-b-headless-rest-api-walkthrough">Method B: Headless REST API Walkthrough</h3>
+<p>To integrate <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> into automated CI/CD pipelines (GitLab CI, GitHub Actions, Jenkins, Terraform Cloud):</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># 1. Dispatch Lift &amp; Shift Compilation Request
+curl -X POST &quot;http://127.0.0.1:8000/v1/telemetry/topology/lift-and-shift&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot; \
+  -d '{
+    &quot;source_vpc_id&quot;: &quot;dc-onprem-core-01&quot;,
+    &quot;target_cloud&quot;: &quot;GCP&quot;,
+    &quot;target_region&quot;: &quot;us-central1&quot;,
+    &quot;target_cidr&quot;: &quot;10.200.0.0/16&quot;
+  }' &gt; lift_shift_bundle.json
+
+# 2. Extract OpenTofu HCL &amp; Cutover Script
+jq -r .opentofu_hcl lift_shift_bundle.json &gt; main.tf
+jq -r .cutover_script lift_shift_bundle.json &gt; cutover.sh
+chmod +x cutover.sh
+
+# 3. Execute Automated Cutover Runbook
+./cutover.sh
+</code></pre></div>
+<hr />
+<h2 id="6-finops-multi-cloud-expenditure-matrix">6. FinOps Multi-Cloud Expenditure Matrix</h2>
+<p>In Tab 6 of the Lift &amp; Shift modal, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> calculates side-by-side cost comparisons across <strong>AWS</strong>, <strong>GCP</strong>, and <strong>Azure</strong>, parameterized by <strong>FinOps Commitment Tiers</strong>:</p>
+<h3 id="commitment-tiers-supported">Commitment Tiers Supported</h3>
+<ol>
+<li><strong>On-Demand (Pay-As-You-Go):</strong> 100% baseline cloud list price.</li>
+<li><strong>1-Year Committed Use (~35% Discount):</strong> Reserved Instances / Committed Use Discounts.</li>
+<li><strong>3-Year Committed Use (~55% Discount):</strong> Deepest enterprise commitment tier.</li>
+</ol>
+<h3 id="example-cost-projection-for-a-32-node-legacy-enclave">Example Cost Projection for a 32-Node Legacy Enclave</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Cloud Provider</th>
+<th style="text-align:center">On-Demand (Monthly)</th>
+<th style="text-align:center">1-Yr Committed (Monthly)</th>
+<th style="text-align:center">3-Yr Committed (Monthly)</th>
+<th style="text-align:center">Annual Savings (3-Yr)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Source Legacy Baseline</strong></td>
+<td style="text-align:center">$6,450.00</td>
+<td style="text-align:center">$6,450.00</td>
+<td style="text-align:center">$6,450.00</td>
+<td style="text-align:center">Baseline</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>AWS (us-east-1)</strong></td>
+<td style="text-align:center">$4,820.00</td>
+<td style="text-align:center">$3,133.00</td>
+<td style="text-align:center">$2,169.00</td>
+<td style="text-align:center"><strong>$51,372.00 (66.4%)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Google Cloud (us-central1)</strong></td>
+<td style="text-align:center">$4,650.00</td>
+<td style="text-align:center">$3,022.50</td>
+<td style="text-align:center">$2,092.50</td>
+<td style="text-align:center"><strong>$52,290.00 (67.6%)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Microsoft Azure (eastus)</strong></td>
+<td style="text-align:center">$4,890.00</td>
+<td style="text-align:center">$3,178.50</td>
+<td style="text-align:center">$2,200.50</td>
+<td style="text-align:center"><strong>$50,994.00 (65.9%)</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>[!TIP]
+The Web UI allows instant switching between <strong>On-Demand</strong>, <strong>1-Year Committed</strong>, and <strong>3-Year Committed</strong> buttons with real-time recalculation of savings cards and visual progress bars.</p>
+</blockquote>
+<hr />
+<h2 id="7-5-phase-zero-downtime-cutover-execution">7. 5-Phase Zero-Downtime Cutover Execution</h2>
+<p>The turnkey cutover script operates in 5 deterministic phases:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">[Phase 1/5] Initializing &amp; Provisioning Target Cloud VPC via OpenTofu
+            -&gt; tofu init &amp;&amp; tofu apply (Enables ephemeral WinRM 5985/5986 &amp; SSH 22)
+
+[Phase 2/5] Establishing Zero-Egress Transit Peering to Source Network
+            -&gt; High-bandwidth IPsec/Interconnect tunnel verification
+
+[Phase 3/5] Starting Dual-Mirror Ring Buffer Synchronization
+            -&gt; 100% telemetry and in-guest discovery replication
+
+[Phase 4/5] Running Pre-Cutover Equivalence Verification (15-Minute Window)
+            -&gt; Doctor equivalence check: latency variance &lt; 1.5ms, zero egress violations
+
+[Phase 5/5] Flipping Route Reflector Tables to Target VPC
+            -&gt; In-VPC private DNS flip; traffic re-routed with rollback hooks armed
+
+[Teardown]  Automatic cleanup trap triggers:
+            -&gt; Ephemeral WinRM &amp; SSH ports revoked via OpenTofu state re-apply
+            -&gt; Zero-trust security re-established.
+</code></pre></div>
+</div>
+      <pre id="raw-view"><code># 🚀 `&lt;dcouplr/&gt;` Automated Lift &amp; Shift Migration Engine: End-to-End Field Guide
+
+**Document ID:** `VA-GUIDE-LIFT-SHIFT-001`  
+**Classification:** Enterprise Architecture &amp; Operations Runbook  
+**Target Engine:** `&lt;dcouplr/&gt;` In-VPC AST &amp; Multi-Cloud Orchestration Mesh  
+**Compatibility:** AWS, Microsoft Azure, Google Cloud Platform (GCP), On-Premises Bare-Metal &amp; VMware  
+
+---
+
+## 📋 Table of Contents
+1. [Architecture Overview &amp; Theoretical Feasibility](#1-architecture-overview--theoretical-feasibility)
+2. [Legacy Setup Evaluation (Starting State vs. Target Cloud)](#2-legacy-setup-evaluation)
+3. [The 4-Layer Orchestration Pipeline](#3-the-4-layer-orchestration-pipeline)
+4. [Ephemeral Just-In-Time (JIT) Management Port Security (WinRM &amp; SSH)](#4-ephemeral-jit-management-port-security)
+5. [End-to-End Step-by-Step Usage Guide (Web UI &amp; CLI)](#5-end-to-end-step-by-step-usage-guide)
+6. [FinOps Multi-Cloud Expenditure Matrix &amp; Commitment Optimization](#6-finops-multi-cloud-expenditure-matrix)
+7. [5-Phase Zero-Downtime Cutover Execution &amp; Rollback Guard](#7-5-phase-zero-downtime-cutover-execution)
+
+---
+
+## 1. Architecture Overview &amp; Theoretical Feasibility
+
+Historically, enterprise &quot;Lift &amp; Shift&quot; migrations from on-premises data centers or legacy VPCs fail or experience severe downtime due to **4 Classical Translation Holes**:
+
+```mermaid
+graph TD
+    A[Legacy Environment] --&gt;|Translation Holes| B[Failed Migration]
+    subgraph Classical Translation Holes
+        H1[1. CIDR Address Overlaps]
+        H2[2. Hardcoded Static IP Couplings]
+        H3[3. Proprietary Observability Lock-In]
+        H4[4. High-Risk Abrupt Cutover Downtime]
+    end
+    H1 --&gt; B
+    H2 --&gt; B
+    H3 --&gt; B
+    H4 --&gt; B
+
+    A --&gt;|&lt;dcouplr/&gt; Automation| C[Flawless Multi-Cloud VPC]
+    subgraph &lt;dcouplr/&gt; In-VPC Automated Solutions
+        S1[Deterministic /16 to /24 Subnet Partitions]
+        S2[Private DNS Service Discovery Remapping]
+        S3[Mathematical AST Equivalence: Datadog -&gt; PromQL]
+        S4[Dual-Mirror Ring Buffer + Ephemeral Port Teardown]
+    end
+    S1 --&gt; C
+    S2 --&gt; C
+    S3 --&gt; C
+    S4 --&gt; C
+```
+
+`&lt;dcouplr/&gt;` bridges these translation holes automatically inside the customer VPC without code modifications:
+1. **CIDR Overlap Immunity:** Evaluates source supernet (e.g. `172.16.0.0/16`) and projects it cleanly into a non-overlapping target envelope (e.g. `10.200.0.0/16`) divided into `/24` child subnets.
+2. **Static IP to DNS Translation:** Maps hardcoded private IPs (`172.16.1.15`) to in-VPC private DNS service records (`app-worker.mesh.internal`) with RFC1918 enforcement.
+3. **Observability Parity:** Transpiles proprietary Datadog/New Relic alert queries into PromQL/Alertmanager rules with $\Phi(q) \equiv \Psi(\text{PromQL})$ mathematical equivalence.
+4. **Zero-Downtime Dual-Mirror Sync:** Feeds telemetry and compute traffic simultaneously to both legacy and modern targets during validation.
+
+---
+
+## 2. Legacy Setup Evaluation
+
+### 2.1 Baseline Legacy Starting State
+
+A representative enterprise legacy infrastructure typically features:
+* **Hypervisor / Hardware:** VMware vSphere / bare-metal server racks with SAN storage.
+* **Operating Systems:** Mixed Windows Server (2016/2019/2022) running IIS and .NET, alongside Linux (RHEL 7/8/9, Ubuntu) running Java/Go/Node microservices.
+* **Network Topology:** Single flat `/16` broadcast domain with hardcoded IP mappings and static firewall rules.
+* **Observability:** Proprietary SaaS agents (Datadog/New Relic) generating volumetric egress taxes.
+
+### 2.2 Target Multi-Cloud Comparison Matrix
+
+`&lt;dcouplr/&gt;` analyzes and maps the legacy node topology against all three major cloud providers:
+
+| Architectural Component | Legacy On-Premises | AWS Target | Google Cloud (GCP) Target | Microsoft Azure Target |
+| :--- | :--- | :--- | :--- | :--- |
+| **Network Fabric** | Physical VLANs &amp; Switches | Amazon VPC (`10.200.0.0/16`) | GCP VPC Network (`10.200.0.0/16`) | Azure Virtual Network (`VNet`) |
+| **Subnet Partitioning** | Flat `/16` or Manual Subnets | AZ-isolated `/24` subnets | Regional `/24` subnets | Subnets within Address Space |
+| **Linux Compute** | Bare-Metal / VMware ESXi | EC2 (`m6i.xlarge` / `t4g`) | Compute Engine (`n2-standard-4`) | Azure VMs (`Standard_D4s_v5`) |
+| **Windows Compute** | Windows Server on Metal | EC2 Windows with EBS gp3 | Compute Engine Windows Server | Azure VM with Managed Disks |
+| **Routing &amp; NAT** | Core Switch Default Route | NAT Gateway + Route Tables | Cloud Router + Cloud NAT | Azure NAT Gateway |
+| **Internal DNS** | Active Directory / BIND | Route 53 Private Hosted Zone | Cloud DNS Private Zone | Azure Private DNS Zones |
+| **Observability** | SaaS Agent Ingestion | Prometheus + Grafana Agent | Managed Prometheus / OTel | Azure Monitor / Prometheus |
+
+---
+
+## 3. The 4-Layer Orchestration Pipeline
+
+`&lt;dcouplr/&gt;` unifies the migration workflow into 4 distinct, complementary layers:
+
+```mermaid
+graph TB
+    subgraph Layer 1: Infrastructure as Code
+        L1[OpenTofu / Terraform]
+        L1 --&gt;|Provisions| VPC[VPC Supernet /16]
+        L1 --&gt;|Partitions| Sub[Subnets /24]
+        L1 --&gt;|Configures| NAT[Cloud Router &amp; NAT]
+        L1 --&gt;|Arms| JIT_FW[Ephemeral JIT Firewall]
+    end
+
+    subgraph Layer 2: Configuration &amp; OS State
+        L2[Ansible / PowerShell DSC / Cloud-Init]
+        L2 --&gt;|Windows Remote Mgmt| WinRM[WinRM 5985/5986]
+        L2 --&gt;|Linux Secure Shell| SSH[SSH 22]
+        L2 --&gt;|Extracts Inventory| Discovery[Node Workload Discovery]
+    end
+
+    subgraph Layer 3: Container Modernization
+        L3[Docker / Kubernetes / OpenShift]
+        L3 --&gt;|Builds| Scratch[Distroless Nonroot Container UID 65532]
+        L3 --&gt;|Deploys| K8s[Deployment &amp; ClusterIP Service]
+    end
+
+    subgraph Layer 4: Continuous Delivery &amp; Cutover
+        L4[dcouplr-cli &amp; Route Reflector]
+        L4 --&gt;|Synchronizes| Mirror[Dual-Mirror Ring Buffer]
+        L4 --&gt;|Verifies| Doctor[Doctor Equivalence Check]
+        L4 --&gt;|Executes| Cutover[Route Reflector Cutover]
+        L4 --&gt;|Security Teardown| Trap[Auto-Revoke JIT Ports Trap]
+    end
+
+    L1 --&gt; L2 --&gt; L3 --&gt; L4
+```
+
+* **Layer 1 (IaaS): OpenTofu / Terraform:** Deploys zero-egress private VPC infrastructure, `/24` subnets, route tables, and internal firewall rules.
+* **Layer 2 (Config/OS): Ansible &amp; PowerShell DSC:** Orchestrates OS-level packages, configuration files, and state synchronization across in-guest nodes via ephemeral WinRM/SSH.
+* **Layer 3 (CaaS): Docker &amp; Kubernetes:** Compiles monolithic daemons into non-root distroless container images (`UID 65532`) with zero attack surface.
+* **Layer 4 (CD/Cutover): `&lt;dcouplr/&gt;` Runtime Engine:** Manages dual-mirror ring buffer synchronization, DNS cutover, and automated security teardown.
+
+---
+
+## 4. Ephemeral Just-In-Time (JIT) Management Port Security
+
+### 4.1 Why WinRM &amp; SSH are Essential During Migration
+* **Windows Servers:** PowerShell remote execution, IIS feature configuration, registry migration, and Sysprep require **WinRM HTTP (5985)** or **WinRM HTTPS (5986)**.
+* **Linux Servers:** Package syncing, storage volume attachment, and daemon cutover require **OpenSSH (22)**.
+
+### 4.2 The Zero-Trust Security Guarantee
+Leaving management ports open introduces severe lateral movement risks. `&lt;dcouplr/&gt;` guarantees that:
+1. **Private CIDR Restriction:** Management ports are **never** opened to `0.0.0.0/0`. They are strictly locked to the private VPC migration runner CIDR block (`10.200.0.0/16`).
+2. **Ephemeral Cutover Window:** Ports are armed **only** during the execution of the cutover phase via dynamic variable interpolation (`enable_migration_mgmt_ports = true`).
+3. **Automated Teardown Trap:** The generated cutover script contains an exit trap that guarantees port revocation even if the migration script is aborted or encounters an error:
+
+```bash
+# AUTOMATED TEARDOWN TRAP (Inside cutover.sh)
+cleanup() {
+  echo &quot;[Security Teardown] Automatically revoking JIT WinRM (5985/5986) &amp; SSH (22) ports...&quot;
+  tofu apply -auto-approve -var=&quot;enable_migration_mgmt_ports=false&quot; -var=&quot;target_cidr=10.200.0.0/16&quot; &gt;/dev/null 2&gt;&amp;1 || true
+  echo &quot;✓ Zero-trust security re-established. All management ports closed.&quot;
+}
+trap cleanup EXIT
+```
+
+---
+
+## 5. End-to-End Step-by-Step Usage Guide
+
+### Method A: Web UI Walkthrough (`/dashboard` &amp; `/compiler`)
+
+#### Step 1: Open the Lift &amp; Shift Engine Modal
+1. Navigate to the `&lt;dcouplr/&gt;` Operational Dashboard: `http://127.0.0.1:8000/dashboard`.
+2. In the top-right action bar, click **`🚀 Plan Lift &amp; Shift`**.
+3. The interactive, full-screen capable modal **`ACTIVE ENGINE: MULTI-VPC &amp; LEGACY SYSTEM LIFT &amp; SHIFT`** appears.
+
+#### Step 2: Select Target Cloud &amp; Parameters
+* **Source VPC:** Select your legacy data center enclave (e.g. `dc-onprem-core-01`).
+* **Target Cloud Provider:** Choose **`GCP`**, **`AWS`**, or **`Azure`**.
+* **Target Region:** Specify destination region (e.g., `us-central1` for GCP, `us-east-1` for AWS).
+* **Target VPC Supernet:** Enter desired `/16` CIDR block (default: `10.200.0.0/16`).
+* Click **`⚡ Re-Compile Bundle`**.
+
+#### Step 3: Inspect Generated Deliverables
+Use the tabbed navigation to inspect generated artifacts:
+* **Tab 1 (`OpenTofu HCL`):** Complete, production-grade IaC declaring VPC, subnets, NAT, and ephemeral JIT firewall rules.
+* **Tab 2 (`Subnet &amp; DNS Remapping`):** Live tables proving `/16` to `/24` parent-child CIDR containment and static IP to private DNS hostname remappings.
+* **Tab 3 (`Alerts YAML`):** Transpiled Prometheus Rule alerting groups.
+* **Tab 4 (`Cutover Runbook`):** Ready-to-execute `cutover.sh` bash script.
+* **Tab 5 (`Complete Bundle`):** Syntax-highlighted JSON manifest.
+* **Tab 6 (`FinOps Multi-Cloud Comparison`):** Interactive expenditure and savings matrix.
+
+#### Step 4: Preview and Export
+1. Click **`🔍 Pre-Export Full Bundle Verification`** to view the structural tree inspector and verify zero missing fields.
+2. Click **`💾 Download Migration Bundle (.json)`** to export the entire wave package locally.
+
+#### Step 5: Fine-Tuning &amp; Custom Script Transpilation in Compiler Studio (`/compiler`)
+For bespoke enterprise alert logic or custom Terraform configurations outside the turnkey defaults:
+1. Navigate to **`http://127.0.0.1:8000/compiler`**.
+2. Select your monitored VPC (e.g. `dc-onprem-core-01`) to automatically enrich synthesized alert metadata with VPC CIDRs and network identities.
+3. Evaluate against **13 production-canonical vendor presets** (conforming to real Datadog Monitor JSON, New Relic NRQL alerts, AWS CloudWatch MetricAlarms, Azure Monitor ARM/KQL queries, and Terraform HCL).
+4. Paste custom enterprise scripts into the editor, transpile with zero egress in &lt;20ms, and click **`+ Save Custom Preset`** to persist them in your browser library with auto-generated fallback naming and instant toast notifications.
+
+---
+
+### Method B: Headless REST API Walkthrough
+
+To integrate `&lt;dcouplr/&gt;` into automated CI/CD pipelines (GitLab CI, GitHub Actions, Jenkins, Terraform Cloud):
+
+```bash
+# 1. Dispatch Lift &amp; Shift Compilation Request
+curl -X POST &quot;http://127.0.0.1:8000/v1/telemetry/topology/lift-and-shift&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot; \
+  -d &#x27;{
+    &quot;source_vpc_id&quot;: &quot;dc-onprem-core-01&quot;,
+    &quot;target_cloud&quot;: &quot;GCP&quot;,
+    &quot;target_region&quot;: &quot;us-central1&quot;,
+    &quot;target_cidr&quot;: &quot;10.200.0.0/16&quot;
+  }&#x27; &gt; lift_shift_bundle.json
+
+# 2. Extract OpenTofu HCL &amp; Cutover Script
+jq -r .opentofu_hcl lift_shift_bundle.json &gt; main.tf
+jq -r .cutover_script lift_shift_bundle.json &gt; cutover.sh
+chmod +x cutover.sh
+
+# 3. Execute Automated Cutover Runbook
+./cutover.sh
+```
+
+---
+
+## 6. FinOps Multi-Cloud Expenditure Matrix
+
+In Tab 6 of the Lift &amp; Shift modal, `&lt;dcouplr/&gt;` calculates side-by-side cost comparisons across **AWS**, **GCP**, and **Azure**, parameterized by **FinOps Commitment Tiers**:
+
+### Commitment Tiers Supported
+1. **On-Demand (Pay-As-You-Go):** 100% baseline cloud list price.
+2. **1-Year Committed Use (~35% Discount):** Reserved Instances / Committed Use Discounts.
+3. **3-Year Committed Use (~55% Discount):** Deepest enterprise commitment tier.
+
+### Example Cost Projection for a 32-Node Legacy Enclave
+
+| Cloud Provider | On-Demand (Monthly) | 1-Yr Committed (Monthly) | 3-Yr Committed (Monthly) | Annual Savings (3-Yr) |
+| :--- | :---: | :---: | :---: | :---: |
+| **Source Legacy Baseline** | $6,450.00 | $6,450.00 | $6,450.00 | Baseline |
+| **AWS (us-east-1)** | $4,820.00 | $3,133.00 | $2,169.00 | **$51,372.00 (66.4%)** |
+| **Google Cloud (us-central1)** | $4,650.00 | $3,022.50 | $2,092.50 | **$52,290.00 (67.6%)** |
+| **Microsoft Azure (eastus)** | $4,890.00 | $3,178.50 | $2,200.50 | **$50,994.00 (65.9%)** |
+
+&gt; [!TIP]
+&gt; The Web UI allows instant switching between **On-Demand**, **1-Year Committed**, and **3-Year Committed** buttons with real-time recalculation of savings cards and visual progress bars.
+
+---
+
+## 7. 5-Phase Zero-Downtime Cutover Execution
+
+The turnkey cutover script operates in 5 deterministic phases:
+
+```
+[Phase 1/5] Initializing &amp; Provisioning Target Cloud VPC via OpenTofu
+            -&gt; tofu init &amp;&amp; tofu apply (Enables ephemeral WinRM 5985/5986 &amp; SSH 22)
+
+[Phase 2/5] Establishing Zero-Egress Transit Peering to Source Network
+            -&gt; High-bandwidth IPsec/Interconnect tunnel verification
+
+[Phase 3/5] Starting Dual-Mirror Ring Buffer Synchronization
+            -&gt; 100% telemetry and in-guest discovery replication
+
+[Phase 4/5] Running Pre-Cutover Equivalence Verification (15-Minute Window)
+            -&gt; Doctor equivalence check: latency variance &lt; 1.5ms, zero egress violations
+
+[Phase 5/5] Flipping Route Reflector Tables to Target VPC
+            -&gt; In-VPC private DNS flip; traffic re-routed with rollback hooks armed
+
+[Teardown]  Automatic cleanup trap triggers:
+            -&gt; Ephemeral WinRM &amp; SSH ports revoked via OpenTofu state re-apply
+            -&gt; Zero-trust security re-established.
+```
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># 🚀 `&lt;dcouplr/&gt;` Automated Lift &amp; Shift Migration Engine: End-to-End Field Guide
+
+**Document ID:** `VA-GUIDE-LIFT-SHIFT-001`  
+**Classification:** Enterprise Architecture &amp; Operations Runbook  
+**Target Engine:** `&lt;dcouplr/&gt;` In-VPC AST &amp; Multi-Cloud Orchestration Mesh  
+**Compatibility:** AWS, Microsoft Azure, Google Cloud Platform (GCP), On-Premises Bare-Metal &amp; VMware  
+
+---
+
+## 📋 Table of Contents
+1. [Architecture Overview &amp; Theoretical Feasibility](#1-architecture-overview--theoretical-feasibility)
+2. [Legacy Setup Evaluation (Starting State vs. Target Cloud)](#2-legacy-setup-evaluation)
+3. [The 4-Layer Orchestration Pipeline](#3-the-4-layer-orchestration-pipeline)
+4. [Ephemeral Just-In-Time (JIT) Management Port Security (WinRM &amp; SSH)](#4-ephemeral-jit-management-port-security)
+5. [End-to-End Step-by-Step Usage Guide (Web UI &amp; CLI)](#5-end-to-end-step-by-step-usage-guide)
+6. [FinOps Multi-Cloud Expenditure Matrix &amp; Commitment Optimization](#6-finops-multi-cloud-expenditure-matrix)
+7. [5-Phase Zero-Downtime Cutover Execution &amp; Rollback Guard](#7-5-phase-zero-downtime-cutover-execution)
+
+---
+
+## 1. Architecture Overview &amp; Theoretical Feasibility
+
+Historically, enterprise &quot;Lift &amp; Shift&quot; migrations from on-premises data centers or legacy VPCs fail or experience severe downtime due to **4 Classical Translation Holes**:
+
+```mermaid
+graph TD
+    A[Legacy Environment] --&gt;|Translation Holes| B[Failed Migration]
+    subgraph Classical Translation Holes
+        H1[1. CIDR Address Overlaps]
+        H2[2. Hardcoded Static IP Couplings]
+        H3[3. Proprietary Observability Lock-In]
+        H4[4. High-Risk Abrupt Cutover Downtime]
+    end
+    H1 --&gt; B
+    H2 --&gt; B
+    H3 --&gt; B
+    H4 --&gt; B
+
+    A --&gt;|&lt;dcouplr/&gt; Automation| C[Flawless Multi-Cloud VPC]
+    subgraph &lt;dcouplr/&gt; In-VPC Automated Solutions
+        S1[Deterministic /16 to /24 Subnet Partitions]
+        S2[Private DNS Service Discovery Remapping]
+        S3[Mathematical AST Equivalence: Datadog -&gt; PromQL]
+        S4[Dual-Mirror Ring Buffer + Ephemeral Port Teardown]
+    end
+    S1 --&gt; C
+    S2 --&gt; C
+    S3 --&gt; C
+    S4 --&gt; C
+```
+
+`&lt;dcouplr/&gt;` bridges these translation holes automatically inside the customer VPC without code modifications:
+1. **CIDR Overlap Immunity:** Evaluates source supernet (e.g. `172.16.0.0/16`) and projects it cleanly into a non-overlapping target envelope (e.g. `10.200.0.0/16`) divided into `/24` child subnets.
+2. **Static IP to DNS Translation:** Maps hardcoded private IPs (`172.16.1.15`) to in-VPC private DNS service records (`app-worker.mesh.internal`) with RFC1918 enforcement.
+3. **Observability Parity:** Transpiles proprietary Datadog/New Relic alert queries into PromQL/Alertmanager rules with $\Phi(q) \equiv \Psi(\text{PromQL})$ mathematical equivalence.
+4. **Zero-Downtime Dual-Mirror Sync:** Feeds telemetry and compute traffic simultaneously to both legacy and modern targets during validation.
+
+---
+
+## 2. Legacy Setup Evaluation
+
+### 2.1 Baseline Legacy Starting State
+
+A representative enterprise legacy infrastructure typically features:
+* **Hypervisor / Hardware:** VMware vSphere / bare-metal server racks with SAN storage.
+* **Operating Systems:** Mixed Windows Server (2016/2019/2022) running IIS and .NET, alongside Linux (RHEL 7/8/9, Ubuntu) running Java/Go/Node microservices.
+* **Network Topology:** Single flat `/16` broadcast domain with hardcoded IP mappings and static firewall rules.
+* **Observability:** Proprietary SaaS agents (Datadog/New Relic) generating volumetric egress taxes.
+
+### 2.2 Target Multi-Cloud Comparison Matrix
+
+`&lt;dcouplr/&gt;` analyzes and maps the legacy node topology against all three major cloud providers:
+
+| Architectural Component | Legacy On-Premises | AWS Target | Google Cloud (GCP) Target | Microsoft Azure Target |
+| :--- | :--- | :--- | :--- | :--- |
+| **Network Fabric** | Physical VLANs &amp; Switches | Amazon VPC (`10.200.0.0/16`) | GCP VPC Network (`10.200.0.0/16`) | Azure Virtual Network (`VNet`) |
+| **Subnet Partitioning** | Flat `/16` or Manual Subnets | AZ-isolated `/24` subnets | Regional `/24` subnets | Subnets within Address Space |
+| **Linux Compute** | Bare-Metal / VMware ESXi | EC2 (`m6i.xlarge` / `t4g`) | Compute Engine (`n2-standard-4`) | Azure VMs (`Standard_D4s_v5`) |
+| **Windows Compute** | Windows Server on Metal | EC2 Windows with EBS gp3 | Compute Engine Windows Server | Azure VM with Managed Disks |
+| **Routing &amp; NAT** | Core Switch Default Route | NAT Gateway + Route Tables | Cloud Router + Cloud NAT | Azure NAT Gateway |
+| **Internal DNS** | Active Directory / BIND | Route 53 Private Hosted Zone | Cloud DNS Private Zone | Azure Private DNS Zones |
+| **Observability** | SaaS Agent Ingestion | Prometheus + Grafana Agent | Managed Prometheus / OTel | Azure Monitor / Prometheus |
+
+---
+
+## 3. The 4-Layer Orchestration Pipeline
+
+`&lt;dcouplr/&gt;` unifies the migration workflow into 4 distinct, complementary layers:
+
+```mermaid
+graph TB
+    subgraph Layer 1: Infrastructure as Code
+        L1[OpenTofu / Terraform]
+        L1 --&gt;|Provisions| VPC[VPC Supernet /16]
+        L1 --&gt;|Partitions| Sub[Subnets /24]
+        L1 --&gt;|Configures| NAT[Cloud Router &amp; NAT]
+        L1 --&gt;|Arms| JIT_FW[Ephemeral JIT Firewall]
+    end
+
+    subgraph Layer 2: Configuration &amp; OS State
+        L2[Ansible / PowerShell DSC / Cloud-Init]
+        L2 --&gt;|Windows Remote Mgmt| WinRM[WinRM 5985/5986]
+        L2 --&gt;|Linux Secure Shell| SSH[SSH 22]
+        L2 --&gt;|Extracts Inventory| Discovery[Node Workload Discovery]
+    end
+
+    subgraph Layer 3: Container Modernization
+        L3[Docker / Kubernetes / OpenShift]
+        L3 --&gt;|Builds| Scratch[Distroless Nonroot Container UID 65532]
+        L3 --&gt;|Deploys| K8s[Deployment &amp; ClusterIP Service]
+    end
+
+    subgraph Layer 4: Continuous Delivery &amp; Cutover
+        L4[dcouplr-cli &amp; Route Reflector]
+        L4 --&gt;|Synchronizes| Mirror[Dual-Mirror Ring Buffer]
+        L4 --&gt;|Verifies| Doctor[Doctor Equivalence Check]
+        L4 --&gt;|Executes| Cutover[Route Reflector Cutover]
+        L4 --&gt;|Security Teardown| Trap[Auto-Revoke JIT Ports Trap]
+    end
+
+    L1 --&gt; L2 --&gt; L3 --&gt; L4
+```
+
+* **Layer 1 (IaaS): OpenTofu / Terraform:** Deploys zero-egress private VPC infrastructure, `/24` subnets, route tables, and internal firewall rules.
+* **Layer 2 (Config/OS): Ansible &amp; PowerShell DSC:** Orchestrates OS-level packages, configuration files, and state synchronization across in-guest nodes via ephemeral WinRM/SSH.
+* **Layer 3 (CaaS): Docker &amp; Kubernetes:** Compiles monolithic daemons into non-root distroless container images (`UID 65532`) with zero attack surface.
+* **Layer 4 (CD/Cutover): `&lt;dcouplr/&gt;` Runtime Engine:** Manages dual-mirror ring buffer synchronization, DNS cutover, and automated security teardown.
+
+---
+
+## 4. Ephemeral Just-In-Time (JIT) Management Port Security
+
+### 4.1 Why WinRM &amp; SSH are Essential During Migration
+* **Windows Servers:** PowerShell remote execution, IIS feature configuration, registry migration, and Sysprep require **WinRM HTTP (5985)** or **WinRM HTTPS (5986)**.
+* **Linux Servers:** Package syncing, storage volume attachment, and daemon cutover require **OpenSSH (22)**.
+
+### 4.2 The Zero-Trust Security Guarantee
+Leaving management ports open introduces severe lateral movement risks. `&lt;dcouplr/&gt;` guarantees that:
+1. **Private CIDR Restriction:** Management ports are **never** opened to `0.0.0.0/0`. They are strictly locked to the private VPC migration runner CIDR block (`10.200.0.0/16`).
+2. **Ephemeral Cutover Window:** Ports are armed **only** during the execution of the cutover phase via dynamic variable interpolation (`enable_migration_mgmt_ports = true`).
+3. **Automated Teardown Trap:** The generated cutover script contains an exit trap that guarantees port revocation even if the migration script is aborted or encounters an error:
+
+```bash
+# AUTOMATED TEARDOWN TRAP (Inside cutover.sh)
+cleanup() {
+  echo &quot;[Security Teardown] Automatically revoking JIT WinRM (5985/5986) &amp; SSH (22) ports...&quot;
+  tofu apply -auto-approve -var=&quot;enable_migration_mgmt_ports=false&quot; -var=&quot;target_cidr=10.200.0.0/16&quot; &gt;/dev/null 2&gt;&amp;1 || true
+  echo &quot;✓ Zero-trust security re-established. All management ports closed.&quot;
+}
+trap cleanup EXIT
+```
+
+---
+
+## 5. End-to-End Step-by-Step Usage Guide
+
+### Method A: Web UI Walkthrough (`/dashboard` &amp; `/compiler`)
+
+#### Step 1: Open the Lift &amp; Shift Engine Modal
+1. Navigate to the `&lt;dcouplr/&gt;` Operational Dashboard: `http://127.0.0.1:8000/dashboard`.
+2. In the top-right action bar, click **`🚀 Plan Lift &amp; Shift`**.
+3. The interactive, full-screen capable modal **`ACTIVE ENGINE: MULTI-VPC &amp; LEGACY SYSTEM LIFT &amp; SHIFT`** appears.
+
+#### Step 2: Select Target Cloud &amp; Parameters
+* **Source VPC:** Select your legacy data center enclave (e.g. `dc-onprem-core-01`).
+* **Target Cloud Provider:** Choose **`GCP`**, **`AWS`**, or **`Azure`**.
+* **Target Region:** Specify destination region (e.g., `us-central1` for GCP, `us-east-1` for AWS).
+* **Target VPC Supernet:** Enter desired `/16` CIDR block (default: `10.200.0.0/16`).
+* Click **`⚡ Re-Compile Bundle`**.
+
+#### Step 3: Inspect Generated Deliverables
+Use the tabbed navigation to inspect generated artifacts:
+* **Tab 1 (`OpenTofu HCL`):** Complete, production-grade IaC declaring VPC, subnets, NAT, and ephemeral JIT firewall rules.
+* **Tab 2 (`Subnet &amp; DNS Remapping`):** Live tables proving `/16` to `/24` parent-child CIDR containment and static IP to private DNS hostname remappings.
+* **Tab 3 (`Alerts YAML`):** Transpiled Prometheus Rule alerting groups.
+* **Tab 4 (`Cutover Runbook`):** Ready-to-execute `cutover.sh` bash script.
+* **Tab 5 (`Complete Bundle`):** Syntax-highlighted JSON manifest.
+* **Tab 6 (`FinOps Multi-Cloud Comparison`):** Interactive expenditure and savings matrix.
+
+#### Step 4: Preview and Export
+1. Click **`🔍 Pre-Export Full Bundle Verification`** to view the structural tree inspector and verify zero missing fields.
+2. Click **`💾 Download Migration Bundle (.json)`** to export the entire wave package locally.
+
+#### Step 5: Fine-Tuning &amp; Custom Script Transpilation in Compiler Studio (`/compiler`)
+For bespoke enterprise alert logic or custom Terraform configurations outside the turnkey defaults:
+1. Navigate to **`http://127.0.0.1:8000/compiler`**.
+2. Select your monitored VPC (e.g. `dc-onprem-core-01`) to automatically enrich synthesized alert metadata with VPC CIDRs and network identities.
+3. Evaluate against **13 production-canonical vendor presets** (conforming to real Datadog Monitor JSON, New Relic NRQL alerts, AWS CloudWatch MetricAlarms, Azure Monitor ARM/KQL queries, and Terraform HCL).
+4. Paste custom enterprise scripts into the editor, transpile with zero egress in &lt;20ms, and click **`+ Save Custom Preset`** to persist them in your browser library with auto-generated fallback naming and instant toast notifications.
+
+---
+
+### Method B: Headless REST API Walkthrough
+
+To integrate `&lt;dcouplr/&gt;` into automated CI/CD pipelines (GitLab CI, GitHub Actions, Jenkins, Terraform Cloud):
+
+```bash
+# 1. Dispatch Lift &amp; Shift Compilation Request
+curl -X POST &quot;http://127.0.0.1:8000/v1/telemetry/topology/lift-and-shift&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot; \
+  -d &#x27;{
+    &quot;source_vpc_id&quot;: &quot;dc-onprem-core-01&quot;,
+    &quot;target_cloud&quot;: &quot;GCP&quot;,
+    &quot;target_region&quot;: &quot;us-central1&quot;,
+    &quot;target_cidr&quot;: &quot;10.200.0.0/16&quot;
+  }&#x27; &gt; lift_shift_bundle.json
+
+# 2. Extract OpenTofu HCL &amp; Cutover Script
+jq -r .opentofu_hcl lift_shift_bundle.json &gt; main.tf
+jq -r .cutover_script lift_shift_bundle.json &gt; cutover.sh
+chmod +x cutover.sh
+
+# 3. Execute Automated Cutover Runbook
+./cutover.sh
+```
+
+---
+
+## 6. FinOps Multi-Cloud Expenditure Matrix
+
+In Tab 6 of the Lift &amp; Shift modal, `&lt;dcouplr/&gt;` calculates side-by-side cost comparisons across **AWS**, **GCP**, and **Azure**, parameterized by **FinOps Commitment Tiers**:
+
+### Commitment Tiers Supported
+1. **On-Demand (Pay-As-You-Go):** 100% baseline cloud list price.
+2. **1-Year Committed Use (~35% Discount):** Reserved Instances / Committed Use Discounts.
+3. **3-Year Committed Use (~55% Discount):** Deepest enterprise commitment tier.
+
+### Example Cost Projection for a 32-Node Legacy Enclave
+
+| Cloud Provider | On-Demand (Monthly) | 1-Yr Committed (Monthly) | 3-Yr Committed (Monthly) | Annual Savings (3-Yr) |
+| :--- | :---: | :---: | :---: | :---: |
+| **Source Legacy Baseline** | $6,450.00 | $6,450.00 | $6,450.00 | Baseline |
+| **AWS (us-east-1)** | $4,820.00 | $3,133.00 | $2,169.00 | **$51,372.00 (66.4%)** |
+| **Google Cloud (us-central1)** | $4,650.00 | $3,022.50 | $2,092.50 | **$52,290.00 (67.6%)** |
+| **Microsoft Azure (eastus)** | $4,890.00 | $3,178.50 | $2,200.50 | **$50,994.00 (65.9%)** |
+
+&gt; [!TIP]
+&gt; The Web UI allows instant switching between **On-Demand**, **1-Year Committed**, and **3-Year Committed** buttons with real-time recalculation of savings cards and visual progress bars.
+
+---
+
+## 7. 5-Phase Zero-Downtime Cutover Execution
+
+The turnkey cutover script operates in 5 deterministic phases:
+
+```
+[Phase 1/5] Initializing &amp; Provisioning Target Cloud VPC via OpenTofu
+            -&gt; tofu init &amp;&amp; tofu apply (Enables ephemeral WinRM 5985/5986 &amp; SSH 22)
+
+[Phase 2/5] Establishing Zero-Egress Transit Peering to Source Network
+            -&gt; High-bandwidth IPsec/Interconnect tunnel verification
+
+[Phase 3/5] Starting Dual-Mirror Ring Buffer Synchronization
+            -&gt; 100% telemetry and in-guest discovery replication
+
+[Phase 4/5] Running Pre-Cutover Equivalence Verification (15-Minute Window)
+            -&gt; Doctor equivalence check: latency variance &lt; 1.5ms, zero egress violations
+
+[Phase 5/5] Flipping Route Reflector Tables to Target VPC
+            -&gt; In-VPC private DNS flip; traffic re-routed with rollback hooks armed
+
+[Teardown]  Automatic cleanup trap triggers:
+            -&gt; Ephemeral WinRM &amp; SSH ports revoked via OpenTofu state re-apply
+            -&gt; Zero-trust security re-established.
+```
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

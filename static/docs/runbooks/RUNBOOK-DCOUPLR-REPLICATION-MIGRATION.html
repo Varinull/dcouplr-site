@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-DCOUPLR-REPLICATION-MIGRATION.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-DCOUPLR-REPLICATION-MIGRATION.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-DCOUPLR-REPLICATION-MIGRATION.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="operations-runbook-cloud-native-block-replication-staging-host-push-wave-cutover">Operations Runbook: Cloud-Native Block Replication Staging, Host Push &amp; Wave Cutover</h1>
+<p><strong>Document Identifier:</strong> <code>RUNBOOK-DCOUPLR-REPL-001</code><br />
+<strong>Classification:</strong> Field Engineering Standard Operating Procedure (SOP)<br />
+<strong>Applicability:</strong> Cloud Engineers, Migration Architects, SREs, and DevOps Operators<br />
+<strong>Supported Engines:</strong> AWS Application Migration Service (MGN), Google Cloud Migrate to Virtual Machines (M4CE), Azure Migrate<br />
+<strong>Full Architectural Blueprint:</strong> Available in Admin Vault at <code>ProjectAssistant/admin-runbooks/ADMIN-RUNBOOK-REPLICATION-MIGRATION-MASTER.md</code></p>
+<hr />
+<h2 id="1-quick-overview">1. Quick Overview</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> acts as the zero-egress <strong>Control Plane Brain</strong> for enterprise infrastructure migrations. While native hyperscaler engines (<strong>AWS MGN</strong>, <strong>GCP M4CE</strong>, <strong>Azure Migrate</strong>) mirror raw disk blocks over TLS 443, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> automatically generates the surrounding infrastructure:</p>
+<ol>
+<li><strong>Target Landing Zone IaC:</strong> Generates non-overlapping VPCs, subnets, and route tables in &lt; 15ms.</li>
+<li><strong>Observability Transpilation:</strong> Translates proprietary Datadog and New Relic monitors into native Prometheus alert rules.</li>
+<li><strong>Split-Horizon DNS &amp; IP Decoupling:</strong> Generates eBPF diversion tables and private mesh DNS (<code>*.mesh.internal</code>).</li>
+</ol>
+<p>This runbook provides step-by-step instructions on <strong>where to get</strong> migration staging scripts, <strong>where to place them</strong>, <strong>what tools are required</strong>, and <strong>how to execute</strong> the migration wave safely.</p>
+<hr />
+<hr />
+<h2 id="11-dashboard-navigation-demystified-view-docs-workflow-steps-copy-checklist">1.1 Dashboard Navigation Demystified: View Docs, Workflow Steps &amp; Copy Checklist</h2>
+<p>On the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> SRE Live Telemetry Dashboard (<code>http://localhost:8000/dashboard</code>), inside the <strong>Cloud-Native Block Replication Orchestrator</strong> panel, operators encounter three key controls:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+-----------------------------------------------------------------------------------------------+
+| ⚙️ Cloud-Native Block Replication Orchestrator: Phase 1 Ready                                 |
+| [📖 Engineer's Script Runbook: Where &amp; What to Change] [RUNBOOK-DCOUPLR-REPL-001]             |
+|                                                                                               |
+|   [📄 View Docs]     [Show Workflow Steps]     [📋 Copy Checklist]                           |
++-----------------------------------------------------------------------------------------------+
+</code></pre></div>
+<h3 id="why-these-three-controls-exist-and-how-to-use-them">Why These Three Controls Exist and How to Use Them:</h3>
+<ol>
+<li><strong><code>[📄 View Docs]</code> (Full Architectural SOP):</strong>
+<ul>
+<li><strong>What it does:</strong> Direct link opening this complete technical runbook document (<code>RUNBOOK-DCOUPLR-REPLICATION-MIGRATION.md</code>).</li>
+<li><strong>When to use it:</strong> When an engineer, auditor, or architect needs full technical explanations, deep architectural failure mode analysis, rollback triggers, and troubleshooting command syntax.</li>
+</ul>
+</li>
+<li><strong><code>Show Workflow Steps</code> (Inline Operator Accordion):</strong>
+<ul>
+<li><strong>What it does:</strong> An interactive toggle on the dashboard that reveals an inline 5-phase execution summary right above the generated scripts.</li>
+<li><strong>When to use it:</strong> During live terminal execution so operators do not have to flip back and forth between multiple browser tabs while running commands.</li>
+</ul>
+</li>
+<li><strong><code>📋 Copy Checklist</code> (Change Management &amp; CAB Clipboard):</strong>
+<ul>
+<li><strong>What it does:</strong> Copies a formatted Markdown checklist of all required script parameters, file paths, and phased execution steps directly to your system clipboard.</li>
+<li><strong>When to use it:</strong> Paste directly into your enterprise <strong>ServiceNow Change Request</strong>, Jira migration ticket, or Slack incident war-room channel for full audit compliance.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="12-deep-dive-parameter-matrix-why-its-there-what-is-the-use-prerequisites">1.2 Deep-Dive Parameter Matrix: Why It's There, What is the Use &amp; Prerequisites</h2>
+<p>Operators must never blindly copy scripts. Here is the exact technical explanation of every parameter flagged by <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>:</p>
+<h3 id="1-targetproject-awsaccountid-azureresourcegroup">1. <code>TARGET_PROJECT</code> / <code>AWS_ACCOUNT_ID</code> / <code>AZURE_RESOURCE_GROUP</code></h3>
+<ul>
+<li><strong>Location in Script:</strong> <code>provider_cli_execution_script</code> (top parameter block, lines 15–20).</li>
+<li><strong>Classification:</strong> <code>[REQUIRED]</code></li>
+<li><strong>Why It Is There:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> generates shell commands that configure replication subnets and launch templates. However, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> cannot guess your enterprise cloud subscription or billing account number without user input.</li>
+<li><strong>What is the Technical Purpose:</strong> Anchors the target replication engine (AWS MGN, GCP M4CE, Azure Migrate) to the correct hyperscaler tenant, preventing accidental provisioning into development or wrong organization boundaries.</li>
+<li><strong>Prerequisites to check before checking off:</strong>
+<ol>
+<li>The target cloud account or project ID exists and is active.</li>
+<li>Cloud CLI authentication is active with required IAM permissions:
+<ul>
+<li><strong>AWS:</strong> <code>AWSApplicationMigrationFullAccess</code> (verify with <code>aws sts get-caller-identity</code>).</li>
+<li><strong>GCP:</strong> <code>roles/vmmigration.admin</code> (verify with <code>gcloud config get-value project</code>).</li>
+<li><strong>Azure:</strong> <code>Contributor</code> or <code>Azure Migrate Administrator</code> (verify with <code>az account show</code>).</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="2-dcouplrjitsessiontoken">2. <code>DCOUPLR_JIT_SESSION_TOKEN</code></h3>
+<ul>
+<li><strong>Location in Script:</strong> <code>agent_push_script_bash</code> / <code>agent_push_script_powershell</code> (shell environment variable).</li>
+<li><strong>Classification:</strong> <code>[REQUIRED]</code></li>
+<li><strong>Why It Is There:</strong> Hyperscaler replication agents (AWS MGN Agent, Google Migrate Agent) require a short-lived registration token to pair a source operating system with the cloud replication manager.</li>
+<li><strong>What is the Technical Purpose:</strong> Authenticates the agent payload with the hyperscaler control plane, enabling it to stream encrypted disk changes over outbound TLS port 443 into staging storage.</li>
+<li><strong>Prerequisites to check before checking off:</strong>
+<ol>
+<li>Generate an ephemeral installation token from your target cloud console (e.g. AWS MGN → Settings → Initialize Service, or GCP Migrate to VMs → Sources).</li>
+<li>Export the variable in your current terminal session: <code>export DCOUPLR_JIT_SESSION_TOKEN=&quot;mgn-reg-token-abc123xyz&quot;</code>.</li>
+<li>Confirm the token has not expired (registration tokens typically expire after 1–24 hours).</li>
+</ol>
+</li>
+</ul>
+<h3 id="3-sshuser-sshkeypath-linux-fleets">3. <code>SSH_USER</code> &amp; <code>SSH_KEY_PATH</code> (Linux Fleets)</h3>
+<ul>
+<li><strong>Location in Script:</strong> <code>agent_push_script_bash</code> (lines 14–18).</li>
+<li><strong>Classification:</strong> <code>[REQUIRED]</code></li>
+<li><strong>Why It Is There:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> automates concurrent agent installation across all source Linux VMs in the selected VPC cohort via temporary SSH connections.</li>
+<li><strong>What is the Technical Purpose:</strong> Provides administrative credentials allowing the bootstrap script to mount the replication kernel driver (<code>aws-replication-agent</code> / <code>m4ce-agent</code>) without human intervention.</li>
+<li><strong>Prerequisites to check before checking off:</strong>
+<ol>
+<li>Private key permissions are locked down: <code>chmod 600 &lt;path_to_key.pem&gt;</code>.</li>
+<li>Smoke test SSH connectivity to at least one source Linux VM: <code>ssh -i $SSH_KEY_PATH $SSH_USER@&lt;source_ip&gt; &quot;echo OK&quot;</code>.</li>
+<li>Verify the SSH user has passwordless <code>sudo</code> privileges to execute package installations.</li>
+</ol>
+</li>
+</ul>
+<h3 id="4-winrmcredential-windows-fleets">4. <code>$WinRMCredential</code> (Windows Fleets)</h3>
+<ul>
+<li><strong>Location in Script:</strong> <code>agent_push_script_powershell</code> (lines 18–22).</li>
+<li><strong>Classification:</strong> <code>[REQUIRED]</code></li>
+<li><strong>Why It Is There:</strong> Windows servers do not natively use SSH for fleet orchestration; they utilize PowerShell Remoting over HTTPS WinRM (Port 5986).</li>
+<li><strong>What is the Technical Purpose:</strong> Authenticates against Windows nodes to trigger <code>Invoke-Command</code>, installing the Windows Volume Shadow Copy Service (VSS) disk replication driver.</li>
+<li><strong>Prerequisites to check before checking off:</strong>
+<ol>
+<li>WinRM service is running on the source Windows servers (<code>Get-Service WinRM</code>).</li>
+<li>The service account belongs to the <code>Local Administrators</code> group on source servers.</li>
+<li>HTTPS port 5986 (or HTTP 5985) is temporarily reachable from your migration runner.</li>
+</ol>
+</li>
+</ul>
+<h3 id="5-targetregion">5. <code>TARGET_REGION</code></h3>
+<ul>
+<li><strong>Location in Script:</strong> All scripts (top parameter block).</li>
+<li><strong>Classification:</strong> <code>[AUTO-SET / OPTIONAL]</code></li>
+<li><strong>Why It Is There:</strong> Automatically populated by <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> based on your migration wave topology (e.g. <code>us-east-1</code>, <code>us-central1</code>, <code>westeurope</code>).</li>
+<li><strong>What is the Technical Purpose:</strong> Dictates the geographical destination for staging disks, VPC subnets, and compute instances.</li>
+<li><strong>Prerequisites to check before checking off:</strong> Verify this value matches your target architecture. Only modify if executing a Disaster Recovery (DR) drill to an alternate secondary region.</li>
+</ul>
+<h3 id="6-targetnodes-targetnodes">6. <code>TARGET_NODES</code> / <code>$TargetNodes</code></h3>
+<ul>
+<li><strong>Location in Script:</strong> <code>agent_push_script_bash</code> / <code>agent_push_script_powershell</code> (target array).</li>
+<li><strong>Classification:</strong> <code>[AUTO-SET / OPTIONAL]</code></li>
+<li><strong>Why It Is There:</strong> Automatically populated with all discovered source IP addresses in the selected VPC.</li>
+<li><strong>What is the Technical Purpose:</strong> Allows operators to trim down the array to test a single <strong>Canary Host</strong> before executing a wave push across 50+ nodes.</li>
+<li><strong>Prerequisites to check before checking off:</strong> Confirm whether you are deploying to the entire wave cohort simultaneously or performing a pilot test on 1 or 2 canary nodes.</li>
+</ul>
+<h2 id="2-tools-prerequisites-checklist">2. Tools &amp; Prerequisites Checklist</h2>
+<p>Verify the following tools and permissions on your local workstation or bastion migration runner before proceeding:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Category</th>
+<th style="text-align:left">Requirement</th>
+<th style="text-align:left">Verification Command</th>
+<th style="text-align:left">Notes / Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Command Runner</strong></td>
+<td style="text-align:left">Linux (Ubuntu, RHEL, Amazon Linux) or Windows Server</td>
+<td style="text-align:left"><code>uname -a</code> or <code>[System.Environment]::OSVersion</code></td>
+<td style="text-align:left">Machine that orchestrates the migration dispatch.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>HTTP Client</strong></td>
+<td style="text-align:left"><code>curl</code> (v7.68+) or PowerShell <code>Invoke-WebRequest</code></td>
+<td style="text-align:left"><code>curl --version</code></td>
+<td style="text-align:left">Downloads staging scripts from <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> appliance.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>JSON Parser</strong></td>
+<td style="text-align:left"><code>jq</code> (v1.6+)</td>
+<td style="text-align:left"><code>jq --version</code></td>
+<td style="text-align:left">Parses migration metadata and wave outputs.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Cloud CLI</strong></td>
+<td style="text-align:left">AWS CLI v2 / gcloud CLI / Azure CLI</td>
+<td style="text-align:left"><code>aws --version</code> / <code>gcloud --version</code> / <code>az --version</code></td>
+<td style="text-align:left">Pre-stages target launch configurations and VPC bindings.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>OpenSSH Client</strong></td>
+<td style="text-align:left"><code>ssh</code> (v8.0+)</td>
+<td style="text-align:left"><code>ssh -V</code></td>
+<td style="text-align:left">Pushes JIT agent bootstrap to Linux hosts (Port 22).</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>PowerShell Core</strong></td>
+<td style="text-align:left"><code>pwsh</code> (v7.2+)</td>
+<td style="text-align:left"><code>pwsh --version</code></td>
+<td style="text-align:left">Pushes JIT agent bootstrap to Windows hosts via WinRM (Port 5986).</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Network Egress</strong></td>
+<td style="text-align:left">Outbound TCP Port <code>443</code></td>
+<td style="text-align:left"><code>nc -zv mgn.us-east-1.amazonaws.com 443</code></td>
+<td style="text-align:left">Source servers need outbound port 443 to provider endpoints. <strong>Zero inbound ports required.</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>IAM Privileges</strong></td>
+<td style="text-align:left">Target Cloud Migration Admin</td>
+<td style="text-align:left"><code>aws sts get-caller-identity</code></td>
+<td style="text-align:left">Requires <code>AWSApplicationMigrationFullAccess</code>, GCP <code>roles/vmmigration.admin</code>, or Azure <code>Contributor</code>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-where-to-get-it-artifacts-staging-scripts">3. Where to Get It (Artifacts &amp; Staging Scripts)</h2>
+<p>All migration staging and host push scripts are compiled directly inside volatile memory by <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>. Retrieve them using one of the following methods:</p>
+<h3 id="method-a-direct-in-vpc-download-recommended">Method A: Direct In-VPC Download (Recommended)</h3>
+<p>Download directly from your running <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> in-VPC appliance:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># 1. Provider CLI Staging Script (AWS MGN, GCP M4CE, or Azure Migrate)
+curl -sSL http://127.0.0.1:8000/v1/migration/scripts/provider_cli_staging.sh -o ./provider_cli_staging.sh
+
+# 2. Linux SSH Agent Push Script (Ephemeral JIT Port 22)
+curl -sSL http://127.0.0.1:8000/v1/migration/scripts/agent_push_ssh.sh -o ./agent_push_ssh.sh
+
+# 3. Windows WinRM Agent Push Script (Ephemeral JIT HTTPS WinRM)
+curl -sSL http://127.0.0.1:8000/v1/migration/scripts/agent_push_winrm.ps1 -o ./agent_push_winrm.ps1
+</code></pre></div>
+<h3 id="method-b-extract-from-offline-enterprise-bundle">Method B: Extract from Offline Enterprise Bundle</h3>
+<p>If operating in a fully air-gapped subnet without HTTP access to port 8000:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Extract pre-compiled scripts from local release archive
+tar -zxvf /opt/dcouplr/dcouplr-enterprise-v1.0.0.tar.gz -C ./ scripts/
+</code></pre></div>
+<hr />
+<h2 id="4-where-to-put-it-target-destination-paths-permissions">4. Where to Put It (Target Destination Paths &amp; Permissions)</h2>
+<p>Place all staging and execution scripts in the designated deployment directories with strict filesystem access controls:</p>
+<h3 id="on-the-migration-runner-bastion-host">On the Migration Runner / Bastion Host:</h3>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">/opt/dcouplr/migration/
+├── provider_cli_staging.sh      (Permissions: chmod 700, Owner: $USER)
+├── agent_push_ssh.sh            (Permissions: chmod 700, Owner: $USER)
+├── agent_push_winrm.ps1         (Permissions: chmod 700, Owner: $USER)
+└── target_launch_template.json  (Permissions: chmod 600, Owner: $USER)
+</code></pre></div>
+<h4 id="windows-runner-path">Windows Runner Path:</h4>
+<div class="code-box"><div class="code-box-header"><span>powershell</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-powershell">New-Item -ItemType Directory -Path &quot;C:\dcouplr\migration&quot; -Force
+Move-Item -Path &quot;.\agent_push_winrm.ps1&quot; -Destination &quot;C:\dcouplr\migration\&quot;
+</code></pre></div>
+<h4 id="linux-setup-command">Linux Setup Command:</h4>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">sudo mkdir -p /opt/dcouplr/migration
+sudo chown -R $USER:$USER /opt/dcouplr/migration
+chmod 700 /opt/dcouplr/migration
+cd /opt/dcouplr/migration
+</code></pre></div>
+<blockquote>
+<p>[!IMPORTANT]
+<strong>No Permanent Footprint on Source Servers:</strong> The replication agent bootstrap runs ephemerally. Once registered with your target cloud provider, all temporary bootstrap scripts are purged automatically via <code>trap cleanup EXIT</code>.</p>
+</blockquote>
+<hr />
+<hr />
+<h2 id="41-monitoring-lift-and-shift-packaging-target-movement-pipeline">4.1 Monitoring Lift-and-Shift Packaging &amp; Target Movement Pipeline</h2>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌────────────────────────────────────────────────────────────────────────────────────────┐
+│               MONITORING LIFT-AND-SHIFT PACKAGING &amp; TARGET TRANSIT FLOW                │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 1. INGESTION &amp; PARSING   --&gt; Extracts source monitors (Datadog, New Relic, Dynatrace,  │
+│                              Splunk, CloudWatch, Azure Monitor, Prometheus).           │
+│ 2. AST RECALIBRATION     --&gt; Transpiles to PromQL &amp; recalibrates downscaled hardware.  │
+│ 3. PHASE 2 PACKAGING     --&gt; Sealed into 'monitoring-bundle-&lt;target_vpc&gt;.tar.gz'.      │
+│ 4. PRIVATE TRANSIT       --&gt; Moved via VPC Peering, DirectConnect, or S3 VPC Endpoint. │
+│ 5. SHADOW RUN ON TARGET  --&gt; Deployed on target in shadow mode (dual-run validation).  │
+│ 6. FINAL CUTOVER HOOK    --&gt; Promoted to primary target alerting upon DNS switch.      │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="when-is-monitoring-configuration-packaged">When is Monitoring Configuration Packaged?</h3>
+<p>Packaging occurs during <strong>Phase 2 (Pre-Cutover Preparation / Migration Wave Staging)</strong>—well <em>before</em> any compute cutover is initiated:</p>
+<ol>
+<li>Operator runs <code>dcouplr migrate-monitoring --source &lt;vendor&gt; --target-vpc &lt;vpc_id&gt; --target-cloud &lt;cloud&gt; --package</code> or triggers <code>POST /v1/telemetry/monitoring/migrate</code>.</li>
+<li><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> parses source monitors into Unified Intermediate Telemetry Representation (UIT-IR).</li>
+<li>Dynamic Hardware Recalibration scales down fixed thresholds (e.g. 32 GB RAM downscaled to 16 GB VM) to eliminate false alert paging.</li>
+<li>Generates sealed tarball: <code>monitoring-bundle-&lt;target_vpc&gt;.tar.gz</code>.</li>
+</ol>
+<h3 id="how-do-we-move-that-to-the-new-target-vpc">How Do We Move That to the New Target VPC?</h3>
+<p>To ensure <strong>$0.00 cloud egress</strong>, the package is moved via one of three private transit paths:</p>
+<ol>
+<li><strong>Option A (Private Cloud Transit / VPC Peering / DirectConnect):</strong> Direct bastion-to-bastion transfer (<code>scp -i target_bastion.pem ./monitoring-bundle-&lt;vpc&gt;.tar.gz user@10.100.1.10:/opt/dcouplr/</code>).</li>
+<li><strong>Option B (Private Object Storage via VPC Endpoint):</strong> Staged in S3/GCS via private Gateway Endpoint ($0 egress) and pulled onto target nodes.</li>
+<li><strong>Option C (Internal Enterprise GitOps):</strong> Committed to internal GitLab/GitHub and reconciled into the target cluster via ArgoCD/Flux.</li>
+</ol>
+<h3 id="how-is-it-unpacked-and-armed-on-target">How is it Unpacked and Armed on Target?</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">cd /opt/dcouplr
+tar -zxvf monitoring-bundle-&lt;target_vpc&gt;.tar.gz
+cd monitoring-bundle-&lt;target_vpc&gt;
+./scripts/deploy-target-monitoring.sh
+</code></pre></div>
+<p>This deploys the in-VPC OpenTelemetry Collector, Prometheus rules, and Grafana dashboards in <strong>Shadow Mode</strong>, running dual-stack verification against source metrics for 48–72 hours prior to cutover.</p>
+<h2 id="5-step-by-step-implementation-procedure">5. Step-by-Step Implementation Procedure</h2>
+<p>Follow this sequential procedure to execute a migration wave:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌──────────────────────────────────────────────────────────────────────────┐
+│                      MIGRATION WAVE EXECUTION STEPS                      │
+├─────────┬───────────────────────────────┬────────────────────────────────┤
+│ Step 1  │ Configure Environment &amp; JIT   │ Export API tokens &amp; target IDs │
+│ Step 2  │ Run Provider Staging Script   │ Pre-stage VPCs &amp; templates     │
+│ Step 3  │ Dispatch Agent Bootstrap      │ Push agent to source servers   │
+│ Step 4  │ Monitor Replication Sync      │ Verify lag &lt; 60 seconds        │
+│ Step 5  │ Execute Synchronized Cutover  │ Final delta flush &amp; DNS switch │
+└─────────┴───────────────────────────────┴────────────────────────────────┘
+</code></pre></div>
+<h3 id="step-1-export-target-cloud-credentials-jit-session-token">Step 1: Export Target Cloud Credentials &amp; JIT Session Token</h3>
+<p>In your migration runner terminal, export the necessary credentials. <strong>Never hardcode credentials in script files.</strong></p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># For AWS MGN Target:
+export AWS_REGION=&quot;us-east-1&quot;
+export AWS_DEFAULT_REGION=&quot;us-east-1&quot;
+export DCOUPLR_JIT_SESSION_TOKEN=&quot;mgn-reg-token-abc123xyz&quot;
+export SSH_USER=&quot;ubuntu&quot;
+export SSH_KEY_PATH=&quot;$HOME/.ssh/migration_bastion_key.pem&quot;
+
+# For GCP M4CE Target:
+export CLOUDSDK_CORE_PROJECT=&quot;migrated-workloads-prod&quot;
+export CLOUDSDK_COMPUTE_REGION=&quot;us-central1&quot;
+export DCOUPLR_JIT_SESSION_TOKEN=&quot;gcp-m4ce-install-token&quot;
+</code></pre></div>
+<h3 id="step-2-execute-provider-cli-staging-script">Step 2: Execute Provider CLI Staging Script</h3>
+<p>Run the staged launch configuration script to initialize the target cloud replication environment:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">chmod +x ./provider_cli_staging.sh
+./provider_cli_staging.sh
+</code></pre></div>
+<p><strong>Expected Console Output:</strong></p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">[INFO] <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Migration Engine v1.0.0
+[INFO] Validating AWS API connection in region us-east-1... OK
+[INFO] Verifying target VPC vpc-0a1b2c3d4e5f6... Verified
+[INFO] Synthesizing non-overlapping subnets (10.100.0.0/24)... OK
+[INFO] Registering AWS MGN Replication Launch Template: lt-0987654321fedcba... Created
+[SUCCESS] Provider Staging Complete. Ready for Agent Dispatch.
+</code></pre></div>
+<h3 id="step-3-dispatch-ephemeral-agent-bootstrap">Step 3: Dispatch Ephemeral Agent Bootstrap</h3>
+<p>Push the replication agent to the fleet of source servers:</p>
+<h4 id="for-linux-fleets-via-ssh">For Linux Fleets (via SSH):</h4>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">chmod +x ./agent_push_ssh.sh
+./agent_push_ssh.sh
+</code></pre></div>
+<p><strong>Expected Console Output:</strong></p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">[DISPATCH] Starting concurrent bootstrap across 12 source Linux nodes...
+[NODE 10.0.1.15] JIT SSH port open -&gt; Uploading agent installer... Done.
+[NODE 10.0.1.15] Installing AWS Replication Agent in quiet mode... Installed.
+[NODE 10.0.1.15] TLS 443 outbound stream active. Closing JIT SSH port.
+[NODE 10.0.1.16] JIT SSH port open -&gt; Uploading agent installer... Done.
+[NODE 10.0.1.16] Installing AWS Replication Agent in quiet mode... Installed.
+[SUCCESS] All 12 Linux nodes registered. Security teardown completed.
+</code></pre></div>
+<h4 id="for-windows-fleets-via-winrm">For Windows Fleets (via WinRM):</h4>
+<div class="code-box"><div class="code-box-header"><span>powershell</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-powershell">pwsh -File ./agent_push_winrm.ps1
+</code></pre></div>
+<h3 id="step-4-monitor-continuous-replication-lag-baseline-sync">Step 4: Monitor Continuous Replication Lag &amp; Baseline Sync</h3>
+<p>Continuous block replication begins immediately. Monitor the replication sync until lag drops below 60 seconds:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Query replication state on AWS MGN:
+aws mgn describe-source-servers \
+  --query 'items[*].{ServerID:sourceServerID,Hostname:identificationHints.hostname,Status:dataReplicationInfo.dataReplicationState,Lag:dataReplicationInfo.lagDuration}' \
+  --output table
+</code></pre></div>
+<p><strong>Expected Console Output:</strong></p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">-------------------------------------------------------------------------------------
+|                               DescribeSourceServers                               |
++----------------------+--------------------+---------------------+-----------------+
+|       Hostname       |       Lag          |      ServerID       |     Status      |
++----------------------+--------------------+---------------------+-----------------+
+|  app-server-prod-01  |  0.42s             |  s-1234567890abcdef |  CONTINUOUS     |
+|  app-server-prod-02  |  0.38s             |  s-abcdef1234567890 |  CONTINUOUS     |
+|  db-server-prod-01   |  0.89s             |  s-567890abcdef1234 |  CONTINUOUS     |
++----------------------+--------------------+---------------------+-----------------+
+</code></pre></div>
+<blockquote>
+<p>[!IMPORTANT]
+<strong>Cutover Ready Condition:</strong> Do NOT initiate cutover until <code>Status</code> displays <code>CONTINUOUS</code> and <code>Lag</code> is <strong>&lt; 60 seconds</strong>.</p>
+</blockquote>
+<h3 id="step-5-execute-synchronized-cutover-hook">Step 5: Execute Synchronized Cutover Hook</h3>
+<p>When your maintenance window opens:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># 1. Initiate final delta block flush
+aws mgn start-cutover --source-server-ids &quot;s-1234567890abcdef&quot; --region &quot;us-east-1&quot;
+
+# 2. Switch In-VPC Split-Horizon DNS to target cloud instances
+dcouplr-cli dns switch --zone mesh.internal --apply-records
+
+# 3. Arm Open-Source Monitoring &amp; Alert Rules (Zero Observability Blind Spots)
+kubectl apply -f /opt/dcouplr/migration/alertmanager_rules.yaml
+</code></pre></div>
+<hr />
+<h2 id="6-verification-what-to-look-out-for">6. Verification &amp; What to Look Out For</h2>
+<p>Once cutover completes, perform these three mandatory operational health checks:</p>
+<ol>
+<li><strong>Service Port Reachability:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -I http://app.mesh.internal:8080/health
+# Expected: HTTP/1.1 200 OK
+</code></pre></div>
+</li>
+<li><strong>Prometheus Alerting Ingestion:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -s http://127.0.0.1:9090/api/v1/rules | jq '.data.groups[].rules[].name'
+# Expected: Transpiled Datadog rules are active in Prometheus
+</code></pre></div>
+</li>
+<li><strong>WAN Egress Attestation:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -s http://127.0.0.1:8000/v1/telemetry/metrics | jq '.egress_attestation'
+# Expected: { &quot;status&quot;: &quot;ZERO_EGRESS_VERIFIED&quot;, &quot;wan_fees&quot;: &quot;$0.00&quot; }
+</code></pre></div>
+</li>
+</ol>
+<hr />
+<h2 id="7-disconnection-fast-recovery-troubleshooting">7. Disconnection &amp; Fast Recovery (Troubleshooting)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Failure Mode</th>
+<th style="text-align:left">Root Cause</th>
+<th style="text-align:left">Immediate Remediation Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Agent Bootstrap Connection Timed Out</strong></td>
+<td style="text-align:left">Local firewall (<code>iptables</code> / Windows Defender) blocking JIT SSH/WinRM.</td>
+<td style="text-align:left">Add temporary host allowlist rule: <code>sudo iptables -I INPUT -p tcp --dport 22 -s &lt;bastion-ip&gt; -j ACCEPT</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Replication Lag Stalls (&gt; 5 min)</strong></td>
+<td style="text-align:left">Source disk write throughput exceeds network upload rate.</td>
+<td style="text-align:left">Exclude non-critical swap/temp directories in provider replication settings.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Target Cloud Instance Fails Boot</strong></td>
+<td style="text-align:left">Missing hypervisor drivers (virtio / ENA) in source kernel.</td>
+<td style="text-align:left"><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> auto-injects drivers in launch template: verify <code>EnableInstanceMetadataTags=true</code>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Emergency Abort &amp; Rollback</strong></td>
+<td style="text-align:left">Target application fails smoke testing.</td>
+<td style="text-align:left">Revert DNS immediately: <code>dcouplr-cli dns switch --zone mesh.internal --revert</code>. Source servers were never modified and remain intact.</td>
+</tr>
+</tbody>
+</table>
+</div>
+      <pre id="raw-view"><code># Operations Runbook: Cloud-Native Block Replication Staging, Host Push &amp; Wave Cutover
+
+**Document Identifier:** `RUNBOOK-DCOUPLR-REPL-001`  
+**Classification:** Field Engineering Standard Operating Procedure (SOP)  
+**Applicability:** Cloud Engineers, Migration Architects, SREs, and DevOps Operators  
+**Supported Engines:** AWS Application Migration Service (MGN), Google Cloud Migrate to Virtual Machines (M4CE), Azure Migrate  
+**Full Architectural Blueprint:** Available in Admin Vault at `ProjectAssistant/admin-runbooks/ADMIN-RUNBOOK-REPLICATION-MIGRATION-MASTER.md`
+
+---
+
+## 1. Quick Overview
+
+`&lt;dcouplr/&gt;` acts as the zero-egress **Control Plane Brain** for enterprise infrastructure migrations. While native hyperscaler engines (**AWS MGN**, **GCP M4CE**, **Azure Migrate**) mirror raw disk blocks over TLS 443, `&lt;dcouplr/&gt;` automatically generates the surrounding infrastructure:
+1. **Target Landing Zone IaC:** Generates non-overlapping VPCs, subnets, and route tables in &lt; 15ms.
+2. **Observability Transpilation:** Translates proprietary Datadog and New Relic monitors into native Prometheus alert rules.
+3. **Split-Horizon DNS &amp; IP Decoupling:** Generates eBPF diversion tables and private mesh DNS (`*.mesh.internal`).
+
+This runbook provides step-by-step instructions on **where to get** migration staging scripts, **where to place them**, **what tools are required**, and **how to execute** the migration wave safely.
+
+---
+
+
+
+---
+
+## 1.1 Dashboard Navigation Demystified: View Docs, Workflow Steps &amp; Copy Checklist
+
+On the `&lt;dcouplr/&gt;` SRE Live Telemetry Dashboard (`http://localhost:8000/dashboard`), inside the **Cloud-Native Block Replication Orchestrator** panel, operators encounter three key controls:
+
+```text
++-----------------------------------------------------------------------------------------------+
+| ⚙️ Cloud-Native Block Replication Orchestrator: Phase 1 Ready                                 |
+| [📖 Engineer&#x27;s Script Runbook: Where &amp; What to Change] [RUNBOOK-DCOUPLR-REPL-001]             |
+|                                                                                               |
+|   [📄 View Docs]     [Show Workflow Steps]     [📋 Copy Checklist]                           |
++-----------------------------------------------------------------------------------------------+
+```
+
+### Why These Three Controls Exist and How to Use Them:
+
+1. **`[📄 View Docs]` (Full Architectural SOP):**
+   - **What it does:** Direct link opening this complete technical runbook document (`RUNBOOK-DCOUPLR-REPLICATION-MIGRATION.md`).
+   - **When to use it:** When an engineer, auditor, or architect needs full technical explanations, deep architectural failure mode analysis, rollback triggers, and troubleshooting command syntax.
+2. **`Show Workflow Steps` (Inline Operator Accordion):**
+   - **What it does:** An interactive toggle on the dashboard that reveals an inline 5-phase execution summary right above the generated scripts.
+   - **When to use it:** During live terminal execution so operators do not have to flip back and forth between multiple browser tabs while running commands.
+3. **`📋 Copy Checklist` (Change Management &amp; CAB Clipboard):**
+   - **What it does:** Copies a formatted Markdown checklist of all required script parameters, file paths, and phased execution steps directly to your system clipboard.
+   - **When to use it:** Paste directly into your enterprise **ServiceNow Change Request**, Jira migration ticket, or Slack incident war-room channel for full audit compliance.
+
+---
+
+## 1.2 Deep-Dive Parameter Matrix: Why It&#x27;s There, What is the Use &amp; Prerequisites
+
+Operators must never blindly copy scripts. Here is the exact technical explanation of every parameter flagged by `&lt;dcouplr/&gt;`:
+
+### 1. `TARGET_PROJECT` / `AWS_ACCOUNT_ID` / `AZURE_RESOURCE_GROUP`
+* **Location in Script:** `provider_cli_execution_script` (top parameter block, lines 15–20).
+* **Classification:** `[REQUIRED]`
+* **Why It Is There:** `&lt;dcouplr/&gt;` generates shell commands that configure replication subnets and launch templates. However, `&lt;dcouplr/&gt;` cannot guess your enterprise cloud subscription or billing account number without user input.
+* **What is the Technical Purpose:** Anchors the target replication engine (AWS MGN, GCP M4CE, Azure Migrate) to the correct hyperscaler tenant, preventing accidental provisioning into development or wrong organization boundaries.
+* **Prerequisites to check before checking off:**
+  1. The target cloud account or project ID exists and is active.
+  2. Cloud CLI authentication is active with required IAM permissions:
+     - **AWS:** `AWSApplicationMigrationFullAccess` (verify with `aws sts get-caller-identity`).
+     - **GCP:** `roles/vmmigration.admin` (verify with `gcloud config get-value project`).
+     - **Azure:** `Contributor` or `Azure Migrate Administrator` (verify with `az account show`).
+
+### 2. `DCOUPLR_JIT_SESSION_TOKEN`
+* **Location in Script:** `agent_push_script_bash` / `agent_push_script_powershell` (shell environment variable).
+* **Classification:** `[REQUIRED]`
+* **Why It Is There:** Hyperscaler replication agents (AWS MGN Agent, Google Migrate Agent) require a short-lived registration token to pair a source operating system with the cloud replication manager.
+* **What is the Technical Purpose:** Authenticates the agent payload with the hyperscaler control plane, enabling it to stream encrypted disk changes over outbound TLS port 443 into staging storage.
+* **Prerequisites to check before checking off:**
+  1. Generate an ephemeral installation token from your target cloud console (e.g. AWS MGN → Settings → Initialize Service, or GCP Migrate to VMs → Sources).
+  2. Export the variable in your current terminal session: `export DCOUPLR_JIT_SESSION_TOKEN=&quot;mgn-reg-token-abc123xyz&quot;`.
+  3. Confirm the token has not expired (registration tokens typically expire after 1–24 hours).
+
+### 3. `SSH_USER` &amp; `SSH_KEY_PATH` (Linux Fleets)
+* **Location in Script:** `agent_push_script_bash` (lines 14–18).
+* **Classification:** `[REQUIRED]`
+* **Why It Is There:** `&lt;dcouplr/&gt;` automates concurrent agent installation across all source Linux VMs in the selected VPC cohort via temporary SSH connections.
+* **What is the Technical Purpose:** Provides administrative credentials allowing the bootstrap script to mount the replication kernel driver (`aws-replication-agent` / `m4ce-agent`) without human intervention.
+* **Prerequisites to check before checking off:**
+  1. Private key permissions are locked down: `chmod 600 &lt;path_to_key.pem&gt;`.
+  2. Smoke test SSH connectivity to at least one source Linux VM: `ssh -i $SSH_KEY_PATH $SSH_USER@&lt;source_ip&gt; &quot;echo OK&quot;`.
+  3. Verify the SSH user has passwordless `sudo` privileges to execute package installations.
+
+### 4. `$WinRMCredential` (Windows Fleets)
+* **Location in Script:** `agent_push_script_powershell` (lines 18–22).
+* **Classification:** `[REQUIRED]`
+* **Why It Is There:** Windows servers do not natively use SSH for fleet orchestration; they utilize PowerShell Remoting over HTTPS WinRM (Port 5986).
+* **What is the Technical Purpose:** Authenticates against Windows nodes to trigger `Invoke-Command`, installing the Windows Volume Shadow Copy Service (VSS) disk replication driver.
+* **Prerequisites to check before checking off:**
+  1. WinRM service is running on the source Windows servers (`Get-Service WinRM`).
+  2. The service account belongs to the `Local Administrators` group on source servers.
+  3. HTTPS port 5986 (or HTTP 5985) is temporarily reachable from your migration runner.
+
+### 5. `TARGET_REGION`
+* **Location in Script:** All scripts (top parameter block).
+* **Classification:** `[AUTO-SET / OPTIONAL]`
+* **Why It Is There:** Automatically populated by `&lt;dcouplr/&gt;` based on your migration wave topology (e.g. `us-east-1`, `us-central1`, `westeurope`).
+* **What is the Technical Purpose:** Dictates the geographical destination for staging disks, VPC subnets, and compute instances.
+* **Prerequisites to check before checking off:** Verify this value matches your target architecture. Only modify if executing a Disaster Recovery (DR) drill to an alternate secondary region.
+
+### 6. `TARGET_NODES` / `$TargetNodes`
+* **Location in Script:** `agent_push_script_bash` / `agent_push_script_powershell` (target array).
+* **Classification:** `[AUTO-SET / OPTIONAL]`
+* **Why It Is There:** Automatically populated with all discovered source IP addresses in the selected VPC.
+* **What is the Technical Purpose:** Allows operators to trim down the array to test a single **Canary Host** before executing a wave push across 50+ nodes.
+* **Prerequisites to check before checking off:** Confirm whether you are deploying to the entire wave cohort simultaneously or performing a pilot test on 1 or 2 canary nodes.
+
+
+## 2. Tools &amp; Prerequisites Checklist
+
+Verify the following tools and permissions on your local workstation or bastion migration runner before proceeding:
+
+| Category | Requirement | Verification Command | Notes / Purpose |
+| :--- | :--- | :--- | :--- |
+| **Command Runner** | Linux (Ubuntu, RHEL, Amazon Linux) or Windows Server | `uname -a` or `[System.Environment]::OSVersion` | Machine that orchestrates the migration dispatch. |
+| **HTTP Client** | `curl` (v7.68+) or PowerShell `Invoke-WebRequest` | `curl --version` | Downloads staging scripts from `&lt;dcouplr/&gt;` appliance. |
+| **JSON Parser** | `jq` (v1.6+) | `jq --version` | Parses migration metadata and wave outputs. |
+| **Cloud CLI** | AWS CLI v2 / gcloud CLI / Azure CLI | `aws --version` / `gcloud --version` / `az --version` | Pre-stages target launch configurations and VPC bindings. |
+| **OpenSSH Client** | `ssh` (v8.0+) | `ssh -V` | Pushes JIT agent bootstrap to Linux hosts (Port 22). |
+| **PowerShell Core** | `pwsh` (v7.2+) | `pwsh --version` | Pushes JIT agent bootstrap to Windows hosts via WinRM (Port 5986). |
+| **Network Egress** | Outbound TCP Port `443` | `nc -zv mgn.us-east-1.amazonaws.com 443` | Source servers need outbound port 443 to provider endpoints. **Zero inbound ports required.** |
+| **IAM Privileges** | Target Cloud Migration Admin | `aws sts get-caller-identity` | Requires `AWSApplicationMigrationFullAccess`, GCP `roles/vmmigration.admin`, or Azure `Contributor`. |
+
+---
+
+## 3. Where to Get It (Artifacts &amp; Staging Scripts)
+
+All migration staging and host push scripts are compiled directly inside volatile memory by `&lt;dcouplr/&gt;`. Retrieve them using one of the following methods:
+
+### Method A: Direct In-VPC Download (Recommended)
+Download directly from your running `&lt;dcouplr/&gt;` in-VPC appliance:
+
+```bash
+# 1. Provider CLI Staging Script (AWS MGN, GCP M4CE, or Azure Migrate)
+curl -sSL http://127.0.0.1:8000/v1/migration/scripts/provider_cli_staging.sh -o ./provider_cli_staging.sh
+
+# 2. Linux SSH Agent Push Script (Ephemeral JIT Port 22)
+curl -sSL http://127.0.0.1:8000/v1/migration/scripts/agent_push_ssh.sh -o ./agent_push_ssh.sh
+
+# 3. Windows WinRM Agent Push Script (Ephemeral JIT HTTPS WinRM)
+curl -sSL http://127.0.0.1:8000/v1/migration/scripts/agent_push_winrm.ps1 -o ./agent_push_winrm.ps1
+```
+
+### Method B: Extract from Offline Enterprise Bundle
+If operating in a fully air-gapped subnet without HTTP access to port 8000:
+```bash
+# Extract pre-compiled scripts from local release archive
+tar -zxvf /opt/dcouplr/dcouplr-enterprise-v1.0.0.tar.gz -C ./ scripts/
+```
+
+---
+
+## 4. Where to Put It (Target Destination Paths &amp; Permissions)
+
+Place all staging and execution scripts in the designated deployment directories with strict filesystem access controls:
+
+### On the Migration Runner / Bastion Host:
+
+```
+/opt/dcouplr/migration/
+├── provider_cli_staging.sh      (Permissions: chmod 700, Owner: $USER)
+├── agent_push_ssh.sh            (Permissions: chmod 700, Owner: $USER)
+├── agent_push_winrm.ps1         (Permissions: chmod 700, Owner: $USER)
+└── target_launch_template.json  (Permissions: chmod 600, Owner: $USER)
+```
+
+#### Windows Runner Path:
+```powershell
+New-Item -ItemType Directory -Path &quot;C:\dcouplr\migration&quot; -Force
+Move-Item -Path &quot;.\agent_push_winrm.ps1&quot; -Destination &quot;C:\dcouplr\migration\&quot;
+```
+
+#### Linux Setup Command:
+```bash
+sudo mkdir -p /opt/dcouplr/migration
+sudo chown -R $USER:$USER /opt/dcouplr/migration
+chmod 700 /opt/dcouplr/migration
+cd /opt/dcouplr/migration
+```
+
+&gt; [!IMPORTANT]
+&gt; **No Permanent Footprint on Source Servers:** The replication agent bootstrap runs ephemerally. Once registered with your target cloud provider, all temporary bootstrap scripts are purged automatically via `trap cleanup EXIT`.
+
+---
+
+
+
+---
+
+## 4.1 Monitoring Lift-and-Shift Packaging &amp; Target Movement Pipeline
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│               MONITORING LIFT-AND-SHIFT PACKAGING &amp; TARGET TRANSIT FLOW                │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 1. INGESTION &amp; PARSING   --&gt; Extracts source monitors (Datadog, New Relic, Dynatrace,  │
+│                              Splunk, CloudWatch, Azure Monitor, Prometheus).           │
+│ 2. AST RECALIBRATION     --&gt; Transpiles to PromQL &amp; recalibrates downscaled hardware.  │
+│ 3. PHASE 2 PACKAGING     --&gt; Sealed into &#x27;monitoring-bundle-&lt;target_vpc&gt;.tar.gz&#x27;.      │
+│ 4. PRIVATE TRANSIT       --&gt; Moved via VPC Peering, DirectConnect, or S3 VPC Endpoint. │
+│ 5. SHADOW RUN ON TARGET  --&gt; Deployed on target in shadow mode (dual-run validation).  │
+│ 6. FINAL CUTOVER HOOK    --&gt; Promoted to primary target alerting upon DNS switch.      │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### When is Monitoring Configuration Packaged?
+Packaging occurs during **Phase 2 (Pre-Cutover Preparation / Migration Wave Staging)**—well *before* any compute cutover is initiated:
+1. Operator runs `dcouplr migrate-monitoring --source &lt;vendor&gt; --target-vpc &lt;vpc_id&gt; --target-cloud &lt;cloud&gt; --package` or triggers `POST /v1/telemetry/monitoring/migrate`.
+2. `&lt;dcouplr/&gt;` parses source monitors into Unified Intermediate Telemetry Representation (UIT-IR).
+3. Dynamic Hardware Recalibration scales down fixed thresholds (e.g. 32 GB RAM downscaled to 16 GB VM) to eliminate false alert paging.
+4. Generates sealed tarball: `monitoring-bundle-&lt;target_vpc&gt;.tar.gz`.
+
+### How Do We Move That to the New Target VPC?
+To ensure **$0.00 cloud egress**, the package is moved via one of three private transit paths:
+1. **Option A (Private Cloud Transit / VPC Peering / DirectConnect):** Direct bastion-to-bastion transfer (`scp -i target_bastion.pem ./monitoring-bundle-&lt;vpc&gt;.tar.gz user@10.100.1.10:/opt/dcouplr/`).
+2. **Option B (Private Object Storage via VPC Endpoint):** Staged in S3/GCS via private Gateway Endpoint ($0 egress) and pulled onto target nodes.
+3. **Option C (Internal Enterprise GitOps):** Committed to internal GitLab/GitHub and reconciled into the target cluster via ArgoCD/Flux.
+
+### How is it Unpacked and Armed on Target?
+```bash
+cd /opt/dcouplr
+tar -zxvf monitoring-bundle-&lt;target_vpc&gt;.tar.gz
+cd monitoring-bundle-&lt;target_vpc&gt;
+./scripts/deploy-target-monitoring.sh
+```
+This deploys the in-VPC OpenTelemetry Collector, Prometheus rules, and Grafana dashboards in **Shadow Mode**, running dual-stack verification against source metrics for 48–72 hours prior to cutover.
+
+
+## 5. Step-by-Step Implementation Procedure
+
+Follow this sequential procedure to execute a migration wave:
+
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│                      MIGRATION WAVE EXECUTION STEPS                      │
+├─────────┬───────────────────────────────┬────────────────────────────────┤
+│ Step 1  │ Configure Environment &amp; JIT   │ Export API tokens &amp; target IDs │
+│ Step 2  │ Run Provider Staging Script   │ Pre-stage VPCs &amp; templates     │
+│ Step 3  │ Dispatch Agent Bootstrap      │ Push agent to source servers   │
+│ Step 4  │ Monitor Replication Sync      │ Verify lag &lt; 60 seconds        │
+│ Step 5  │ Execute Synchronized Cutover  │ Final delta flush &amp; DNS switch │
+└─────────┴───────────────────────────────┴────────────────────────────────┘
+```
+
+### Step 1: Export Target Cloud Credentials &amp; JIT Session Token
+
+In your migration runner terminal, export the necessary credentials. **Never hardcode credentials in script files.**
+
+```bash
+# For AWS MGN Target:
+export AWS_REGION=&quot;us-east-1&quot;
+export AWS_DEFAULT_REGION=&quot;us-east-1&quot;
+export DCOUPLR_JIT_SESSION_TOKEN=&quot;mgn-reg-token-abc123xyz&quot;
+export SSH_USER=&quot;ubuntu&quot;
+export SSH_KEY_PATH=&quot;$HOME/.ssh/migration_bastion_key.pem&quot;
+
+# For GCP M4CE Target:
+export CLOUDSDK_CORE_PROJECT=&quot;migrated-workloads-prod&quot;
+export CLOUDSDK_COMPUTE_REGION=&quot;us-central1&quot;
+export DCOUPLR_JIT_SESSION_TOKEN=&quot;gcp-m4ce-install-token&quot;
+```
+
+### Step 2: Execute Provider CLI Staging Script
+
+Run the staged launch configuration script to initialize the target cloud replication environment:
+
+```bash
+chmod +x ./provider_cli_staging.sh
+./provider_cli_staging.sh
+```
+
+**Expected Console Output:**
+```text
+[INFO] &lt;dcouplr/&gt; Migration Engine v1.0.0
+[INFO] Validating AWS API connection in region us-east-1... OK
+[INFO] Verifying target VPC vpc-0a1b2c3d4e5f6... Verified
+[INFO] Synthesizing non-overlapping subnets (10.100.0.0/24)... OK
+[INFO] Registering AWS MGN Replication Launch Template: lt-0987654321fedcba... Created
+[SUCCESS] Provider Staging Complete. Ready for Agent Dispatch.
+```
+
+### Step 3: Dispatch Ephemeral Agent Bootstrap
+
+Push the replication agent to the fleet of source servers:
+
+#### For Linux Fleets (via SSH):
+```bash
+chmod +x ./agent_push_ssh.sh
+./agent_push_ssh.sh
+```
+
+**Expected Console Output:**
+```text
+[DISPATCH] Starting concurrent bootstrap across 12 source Linux nodes...
+[NODE 10.0.1.15] JIT SSH port open -&gt; Uploading agent installer... Done.
+[NODE 10.0.1.15] Installing AWS Replication Agent in quiet mode... Installed.
+[NODE 10.0.1.15] TLS 443 outbound stream active. Closing JIT SSH port.
+[NODE 10.0.1.16] JIT SSH port open -&gt; Uploading agent installer... Done.
+[NODE 10.0.1.16] Installing AWS Replication Agent in quiet mode... Installed.
+[SUCCESS] All 12 Linux nodes registered. Security teardown completed.
+```
+
+#### For Windows Fleets (via WinRM):
+```powershell
+pwsh -File ./agent_push_winrm.ps1
+```
+
+### Step 4: Monitor Continuous Replication Lag &amp; Baseline Sync
+
+Continuous block replication begins immediately. Monitor the replication sync until lag drops below 60 seconds:
+
+```bash
+# Query replication state on AWS MGN:
+aws mgn describe-source-servers \
+  --query &#x27;items[*].{ServerID:sourceServerID,Hostname:identificationHints.hostname,Status:dataReplicationInfo.dataReplicationState,Lag:dataReplicationInfo.lagDuration}&#x27; \
+  --output table
+```
+
+**Expected Console Output:**
+```text
+-------------------------------------------------------------------------------------
+|                               DescribeSourceServers                               |
++----------------------+--------------------+---------------------+-----------------+
+|       Hostname       |       Lag          |      ServerID       |     Status      |
++----------------------+--------------------+---------------------+-----------------+
+|  app-server-prod-01  |  0.42s             |  s-1234567890abcdef |  CONTINUOUS     |
+|  app-server-prod-02  |  0.38s             |  s-abcdef1234567890 |  CONTINUOUS     |
+|  db-server-prod-01   |  0.89s             |  s-567890abcdef1234 |  CONTINUOUS     |
++----------------------+--------------------+---------------------+-----------------+
+```
+
+&gt; [!IMPORTANT]
+&gt; **Cutover Ready Condition:** Do NOT initiate cutover until `Status` displays `CONTINUOUS` and `Lag` is **&lt; 60 seconds**.
+
+### Step 5: Execute Synchronized Cutover Hook
+
+When your maintenance window opens:
+
+```bash
+# 1. Initiate final delta block flush
+aws mgn start-cutover --source-server-ids &quot;s-1234567890abcdef&quot; --region &quot;us-east-1&quot;
+
+# 2. Switch In-VPC Split-Horizon DNS to target cloud instances
+dcouplr-cli dns switch --zone mesh.internal --apply-records
+
+# 3. Arm Open-Source Monitoring &amp; Alert Rules (Zero Observability Blind Spots)
+kubectl apply -f /opt/dcouplr/migration/alertmanager_rules.yaml
+```
+
+---
+
+## 6. Verification &amp; What to Look Out For
+
+Once cutover completes, perform these three mandatory operational health checks:
+
+1. **Service Port Reachability:**
+   ```bash
+   curl -I http://app.mesh.internal:8080/health
+   # Expected: HTTP/1.1 200 OK
+   ```
+2. **Prometheus Alerting Ingestion:**
+   ```bash
+   curl -s http://127.0.0.1:9090/api/v1/rules | jq &#x27;.data.groups[].rules[].name&#x27;
+   # Expected: Transpiled Datadog rules are active in Prometheus
+   ```
+3. **WAN Egress Attestation:**
+   ```bash
+   curl -s http://127.0.0.1:8000/v1/telemetry/metrics | jq &#x27;.egress_attestation&#x27;
+   # Expected: { &quot;status&quot;: &quot;ZERO_EGRESS_VERIFIED&quot;, &quot;wan_fees&quot;: &quot;$0.00&quot; }
+   ```
+
+---
+
+## 7. Disconnection &amp; Fast Recovery (Troubleshooting)
+
+| Failure Mode | Root Cause | Immediate Remediation Command |
+| :--- | :--- | :--- |
+| **Agent Bootstrap Connection Timed Out** | Local firewall (`iptables` / Windows Defender) blocking JIT SSH/WinRM. | Add temporary host allowlist rule: `sudo iptables -I INPUT -p tcp --dport 22 -s &lt;bastion-ip&gt; -j ACCEPT` |
+| **Replication Lag Stalls (&gt; 5 min)** | Source disk write throughput exceeds network upload rate. | Exclude non-critical swap/temp directories in provider replication settings. |
+| **Target Cloud Instance Fails Boot** | Missing hypervisor drivers (virtio / ENA) in source kernel. | `&lt;dcouplr/&gt;` auto-injects drivers in launch template: verify `EnableInstanceMetadataTags=true`. |
+| **Emergency Abort &amp; Rollback** | Target application fails smoke testing. | Revert DNS immediately: `dcouplr-cli dns switch --zone mesh.internal --revert`. Source servers were never modified and remain intact. |
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># Operations Runbook: Cloud-Native Block Replication Staging, Host Push &amp; Wave Cutover
+
+**Document Identifier:** `RUNBOOK-DCOUPLR-REPL-001`  
+**Classification:** Field Engineering Standard Operating Procedure (SOP)  
+**Applicability:** Cloud Engineers, Migration Architects, SREs, and DevOps Operators  
+**Supported Engines:** AWS Application Migration Service (MGN), Google Cloud Migrate to Virtual Machines (M4CE), Azure Migrate  
+**Full Architectural Blueprint:** Available in Admin Vault at `ProjectAssistant/admin-runbooks/ADMIN-RUNBOOK-REPLICATION-MIGRATION-MASTER.md`
+
+---
+
+## 1. Quick Overview
+
+`&lt;dcouplr/&gt;` acts as the zero-egress **Control Plane Brain** for enterprise infrastructure migrations. While native hyperscaler engines (**AWS MGN**, **GCP M4CE**, **Azure Migrate**) mirror raw disk blocks over TLS 443, `&lt;dcouplr/&gt;` automatically generates the surrounding infrastructure:
+1. **Target Landing Zone IaC:** Generates non-overlapping VPCs, subnets, and route tables in &lt; 15ms.
+2. **Observability Transpilation:** Translates proprietary Datadog and New Relic monitors into native Prometheus alert rules.
+3. **Split-Horizon DNS &amp; IP Decoupling:** Generates eBPF diversion tables and private mesh DNS (`*.mesh.internal`).
+
+This runbook provides step-by-step instructions on **where to get** migration staging scripts, **where to place them**, **what tools are required**, and **how to execute** the migration wave safely.
+
+---
+
+
+
+---
+
+## 1.1 Dashboard Navigation Demystified: View Docs, Workflow Steps &amp; Copy Checklist
+
+On the `&lt;dcouplr/&gt;` SRE Live Telemetry Dashboard (`http://localhost:8000/dashboard`), inside the **Cloud-Native Block Replication Orchestrator** panel, operators encounter three key controls:
+
+```text
++-----------------------------------------------------------------------------------------------+
+| ⚙️ Cloud-Native Block Replication Orchestrator: Phase 1 Ready                                 |
+| [📖 Engineer&#x27;s Script Runbook: Where &amp; What to Change] [RUNBOOK-DCOUPLR-REPL-001]             |
+|                                                                                               |
+|   [📄 View Docs]     [Show Workflow Steps]     [📋 Copy Checklist]                           |
++-----------------------------------------------------------------------------------------------+
+```
+
+### Why These Three Controls Exist and How to Use Them:
+
+1. **`[📄 View Docs]` (Full Architectural SOP):**
+   - **What it does:** Direct link opening this complete technical runbook document (`RUNBOOK-DCOUPLR-REPLICATION-MIGRATION.md`).
+   - **When to use it:** When an engineer, auditor, or architect needs full technical explanations, deep architectural failure mode analysis, rollback triggers, and troubleshooting command syntax.
+2. **`Show Workflow Steps` (Inline Operator Accordion):**
+   - **What it does:** An interactive toggle on the dashboard that reveals an inline 5-phase execution summary right above the generated scripts.
+   - **When to use it:** During live terminal execution so operators do not have to flip back and forth between multiple browser tabs while running commands.
+3. **`📋 Copy Checklist` (Change Management &amp; CAB Clipboard):**
+   - **What it does:** Copies a formatted Markdown checklist of all required script parameters, file paths, and phased execution steps directly to your system clipboard.
+   - **When to use it:** Paste directly into your enterprise **ServiceNow Change Request**, Jira migration ticket, or Slack incident war-room channel for full audit compliance.
+
+---
+
+## 1.2 Deep-Dive Parameter Matrix: Why It&#x27;s There, What is the Use &amp; Prerequisites
+
+Operators must never blindly copy scripts. Here is the exact technical explanation of every parameter flagged by `&lt;dcouplr/&gt;`:
+
+### 1. `TARGET_PROJECT` / `AWS_ACCOUNT_ID` / `AZURE_RESOURCE_GROUP`
+* **Location in Script:** `provider_cli_execution_script` (top parameter block, lines 15–20).
+* **Classification:** `[REQUIRED]`
+* **Why It Is There:** `&lt;dcouplr/&gt;` generates shell commands that configure replication subnets and launch templates. However, `&lt;dcouplr/&gt;` cannot guess your enterprise cloud subscription or billing account number without user input.
+* **What is the Technical Purpose:** Anchors the target replication engine (AWS MGN, GCP M4CE, Azure Migrate) to the correct hyperscaler tenant, preventing accidental provisioning into development or wrong organization boundaries.
+* **Prerequisites to check before checking off:**
+  1. The target cloud account or project ID exists and is active.
+  2. Cloud CLI authentication is active with required IAM permissions:
+     - **AWS:** `AWSApplicationMigrationFullAccess` (verify with `aws sts get-caller-identity`).
+     - **GCP:** `roles/vmmigration.admin` (verify with `gcloud config get-value project`).
+     - **Azure:** `Contributor` or `Azure Migrate Administrator` (verify with `az account show`).
+
+### 2. `DCOUPLR_JIT_SESSION_TOKEN`
+* **Location in Script:** `agent_push_script_bash` / `agent_push_script_powershell` (shell environment variable).
+* **Classification:** `[REQUIRED]`
+* **Why It Is There:** Hyperscaler replication agents (AWS MGN Agent, Google Migrate Agent) require a short-lived registration token to pair a source operating system with the cloud replication manager.
+* **What is the Technical Purpose:** Authenticates the agent payload with the hyperscaler control plane, enabling it to stream encrypted disk changes over outbound TLS port 443 into staging storage.
+* **Prerequisites to check before checking off:**
+  1. Generate an ephemeral installation token from your target cloud console (e.g. AWS MGN → Settings → Initialize Service, or GCP Migrate to VMs → Sources).
+  2. Export the variable in your current terminal session: `export DCOUPLR_JIT_SESSION_TOKEN=&quot;mgn-reg-token-abc123xyz&quot;`.
+  3. Confirm the token has not expired (registration tokens typically expire after 1–24 hours).
+
+### 3. `SSH_USER` &amp; `SSH_KEY_PATH` (Linux Fleets)
+* **Location in Script:** `agent_push_script_bash` (lines 14–18).
+* **Classification:** `[REQUIRED]`
+* **Why It Is There:** `&lt;dcouplr/&gt;` automates concurrent agent installation across all source Linux VMs in the selected VPC cohort via temporary SSH connections.
+* **What is the Technical Purpose:** Provides administrative credentials allowing the bootstrap script to mount the replication kernel driver (`aws-replication-agent` / `m4ce-agent`) without human intervention.
+* **Prerequisites to check before checking off:**
+  1. Private key permissions are locked down: `chmod 600 &lt;path_to_key.pem&gt;`.
+  2. Smoke test SSH connectivity to at least one source Linux VM: `ssh -i $SSH_KEY_PATH $SSH_USER@&lt;source_ip&gt; &quot;echo OK&quot;`.
+  3. Verify the SSH user has passwordless `sudo` privileges to execute package installations.
+
+### 4. `$WinRMCredential` (Windows Fleets)
+* **Location in Script:** `agent_push_script_powershell` (lines 18–22).
+* **Classification:** `[REQUIRED]`
+* **Why It Is There:** Windows servers do not natively use SSH for fleet orchestration; they utilize PowerShell Remoting over HTTPS WinRM (Port 5986).
+* **What is the Technical Purpose:** Authenticates against Windows nodes to trigger `Invoke-Command`, installing the Windows Volume Shadow Copy Service (VSS) disk replication driver.
+* **Prerequisites to check before checking off:**
+  1. WinRM service is running on the source Windows servers (`Get-Service WinRM`).
+  2. The service account belongs to the `Local Administrators` group on source servers.
+  3. HTTPS port 5986 (or HTTP 5985) is temporarily reachable from your migration runner.
+
+### 5. `TARGET_REGION`
+* **Location in Script:** All scripts (top parameter block).
+* **Classification:** `[AUTO-SET / OPTIONAL]`
+* **Why It Is There:** Automatically populated by `&lt;dcouplr/&gt;` based on your migration wave topology (e.g. `us-east-1`, `us-central1`, `westeurope`).
+* **What is the Technical Purpose:** Dictates the geographical destination for staging disks, VPC subnets, and compute instances.
+* **Prerequisites to check before checking off:** Verify this value matches your target architecture. Only modify if executing a Disaster Recovery (DR) drill to an alternate secondary region.
+
+### 6. `TARGET_NODES` / `$TargetNodes`
+* **Location in Script:** `agent_push_script_bash` / `agent_push_script_powershell` (target array).
+* **Classification:** `[AUTO-SET / OPTIONAL]`
+* **Why It Is There:** Automatically populated with all discovered source IP addresses in the selected VPC.
+* **What is the Technical Purpose:** Allows operators to trim down the array to test a single **Canary Host** before executing a wave push across 50+ nodes.
+* **Prerequisites to check before checking off:** Confirm whether you are deploying to the entire wave cohort simultaneously or performing a pilot test on 1 or 2 canary nodes.
+
+
+## 2. Tools &amp; Prerequisites Checklist
+
+Verify the following tools and permissions on your local workstation or bastion migration runner before proceeding:
+
+| Category | Requirement | Verification Command | Notes / Purpose |
+| :--- | :--- | :--- | :--- |
+| **Command Runner** | Linux (Ubuntu, RHEL, Amazon Linux) or Windows Server | `uname -a` or `[System.Environment]::OSVersion` | Machine that orchestrates the migration dispatch. |
+| **HTTP Client** | `curl` (v7.68+) or PowerShell `Invoke-WebRequest` | `curl --version` | Downloads staging scripts from `&lt;dcouplr/&gt;` appliance. |
+| **JSON Parser** | `jq` (v1.6+) | `jq --version` | Parses migration metadata and wave outputs. |
+| **Cloud CLI** | AWS CLI v2 / gcloud CLI / Azure CLI | `aws --version` / `gcloud --version` / `az --version` | Pre-stages target launch configurations and VPC bindings. |
+| **OpenSSH Client** | `ssh` (v8.0+) | `ssh -V` | Pushes JIT agent bootstrap to Linux hosts (Port 22). |
+| **PowerShell Core** | `pwsh` (v7.2+) | `pwsh --version` | Pushes JIT agent bootstrap to Windows hosts via WinRM (Port 5986). |
+| **Network Egress** | Outbound TCP Port `443` | `nc -zv mgn.us-east-1.amazonaws.com 443` | Source servers need outbound port 443 to provider endpoints. **Zero inbound ports required.** |
+| **IAM Privileges** | Target Cloud Migration Admin | `aws sts get-caller-identity` | Requires `AWSApplicationMigrationFullAccess`, GCP `roles/vmmigration.admin`, or Azure `Contributor`. |
+
+---
+
+## 3. Where to Get It (Artifacts &amp; Staging Scripts)
+
+All migration staging and host push scripts are compiled directly inside volatile memory by `&lt;dcouplr/&gt;`. Retrieve them using one of the following methods:
+
+### Method A: Direct In-VPC Download (Recommended)
+Download directly from your running `&lt;dcouplr/&gt;` in-VPC appliance:
+
+```bash
+# 1. Provider CLI Staging Script (AWS MGN, GCP M4CE, or Azure Migrate)
+curl -sSL http://127.0.0.1:8000/v1/migration/scripts/provider_cli_staging.sh -o ./provider_cli_staging.sh
+
+# 2. Linux SSH Agent Push Script (Ephemeral JIT Port 22)
+curl -sSL http://127.0.0.1:8000/v1/migration/scripts/agent_push_ssh.sh -o ./agent_push_ssh.sh
+
+# 3. Windows WinRM Agent Push Script (Ephemeral JIT HTTPS WinRM)
+curl -sSL http://127.0.0.1:8000/v1/migration/scripts/agent_push_winrm.ps1 -o ./agent_push_winrm.ps1
+```
+
+### Method B: Extract from Offline Enterprise Bundle
+If operating in a fully air-gapped subnet without HTTP access to port 8000:
+```bash
+# Extract pre-compiled scripts from local release archive
+tar -zxvf /opt/dcouplr/dcouplr-enterprise-v1.0.0.tar.gz -C ./ scripts/
+```
+
+---
+
+## 4. Where to Put It (Target Destination Paths &amp; Permissions)
+
+Place all staging and execution scripts in the designated deployment directories with strict filesystem access controls:
+
+### On the Migration Runner / Bastion Host:
+
+```
+/opt/dcouplr/migration/
+├── provider_cli_staging.sh      (Permissions: chmod 700, Owner: $USER)
+├── agent_push_ssh.sh            (Permissions: chmod 700, Owner: $USER)
+├── agent_push_winrm.ps1         (Permissions: chmod 700, Owner: $USER)
+└── target_launch_template.json  (Permissions: chmod 600, Owner: $USER)
+```
+
+#### Windows Runner Path:
+```powershell
+New-Item -ItemType Directory -Path &quot;C:\dcouplr\migration&quot; -Force
+Move-Item -Path &quot;.\agent_push_winrm.ps1&quot; -Destination &quot;C:\dcouplr\migration\&quot;
+```
+
+#### Linux Setup Command:
+```bash
+sudo mkdir -p /opt/dcouplr/migration
+sudo chown -R $USER:$USER /opt/dcouplr/migration
+chmod 700 /opt/dcouplr/migration
+cd /opt/dcouplr/migration
+```
+
+&gt; [!IMPORTANT]
+&gt; **No Permanent Footprint on Source Servers:** The replication agent bootstrap runs ephemerally. Once registered with your target cloud provider, all temporary bootstrap scripts are purged automatically via `trap cleanup EXIT`.
+
+---
+
+
+
+---
+
+## 4.1 Monitoring Lift-and-Shift Packaging &amp; Target Movement Pipeline
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│               MONITORING LIFT-AND-SHIFT PACKAGING &amp; TARGET TRANSIT FLOW                │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 1. INGESTION &amp; PARSING   --&gt; Extracts source monitors (Datadog, New Relic, Dynatrace,  │
+│                              Splunk, CloudWatch, Azure Monitor, Prometheus).           │
+│ 2. AST RECALIBRATION     --&gt; Transpiles to PromQL &amp; recalibrates downscaled hardware.  │
+│ 3. PHASE 2 PACKAGING     --&gt; Sealed into &#x27;monitoring-bundle-&lt;target_vpc&gt;.tar.gz&#x27;.      │
+│ 4. PRIVATE TRANSIT       --&gt; Moved via VPC Peering, DirectConnect, or S3 VPC Endpoint. │
+│ 5. SHADOW RUN ON TARGET  --&gt; Deployed on target in shadow mode (dual-run validation).  │
+│ 6. FINAL CUTOVER HOOK    --&gt; Promoted to primary target alerting upon DNS switch.      │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### When is Monitoring Configuration Packaged?
+Packaging occurs during **Phase 2 (Pre-Cutover Preparation / Migration Wave Staging)**—well *before* any compute cutover is initiated:
+1. Operator runs `dcouplr migrate-monitoring --source &lt;vendor&gt; --target-vpc &lt;vpc_id&gt; --target-cloud &lt;cloud&gt; --package` or triggers `POST /v1/telemetry/monitoring/migrate`.
+2. `&lt;dcouplr/&gt;` parses source monitors into Unified Intermediate Telemetry Representation (UIT-IR).
+3. Dynamic Hardware Recalibration scales down fixed thresholds (e.g. 32 GB RAM downscaled to 16 GB VM) to eliminate false alert paging.
+4. Generates sealed tarball: `monitoring-bundle-&lt;target_vpc&gt;.tar.gz`.
+
+### How Do We Move That to the New Target VPC?
+To ensure **$0.00 cloud egress**, the package is moved via one of three private transit paths:
+1. **Option A (Private Cloud Transit / VPC Peering / DirectConnect):** Direct bastion-to-bastion transfer (`scp -i target_bastion.pem ./monitoring-bundle-&lt;vpc&gt;.tar.gz user@10.100.1.10:/opt/dcouplr/`).
+2. **Option B (Private Object Storage via VPC Endpoint):** Staged in S3/GCS via private Gateway Endpoint ($0 egress) and pulled onto target nodes.
+3. **Option C (Internal Enterprise GitOps):** Committed to internal GitLab/GitHub and reconciled into the target cluster via ArgoCD/Flux.
+
+### How is it Unpacked and Armed on Target?
+```bash
+cd /opt/dcouplr
+tar -zxvf monitoring-bundle-&lt;target_vpc&gt;.tar.gz
+cd monitoring-bundle-&lt;target_vpc&gt;
+./scripts/deploy-target-monitoring.sh
+```
+This deploys the in-VPC OpenTelemetry Collector, Prometheus rules, and Grafana dashboards in **Shadow Mode**, running dual-stack verification against source metrics for 48–72 hours prior to cutover.
+
+
+## 5. Step-by-Step Implementation Procedure
+
+Follow this sequential procedure to execute a migration wave:
+
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│                      MIGRATION WAVE EXECUTION STEPS                      │
+├─────────┬───────────────────────────────┬────────────────────────────────┤
+│ Step 1  │ Configure Environment &amp; JIT   │ Export API tokens &amp; target IDs │
+│ Step 2  │ Run Provider Staging Script   │ Pre-stage VPCs &amp; templates     │
+│ Step 3  │ Dispatch Agent Bootstrap      │ Push agent to source servers   │
+│ Step 4  │ Monitor Replication Sync      │ Verify lag &lt; 60 seconds        │
+│ Step 5  │ Execute Synchronized Cutover  │ Final delta flush &amp; DNS switch │
+└─────────┴───────────────────────────────┴────────────────────────────────┘
+```
+
+### Step 1: Export Target Cloud Credentials &amp; JIT Session Token
+
+In your migration runner terminal, export the necessary credentials. **Never hardcode credentials in script files.**
+
+```bash
+# For AWS MGN Target:
+export AWS_REGION=&quot;us-east-1&quot;
+export AWS_DEFAULT_REGION=&quot;us-east-1&quot;
+export DCOUPLR_JIT_SESSION_TOKEN=&quot;mgn-reg-token-abc123xyz&quot;
+export SSH_USER=&quot;ubuntu&quot;
+export SSH_KEY_PATH=&quot;$HOME/.ssh/migration_bastion_key.pem&quot;
+
+# For GCP M4CE Target:
+export CLOUDSDK_CORE_PROJECT=&quot;migrated-workloads-prod&quot;
+export CLOUDSDK_COMPUTE_REGION=&quot;us-central1&quot;
+export DCOUPLR_JIT_SESSION_TOKEN=&quot;gcp-m4ce-install-token&quot;
+```
+
+### Step 2: Execute Provider CLI Staging Script
+
+Run the staged launch configuration script to initialize the target cloud replication environment:
+
+```bash
+chmod +x ./provider_cli_staging.sh
+./provider_cli_staging.sh
+```
+
+**Expected Console Output:**
+```text
+[INFO] &lt;dcouplr/&gt; Migration Engine v1.0.0
+[INFO] Validating AWS API connection in region us-east-1... OK
+[INFO] Verifying target VPC vpc-0a1b2c3d4e5f6... Verified
+[INFO] Synthesizing non-overlapping subnets (10.100.0.0/24)... OK
+[INFO] Registering AWS MGN Replication Launch Template: lt-0987654321fedcba... Created
+[SUCCESS] Provider Staging Complete. Ready for Agent Dispatch.
+```
+
+### Step 3: Dispatch Ephemeral Agent Bootstrap
+
+Push the replication agent to the fleet of source servers:
+
+#### For Linux Fleets (via SSH):
+```bash
+chmod +x ./agent_push_ssh.sh
+./agent_push_ssh.sh
+```
+
+**Expected Console Output:**
+```text
+[DISPATCH] Starting concurrent bootstrap across 12 source Linux nodes...
+[NODE 10.0.1.15] JIT SSH port open -&gt; Uploading agent installer... Done.
+[NODE 10.0.1.15] Installing AWS Replication Agent in quiet mode... Installed.
+[NODE 10.0.1.15] TLS 443 outbound stream active. Closing JIT SSH port.
+[NODE 10.0.1.16] JIT SSH port open -&gt; Uploading agent installer... Done.
+[NODE 10.0.1.16] Installing AWS Replication Agent in quiet mode... Installed.
+[SUCCESS] All 12 Linux nodes registered. Security teardown completed.
+```
+
+#### For Windows Fleets (via WinRM):
+```powershell
+pwsh -File ./agent_push_winrm.ps1
+```
+
+### Step 4: Monitor Continuous Replication Lag &amp; Baseline Sync
+
+Continuous block replication begins immediately. Monitor the replication sync until lag drops below 60 seconds:
+
+```bash
+# Query replication state on AWS MGN:
+aws mgn describe-source-servers \
+  --query &#x27;items[*].{ServerID:sourceServerID,Hostname:identificationHints.hostname,Status:dataReplicationInfo.dataReplicationState,Lag:dataReplicationInfo.lagDuration}&#x27; \
+  --output table
+```
+
+**Expected Console Output:**
+```text
+-------------------------------------------------------------------------------------
+|                               DescribeSourceServers                               |
++----------------------+--------------------+---------------------+-----------------+
+|       Hostname       |       Lag          |      ServerID       |     Status      |
++----------------------+--------------------+---------------------+-----------------+
+|  app-server-prod-01  |  0.42s             |  s-1234567890abcdef |  CONTINUOUS     |
+|  app-server-prod-02  |  0.38s             |  s-abcdef1234567890 |  CONTINUOUS     |
+|  db-server-prod-01   |  0.89s             |  s-567890abcdef1234 |  CONTINUOUS     |
++----------------------+--------------------+---------------------+-----------------+
+```
+
+&gt; [!IMPORTANT]
+&gt; **Cutover Ready Condition:** Do NOT initiate cutover until `Status` displays `CONTINUOUS` and `Lag` is **&lt; 60 seconds**.
+
+### Step 5: Execute Synchronized Cutover Hook
+
+When your maintenance window opens:
+
+```bash
+# 1. Initiate final delta block flush
+aws mgn start-cutover --source-server-ids &quot;s-1234567890abcdef&quot; --region &quot;us-east-1&quot;
+
+# 2. Switch In-VPC Split-Horizon DNS to target cloud instances
+dcouplr-cli dns switch --zone mesh.internal --apply-records
+
+# 3. Arm Open-Source Monitoring &amp; Alert Rules (Zero Observability Blind Spots)
+kubectl apply -f /opt/dcouplr/migration/alertmanager_rules.yaml
+```
+
+---
+
+## 6. Verification &amp; What to Look Out For
+
+Once cutover completes, perform these three mandatory operational health checks:
+
+1. **Service Port Reachability:**
+   ```bash
+   curl -I http://app.mesh.internal:8080/health
+   # Expected: HTTP/1.1 200 OK
+   ```
+2. **Prometheus Alerting Ingestion:**
+   ```bash
+   curl -s http://127.0.0.1:9090/api/v1/rules | jq &#x27;.data.groups[].rules[].name&#x27;
+   # Expected: Transpiled Datadog rules are active in Prometheus
+   ```
+3. **WAN Egress Attestation:**
+   ```bash
+   curl -s http://127.0.0.1:8000/v1/telemetry/metrics | jq &#x27;.egress_attestation&#x27;
+   # Expected: { &quot;status&quot;: &quot;ZERO_EGRESS_VERIFIED&quot;, &quot;wan_fees&quot;: &quot;$0.00&quot; }
+   ```
+
+---
+
+## 7. Disconnection &amp; Fast Recovery (Troubleshooting)
+
+| Failure Mode | Root Cause | Immediate Remediation Command |
+| :--- | :--- | :--- |
+| **Agent Bootstrap Connection Timed Out** | Local firewall (`iptables` / Windows Defender) blocking JIT SSH/WinRM. | Add temporary host allowlist rule: `sudo iptables -I INPUT -p tcp --dport 22 -s &lt;bastion-ip&gt; -j ACCEPT` |
+| **Replication Lag Stalls (&gt; 5 min)** | Source disk write throughput exceeds network upload rate. | Exclude non-critical swap/temp directories in provider replication settings. |
+| **Target Cloud Instance Fails Boot** | Missing hypervisor drivers (virtio / ENA) in source kernel. | `&lt;dcouplr/&gt;` auto-injects drivers in launch template: verify `EnableInstanceMetadataTags=true`. |
+| **Emergency Abort &amp; Rollback** | Target application fails smoke testing. | Revert DNS immediately: `dcouplr-cli dns switch --zone mesh.internal --revert`. Source servers were never modified and remain intact. |
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

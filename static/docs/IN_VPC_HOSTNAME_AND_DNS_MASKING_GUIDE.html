@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - IN_VPC_HOSTNAME_AND_DNS_MASKING_GUIDE.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/IN_VPC_HOSTNAME_AND_DNS_MASKING_GUIDE.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="IN_VPC_HOSTNAME_AND_DNS_MASKING_GUIDE.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="operations-guide-in-vpc-hostname-resolution-url-masking">Operations Guide: In-VPC Hostname Resolution &amp; URL Masking</h1>
+<p><strong>Document Identifier:</strong> <code>VA-GUIDE-DNS-MASKING-001</code><br />
+<strong>Governing Architectural Standard:</strong> <code>VA-SPEC-WALLBOARD-OBS-001</code> / <code>D-44</code> / <code>D-51</code><br />
+<strong>Classification:</strong> Standard Operating Procedure (SOP) &amp; Enterprise Infrastructure Guide<br />
+<strong>Target Audience:</strong> DevOps Engineers, Cloud Platform Architects, SREs, Security Administrators<br />
+<strong>Compliance Standards:</strong> SOC-2 Type II, ISO 27001, In-VPC Zero-Egress Invariant</p>
+<hr />
+<h2 id="1-executive-summary-problem-statement">1. Executive Summary &amp; Problem Statement</h2>
+<p>By default, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> binds its high-performance in-VPC telemetry daemon to <code>0.0.0.0:8000</code> (accessible locally via <code>http://127.0.0.1:8000</code>). While ideal for initial container startup, exposing raw loopback IPs (<code>127.0.0.1</code>) and non-standard ports (<code>:8000</code>) introduces significant enterprise friction:</p>
+<ul>
+<li><strong>Developer &amp; Executive Experience</strong>: Navigating to <code>http://127.0.0.1:8000/dashboard</code> looks like raw internal developer scaffolding rather than an enterprise-grade platform.</li>
+<li><strong>Single Sign-On (SSO) &amp; Cookie Constraints</strong>: Enterprise Identity Providers (Okta, Entra ID, Google Workspace) restrict callback redirects on raw IP addresses under strict OAuth2/OIDC security policies.</li>
+<li><strong>Multi-VPC &amp; Team Accessibility</strong>: Engineers across private subnets cannot easily share loopback links.</li>
+</ul>
+<p>This guide provides turnkey, production-tested configurations to mask <code>http://127.0.0.1:8000</code> with <strong>clean, branded, valid domain names</strong> across local workstations, cloud VPCs, Kubernetes clusters, and 24x7 NOC wall displays.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                           IN-VPC HOSTNAME MASKING TOPOLOGIES                                    │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                 │
+│  [1. Local Workstation]           [2. Enterprise VPC]              [3. 24x7 NOC Wallboard]      │
+│  ┌─────────────────────────┐      ┌─────────────────────────┐      ┌─────────────────────────┐  │
+│  │ http://dcouplr.local/   │      │ https://dashboard.      │      │ https://noc.            │  │
+│  │ dashboard               │      │ dcouplr.internal        │      │ yourcompany.com         │  │
+│  └────────────┬────────────┘      └────────────┬────────────┘      └────────────┬────────────┘  │
+│               │                                │                                │               │
+│               ▼                                ▼                                ▼               │
+│  ┌─────────────────────────┐      ┌─────────────────────────┐      ┌─────────────────────────┐  │
+│  │ Windows hosts file +    │      │ Route 53 Private Zone + │      │ <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AirLock™     │  │
+│  │ netsh portproxy (pt 80) │      │ Internal ALB / Ingress  │      │ Cloudflare Zero Trust   │  │
+│  └────────────┬────────────┘      └────────────┬────────────┘      └────────────┬────────────┘  │
+│               │                                │                                │               │
+│               └────────────────────────────────┼────────────────────────────────┘               │
+│                                                ▼                                                │
+│                                 ┌──────────────────────────────┐                                │
+│                                 │ <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Engine (Port 8000)│                                │
+│                                 │ 100% In-VPC • Zero WAN Egress│                                │
+│                                 └──────────────────────────────┘                                │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="2-local-workstation-setup-windows-macos-linux">2. Local Workstation Setup (Windows, macOS, Linux)</h2>
+<h3 id="21-option-a-hostname-masking-dcouplrlocal8000">2.1 Option A: Hostname Masking (<code>dcouplr.local:8000</code>)</h3>
+<p>Every modern operating system includes a local DNS resolution table (<code>hosts</code> file). Adding a domain mapping binds any custom name to <code>127.0.0.1</code>.</p>
+<h4 id="windows-run-powershell-as-administrator">Windows (Run PowerShell as Administrator):</h4>
+<div class="code-box"><div class="code-box-header"><span>powershell</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-powershell">Add-Content -Path &quot;$env:SystemRoot\System32\drivers\etc\hosts&quot; -Value &quot;`n127.0.0.1  dcouplr.local app.dcouplr.local dashboard.dcouplr.local&quot;
+</code></pre></div>
+<h4 id="macos-linux">macOS / Linux:</h4>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">echo &quot;127.0.0.1  dcouplr.local app.dcouplr.local dashboard.dcouplr.local&quot; | sudo tee -a /etc/hosts
+</code></pre></div>
+<p><strong>Result:</strong> Navigating to <code>http://dcouplr.local:8000/dashboard</code> immediately displays the live cluster telemetry.</p>
+<hr />
+<h3 id="22-option-b-dropping-the-8000-port-completely-httpdcouplrlocaldashboard">2.2 Option B: Dropping the <code>:8000</code> Port Completely (<code>http://dcouplr.local/dashboard</code>)</h3>
+<p>To eliminate the port number completely so the application runs on standard HTTP port <code>80</code>:</p>
+<h4 id="windows-native-port-forwarding-powershell-as-administrator">Windows Native Port-Forwarding (PowerShell as Administrator):</h4>
+<p>Windows includes a built-in kernel-level TCP port forwarding proxy (<code>netsh</code>):</p>
+<div class="code-box"><div class="code-box-header"><span>powershell</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-powershell">netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=8000 connectaddress=127.0.0.1
+</code></pre></div>
+<p><em>To verify active proxy:</em></p>
+<div class="code-box"><div class="code-box-header"><span>powershell</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-powershell">netsh interface portproxy show all
+</code></pre></div>
+<p><strong>Result:</strong> You can now type <strong><code>http://dcouplr.local/dashboard</code></strong> directly into Chrome, Edge, or Firefox without specifying <code>:8000</code>!</p>
+<hr />
+<h3 id="23-option-c-zero-config-local-tls-httpsdcouplrlocaldashboard">2.3 Option C: Zero-Config Local TLS (<code>https://dcouplr.local/dashboard</code>)</h3>
+<p>For environments requiring local HTTPS (e.g., testing WebRTC war-rooms or camera/microphone permissions):</p>
+<p>Create a <code>Caddyfile</code> in your workspace:</p>
+<div class="code-box"><div class="code-box-header"><span>caddy</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-caddy">dcouplr.local {
+    reverse_proxy 127.0.0.1:8000
+    tls internal
+}
+</code></pre></div>
+<p>Run <code>caddy run</code>. Caddy automatically generates and installs a trusted local CA certificate into the Windows Certificate Store, serving <strong><code>https://dcouplr.local/dashboard</code></strong> with a green lock icon.</p>
+<hr />
+<h2 id="3-enterprise-vpc-private-dns-aws-gcp-azure">3. Enterprise VPC Private DNS (AWS, GCP, Azure)</h2>
+<p>In enterprise cloud perimeters, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> is accessed across hundreds of VPC-peered developer subnets using Cloud Private DNS.</p>
+<h3 id="31-aws-route-53-private-hosted-zone">3.1 AWS Route 53 Private Hosted Zone</h3>
+<ol>
+<li><strong>Create Private Hosted Zone</strong>: <code>dcouplr.internal</code> associated with your application VPCs.</li>
+<li><strong>Provision Internal Application Load Balancer (ALB)</strong>:
+<ul>
+<li>Scheme: <code>internal</code> (RFC 1918 private subnets only).</li>
+<li>Listener: Port 443 with corporate ACM wildcard certificate (<code>*.dcouplr.internal</code>).</li>
+<li>Target Group: Port 8000 pointing to <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> EC2 instances or container tasks.</li>
+</ul>
+</li>
+<li><strong>Create Route 53 Alias Record</strong>:
+<ul>
+<li><code>dashboard.dcouplr.internal</code> $\rightarrow$ DualStack ALB DNS name.</li>
+</ul>
+</li>
+<li><strong>End-User URL</strong>:
+👉 <strong><code>https://dashboard.dcouplr.internal</code></strong></li>
+</ol>
+<h3 id="32-google-cloud-dns-private-zone">3.2 Google Cloud DNS Private Zone</h3>
+<ol>
+<li><strong>Create Private Zone</strong>: <code>dcouplr.corp</code> authorized for your VPC network.</li>
+<li><strong>Deploy Internal HTTP(S) Load Balancer</strong>:
+<ul>
+<li>Frontend: Private IPv4 VIP on your internal subnet.</li>
+<li>Backend Service: Instance Group running <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> on port 8000 with health check on <code>GET /v1/health</code>.</li>
+</ul>
+</li>
+<li><strong>Add DNS A-Record</strong>:
+<ul>
+<li><code>dashboard.dcouplr.corp</code> $\rightarrow$ Internal LB VIP.</li>
+</ul>
+</li>
+</ol>
+<h3 id="33-azure-private-dns-zone">3.3 Azure Private DNS Zone</h3>
+<ol>
+<li><strong>Create Private DNS Zone</strong>: <code>privatelink.dcouplr.internal</code> linked to target Virtual Networks.</li>
+<li><strong>Deploy Azure Application Gateway (Private Frontend IP)</strong>:
+<ul>
+<li>HTTP Setting: Backend port 8000.</li>
+<li>Listener: Private HTTPS on port 443.</li>
+</ul>
+</li>
+<li><strong>Add A-Record</strong>:
+<ul>
+<li><code>dashboard.privatelink.dcouplr.internal</code> $\rightarrow$ App Gateway Private IP.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="4-kubernetes-ingress-controller-helm-gitops">4. Kubernetes Ingress Controller (Helm / GitOps)</h2>
+<p>For Kubernetes deployments (EKS, GKE, AKS, OpenShift), the official Helm chart (<code>deploy/helm/</code>) includes ingress declarations:</p>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml">apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dcouplr-ingress
+  namespace: dcouplr-system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: &quot;true&quot;
+    nginx.ingress.kubernetes.io/proxy-read-timeout: &quot;3600&quot;
+    nginx.ingress.kubernetes.io/proxy-send-timeout: &quot;3600&quot;
+spec:
+  rules:
+  - host: dcouplr.internal
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dcouplr-api
+            port:
+              number: 8000
+  tls:
+  - hosts:
+    - dcouplr.internal
+    secretName: dcouplr-tls-cert
+</code></pre></div>
+<p><strong>End-User Access</strong>: Engineers on the company VPN or within the cluster network navigate to:<br />
+👉 <strong><code>https://dcouplr.internal/dashboard</code></strong></p>
+<hr />
+<h2 id="5-zero-trust-ingress-tunnel-dcouplr-airlock">5. Zero-Trust Ingress Tunnel: <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AirLock™</code></h2>
+<p>For remote SREs and 24x7 NOC wallboards located outside the physical VPC perimeter, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AirLock™</code> eliminates the need for VPN clients while maintaining <strong>0 open inbound firewall ports</strong>:</p>
+<ol>
+<li><strong>Deploy In-VPC Tunnel Daemon</strong>:<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">./scripts/deploy_wallboard_tunnel.sh dcouplr-airlock noc.yourcompany.com 8000
+</code></pre></div>
+</li>
+<li><strong>Configure Cloudflare Access Service Token</strong>:
+<ul>
+<li>Create non-expiring Service Token (<code>CF-Access-Client-Id</code> and <code>CF-Access-Client-Secret</code>).</li>
+<li>Bind wallboard kiosk browsers or developer browser sessions to validate token.</li>
+</ul>
+</li>
+<li><strong>End-User &amp; TV Wall URL</strong>:<br />
+👉 <strong><code>https://noc.yourcompany.com</code></strong></li>
+</ol>
+<hr />
+<h2 id="6-pre-configured-cors-allowed-origins">6. Pre-Configured CORS &amp; Allowed Origins</h2>
+<p>The <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> API engine has been pre-configured in <code>migration_tools/api/app.py</code> to allow cross-origin requests from all standard masked hostnames:</p>
+<div class="code-box"><div class="code-box-header"><span>python</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-python">ALLOWED_ORIGINS = [
+    &quot;http://127.0.0.1:8000&quot;,
+    &quot;http://localhost:8000&quot;,
+    &quot;http://dcouplr.local:8000&quot;,
+    &quot;http://dcouplr.local&quot;,
+    &quot;http://app.dcouplr.internal:8000&quot;,
+    &quot;http://app.dcouplr.internal&quot;,
+    &quot;http://dashboard.dcouplr.local:8000&quot;,
+    &quot;http://dashboard.dcouplr.local&quot;,
+    &quot;https://dcouplr.local&quot;,
+    &quot;https://app.dcouplr.internal&quot;
+]
+</code></pre></div>
+<p>Any request routed through these hostnames is recognized as an authorized internal origin with full cookie and session preservation.</p>
+</div>
+      <pre id="raw-view"><code># Operations Guide: In-VPC Hostname Resolution &amp; URL Masking
+
+**Document Identifier:** `VA-GUIDE-DNS-MASKING-001`  
+**Governing Architectural Standard:** `VA-SPEC-WALLBOARD-OBS-001` / `D-44` / `D-51`  
+**Classification:** Standard Operating Procedure (SOP) &amp; Enterprise Infrastructure Guide  
+**Target Audience:** DevOps Engineers, Cloud Platform Architects, SREs, Security Administrators  
+**Compliance Standards:** SOC-2 Type II, ISO 27001, In-VPC Zero-Egress Invariant
+
+---
+
+## 1. Executive Summary &amp; Problem Statement
+
+By default, `&lt;dcouplr/&gt;` binds its high-performance in-VPC telemetry daemon to `0.0.0.0:8000` (accessible locally via `http://127.0.0.1:8000`). While ideal for initial container startup, exposing raw loopback IPs (`127.0.0.1`) and non-standard ports (`:8000`) introduces significant enterprise friction:
+- **Developer &amp; Executive Experience**: Navigating to `http://127.0.0.1:8000/dashboard` looks like raw internal developer scaffolding rather than an enterprise-grade platform.
+- **Single Sign-On (SSO) &amp; Cookie Constraints**: Enterprise Identity Providers (Okta, Entra ID, Google Workspace) restrict callback redirects on raw IP addresses under strict OAuth2/OIDC security policies.
+- **Multi-VPC &amp; Team Accessibility**: Engineers across private subnets cannot easily share loopback links.
+
+This guide provides turnkey, production-tested configurations to mask `http://127.0.0.1:8000` with **clean, branded, valid domain names** across local workstations, cloud VPCs, Kubernetes clusters, and 24x7 NOC wall displays.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                           IN-VPC HOSTNAME MASKING TOPOLOGIES                                    │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                 │
+│  [1. Local Workstation]           [2. Enterprise VPC]              [3. 24x7 NOC Wallboard]      │
+│  ┌─────────────────────────┐      ┌─────────────────────────┐      ┌─────────────────────────┐  │
+│  │ http://dcouplr.local/   │      │ https://dashboard.      │      │ https://noc.            │  │
+│  │ dashboard               │      │ dcouplr.internal        │      │ yourcompany.com         │  │
+│  └────────────┬────────────┘      └────────────┬────────────┘      └────────────┬────────────┘  │
+│               │                                │                                │               │
+│               ▼                                ▼                                ▼               │
+│  ┌─────────────────────────┐      ┌─────────────────────────┐      ┌─────────────────────────┐  │
+│  │ Windows hosts file +    │      │ Route 53 Private Zone + │      │ &lt;dcouplr/&gt; AirLock™     │  │
+│  │ netsh portproxy (pt 80) │      │ Internal ALB / Ingress  │      │ Cloudflare Zero Trust   │  │
+│  └────────────┬────────────┘      └────────────┬────────────┘      └────────────┬────────────┘  │
+│               │                                │                                │               │
+│               └────────────────────────────────┼────────────────────────────────┘               │
+│                                                ▼                                                │
+│                                 ┌──────────────────────────────┐                                │
+│                                 │ &lt;dcouplr/&gt; Engine (Port 8000)│                                │
+│                                 │ 100% In-VPC • Zero WAN Egress│                                │
+│                                 └──────────────────────────────┘                                │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. Local Workstation Setup (Windows, macOS, Linux)
+
+### 2.1 Option A: Hostname Masking (`dcouplr.local:8000`)
+Every modern operating system includes a local DNS resolution table (`hosts` file). Adding a domain mapping binds any custom name to `127.0.0.1`.
+
+#### Windows (Run PowerShell as Administrator):
+```powershell
+Add-Content -Path &quot;$env:SystemRoot\System32\drivers\etc\hosts&quot; -Value &quot;`n127.0.0.1  dcouplr.local app.dcouplr.local dashboard.dcouplr.local&quot;
+```
+
+#### macOS / Linux:
+```bash
+echo &quot;127.0.0.1  dcouplr.local app.dcouplr.local dashboard.dcouplr.local&quot; | sudo tee -a /etc/hosts
+```
+
+**Result:** Navigating to `http://dcouplr.local:8000/dashboard` immediately displays the live cluster telemetry.
+
+---
+
+### 2.2 Option B: Dropping the `:8000` Port Completely (`http://dcouplr.local/dashboard`)
+To eliminate the port number completely so the application runs on standard HTTP port `80`:
+
+#### Windows Native Port-Forwarding (PowerShell as Administrator):
+Windows includes a built-in kernel-level TCP port forwarding proxy (`netsh`):
+```powershell
+netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=8000 connectaddress=127.0.0.1
+```
+*To verify active proxy:*
+```powershell
+netsh interface portproxy show all
+```
+
+**Result:** You can now type **`http://dcouplr.local/dashboard`** directly into Chrome, Edge, or Firefox without specifying `:8000`!
+
+---
+
+### 2.3 Option C: Zero-Config Local TLS (`https://dcouplr.local/dashboard`)
+For environments requiring local HTTPS (e.g., testing WebRTC war-rooms or camera/microphone permissions):
+
+Create a `Caddyfile` in your workspace:
+```caddy
+dcouplr.local {
+    reverse_proxy 127.0.0.1:8000
+    tls internal
+}
+```
+Run `caddy run`. Caddy automatically generates and installs a trusted local CA certificate into the Windows Certificate Store, serving **`https://dcouplr.local/dashboard`** with a green lock icon.
+
+---
+
+## 3. Enterprise VPC Private DNS (AWS, GCP, Azure)
+
+In enterprise cloud perimeters, `&lt;dcouplr/&gt;` is accessed across hundreds of VPC-peered developer subnets using Cloud Private DNS.
+
+### 3.1 AWS Route 53 Private Hosted Zone
+1. **Create Private Hosted Zone**: `dcouplr.internal` associated with your application VPCs.
+2. **Provision Internal Application Load Balancer (ALB)**:
+   - Scheme: `internal` (RFC 1918 private subnets only).
+   - Listener: Port 443 with corporate ACM wildcard certificate (`*.dcouplr.internal`).
+   - Target Group: Port 8000 pointing to `&lt;dcouplr/&gt;` EC2 instances or container tasks.
+3. **Create Route 53 Alias Record**:
+   - `dashboard.dcouplr.internal` $\rightarrow$ DualStack ALB DNS name.
+4. **End-User URL**:
+   👉 **`https://dashboard.dcouplr.internal`**
+
+### 3.2 Google Cloud DNS Private Zone
+1. **Create Private Zone**: `dcouplr.corp` authorized for your VPC network.
+2. **Deploy Internal HTTP(S) Load Balancer**:
+   - Frontend: Private IPv4 VIP on your internal subnet.
+   - Backend Service: Instance Group running `&lt;dcouplr/&gt;` on port 8000 with health check on `GET /v1/health`.
+3. **Add DNS A-Record**:
+   - `dashboard.dcouplr.corp` $\rightarrow$ Internal LB VIP.
+
+### 3.3 Azure Private DNS Zone
+1. **Create Private DNS Zone**: `privatelink.dcouplr.internal` linked to target Virtual Networks.
+2. **Deploy Azure Application Gateway (Private Frontend IP)**:
+   - HTTP Setting: Backend port 8000.
+   - Listener: Private HTTPS on port 443.
+3. **Add A-Record**:
+   - `dashboard.privatelink.dcouplr.internal` $\rightarrow$ App Gateway Private IP.
+
+---
+
+## 4. Kubernetes Ingress Controller (Helm / GitOps)
+
+For Kubernetes deployments (EKS, GKE, AKS, OpenShift), the official Helm chart (`deploy/helm/`) includes ingress declarations:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dcouplr-ingress
+  namespace: dcouplr-system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: &quot;true&quot;
+    nginx.ingress.kubernetes.io/proxy-read-timeout: &quot;3600&quot;
+    nginx.ingress.kubernetes.io/proxy-send-timeout: &quot;3600&quot;
+spec:
+  rules:
+  - host: dcouplr.internal
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dcouplr-api
+            port:
+              number: 8000
+  tls:
+  - hosts:
+    - dcouplr.internal
+    secretName: dcouplr-tls-cert
+```
+
+**End-User Access**: Engineers on the company VPN or within the cluster network navigate to:  
+👉 **`https://dcouplr.internal/dashboard`**
+
+---
+
+## 5. Zero-Trust Ingress Tunnel: `&lt;dcouplr/&gt; AirLock™`
+
+For remote SREs and 24x7 NOC wallboards located outside the physical VPC perimeter, `&lt;dcouplr/&gt; AirLock™` eliminates the need for VPN clients while maintaining **0 open inbound firewall ports**:
+
+1. **Deploy In-VPC Tunnel Daemon**:
+   ```bash
+   ./scripts/deploy_wallboard_tunnel.sh dcouplr-airlock noc.yourcompany.com 8000
+   ```
+2. **Configure Cloudflare Access Service Token**:
+   - Create non-expiring Service Token (`CF-Access-Client-Id` and `CF-Access-Client-Secret`).
+   - Bind wallboard kiosk browsers or developer browser sessions to validate token.
+3. **End-User &amp; TV Wall URL**:  
+   👉 **`https://noc.yourcompany.com`**
+
+---
+
+## 6. Pre-Configured CORS &amp; Allowed Origins
+
+The `&lt;dcouplr/&gt;` API engine has been pre-configured in `migration_tools/api/app.py` to allow cross-origin requests from all standard masked hostnames:
+
+```python
+ALLOWED_ORIGINS = [
+    &quot;http://127.0.0.1:8000&quot;,
+    &quot;http://localhost:8000&quot;,
+    &quot;http://dcouplr.local:8000&quot;,
+    &quot;http://dcouplr.local&quot;,
+    &quot;http://app.dcouplr.internal:8000&quot;,
+    &quot;http://app.dcouplr.internal&quot;,
+    &quot;http://dashboard.dcouplr.local:8000&quot;,
+    &quot;http://dashboard.dcouplr.local&quot;,
+    &quot;https://dcouplr.local&quot;,
+    &quot;https://app.dcouplr.internal&quot;
+]
+```
+
+Any request routed through these hostnames is recognized as an authorized internal origin with full cookie and session preservation.
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># Operations Guide: In-VPC Hostname Resolution &amp; URL Masking
+
+**Document Identifier:** `VA-GUIDE-DNS-MASKING-001`  
+**Governing Architectural Standard:** `VA-SPEC-WALLBOARD-OBS-001` / `D-44` / `D-51`  
+**Classification:** Standard Operating Procedure (SOP) &amp; Enterprise Infrastructure Guide  
+**Target Audience:** DevOps Engineers, Cloud Platform Architects, SREs, Security Administrators  
+**Compliance Standards:** SOC-2 Type II, ISO 27001, In-VPC Zero-Egress Invariant
+
+---
+
+## 1. Executive Summary &amp; Problem Statement
+
+By default, `&lt;dcouplr/&gt;` binds its high-performance in-VPC telemetry daemon to `0.0.0.0:8000` (accessible locally via `http://127.0.0.1:8000`). While ideal for initial container startup, exposing raw loopback IPs (`127.0.0.1`) and non-standard ports (`:8000`) introduces significant enterprise friction:
+- **Developer &amp; Executive Experience**: Navigating to `http://127.0.0.1:8000/dashboard` looks like raw internal developer scaffolding rather than an enterprise-grade platform.
+- **Single Sign-On (SSO) &amp; Cookie Constraints**: Enterprise Identity Providers (Okta, Entra ID, Google Workspace) restrict callback redirects on raw IP addresses under strict OAuth2/OIDC security policies.
+- **Multi-VPC &amp; Team Accessibility**: Engineers across private subnets cannot easily share loopback links.
+
+This guide provides turnkey, production-tested configurations to mask `http://127.0.0.1:8000` with **clean, branded, valid domain names** across local workstations, cloud VPCs, Kubernetes clusters, and 24x7 NOC wall displays.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                           IN-VPC HOSTNAME MASKING TOPOLOGIES                                    │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                 │
+│  [1. Local Workstation]           [2. Enterprise VPC]              [3. 24x7 NOC Wallboard]      │
+│  ┌─────────────────────────┐      ┌─────────────────────────┐      ┌─────────────────────────┐  │
+│  │ http://dcouplr.local/   │      │ https://dashboard.      │      │ https://noc.            │  │
+│  │ dashboard               │      │ dcouplr.internal        │      │ yourcompany.com         │  │
+│  └────────────┬────────────┘      └────────────┬────────────┘      └────────────┬────────────┘  │
+│               │                                │                                │               │
+│               ▼                                ▼                                ▼               │
+│  ┌─────────────────────────┐      ┌─────────────────────────┐      ┌─────────────────────────┐  │
+│  │ Windows hosts file +    │      │ Route 53 Private Zone + │      │ &lt;dcouplr/&gt; AirLock™     │  │
+│  │ netsh portproxy (pt 80) │      │ Internal ALB / Ingress  │      │ Cloudflare Zero Trust   │  │
+│  └────────────┬────────────┘      └────────────┬────────────┘      └────────────┬────────────┘  │
+│               │                                │                                │               │
+│               └────────────────────────────────┼────────────────────────────────┘               │
+│                                                ▼                                                │
+│                                 ┌──────────────────────────────┐                                │
+│                                 │ &lt;dcouplr/&gt; Engine (Port 8000)│                                │
+│                                 │ 100% In-VPC • Zero WAN Egress│                                │
+│                                 └──────────────────────────────┘                                │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. Local Workstation Setup (Windows, macOS, Linux)
+
+### 2.1 Option A: Hostname Masking (`dcouplr.local:8000`)
+Every modern operating system includes a local DNS resolution table (`hosts` file). Adding a domain mapping binds any custom name to `127.0.0.1`.
+
+#### Windows (Run PowerShell as Administrator):
+```powershell
+Add-Content -Path &quot;$env:SystemRoot\System32\drivers\etc\hosts&quot; -Value &quot;`n127.0.0.1  dcouplr.local app.dcouplr.local dashboard.dcouplr.local&quot;
+```
+
+#### macOS / Linux:
+```bash
+echo &quot;127.0.0.1  dcouplr.local app.dcouplr.local dashboard.dcouplr.local&quot; | sudo tee -a /etc/hosts
+```
+
+**Result:** Navigating to `http://dcouplr.local:8000/dashboard` immediately displays the live cluster telemetry.
+
+---
+
+### 2.2 Option B: Dropping the `:8000` Port Completely (`http://dcouplr.local/dashboard`)
+To eliminate the port number completely so the application runs on standard HTTP port `80`:
+
+#### Windows Native Port-Forwarding (PowerShell as Administrator):
+Windows includes a built-in kernel-level TCP port forwarding proxy (`netsh`):
+```powershell
+netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=8000 connectaddress=127.0.0.1
+```
+*To verify active proxy:*
+```powershell
+netsh interface portproxy show all
+```
+
+**Result:** You can now type **`http://dcouplr.local/dashboard`** directly into Chrome, Edge, or Firefox without specifying `:8000`!
+
+---
+
+### 2.3 Option C: Zero-Config Local TLS (`https://dcouplr.local/dashboard`)
+For environments requiring local HTTPS (e.g., testing WebRTC war-rooms or camera/microphone permissions):
+
+Create a `Caddyfile` in your workspace:
+```caddy
+dcouplr.local {
+    reverse_proxy 127.0.0.1:8000
+    tls internal
+}
+```
+Run `caddy run`. Caddy automatically generates and installs a trusted local CA certificate into the Windows Certificate Store, serving **`https://dcouplr.local/dashboard`** with a green lock icon.
+
+---
+
+## 3. Enterprise VPC Private DNS (AWS, GCP, Azure)
+
+In enterprise cloud perimeters, `&lt;dcouplr/&gt;` is accessed across hundreds of VPC-peered developer subnets using Cloud Private DNS.
+
+### 3.1 AWS Route 53 Private Hosted Zone
+1. **Create Private Hosted Zone**: `dcouplr.internal` associated with your application VPCs.
+2. **Provision Internal Application Load Balancer (ALB)**:
+   - Scheme: `internal` (RFC 1918 private subnets only).
+   - Listener: Port 443 with corporate ACM wildcard certificate (`*.dcouplr.internal`).
+   - Target Group: Port 8000 pointing to `&lt;dcouplr/&gt;` EC2 instances or container tasks.
+3. **Create Route 53 Alias Record**:
+   - `dashboard.dcouplr.internal` $\rightarrow$ DualStack ALB DNS name.
+4. **End-User URL**:
+   👉 **`https://dashboard.dcouplr.internal`**
+
+### 3.2 Google Cloud DNS Private Zone
+1. **Create Private Zone**: `dcouplr.corp` authorized for your VPC network.
+2. **Deploy Internal HTTP(S) Load Balancer**:
+   - Frontend: Private IPv4 VIP on your internal subnet.
+   - Backend Service: Instance Group running `&lt;dcouplr/&gt;` on port 8000 with health check on `GET /v1/health`.
+3. **Add DNS A-Record**:
+   - `dashboard.dcouplr.corp` $\rightarrow$ Internal LB VIP.
+
+### 3.3 Azure Private DNS Zone
+1. **Create Private DNS Zone**: `privatelink.dcouplr.internal` linked to target Virtual Networks.
+2. **Deploy Azure Application Gateway (Private Frontend IP)**:
+   - HTTP Setting: Backend port 8000.
+   - Listener: Private HTTPS on port 443.
+3. **Add A-Record**:
+   - `dashboard.privatelink.dcouplr.internal` $\rightarrow$ App Gateway Private IP.
+
+---
+
+## 4. Kubernetes Ingress Controller (Helm / GitOps)
+
+For Kubernetes deployments (EKS, GKE, AKS, OpenShift), the official Helm chart (`deploy/helm/`) includes ingress declarations:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dcouplr-ingress
+  namespace: dcouplr-system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: &quot;true&quot;
+    nginx.ingress.kubernetes.io/proxy-read-timeout: &quot;3600&quot;
+    nginx.ingress.kubernetes.io/proxy-send-timeout: &quot;3600&quot;
+spec:
+  rules:
+  - host: dcouplr.internal
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dcouplr-api
+            port:
+              number: 8000
+  tls:
+  - hosts:
+    - dcouplr.internal
+    secretName: dcouplr-tls-cert
+```
+
+**End-User Access**: Engineers on the company VPN or within the cluster network navigate to:  
+👉 **`https://dcouplr.internal/dashboard`**
+
+---
+
+## 5. Zero-Trust Ingress Tunnel: `&lt;dcouplr/&gt; AirLock™`
+
+For remote SREs and 24x7 NOC wallboards located outside the physical VPC perimeter, `&lt;dcouplr/&gt; AirLock™` eliminates the need for VPN clients while maintaining **0 open inbound firewall ports**:
+
+1. **Deploy In-VPC Tunnel Daemon**:
+   ```bash
+   ./scripts/deploy_wallboard_tunnel.sh dcouplr-airlock noc.yourcompany.com 8000
+   ```
+2. **Configure Cloudflare Access Service Token**:
+   - Create non-expiring Service Token (`CF-Access-Client-Id` and `CF-Access-Client-Secret`).
+   - Bind wallboard kiosk browsers or developer browser sessions to validate token.
+3. **End-User &amp; TV Wall URL**:  
+   👉 **`https://noc.yourcompany.com`**
+
+---
+
+## 6. Pre-Configured CORS &amp; Allowed Origins
+
+The `&lt;dcouplr/&gt;` API engine has been pre-configured in `migration_tools/api/app.py` to allow cross-origin requests from all standard masked hostnames:
+
+```python
+ALLOWED_ORIGINS = [
+    &quot;http://127.0.0.1:8000&quot;,
+    &quot;http://localhost:8000&quot;,
+    &quot;http://dcouplr.local:8000&quot;,
+    &quot;http://dcouplr.local&quot;,
+    &quot;http://app.dcouplr.internal:8000&quot;,
+    &quot;http://app.dcouplr.internal&quot;,
+    &quot;http://dashboard.dcouplr.local:8000&quot;,
+    &quot;http://dashboard.dcouplr.local&quot;,
+    &quot;https://dcouplr.local&quot;,
+    &quot;https://app.dcouplr.internal&quot;
+]
+```
+
+Any request routed through these hostnames is recognized as an authorized internal origin with full cookie and session preservation.
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

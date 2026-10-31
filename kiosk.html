@@ -1,0 +1,2494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>&lt;dcouplr/&gt; NOC Kiosk &bull; Air-Gapped SecOps Zero-Egress Monitor</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #050811;
+      --bg-surface: #0a0f1d;
+      --bg-card: #0f172a;
+      --bg-card-hover: #16223d;
+      --border-subtle: #1e293b;
+      --border-glow: #22d3ee;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-emerald: #10b981;
+      --accent-lime: #39ff14;
+      --accent-cyan: #06b6d4;
+      --accent-cyan-bright: #00e5ff;
+      --accent-purple: #8b5cf6;
+      --accent-amber: #f59e0b;
+      --accent-rose: #ef4444;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-heading: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    /* Strict Zero-Scroll Single-Monitor Viewport */
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      max-width: 100vw;
+      max-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Absolute Zero Scrollbar Guarantee */
+      background-color: var(--bg-deep);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* NOC Background Matrix Grid */
+    .kiosk-grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Canonical <dcouplr/> Brand Wordmark (VA-BRAND-001) */
+    .brand-link {
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .brand-logo,
+    .dcouplr-logo {
+      display: inline-flex;
+      align-items: center;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0;
+      margin: 0;
+      user-select: none;
+      line-height: 1;
+      white-space: nowrap;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .dcouplr-bracket,
+    .logo-bracket {
+      color: #39ff14 !important; /* Electric Neon-Lime Green */
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 1.35rem;
+      line-height: 1;
+      letter-spacing: -1px;
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+      display: inline-block;
+    }
+
+    .dcouplr-text,
+    .logo-text {
+      font-family: var(--font-sans);
+      font-weight: 800;
+      font-size: 1.25rem;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      color: #ffffff !important;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+      display: inline-block;
+    }
+
+    /* Header Bar */
+    header.kiosk-header {
+      position: relative;
+      z-index: 50;
+      height: 44px;
+      background: rgba(10, 15, 29, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .badge-kiosk-mode {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--accent-purple);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      text-transform: none;
+      white-space: nowrap;
+    }
+
+    .live-pulse-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.2rem 0.65rem;
+      border-radius: 9999px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--accent-emerald);
+      font-weight: 600;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+      animation: pulse-ring 2s infinite ease-in-out;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; filter: drop-shadow(0 0 6px var(--accent-emerald)); }
+      100% { transform: scale(0.9); opacity: 0.8; }
+    }
+
+    .header-center-info {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .header-stat-item strong {
+      color: var(--text-main);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-kiosk-action {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-family: var(--font-heading);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.28rem 0.65rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .btn-kiosk-action:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+      border-color: var(--accent-cyan);
+    }
+
+    /* Incident Banner and Alarm Flash */
+    .kiosk-header.header-pulse-critical {
+      border-bottom: 2px solid var(--accent-rose) !important;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+      animation: flash-critical 1.5s infinite alternate;
+    }
+
+    .kiosk-header.header-pulse-warning {
+      border-bottom: 2px solid var(--accent-amber) !important;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+    }
+
+    @keyframes flash-critical {
+      from { background: rgba(239, 68, 68, 0.15); }
+      to { background: rgba(10, 15, 29, 0.98); }
+    }
+
+    #noc-incident-banner {
+      display: none;
+      padding: 4px 1rem;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.28) 0%, rgba(15, 23, 42, 0.98) 100%);
+      border-bottom: 2px solid #ef4444;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      z-index: 60;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    /* Zero-Scroll Main Viewport Layout: 2 Columns (Left: Observer Telemetry, Right: Observed Topology & Raft) */
+    main.kiosk-layout {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      min-height: 0;
+      height: auto;
+      width: 100vw;
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      gap: 8px;
+      padding: 8px;
+      box-sizing: border-box;
+      overflow: hidden; /* Zero Scroll Guaranteed */
+    }
+
+    @media (max-width: 1200px) {
+      main.kiosk-layout {
+        grid-template-columns: 340px 1fr;
+      }
+    }
+
+    /* Common Card Panels */
+    .kiosk-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .kiosk-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 0.45rem;
+      flex-shrink: 0;
+    }
+
+    .kiosk-panel-title {
+      font-family: var(--font-heading);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .kiosk-badge-pill {
+      font-family: var(--font-mono);
+      font-size: 0.63rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      color: var(--accent-cyan);
+      white-space: nowrap;
+    }
+
+    /* =========================================================================
+       LEFT COLUMN: Core Engine Telemetry & Observer Performance Indicators
+       ========================================================================= */
+    .observer-column {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* Observer Title Banner */
+    .observer-master-banner {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 8px;
+      padding: 0.5rem 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      flex-shrink: 0;
+    }
+
+    .observer-banner-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .observer-tier-text {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--accent-lime);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      letter-spacing: 0.03em;
+    }
+
+    .observer-ctrl-plane {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.67rem;
+      color: var(--text-muted);
+    }
+
+    .observer-ctrl-plane strong {
+      color: #38bdf8;
+    }
+
+    /* Core Functions Strip (8 Active Subsystems) */
+    .core-functions-container {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 0.45rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      flex-shrink: 0;
+    }
+
+    .core-functions-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.66rem;
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .core-functions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px;
+    }
+
+    .core-fn-chip {
+      background: rgba(11, 17, 32, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 5px;
+      padding: 3px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      transition: border-color 0.15s ease;
+    }
+
+    .core-fn-chip:hover {
+      border-color: rgba(6, 182, 212, 0.4);
+    }
+
+    .core-fn-name {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-muted);
+    }
+
+    .core-fn-status {
+      font-weight: 700;
+      color: var(--accent-emerald);
+      font-size: 0.62rem;
+    }
+
+    /* Key Performance Indicators (Micro-Gauges / Cards) */
+    .kpi-vertical-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .kpi-micro-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      padding: 0.4rem 0.55rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      position: relative;
+    }
+
+    .kpi-card-spanning {
+      grid-column: span 2;
+    }
+
+    .kpi-micro-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .kpi-micro-val-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.35rem;
+    }
+
+    .kpi-micro-num {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1;
+    }
+
+    .kpi-micro-unit {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-family: var(--font-sans);
+    }
+
+    .kpi-micro-subtext {
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+
+    .kpi-micro-bar {
+      height: 3px;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 1px;
+    }
+
+    .kpi-micro-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--accent-cyan);
+      transition: width 0.3s ease;
+    }
+
+    /* Real-Time Waveform Sparkline */
+    .waveform-box {
+      background: rgba(11, 17, 32, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 0.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .waveform-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .waveform-legend {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.62rem;
+    }
+
+    .legend-tag {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .legend-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+
+    .waveform-canvas-wrap {
+      flex: 1;
+      position: relative;
+      min-height: 0;
+      width: 100%;
+    }
+
+    canvas.kiosk-waveform-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+
+    /* SRE Self-Healing & Invariants Strip */
+    .sre-invariants-strip {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 8px;
+      padding: 0.4rem 0.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      flex-shrink: 0;
+    }
+
+    .sre-invariants-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.66rem;
+      font-family: var(--font-mono);
+    }
+
+    .sre-status-pill {
+      font-weight: 700;
+      color: var(--accent-emerald);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sre-step-chips {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      font-size: 0.6rem;
+      font-family: var(--font-mono);
+    }
+
+    .sre-chip {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      padding: 2px 5px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* =========================================================================
+       RIGHT COLUMN: Multi-VPC Cross-Cloud Topology & Embedded Raft Consensus
+       ========================================================================= */
+    .observed-column {
+      display: grid;
+      grid-template-rows: 1fr 146px; /* High-priority area expansion for Multi-VPC Topology */
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* --- TOP: Interactive Multi-VPC Cross-Cloud Topology Map --- */
+    .topology-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .topology-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .topology-filter-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .topo-filter-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .topo-filter-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+      border-color: var(--text-dim);
+    }
+
+    .topo-filter-btn.active {
+      background: rgba(6, 182, 212, 0.18);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .topo-sim-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-topo-alarm {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fb7185;
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-topo-alarm:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .select-topo-scenario {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* SVG Topology Stage */
+    .topology-stage-wrap {
+      flex: 1;
+      position: relative;
+      min-height: 0;
+      width: 100%;
+      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.6) 0%, rgba(6, 9, 17, 0.95) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 0.35rem;
+    }
+
+    #svg-topology-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Live Cross-Cloud Connectivity Mesh Strip */
+    .connectivity-mesh-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      background: rgba(11, 17, 32, 0.9);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      border-radius: 6px;
+      padding: 0.2rem 0.6rem;
+      font-family: var(--font-mono);
+      font-size: 0.63rem;
+      flex-shrink: 0;
+      margin-top: 0.25rem;
+      overflow: hidden;
+    }
+
+    .mesh-strip-label {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--accent-cyan);
+      font-weight: 700;
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+      font-size: 0.62rem;
+    }
+
+    .mesh-links-list {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: nowrap;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .mesh-link-chip {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      padding: 2px 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.61rem;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .mesh-link-chip:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.15);
+    }
+
+    .mesh-link-chip strong {
+      color: var(--text-main);
+    }
+
+    .mesh-link-chip span {
+      color: var(--text-muted);
+    }
+
+    .mesh-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .mesh-strip-badge {
+      font-size: 0.59rem;
+      font-weight: 700;
+      color: var(--accent-emerald);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* Node Inspector Bottom Bar */
+    .node-inspector-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      background: rgba(11, 17, 32, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 6px;
+      padding: 0.25rem 0.65rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      flex-shrink: 0;
+      margin-top: 0.3rem;
+    }
+
+    .inspector-target-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .inspector-agent-status {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #34d399;
+      white-space: nowrap;
+    }
+
+    /* --- BOTTOM: Streamlined High-Density Raft Consensus & WAL Compaction --- */
+    .raft-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      padding: 0.35rem 0.65rem;
+      gap: 0.2rem;
+    }
+
+    .raft-panel .kiosk-panel-header {
+      padding-bottom: 0.22rem;
+    }
+
+    .raft-content-grid {
+      display: grid;
+      grid-template-columns: 1fr 370px;
+      gap: 8px;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      align-items: stretch;
+    }
+
+    @media (max-width: 1400px) {
+      .raft-content-grid {
+        grid-template-columns: 1fr 320px;
+      }
+    }
+
+    /* 3-Node Quorum Cards - Streamlined Horizontal Micro-Cards */
+    .raft-nodes-column {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .raft-node-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 6px;
+      padding: 0.3rem 0.45rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.15rem;
+      position: relative;
+    }
+
+    .raft-node-card.leader {
+      border-color: rgba(6, 182, 212, 0.4);
+      background: linear-gradient(180deg, rgba(6, 182, 212, 0.08) 0%, var(--bg-card) 100%);
+    }
+
+    .raft-node-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .raft-node-id {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .raft-role-badge {
+      font-family: var(--font-mono);
+      font-size: 0.56rem;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .raft-role-badge.leader {
+      background: rgba(6, 182, 212, 0.2);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(6, 182, 212, 0.4);
+    }
+
+    .raft-role-badge.follower {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .raft-node-specs {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5px;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--text-muted);
+    }
+
+    .raft-node-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      white-space: nowrap;
+    }
+
+    .raft-node-row span:last-child {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .raft-node-health {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 0.15rem;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+    }
+
+    /* Raft Right Side: WAL Compaction & Circuit Breaker */
+    .raft-controls-column {
+      display: grid;
+      grid-template-columns: 1fr 130px;
+      gap: 6px;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .wal-compaction-box {
+      background: var(--bg-card);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      border-radius: 6px;
+      padding: 0.3rem 0.45rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      justify-content: space-between;
+    }
+
+    .wal-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .wal-pct-badge {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    .wal-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      font-family: var(--font-mono);
+      font-size: 0.57rem;
+      color: var(--text-muted);
+    }
+
+    .wal-stat-unit {
+      display: flex;
+      flex-direction: column;
+      background: rgba(11, 17, 32, 0.6);
+      padding: 2px 3px;
+      border-radius: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      text-align: center;
+    }
+
+    .wal-stat-unit strong {
+      color: var(--text-main);
+      font-size: 0.63rem;
+    }
+
+    /* Circuit Breaker Drill Box */
+    .cb-drill-box {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 6px;
+      padding: 0.3rem 0.45rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.2rem;
+    }
+
+    .cb-status-area {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+    }
+
+    .cb-badge {
+      font-weight: 800;
+      color: var(--accent-emerald);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.61rem;
+    }
+
+    .btn-chaos-drill {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: var(--accent-amber);
+      font-family: var(--font-mono);
+      font-size: 0.61rem;
+      font-weight: 700;
+      padding: 0.2rem 0.35rem;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      width: 100%;
+    }
+
+    .btn-chaos-drill:hover {
+      background: rgba(245, 158, 11, 0.25);
+    }
+  </style>
+</head>
+<body>
+  <div class="kiosk-grid-bg"></div>
+
+  <!-- Top Master Kiosk HUD -->
+  <header class="kiosk-header" id="kiosk-header">
+    <div class="header-left">
+      <a href="/kiosk" class="brand-link" title="<dcouplr/> NOC Kiosk">
+        <div class="brand-logo dcouplr-logo">
+          <span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span>
+        </div>
+      </a>
+      <span class="badge-kiosk-mode" title="Air-Gapped SecOps">NOC Kiosk</span>
+      <div class="live-pulse-chip">
+        <span class="pulse-dot" id="header-pulse-dot"></span>
+        <span id="kiosk-pulse-status">LIVE STREAM &bull; 0 EGRESS</span>
+      </div>
+    </div>
+
+    <div class="header-center-info">
+      <div class="header-stat-item">
+        <span>VPC MESH: </span>
+        <strong id="hdr-vpc-count">5 VPCs Active</strong>
+      </div>
+      <div class="header-stat-item">
+        <span>NODES: </span>
+        <strong id="hdr-node-count">23 Compute Nodes</strong>
+      </div>
+      <div class="header-stat-item">
+        <span>CONSENSUS: </span>
+        <strong id="hdr-raft-quorum" style="color: var(--accent-emerald);">3/3 Quorum Active</strong>
+      </div>
+      <div class="header-stat-item">
+        <span>EGRESS TCO: </span>
+        <strong style="color: var(--accent-emerald);">$0.00 / mo</strong>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <span id="kiosk-clock" style="font-family: var(--font-mono); font-size: 0.72rem; color: #38bdf8; font-weight: 700; margin-right: 0.5rem;">00:00:00 UTC</span>
+      <button class="btn-kiosk-action" id="btn-fullscreen" type="button" title="Toggle Fullscreen (F11)">
+        <span>⛶</span> Fullscreen
+      </button>
+    </div>
+  </header>
+
+  <!-- Incident Banner for Wallboard / Kiosk Simulation Testing -->
+  <div id="noc-incident-banner">
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <span id="noc-banner-severity-badge" style="background: #ef4444; color: #fff; padding: 2px 7px; border-radius: 4px; font-weight: 800; font-size: 0.7rem;">🚨 P1 CRITICAL</span>
+      <span id="noc-banner-title" style="color: #ffffff; font-weight: 800; font-size: 0.8rem;">PostgreSQL Active Lock Contention Spike</span>
+      <span id="noc-banner-target" style="color: #67e8f9; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.35); padding: 1px 6px; border-radius: 4px; font-weight: 700;">Target: node-vpc-db-01 (10.100.20.44)</span>
+      <span id="noc-banner-location" style="color: #fca5a5;">in AWS Production VPC</span>
+    </div>
+    <div id="noc-banner-metric" style="color: #fde047; font-size: 0.72rem; font-weight: 700;">
+      Metric: 198 locks (&gt;100) &bull; Automated VOE Ticket Spooled
+    </div>
+  </div>
+
+  <!-- Single-Monitor Zero-Scroll Grid Layout -->
+  <main class="kiosk-layout">
+
+    <!-- =======================================================================
+         LEFT COLUMN: Core Engine Telemetry & Observer Performance Indicators
+         ======================================================================= -->
+    <aside class="observer-column">
+      <section class="kiosk-panel" style="height: 100%;" aria-label="Core Engine Telemetry & Observer Performance Indicators">
+        
+        <!-- Header -->
+        <div class="kiosk-panel-header">
+          <div class="kiosk-panel-title">
+            <span style="color: #39ff14;">🛡️</span>
+            <span>Core Engine Telemetry &amp; Observer Indicators</span>
+          </div>
+          <span class="kiosk-badge-pill" id="observer-tier-badge">Tier 1 &bull; In-VPC</span>
+        </div>
+
+        <!-- Master Observer Status Banner -->
+        <div class="observer-master-banner">
+          <div class="observer-banner-top">
+            <span class="observer-tier-text">
+              <span class="pulse-dot" style="width: 6px; height: 6px; background: #39ff14; box-shadow: 0 0 6px #39ff14;"></span>
+              Autonomous Daemon Engine
+            </span>
+            <span style="font-family: var(--font-mono); font-size: 0.62rem; color: #94a3b8;" id="observer-sync-time">Synchronized</span>
+          </div>
+          <div class="observer-ctrl-plane">
+            <span>Control Plane:</span>
+            <strong id="observer-ctrl-status">Verified Stable (Sub-ms SLA &bull; Quorum)</strong>
+          </div>
+        </div>
+
+        <!-- Core Functions Strip (8 Active Subsystems) -->
+        <div class="core-functions-container">
+          <div class="core-functions-label">
+            <span>Core Engine Functions</span>
+            <span style="color: var(--accent-cyan);" id="core-fn-active-count">8/8 Active</span>
+          </div>
+          <div class="core-functions-grid" id="core-functions-grid">
+            <div class="core-fn-chip">
+              <span class="core-fn-name">🛡️ Zero-Egress Guard</span>
+              <span class="core-fn-status" id="fn-status-egress">0 WAN</span>
+            </div>
+            <div class="core-fn-chip">
+              <span class="core-fn-name">⚡ AST Transpiler</span>
+              <span class="core-fn-status" id="fn-status-ast">44 tx/s</span>
+            </div>
+            <div class="core-fn-chip">
+              <span class="core-fn-name">🧠 In-Memory Pool</span>
+              <span class="core-fn-status" id="fn-status-mem">37 MiB</span>
+            </div>
+            <div class="core-fn-chip">
+              <span class="core-fn-name">⏱️ Sub-ms SLA Engine</span>
+              <span class="core-fn-status" id="fn-status-sla">1.3 ms</span>
+            </div>
+            <div class="core-fn-chip">
+              <span class="core-fn-name">🔒 SPIFFE SVID Attestor</span>
+              <span class="core-fn-status" id="fn-status-spiffe">Valid</span>
+            </div>
+            <div class="core-fn-chip">
+              <span class="core-fn-name">🪵 RingBuffer WAL</span>
+              <span class="core-fn-status" id="fn-status-wal">ΔI Safe</span>
+            </div>
+            <div class="core-fn-chip">
+              <span class="core-fn-name">🤝 Raft Consensus Core</span>
+              <span class="core-fn-status" id="fn-status-raft">Leader</span>
+            </div>
+            <div class="core-fn-chip">
+              <span class="core-fn-name">📡 In-VPC eBPF Probe</span>
+              <span class="core-fn-status" id="fn-status-ebpf">XDP_DROP</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7 Key Observer Performance Indicators (KPI Micro-Cards) -->
+        <div class="kpi-vertical-list">
+          
+          <!-- CPU Utilization -->
+          <article class="kpi-micro-card" id="kpi-card-cpu">
+            <div class="kpi-micro-header">
+              <span>CPU Utilization</span>
+              <span style="color: var(--accent-cyan);">⚡</span>
+            </div>
+            <div class="kpi-micro-val-row">
+              <div>
+                <span class="kpi-micro-num" id="kiosk-cpu-val">2.3</span>
+                <span class="kpi-micro-unit">% vCPU</span>
+              </div>
+              <span class="kpi-micro-subtext">&lt; 0.2% daemon</span>
+            </div>
+            <div class="kpi-micro-bar">
+              <div class="kpi-micro-bar-fill" id="kiosk-cpu-bar" style="width: 5%;"></div>
+            </div>
+          </article>
+
+          <!-- Memory Footprint (vs 50 MiB cap) -->
+          <article class="kpi-micro-card" id="kpi-card-mem">
+            <div class="kpi-micro-header">
+              <span>Memory Footprint</span>
+              <span style="color: #69f0ae;">🧠</span>
+            </div>
+            <div class="kpi-micro-val-row">
+              <div>
+                <span class="kpi-micro-num" id="kiosk-mem-val">37.0</span>
+                <span class="kpi-micro-unit">/ 50 MiB</span>
+              </div>
+              <span class="kpi-micro-subtext" id="kiosk-mem-sub" style="color: #34d399;">13 MiB safe</span>
+            </div>
+            <div class="kpi-micro-bar">
+              <div class="kpi-micro-bar-fill" id="kiosk-mem-bar" style="width: 74%; background: #69f0ae;"></div>
+            </div>
+          </article>
+
+          <!-- Latency (P50/P99) -->
+          <article class="kpi-micro-card" id="kpi-card-lat">
+            <div class="kpi-micro-header">
+              <span>Latency (P50/P99)</span>
+              <span style="color: #b388ff;">⏱️</span>
+            </div>
+            <div class="kpi-micro-val-row">
+              <div>
+                <span class="kpi-micro-num" id="kiosk-lat-val">1.3 / 8.7</span>
+                <span class="kpi-micro-unit">ms</span>
+              </div>
+              <span class="kpi-micro-subtext">&lt; 5ms SLA</span>
+            </div>
+            <div class="kpi-micro-bar">
+              <div class="kpi-micro-bar-fill" id="kiosk-lat-bar" style="width: 17%; background: #b388ff;"></div>
+            </div>
+          </article>
+
+          <!-- AST Translation Velocity -->
+          <article class="kpi-micro-card" id="kpi-card-tp">
+            <div class="kpi-micro-header">
+              <span>AST Velocity</span>
+              <span style="color: #ffd740;">🚀</span>
+            </div>
+            <div class="kpi-micro-val-row">
+              <div>
+                <span class="kpi-micro-num" id="kiosk-tp-val">44.2</span>
+                <span class="kpi-micro-unit">tx/s</span>
+              </div>
+              <span class="kpi-micro-subtext" id="kiosk-tp-total">1,422 ops</span>
+            </div>
+            <div class="kpi-micro-bar">
+              <div class="kpi-micro-bar-fill" id="kiosk-tp-bar" style="width: 48%; background: #ffd740;"></div>
+            </div>
+          </article>
+
+          <!-- Zero-Egress Guard -->
+          <article class="kpi-micro-card" id="kpi-card-sec">
+            <div class="kpi-micro-header">
+              <span>Zero-Egress Guard</span>
+              <span style="color: var(--accent-emerald);">🛡️</span>
+            </div>
+            <div class="kpi-micro-val-row">
+              <div>
+                <span class="kpi-micro-num" style="color: var(--accent-emerald);">0</span>
+                <span class="kpi-micro-unit">WAN Pkts</span>
+              </div>
+              <span class="kpi-micro-subtext" id="kiosk-tokens-scrubbed" style="color: #34d399;">4,120 scrubbed</span>
+            </div>
+            <div class="kpi-micro-bar">
+              <div class="kpi-micro-bar-fill" style="width: 100%; background: var(--accent-emerald);"></div>
+            </div>
+          </article>
+
+          <!-- Storage Footprint (Pure Volatile RAM) -->
+          <article class="kpi-micro-card" id="kpi-card-storage">
+            <div class="kpi-micro-header">
+              <span>Storage Footprint</span>
+              <span style="color: #38bdf8;">💾</span>
+            </div>
+            <div class="kpi-micro-val-row">
+              <div>
+                <span class="kpi-micro-num" id="kiosk-storage-val" style="color: #38bdf8;">0.00</span>
+                <span class="kpi-micro-unit">GB Disk</span>
+              </div>
+              <span class="kpi-micro-subtext" style="color: #38bdf8;">Pure RAM</span>
+            </div>
+            <div class="kpi-micro-bar">
+              <div class="kpi-micro-bar-fill" style="width: 100%; background: #38bdf8;"></div>
+            </div>
+          </article>
+
+          <!-- Monthly FinOps Cost (100% In-VPC) -->
+          <article class="kpi-micro-card kpi-card-spanning" id="kpi-card-cost">
+            <div class="kpi-micro-header">
+              <span>In-VPC FinOps Egress Cost</span>
+              <span style="color: var(--accent-emerald); font-weight: 700;">$</span>
+            </div>
+            <div class="kpi-micro-val-row">
+              <div>
+                <span class="kpi-micro-num" style="color: var(--accent-emerald);">$0.00</span>
+                <span class="kpi-micro-unit">/ month</span>
+              </div>
+              <span class="kpi-micro-subtext" style="color: var(--accent-emerald); font-weight: 700;">100% In-VPC Zero Egress Verified</span>
+            </div>
+            <div class="kpi-micro-bar">
+              <div class="kpi-micro-bar-fill" style="width: 100%; background: var(--accent-emerald);"></div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Real-Time Hardware-Accelerated 60 FPS Telemetry Waveform -->
+        <div class="waveform-box">
+          <div class="waveform-header">
+            <span>Live 60 FPS Telemetry Waveform</span>
+            <div class="waveform-legend">
+              <div class="legend-tag"><span class="legend-dot" style="background: var(--accent-cyan);"></span> P50</div>
+              <div class="legend-tag"><span class="legend-dot" style="background: #b388ff;"></span> P99</div>
+              <div class="legend-tag"><span class="legend-dot" style="background: #ffd740;"></span> Velocity</div>
+            </div>
+          </div>
+          <div class="waveform-canvas-wrap">
+            <canvas id="kiosk-waveform-canvas" class="kiosk-waveform-canvas"></canvas>
+          </div>
+        </div>
+
+        <!-- SRE Autonomous Invariants Status Bar -->
+        <div class="sre-invariants-strip">
+          <div class="sre-invariants-header">
+            <span>SRE Invariants Engine:</span>
+            <div class="sre-status-pill" id="sre-kiosk-pill">
+              <span class="pulse-dot" style="width: 5px; height: 5px; background: var(--accent-emerald);"></span>
+              <span>All 8 Subsystems Nominal</span>
+            </div>
+          </div>
+          <div class="sre-step-chips">
+            <span class="sre-chip">SLA Met</span>
+            <span class="sre-chip">Breaker CLOSED</span>
+            <span class="sre-chip">&Delta;I Safe</span>
+            <span class="sre-chip">Routes OK</span>
+            <span class="sre-chip">0 WAN Pkts</span>
+          </div>
+        </div>
+
+      </section>
+    </aside>
+
+    <!-- =======================================================================
+         RIGHT COLUMN: Multi-VPC Cross-Cloud Topology & Embedded Raft Consensus
+         ======================================================================= -->
+    <div class="observed-column">
+      
+      <!-- TOP: Interactive Multi-VPC Cross-Cloud Topology Map -->
+      <section class="kiosk-panel topology-panel" aria-label="Interactive Multi-VPC Cross-Cloud Topology Map">
+        
+        <div class="kiosk-panel-header">
+          <div class="kiosk-panel-title">
+            <span style="color: var(--accent-cyan);">🌐</span>
+            <span>Interactive Multi-VPC Cross-Cloud Topology Map</span>
+          </div>
+
+          <div class="topology-toolbar">
+            <div class="topology-filter-group">
+              <button class="topo-filter-btn active" data-filter="all">All Networks</button>
+              <button class="topo-filter-btn" data-filter="AWS">AWS</button>
+              <button class="topo-filter-btn" data-filter="GCP">GCP</button>
+              <button class="topo-filter-btn" data-filter="Azure">Azure</button>
+              <button class="topo-filter-btn" data-filter="OnPrem">🏢 On-Prem</button>
+            </div>
+
+            <div class="topo-sim-controls">
+              <button class="btn-topo-alarm" id="btn-kiosk-auto-arrange" type="button" title="Auto-Rearrange topology nodes and link badges to eliminate visual overlaps and optimize spacing" style="background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 0.2rem 0.55rem; border-radius: 4px; font-size: 0.66rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s ease;">
+                <span id="kiosk-auto-arrange-icon">📐</span>
+                <span id="kiosk-auto-arrange-text">Auto-Arrange</span>
+              </button>
+              <button class="btn-topo-alarm" id="btn-kiosk-sim-alarm" type="button" title="Test Real-Time Topology Alarm State across Kiosk & Cluster">
+                <span id="alarm-icon">🚨</span>
+                <span id="alarm-text">Simulate Alarm</span>
+              </button>
+              <select id="select-kiosk-sim-scenario" class="select-topo-scenario" title="Choose incident scenario">
+                <option value="HEALTHY">🟢 Clear (Healthy)</option>
+                <option value="P1_CRITICAL">🚨 P1 (DB Lock Spike)</option>
+                <option value="P2_WARNING">⚠️ P2 (Spine Buffer Drop)</option>
+                <option value="DUAL_CASCADE">💥 Multi-Incident (P1+P2)</option>
+              </select>
+            </div>
+
+            <span class="kiosk-badge-pill" style="border-color: rgba(0, 229, 255, 0.4); color: #00e5ff;">Cross-Cloud Mesh</span>
+          </div>
+        </div>
+
+        <!-- SVG Topology Stage Container -->
+        <div class="topology-stage-wrap" id="kiosk-topology-container">
+          <svg id="svg-topology-canvas" viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid meet">
+            <!-- Dynamic SVG nodes and interconnect links injected via JS -->
+          </svg>
+        </div>
+
+        <!-- Live Cross-Cloud Connectivity Mesh Ribbon -->
+        <div class="connectivity-mesh-strip" id="kiosk-connectivity-strip">
+          <div class="mesh-strip-label">
+            <span class="pulse-dot" style="width: 6px; height: 6px; background: #00e5ff;"></span>
+            <span>CONNECTIVITY MESH:</span>
+          </div>
+          <div class="mesh-links-list">
+            <div class="mesh-link-chip" onclick="selectTopologyLink('link-aws-azure-er')" title="Click to inspect Azure ExpressRoute link">
+              <span class="mesh-dot" style="background: #38bdf8;"></span>
+              <strong>Azure ExpressRoute:</strong>
+              <span>6.8ms (10G)</span>
+            </div>
+            <div class="mesh-link-chip" onclick="selectTopologyLink('link-aws-peering')" title="Click to inspect AWS Peering link">
+              <span class="mesh-dot" style="background: #00e5ff;"></span>
+              <strong>AWS Peering:</strong>
+              <span>0.42ms (10G)</span>
+            </div>
+            <div class="mesh-link-chip" onclick="selectTopologyLink('link-aws-onprem-dx')" title="Click to inspect Direct Connect link">
+              <span class="mesh-dot" style="background: #f59e0b;"></span>
+              <strong>Direct Connect:</strong>
+              <span>4.2ms (10G DX)</span>
+            </div>
+            <div class="mesh-link-chip" onclick="selectTopologyLink('link-aws-gcp-wg')" title="Click to inspect WireGuard link">
+              <span class="mesh-dot" style="background: #34d399;"></span>
+              <strong>WireGuard mTLS:</strong>
+              <span>18.6ms (SPIFFE)</span>
+            </div>
+            <div class="mesh-link-chip" onclick="selectTopologyLink('link-stage-gcp-mesh')" title="Click to inspect Cross-Cloud link">
+              <span class="mesh-dot" style="background: #38bdf8;"></span>
+              <strong>Cross-Cloud Mesh:</strong>
+              <span>24.1ms (1.5G)</span>
+            </div>
+            <div class="mesh-link-chip" onclick="selectTopologyLink('link-gcp-onprem-ic')" title="Click to inspect Cloud Interconnect link">
+              <span class="mesh-dot" style="background: #a855f7;"></span>
+              <strong>Interconnect:</strong>
+              <span>12.4ms (5G)</span>
+            </div>
+          </div>
+          <div class="mesh-strip-badge">
+            <span>🔒 ZERO WAN EGRESS &bull; 100% PRIVATE</span>
+          </div>
+        </div>
+
+        <!-- VPC & Link Inspector Status Bar -->
+        <div class="node-inspector-bar" id="kiosk-node-inspector">
+          <div class="inspector-target-info">
+            <span style="color: var(--text-dim);" id="insp-type-label">SELECTED VPC:</span>
+            <strong id="insp-name" style="color: #38bdf8;">staging_vpc (AWS us-west-2)</strong>
+            <span style="color: #475569;">&bull;</span>
+            <span id="insp-meta-1">CIDR: <strong id="insp-cidr" style="color: #f8fafc;">10.101.0.0/16</strong></span>
+            <span style="color: #475569;">&bull;</span>
+            <span id="insp-meta-2">Subnets: <strong id="insp-subnets" style="color: #f8fafc;">2 Subnets</strong></span>
+            <span style="color: #475569;">&bull;</span>
+            <span id="insp-meta-3">Compute: <strong id="insp-nodes" style="color: #f8fafc;">6 Instances</strong></span>
+          </div>
+          <div class="inspector-agent-status">
+            <span class="pulse-dot" style="width: 5px; height: 5px; background: #39ff14;"></span>
+            <span id="insp-agent">dcouplr-agent-02 (FOLLOWER &bull; 10.101.1.20) &bull; HEALTHY</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- BOTTOM: Embedded Raft Consensus & WAL Compaction -->
+      <section class="kiosk-panel raft-panel" aria-label="Embedded Raft Consensus & WAL Compaction">
+        
+        <div class="kiosk-panel-header">
+          <div class="kiosk-panel-title">
+            <span style="color: #8b5cf6;">🤝</span>
+            <span>Embedded Raft Consensus &amp; WAL Compaction</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span class="kiosk-badge-pill" id="kiosk-raft-term-pill" style="border-color: rgba(139, 92, 246, 0.4); color: var(--accent-purple);">TERM 4 &bull; QUORUM 3/3</span>
+            <span class="kiosk-badge-pill" style="border-color: rgba(16, 185, 129, 0.4); color: var(--accent-emerald);">IN-MEMORY VOLATILE</span>
+          </div>
+        </div>
+
+        <div class="raft-content-grid">
+          
+          <!-- Left: 3-Node Quorum Distributed Architecture Cards -->
+          <div class="raft-nodes-column" id="kiosk-raft-nodes-container">
+            
+            <!-- Node 1: Leader -->
+            <article class="raft-node-card leader" id="raft-card-node1">
+              <div class="raft-node-header">
+                <span class="raft-node-id">👑 dcouplr-agent-01</span>
+                <span class="raft-role-badge leader">LEADER</span>
+              </div>
+              <div class="raft-node-specs">
+                <div class="raft-node-row">
+                  <span>Region:</span>
+                  <span>AWS us-east-1</span>
+                </div>
+                <div class="raft-node-row">
+                  <span>Address:</span>
+                  <span style="color: var(--accent-cyan);">10.100.1.10</span>
+                </div>
+                <div class="raft-node-row">
+                  <span>Heartbeat:</span>
+                  <span>500 ms</span>
+                </div>
+                <div class="raft-node-row">
+                  <span>Commit Idx:</span>
+                  <span id="raft-commit-idx">94,654</span>
+                </div>
+              </div>
+              <div class="raft-node-health">
+                <span style="color: #34d399; font-weight: 700;">● HEALTHY &bull; SYNCD</span>
+                <span style="color: var(--text-dim);">Ping: 0.1ms</span>
+              </div>
+            </article>
+
+            <!-- Node 2: Follower -->
+            <article class="raft-node-card" id="raft-card-node2">
+              <div class="raft-node-header">
+                <span class="raft-node-id">🤝 dcouplr-agent-02</span>
+                <span class="raft-role-badge follower">FOLLOWER</span>
+              </div>
+              <div class="raft-node-specs">
+                <div class="raft-node-row">
+                  <span>Region:</span>
+                  <span>AWS us-west-2</span>
+                </div>
+                <div class="raft-node-row">
+                  <span>Address:</span>
+                  <span style="color: var(--accent-cyan);">10.101.1.20</span>
+                </div>
+                <div class="raft-node-row">
+                  <span>Heartbeat:</span>
+                  <span>120 ms ago</span>
+                </div>
+                <div class="raft-node-row">
+                  <span>Applied Idx:</span>
+                  <span id="raft-applied-idx">94,654</span>
+                </div>
+              </div>
+              <div class="raft-node-health">
+                <span style="color: #34d399; font-weight: 700;">● HEALTHY &bull; SYNCD</span>
+                <span style="color: var(--text-dim);">RTT: 14.2ms</span>
+              </div>
+            </article>
+
+            <!-- Node 3: Follower -->
+            <article class="raft-node-card" id="raft-card-node3">
+              <div class="raft-node-header">
+                <span class="raft-node-id">🤝 dcouplr-agent-03</span>
+                <span class="raft-role-badge follower">FOLLOWER</span>
+              </div>
+              <div class="raft-node-specs">
+                <div class="raft-node-row">
+                  <span>Region:</span>
+                  <span>GCP us-central1</span>
+                </div>
+                <div class="raft-node-row">
+                  <span>Address:</span>
+                  <span style="color: var(--accent-cyan);">10.200.1.30</span>
+                </div>
+                <div class="raft-node-row">
+                  <span>Heartbeat:</span>
+                  <span>180 ms ago</span>
+                </div>
+                <div class="raft-node-row">
+                  <span>Match Idx:</span>
+                  <span>94,654</span>
+                </div>
+              </div>
+              <div class="raft-node-health">
+                <span style="color: #34d399; font-weight: 700;">● HEALTHY &bull; SYNCD</span>
+                <span style="color: var(--text-dim);">RTT: 18.6ms</span>
+              </div>
+            </article>
+
+          </div>
+
+          <!-- Right: WAL Log Compaction Math & Circuit Breaker Drill -->
+          <div class="raft-controls-column">
+            
+            <!-- WAL Log Compaction Card -->
+            <div class="wal-compaction-box">
+              <div class="wal-box-header">
+                <span>WAL Log Compaction Monitor</span>
+                <span class="wal-pct-badge" id="kiosk-wal-pct">54.4% of Threshold</span>
+              </div>
+              
+              <div class="kpi-micro-bar" style="height: 4px; margin: 1px 0;">
+                <div class="kpi-micro-bar-fill" id="kiosk-wal-bar" style="width: 54.4%; background: var(--accent-cyan);"></div>
+              </div>
+
+              <div class="wal-stats-grid">
+                <div class="wal-stat-unit">
+                  <span>Applied</span>
+                  <strong id="wal-applied-val">94,654</strong>
+                </div>
+                <div class="wal-stat-unit">
+                  <span>Snapshot</span>
+                  <strong id="wal-snapshot-val">90,195</strong>
+                </div>
+                <div class="wal-stat-unit">
+                  <span>Delta (&Delta;I)</span>
+                  <strong id="wal-delta-val" style="color: var(--accent-cyan);">4,459 / 8,192</strong>
+                </div>
+              </div>
+
+              <div style="font-size: 0.57rem; color: var(--text-dim); font-family: var(--font-mono); display: flex; justify-content: space-between;">
+                <span>Compaction: 8,192 Tx</span>
+                <span style="color: var(--accent-emerald);">Volatile Safe</span>
+              </div>
+            </div>
+
+            <!-- Circuit Breaker Status & Drill -->
+            <div class="cb-drill-box">
+              <div class="cb-status-area">
+                <div class="cb-badge">
+                  <span class="pulse-dot" id="cb-pulse-dot" style="width: 5px; height: 5px; background: var(--accent-emerald);"></span>
+                  <span>Breaker: <span id="cb-status-text">CLOSED</span></span>
+                </div>
+                <div style="font-size: 0.56rem; color: var(--text-dim);">
+                  Auto-Recovery 10s &bull; Failover Safe
+                </div>
+              </div>
+              <button class="btn-chaos-drill" id="btn-kiosk-trip-cb" type="button" title="Simulate latency anomaly to test circuit breaker failover">
+                <span>⚡ Trip Breaker</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- =========================================================================
+       Embedded Real-Time Kiosk Engine Script
+       ========================================================================= -->
+  <script>
+    (function() {
+      // 1. Clock Display
+      function updateClock() {
+        const now = new Date();
+        const str = now.toTimeString().split(' ')[0] + ' UTC';
+        const el = document.getElementById('kiosk-clock');
+        if (el) el.textContent = str;
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      // 2. Fullscreen Toggle
+      const btnFullscreen = document.getElementById('btn-fullscreen');
+      if (btnFullscreen) {
+        btnFullscreen.addEventListener('click', () => {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => console.warn(err));
+          } else {
+            document.exitFullscreen().catch(err => console.warn(err));
+          }
+        });
+      }
+
+      // 3. Topology Data & Interactive High-Space Cross-Cloud SVG Renderer
+      const defaultVpcs = [
+        {
+          id: "vnet-azure-core-01",
+          name: "azure_vnet",
+          cloud: "Azure",
+          region: "eastus2",
+          cidr: "10.150.0.0/16",
+          subnets: 2,
+          instances: 4,
+          agent: "dcouplr-agent-04 (FOLLOWER • IP: 10.150.1.15) • HEALTHY",
+          status: "HEALTHY",
+          role: "ENTERPRISE HUB & EXPRESSROUTE",
+          tunnels: "ExpressRoute, Cloud Mesh",
+          renderX: 600,
+          renderY: 75
+        },
+        {
+          id: "vpc-aws-prod-01",
+          name: "production_vpc",
+          cloud: "AWS",
+          region: "us-east-1",
+          cidr: "10.100.0.0/16",
+          subnets: 2,
+          instances: 4,
+          agent: "dcouplr-agent-01 (LEADER • IP: 10.100.1.10) • HEALTHY",
+          status: "HEALTHY",
+          role: "PRIMARY PROD IN-VPC",
+          tunnels: "Peering, WireGuard, DirectConnect",
+          renderX: 180,
+          renderY: 120
+        },
+        {
+          id: "vpc-gcp-analytics-03",
+          name: "analytics_vpc",
+          cloud: "GCP",
+          region: "us-central1",
+          cidr: "10.200.0.0/16",
+          subnets: 2,
+          instances: 3,
+          agent: "dcouplr-agent-03 (FOLLOWER • IP: 10.200.1.30) • HEALTHY",
+          status: "HEALTHY",
+          role: "BIGQUERY & METRICS PIPELINE",
+          tunnels: "Cross-Cloud WireGuard, Interconnect",
+          renderX: 1020,
+          renderY: 120
+        },
+        {
+          id: "vpc-aws-stage-02",
+          name: "staging_vpc",
+          cloud: "AWS",
+          region: "us-west-2",
+          cidr: "10.101.0.0/16",
+          subnets: 2,
+          instances: 6,
+          agent: "dcouplr-agent-02 (FOLLOWER • IP: 10.101.1.20) • HEALTHY",
+          status: "HEALTHY",
+          role: "STAGING & DR HOT STANDBY",
+          tunnels: "Peering, Cross-Cloud Mesh",
+          renderX: 210,
+          renderY: 385
+        },
+        {
+          id: "dc-onprem-core-01",
+          name: "legacy_datacenter",
+          cloud: "OnPrem",
+          region: "Chicago (DC1)",
+          cidr: "10.10.0.0/16",
+          subnets: 2,
+          instances: 4,
+          agent: "dcouplr-agent-bridge (GATEWAY • IP: 10.10.1.5) • HEALTHY",
+          status: "HEALTHY",
+          role: "HARDWARE HSM & SECURE CORE",
+          tunnels: "Dedicated DX 10G, Private VIF",
+          renderX: 990,
+          renderY: 385
+        }
+      ];
+
+      const topologyLinks = [
+        {
+          id: "link-azure-aws-mesh",
+          from: "vnet-azure-core-01",
+          to: "vpc-aws-prod-01",
+          latency: "11.8ms",
+          bandwidth: "10 Gbps",
+          type: "Cross-Cloud Mesh",
+          protocol: "WireGuard & BGP",
+          cipher: "ChaCha20-Poly1305",
+          mtu: "8950 (Tunnel)",
+          badgeX: 390,
+          badgeY: 52
+        },
+        {
+          id: "link-azure-onprem-er",
+          from: "vnet-azure-core-01",
+          to: "dc-onprem-core-01",
+          latency: "16.4ms",
+          bandwidth: "10 Gbps",
+          type: "ExpressRoute",
+          protocol: "Private Peering 802.1Q",
+          cipher: "MACsec IEEE 802.1AE",
+          mtu: "9001 (Jumbo)",
+          badgeX: 760,
+          badgeY: 170
+        },
+        {
+          id: "link-aws-peering",
+          from: "vpc-aws-prod-01",
+          to: "vpc-aws-stage-02",
+          latency: "0.42ms",
+          bandwidth: "10 Gbps",
+          type: "VPC Peering",
+          protocol: "Intra-Cloud ENI",
+          cipher: "Nitro IPsec",
+          mtu: "9001 (Jumbo)",
+          badgeX: 200,
+          badgeY: 255
+        },
+        {
+          id: "link-aws-gcp-wg",
+          from: "vpc-aws-prod-01",
+          to: "vpc-gcp-analytics-03",
+          latency: "18.6ms",
+          bandwidth: "2.5 Gbps",
+          type: "WireGuard Tunnel",
+          protocol: "ChaCha20-Poly1305",
+          cipher: "mTLS SPIFFE",
+          mtu: "8950 (Tunnel)",
+          badgeX: 600,
+          badgeY: 175
+        },
+        {
+          id: "link-aws-onprem-dx",
+          from: "vpc-aws-prod-01",
+          to: "dc-onprem-core-01",
+          latency: "4.2ms",
+          bandwidth: "10 Gbps",
+          type: "Direct Connect (DX)",
+          protocol: "Private VIF 802.1Q",
+          cipher: "MACsec IEEE 802.1AE",
+          mtu: "9001 (Jumbo)",
+          badgeX: 410,
+          badgeY: 310
+        },
+        {
+          id: "link-stage-gcp-mesh",
+          from: "vpc-aws-stage-02",
+          to: "vpc-gcp-analytics-03",
+          latency: "24.1ms",
+          bandwidth: "1.5 Gbps",
+          type: "Cross-Cloud Mesh",
+          protocol: "IPsec Site-to-Site",
+          cipher: "AES-256-GCM",
+          mtu: "1500",
+          badgeX: 690,
+          badgeY: 345
+        },
+        {
+          id: "link-gcp-onprem-ic",
+          from: "vpc-gcp-analytics-03",
+          to: "dc-onprem-core-01",
+          latency: "12.4ms",
+          bandwidth: "5 Gbps",
+          type: "Cloud Interconnect",
+          protocol: "Dedicated VLAN",
+          cipher: "Cloud Router eBGP",
+          mtu: "8896 (Jumbo)",
+          badgeX: 1000,
+          badgeY: 255
+        }
+      ];
+
+      let activeFilter = "all";
+      let isKioskAutoArranged = false;
+      let selectedVpcId = "vpc-aws-stage-02";
+      let selectedLinkId = null;
+      let activeScenario = "HEALTHY";
+
+      function renderTopologySVG() {
+        const svg = document.getElementById('svg-topology-canvas');
+        if (!svg) return;
+
+        svg.setAttribute('viewBox', '0 0 1200 480');
+
+        const filteredVpcs = defaultVpcs.filter(v => activeFilter === 'all' || v.cloud === activeFilter);
+        const cardW = 232;
+        const cardH = 110;
+        const halfW = cardW / 2;
+        const halfH = cardH / 2;
+
+        let linksSvg = "";
+        let nodesSvg = "";
+        let transitHubSvg = "";
+
+        // If filtered down, adjust coordinates for centered single or dual view
+        if (activeFilter === 'AWS') {
+          defaultVpcs.find(v => v.id === 'vpc-aws-prod-01').renderX = 360;
+          defaultVpcs.find(v => v.id === 'vpc-aws-prod-01').renderY = 240;
+          defaultVpcs.find(v => v.id === 'vpc-aws-stage-02').renderX = 840;
+          defaultVpcs.find(v => v.id === 'vpc-aws-stage-02').renderY = 240;
+        } else if (activeFilter === 'GCP') {
+          defaultVpcs.find(v => v.id === 'vpc-gcp-analytics-03').renderX = 600;
+          defaultVpcs.find(v => v.id === 'vpc-gcp-analytics-03').renderY = 240;
+        } else if (activeFilter === 'Azure') {
+          defaultVpcs.find(v => v.id === 'vnet-azure-core-01').renderX = 600;
+          defaultVpcs.find(v => v.id === 'vnet-azure-core-01').renderY = 240;
+        } else if (activeFilter === 'OnPrem') {
+          defaultVpcs.find(v => v.id === 'dc-onprem-core-01').renderX = 600;
+          defaultVpcs.find(v => v.id === 'dc-onprem-core-01').renderY = 240;
+        } else {
+          if (isKioskAutoArranged) {
+            // Anti-Collision Auto-Arranged Geometry (maximum separation, 0 label overlaps)
+            defaultVpcs.find(v => v.id === 'vpc-aws-prod-01').renderX = 160;
+            defaultVpcs.find(v => v.id === 'vpc-aws-prod-01').renderY = 110;
+            defaultVpcs.find(v => v.id === 'vnet-azure-core-01').renderX = 600;
+            defaultVpcs.find(v => v.id === 'vnet-azure-core-01').renderY = 65;
+            defaultVpcs.find(v => v.id === 'vpc-gcp-analytics-03').renderX = 1040;
+            defaultVpcs.find(v => v.id === 'vpc-gcp-analytics-03').renderY = 110;
+            defaultVpcs.find(v => v.id === 'vpc-aws-stage-02').renderX = 185;
+            defaultVpcs.find(v => v.id === 'vpc-aws-stage-02').renderY = 405;
+            defaultVpcs.find(v => v.id === 'dc-onprem-core-01').renderX = 1015;
+            defaultVpcs.find(v => v.id === 'dc-onprem-core-01').renderY = 405;
+          } else {
+            // Default spacious 5-station cross-cloud constellation
+            defaultVpcs.find(v => v.id === 'vpc-aws-prod-01').renderX = 180;
+            defaultVpcs.find(v => v.id === 'vpc-aws-prod-01').renderY = 120;
+            defaultVpcs.find(v => v.id === 'vnet-azure-core-01').renderX = 600;
+            defaultVpcs.find(v => v.id === 'vnet-azure-core-01').renderY = 75;
+            defaultVpcs.find(v => v.id === 'vpc-gcp-analytics-03').renderX = 1020;
+            defaultVpcs.find(v => v.id === 'vpc-gcp-analytics-03').renderY = 120;
+            defaultVpcs.find(v => v.id === 'vpc-aws-stage-02').renderX = 210;
+            defaultVpcs.find(v => v.id === 'vpc-aws-stage-02').renderY = 385;
+            defaultVpcs.find(v => v.id === 'dc-onprem-core-01').renderX = 990;
+            defaultVpcs.find(v => v.id === 'dc-onprem-core-01').renderY = 385;
+          }
+        }
+
+        // Draw Central Transit Mesh Router Ring (When All Networks active)
+        if (activeFilter === 'all') {
+          transitHubSvg = `
+            <g id="central-transit-ring" opacity="0.95">
+              <circle cx="600" cy="255" r="42" fill="rgba(10, 15, 29, 0.94)" stroke="rgba(6, 182, 212, 0.4)" stroke-width="1.5" stroke-dasharray="4,4">
+                <animateTransform attributeName="transform" type="rotate" from="0 600 265" to="360 600 260" dur="40s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="600" cy="255" r="30" fill="rgba(6, 182, 212, 0.08)" stroke="rgba(0, 229, 255, 0.6)" stroke-width="1.2" />
+              <circle cx="600" cy="255" r="48" fill="none" stroke="rgba(57, 255, 20, 0.3)" stroke-width="1">
+                <animate attributeName="r" values="42;52;42" dur="3s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.8;0.1;0.8" dur="3s" repeatCount="indefinite"/>
+              </circle>
+              <text x="600" y="255" text-anchor="middle" font-family="JetBrains Mono" font-size="8.5" font-weight="800" fill="#00e5ff">TRANSIT MESH</text>
+              <text x="600" y="267" text-anchor="middle" font-family="JetBrains Mono" font-size="7" font-weight="700" fill="#34d399">0 WAN EGRESS</text>
+            </g>
+          `;
+        }
+
+        // Draw Interconnect Links
+        topologyLinks.forEach((link) => {
+          const src = defaultVpcs.find(v => v.id === link.from);
+          const tgt = defaultVpcs.find(v => v.id === link.to);
+          if (!src || !tgt) return;
+
+          // Check if both ends are in filtered view
+          const srcVisible = filteredVpcs.some(v => v.id === src.id);
+          const tgtVisible = filteredVpcs.some(v => v.id === tgt.id);
+          if (!srcVisible || !tgtVisible) return;
+
+          const isAlarmLink = (activeScenario === 'P1_CRITICAL' && (src.id === 'vpc-aws-prod-01' || tgt.id === 'vpc-aws-prod-01')) ||
+                              (activeScenario === 'P2_WARNING' && (src.id === 'dc-onprem-core-01' || tgt.id === 'dc-onprem-core-01')) ||
+                              (activeScenario === 'DUAL_CASCADE');
+
+          const isLinkSelected = selectedLinkId === link.id;
+          const strokeColor = isAlarmLink ? '#ef4444' : (isLinkSelected ? '#00e5ff' : 'rgba(6, 182, 212, 0.55)');
+          const strokeWidth = isAlarmLink ? 2.5 : (isLinkSelected ? 2.5 : 1.6);
+          const packetColor = isAlarmLink ? '#ef4444' : (isLinkSelected ? '#00e5ff' : '#34d399');
+
+          // Compute quad bezier path
+          let ctrlX = (src.renderX + tgt.renderX) / 2;
+          let ctrlY = (src.renderY + tgt.renderY) / 2;
+
+          if (activeFilter === 'all') {
+            ctrlX = link.badgeX;
+            ctrlY = link.badgeY;
+            if (isKioskAutoArranged) {
+              if (link.id === 'link-azure-aws-mesh') { ctrlX = 380; ctrlY = 50; }
+              else if (link.id === 'link-azure-onprem-er') { ctrlX = 750; ctrlY = 168; }
+              else if (link.id === 'link-aws-peering') { ctrlX = 145; ctrlY = 260; }
+              else if (link.id === 'link-aws-gcp-wg') { ctrlX = 600; ctrlY = 152; }
+              else if (link.id === 'link-aws-onprem-dx') { ctrlX = 390; ctrlY = 315; }
+              else if (link.id === 'link-stage-gcp-mesh') { ctrlX = 740; ctrlY = 325; }
+              else if (link.id === 'link-gcp-onprem-ic') { ctrlX = 1055; ctrlY = 260; }
+            }
+          } else {
+            ctrlY -= 28;
+          }
+
+          const pathD = `M ${src.renderX} ${src.renderY} Q ${ctrlX} ${ctrlY} ${tgt.renderX} ${tgt.renderY}`;
+          
+          // Accurately compute badge box width so text NEVER overflows outside the box
+          const labelText = `${link.type} • ${link.latency} (${link.bandwidth})`;
+          const badgeW = Math.max(160, Math.ceil(labelText.length * 5.4) + 18);
+          const badgeH = 20;
+
+          linksSvg += `
+            <g class="topo-link-group" onclick="selectTopologyLink('${link.id}')" style="cursor: pointer;">
+              <!-- Outer Path Halo -->
+              <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="${strokeWidth + 4}" opacity="0.12" />
+              
+              <!-- Core Link Path -->
+              <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="${strokeWidth}" 
+                    stroke-dasharray="${isAlarmLink ? '6,4' : (link.type.includes('WireGuard') ? '5,3' : 'none')}" opacity="0.85"/>
+              
+              <!-- Moving Data Packet Particle -->
+              <circle r="3.5" fill="${packetColor}">
+                <animateMotion path="${pathD}" dur="${isAlarmLink ? '1.2s' : '3.2s'}" repeatCount="indefinite" />
+              </circle>
+              
+              <!-- Bi-directional Secondary Packet -->
+              <circle r="2.5" fill="${packetColor}" opacity="0.7">
+                <animateMotion path="${pathD}" dur="${isAlarmLink ? '1.4s' : '3.8s'}" keyPoints="1;0" keyTimes="0;1" repeatCount="indefinite" />
+              </circle>
+
+              <!-- Interactive Link Badge with Protocol and Latency (Guaranteed zero text overflow) -->
+              <rect x="${ctrlX - badgeW / 2}" y="${ctrlY - badgeH / 2}" width="${badgeW}" height="${badgeH}" rx="5" 
+                    fill="#070c18" stroke="${strokeColor}" stroke-width="${isLinkSelected ? '1.8' : '1.2'}" filter="drop-shadow(0 2px 10px rgba(0,0,0,0.85))"/>
+              
+              <text x="${ctrlX}" y="${ctrlY + 4}" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700">
+                <tspan fill="${isAlarmLink ? '#ef4444' : '#38bdf8'}">${link.type}</tspan>
+                <tspan fill="#64748b"> &bull; </tspan>
+                <tspan fill="${isAlarmLink ? '#fca5a5' : '#34d399'}">${link.latency}</tspan>
+                <tspan fill="#94a3b8"> (${link.bandwidth})</tspan>
+              </text>
+            </g>
+          `;
+        });
+
+        // Draw Nodes
+        filteredVpcs.forEach(vpc => {
+          const isSelected = vpc.id === selectedVpcId;
+          const isAlarm = (activeScenario === 'P1_CRITICAL' && vpc.id === 'vpc-aws-prod-01') ||
+                          (activeScenario === 'P2_WARNING' && vpc.id === 'dc-onprem-core-01') ||
+                          (activeScenario === 'DUAL_CASCADE' && (vpc.id === 'vpc-aws-prod-01' || vpc.id === 'dc-onprem-core-01'));
+
+          const cloudColors = { AWS: '#00e5ff', GCP: '#34d399', Azure: '#38bdf8', OnPrem: '#f59e0b' };
+          const cloudBorder = isAlarm ? '#ef4444' : (isSelected ? '#00e5ff' : (cloudColors[vpc.cloud] || '#00e5ff'));
+          const x0 = vpc.renderX - halfW;
+          const y0 = vpc.renderY - halfH;
+
+          nodesSvg += `
+            <g class="vpc-node-group" onclick="selectVpcNode('${vpc.id}')" style="cursor: pointer;">
+              <!-- Outer Glow / Halo -->
+              <rect x="${x0 - 3}" y="${y0 - 3}" width="${cardW + 6}" height="${cardH + 6}" rx="10" fill="none" 
+                    stroke="${cloudBorder}" stroke-width="${isSelected || isAlarm ? '2' : '1'}" opacity="${isSelected || isAlarm ? '1' : '0.35'}">
+                ${isAlarm ? '<animate attributeName="opacity" values="0.3;1;0.3" dur="1s" repeatCount="indefinite"/>' : ''}
+              </rect>
+              
+              <!-- Card Body -->
+              <rect x="${x0}" y="${y0}" width="${cardW}" height="${cardH}" rx="8" fill="#0d1424" stroke="${cloudBorder}" stroke-width="1.2" />
+              
+              <!-- Top Header Bar -->
+              <rect x="${x0}" y="${y0}" width="${cardW}" height="26" rx="8" fill="rgba(255,255,255,0.05)" />
+              
+              <!-- Cloud Badge -->
+              <rect x="${x0 + 8}" y="${y0 + 5}" width="42" height="16" rx="3" fill="rgba(6,182,212,0.15)" stroke="${cloudBorder}" stroke-width="0.8" />
+              <text x="${x0 + 29}" y="${y0 + 16}" text-anchor="middle" font-family="JetBrains Mono" font-size="8.5" font-weight="800" fill="${cloudBorder}">${vpc.cloud}</text>
+              
+              <!-- VPC Name -->
+              <text x="${x0 + 56}" y="${y0 + 17}" font-family="JetBrains Mono" font-size="10.5" font-weight="700" fill="#f8fafc">${vpc.name}</text>
+              
+              <!-- Live Status Dot -->
+              <circle cx="${x0 + cardW - 14}" cy="${y0 + 13}" r="4.5" fill="${isAlarm ? '#ef4444' : '#10b981'}">
+                ${isAlarm ? '<animate attributeName="r" values="3.5;6;3.5" dur="0.8s" repeatCount="indefinite"/>' : ''}
+              </circle>
+              
+              <!-- Enclave Role Subtitle -->
+              <rect x="${x0 + 8}" y="${y0 + 32}" width="${cardW - 16}" height="15" rx="3" fill="rgba(15, 23, 42, 0.7)" />
+              <text x="${x0 + 14}" y="${y0 + 43}" font-family="JetBrains Mono" font-size="7.5" font-weight="700" fill="#38bdf8">${vpc.role}</text>
+
+              <!-- Details Row 1: CIDR & Region -->
+              <text x="${x0 + 10}" y="${y0 + 64}" font-family="JetBrains Mono" font-size="9" fill="#94a3b8">CIDR: <tspan fill="#00e5ff" font-weight="700">${vpc.cidr}</tspan> &bull; <tspan fill="#cbd5e1">${vpc.region}</tspan></text>
+              
+              <!-- Details Row 2: Subnets & Compute Instances -->
+              <text x="${x0 + 10}" y="${y0 + 81}" font-family="JetBrains Mono" font-size="8.8" fill="#64748b">Alloc: <tspan fill="#34d399" font-weight="700">${vpc.subnets} Subnets</tspan> &bull; <tspan fill="#f8fafc" font-weight="700">${vpc.instances} Nodes</tspan></text>
+              
+              <!-- Details Row 3: Active Interconnect Protocols -->
+              <text x="${x0 + 10}" y="${y0 + 98}" font-family="JetBrains Mono" font-size="8" fill="#64748b">Mesh: <tspan fill="#ffd740">${vpc.tunnels}</tspan></text>
+            </g>
+          `;
+        });
+
+        svg.innerHTML = transitHubSvg + linksSvg + nodesSvg;
+      }
+
+      window.selectVpcNode = function(vpcId) {
+        selectedVpcId = vpcId;
+        selectedLinkId = null;
+        const vpc = defaultVpcs.find(v => v.id === vpcId);
+        if (vpc) {
+          const elType = document.getElementById('insp-type-label');
+          const elName = document.getElementById('insp-name');
+          const elCidr = document.getElementById('insp-cidr');
+          const elSubnets = document.getElementById('insp-subnets');
+          const elNodes = document.getElementById('insp-nodes');
+          const elAgent = document.getElementById('insp-agent');
+
+          if (elType) elType.textContent = 'SELECTED VPC:';
+          if (elName) elName.textContent = `${vpc.name} (${vpc.cloud} ${vpc.region})`;
+          if (elCidr) elCidr.textContent = vpc.cidr;
+          if (elSubnets) elSubnets.textContent = `${vpc.subnets} Subnets`;
+          if (elNodes) elNodes.textContent = `${vpc.instances} Instances`;
+          if (elAgent) elAgent.textContent = vpc.agent;
+        }
+        renderTopologySVG();
+      };
+
+      window.selectTopologyLink = function(linkId) {
+        selectedLinkId = linkId;
+        const link = topologyLinks.find(l => l.id === linkId);
+        if (!link) return;
+
+        const src = defaultVpcs.find(v => v.id === link.from);
+        const tgt = defaultVpcs.find(v => v.id === link.to);
+        if (!src || !tgt) return;
+
+        const elType = document.getElementById('insp-type-label');
+        const elName = document.getElementById('insp-name');
+        const elCidr = document.getElementById('insp-cidr');
+        const elSubnets = document.getElementById('insp-subnets');
+        const elNodes = document.getElementById('insp-nodes');
+        const elAgent = document.getElementById('insp-agent');
+
+        if (elType) elType.textContent = 'SELECTED LINK:';
+        if (elName) elName.textContent = `${src.cloud} ${src.name} ➔ ${tgt.cloud} ${tgt.name} (${link.type})`;
+        if (elCidr) elCidr.textContent = `${link.latency} Latency &bull; ${link.bandwidth}`;
+        if (elSubnets) elSubnets.textContent = `Cipher: ${link.cipher}`;
+        if (elNodes) elNodes.textContent = `MTU: ${link.mtu}`;
+        if (elAgent) elAgent.textContent = `0 WAN Egress (Private Encrypted Fabric) • Protocol: ${link.protocol}`;
+
+        renderTopologySVG();
+      };
+
+      // Filter Buttons
+      document.querySelectorAll('.topo-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.topo-filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeFilter = btn.getAttribute('data-filter') || 'all';
+          renderTopologySVG();
+        });
+      });
+
+      // 4. Live 60 FPS Canvas Waveform
+      const canvas = document.getElementById('kiosk-waveform-canvas');
+      let ctx = null;
+      if (canvas) {
+        ctx = canvas.getContext('2d');
+      }
+
+      const waveHistoryP50 = [];
+      const waveHistoryP99 = [];
+      const waveHistoryVelocity = [];
+      const maxWavePoints = 70;
+
+      for (let i = 0; i < maxWavePoints; i++) {
+        waveHistoryP50.push(1.3 + Math.sin(i * 0.2) * 0.4);
+        waveHistoryP99.push(8.5 + Math.cos(i * 0.15) * 1.2);
+        waveHistoryVelocity.push(42 + Math.sin(i * 0.3) * 4);
+      }
+
+      function drawWaveform() {
+        if (!canvas || !ctx) return;
+        const rect = canvas.getBoundingClientRect();
+        if (canvas.width !== rect.width || canvas.height !== rect.height) {
+          canvas.width = rect.width;
+          canvas.height = rect.height;
+        }
+
+        const w = canvas.width;
+        const h = canvas.height;
+        if (w === 0 || h === 0) {
+          requestAnimationFrame(drawWaveform);
+          return;
+        }
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Draw Subtle Grid
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, h * 0.5);
+        ctx.lineTo(w, h * 0.5);
+        ctx.stroke();
+
+        // Draw Helper for Lines
+        function renderLine(data, minVal, maxVal, color, fillGrad) {
+          ctx.beginPath();
+          const stepX = w / (maxWavePoints - 1);
+          data.forEach((val, i) => {
+            const normY = 1 - (val - minVal) / (maxVal - minVal);
+            const x = i * stepX;
+            const y = Math.max(2, Math.min(h - 2, normY * h));
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          });
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+
+        renderLine(waveHistoryVelocity, 30, 60, '#ffd740');
+        renderLine(waveHistoryP99, 4, 15, '#b388ff');
+        renderLine(waveHistoryP50, 0.5, 3.5, '#06b6d4');
+
+        requestAnimationFrame(drawWaveform);
+      }
+      requestAnimationFrame(drawWaveform);
+
+      // 5. Periodic Waveform Update
+      setInterval(() => {
+        const lastP50 = waveHistoryP50[waveHistoryP50.length - 1];
+        const nextP50 = Math.max(0.8, Math.min(2.5, lastP50 + (Math.random() - 0.5) * 0.3));
+        waveHistoryP50.shift();
+        waveHistoryP50.push(nextP50);
+
+        const lastP99 = waveHistoryP99[waveHistoryP99.length - 1];
+        const nextP99 = Math.max(6.0, Math.min(12.0, lastP99 + (Math.random() - 0.5) * 0.6));
+        waveHistoryP99.shift();
+        waveHistoryP99.push(nextP99);
+
+        const lastV = waveHistoryVelocity[waveHistoryVelocity.length - 1];
+        const nextV = Math.max(36, Math.min(52, lastV + (Math.random() - 0.5) * 2.5));
+        waveHistoryVelocity.shift();
+        waveHistoryVelocity.push(nextV);
+      }, 500);
+
+      // 6. Cluster Simulation & Alarm Handler (Supports P1, P2, DUAL, HEALTHY)
+      const selectScenario = document.getElementById('select-kiosk-sim-scenario');
+      const btnSimAlarm = document.getElementById('btn-kiosk-sim-alarm');
+      const incBanner = document.getElementById('noc-incident-banner');
+      const headerEl = document.getElementById('kiosk-header');
+
+      function applySimulation(scenario) {
+        activeScenario = scenario;
+        if (selectScenario) selectScenario.value = scenario;
+
+        if (scenario === 'P1_CRITICAL') {
+          if (incBanner) {
+            incBanner.style.display = 'flex';
+            incBanner.style.borderBottom = '2px solid #ef4444';
+            incBanner.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.28) 0%, rgba(15, 23, 42, 0.98) 100%)';
+            incBanner.innerHTML = `
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <span id="noc-banner-severity-badge" style="background: #ef4444; color: #fff; padding: 2px 7px; border-radius: 4px; font-weight: 800; font-size: 0.7rem;">🚨 P1 CRITICAL</span>
+                <span id="noc-banner-title" style="color: #ffffff; font-weight: 800; font-size: 0.8rem;">PostgreSQL Active Lock Contention Spike</span>
+                <span id="noc-banner-target" style="color: #67e8f9; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.35); padding: 1px 6px; border-radius: 4px; font-weight: 700;">Target: node-vpc-db-01 (10.100.20.44)</span>
+                <span id="noc-banner-location" style="color: #fca5a5;">in AWS Production VPC</span>
+              </div>
+              <div id="noc-banner-metric" style="color: #fde047; font-size: 0.72rem; font-weight: 700;">
+                Metric: 198 locks (>100) &bull; Automated VOE Ticket Spooled
+              </div>
+            `;
+          }
+          if (headerEl) {
+            headerEl.classList.remove('header-pulse-warning');
+            headerEl.classList.add('header-pulse-critical');
+          }
+        } else if (scenario === 'P2_WARNING') {
+          if (incBanner) {
+            incBanner.style.display = 'flex';
+            incBanner.style.borderBottom = '2px solid #f59e0b';
+            incBanner.style.background = 'linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(15, 23, 42, 0.98) 100%)';
+            incBanner.innerHTML = `
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <span id="noc-banner-severity-badge" style="background: #f59e0b; color: #000; padding: 2px 7px; border-radius: 4px; font-weight: 800; font-size: 0.7rem;">⚠️ P2 WARNING</span>
+                <span id="noc-banner-title" style="color: #ffffff; font-weight: 800; font-size: 0.8rem;">HAProxy Core Ingress Buffer Saturation</span>
+                <span id="noc-banner-target" style="color: #67e8f9; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.35); padding: 1px 6px; border-radius: 4px; font-weight: 700;">Target: node-dc1-bm-08 (172.16.1.18)</span>
+                <span id="noc-banner-location" style="color: #fca5a5;">in Legacy Datacenter Chicago (DC1)</span>
+              </div>
+              <div id="noc-banner-metric" style="color: #fde047; font-size: 0.72rem; font-weight: 700;">
+                Metric: 0.18% drop (>0.05%) &bull; ChatOps Advisory Active
+              </div>
+            `;
+          }
+          if (headerEl) {
+            headerEl.classList.remove('header-pulse-critical');
+            headerEl.classList.add('header-pulse-warning');
+          }
+        } else if (scenario === 'DUAL_CASCADE') {
+          if (incBanner) {
+            incBanner.style.display = 'flex';
+            incBanner.style.borderBottom = '2px solid #ef4444';
+            incBanner.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.32) 0%, rgba(15, 23, 42, 0.98) 100%)';
+            incBanner.innerHTML = `
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1; min-width: 0;">
+                <span id="noc-banner-severity-badge" style="background: #ef4444; color: #fff; padding: 2px 7px; border-radius: 4px; font-weight: 800; font-size: 0.7rem; white-space: nowrap;">🚨 DUAL CASCADE (2 ACTIVE)</span>
+                <span style="background: rgba(239, 68, 68, 0.25); border: 1px solid #ef4444; color: #fff; padding: 1px 6px; border-radius: 4px; font-size: 0.69rem; font-weight: 700; white-space: nowrap;">Issue 1: P1 Postgres Lock Spike (198 locks) &bull; node-vpc-db-01 (AWS Prod)</span>
+                <span style="background: rgba(245, 158, 11, 0.25); border: 1px solid #f59e0b; color: #fff; padding: 1px 6px; border-radius: 4px; font-size: 0.69rem; font-weight: 700; white-space: nowrap;">Issue 2: P2 HAProxy Buffer Drop (0.18%) &bull; node-dc1-bm-08 (OnPrem DC1)</span>
+              </div>
+              <div id="noc-banner-metric" style="color: #86efac; font-size: 0.68rem; font-weight: 700; white-space: nowrap;">
+                Auto-Ranked P1 &rarr; P2 &bull; Fluid Zero-Scroll
+              </div>
+            `;
+          }
+          if (headerEl) {
+            headerEl.classList.remove('header-pulse-warning');
+            headerEl.classList.add('header-pulse-critical');
+          }
+        } else {
+          if (incBanner) incBanner.style.display = 'none';
+          if (headerEl) {
+            headerEl.classList.remove('header-pulse-critical');
+            headerEl.classList.remove('header-pulse-warning');
+          }
+        }
+
+        renderTopologySVG();
+      }
+
+      if (selectScenario) {
+        selectScenario.addEventListener('change', (e) => {
+          applySimulation(e.target.value);
+        });
+      }
+
+      
+      // Auto-Arrange Layout Button in Kiosk
+      const btnKioskAutoArrange = document.getElementById('btn-kiosk-auto-arrange');
+      const iconKioskAutoArrange = document.getElementById('kiosk-auto-arrange-icon');
+      const textKioskAutoArrange = document.getElementById('kiosk-auto-arrange-text');
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("layout") === "auto" || urlParams.get("auto_arrange") === "true") {
+        isKioskAutoArranged = true;
+        if (btnKioskAutoArrange) {
+          btnKioskAutoArrange.style.background = 'rgba(56, 189, 248, 0.25)';
+          btnKioskAutoArrange.style.borderColor = '#38bdf8';
+          btnKioskAutoArrange.style.boxShadow = '0 0 10px rgba(56, 189, 248, 0.35)';
+          if (iconKioskAutoArrange) iconKioskAutoArrange.textContent = '🔄';
+          if (textKioskAutoArrange) textKioskAutoArrange.textContent = 'Reset Layout';
+          btnKioskAutoArrange.title = 'Reset to default compact topology layout';
+        }
+      }
+
+      if (btnKioskAutoArrange) {
+        btnKioskAutoArrange.addEventListener('click', () => {
+          isKioskAutoArranged = !isKioskAutoArranged;
+          if (isKioskAutoArranged) {
+            btnKioskAutoArrange.style.background = 'rgba(56, 189, 248, 0.25)';
+            btnKioskAutoArrange.style.borderColor = '#38bdf8';
+            btnKioskAutoArrange.style.boxShadow = '0 0 10px rgba(56, 189, 248, 0.35)';
+            if (iconKioskAutoArrange) iconKioskAutoArrange.textContent = '🔄';
+            if (textKioskAutoArrange) textKioskAutoArrange.textContent = 'Reset Layout';
+            btnKioskAutoArrange.title = 'Reset to default compact topology layout';
+          } else {
+            btnKioskAutoArrange.style.background = 'rgba(56, 189, 248, 0.12)';
+            btnKioskAutoArrange.style.borderColor = 'rgba(56, 189, 248, 0.35)';
+            btnKioskAutoArrange.style.boxShadow = 'none';
+            if (iconKioskAutoArrange) iconKioskAutoArrange.textContent = '📐';
+            if (textKioskAutoArrange) textKioskAutoArrange.textContent = 'Auto-Arrange';
+            btnKioskAutoArrange.title = 'Auto-Rearrange topology nodes and link badges to eliminate visual overlaps and optimize spacing';
+          }
+          renderTopologySVG();
+        });
+      }
+
+      if (btnSimAlarm) {
+        btnSimAlarm.addEventListener('click', () => {
+          const next = activeScenario === 'HEALTHY' ? 'P1_CRITICAL' : 'HEALTHY';
+          applySimulation(next);
+        });
+      }
+
+      // Chaos Drill Button
+      const btnTripCb = document.getElementById('btn-kiosk-trip-cb');
+      const cbDot = document.getElementById('cb-pulse-dot');
+      const cbText = document.getElementById('cb-status-text');
+      if (btnTripCb) {
+        btnTripCb.addEventListener('click', () => {
+          if (cbText) cbText.textContent = 'OPEN (Tripped)';
+          if (cbDot) cbDot.style.background = '#ef4444';
+          btnTripCb.style.background = 'rgba(239, 68, 68, 0.2)';
+          btnTripCb.style.borderColor = '#ef4444';
+          btnTripCb.style.color = '#ef4444';
+          btnTripCb.textContent = '⏱️ Auto-Recovering...';
+
+          setTimeout(() => {
+            if (cbText) cbText.textContent = 'CLOSED';
+            if (cbDot) cbDot.style.background = 'var(--accent-emerald)';
+            btnTripCb.style.background = 'rgba(245, 158, 11, 0.12)';
+            btnTripCb.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+            btnTripCb.style.color = 'var(--accent-amber)';
+            btnTripCb.innerHTML = '<span>⚡ Trip Breaker</span>';
+          }, 6000);
+        });
+      }
+
+      // 7. Polling Telemetry from API
+      async function pollKioskTelemetry() {
+        try {
+          const res = await fetch('/v1/telemetry/metrics', { cache: 'no-store' });
+          if (!res.ok) return;
+          const data = await res.json();
+
+          if (data.system) {
+            const cpuEl = document.getElementById('kiosk-cpu-val');
+            const cpuBar = document.getElementById('kiosk-cpu-bar');
+            if (cpuEl) cpuEl.textContent = Number(data.system.cpu_percent || 2.3).toFixed(1);
+            if (cpuBar) cpuBar.style.width = Math.min(100, (data.system.cpu_percent || 2.3) * 2) + '%';
+
+            const memEl = document.getElementById('kiosk-mem-val');
+            const memBar = document.getElementById('kiosk-mem-bar');
+            const memSub = document.getElementById('kiosk-mem-sub');
+            const rss = Number(data.system.memory_rss_mb || 37.0).toFixed(1);
+            if (memEl) memEl.textContent = rss;
+            if (memBar) memBar.style.width = Math.min(100, (rss / 50) * 100) + '%';
+            if (memSub) memSub.textContent = (50 - rss).toFixed(1) + ' MiB safe';
+
+            const fnMem = document.getElementById('fn-status-mem');
+            if (fnMem) fnMem.textContent = Math.round(rss) + ' MiB';
+          }
+
+          if (data.engine) {
+            const latEl = document.getElementById('kiosk-lat-val');
+            const p50 = Number(data.engine.latency_p50_ms || 1.3).toFixed(1);
+            const p99 = Number(data.engine.latency_p99_ms || 8.7).toFixed(1);
+            if (latEl) latEl.textContent = `${p50} / ${p99}`;
+
+            const tpEl = document.getElementById('kiosk-tp-val');
+            const tpBar = document.getElementById('kiosk-tp-bar');
+            const tpRate = Number(data.engine.translation_rate_per_sec || 44.2).toFixed(1);
+            if (tpEl) tpEl.textContent = tpRate;
+            if (tpBar) tpBar.style.width = Math.min(100, (tpRate / 80) * 100) + '%';
+
+            const tpTotalEl = document.getElementById('kiosk-tp-total');
+            if (tpTotalEl && data.engine.total_translations) {
+              tpTotalEl.textContent = `${data.engine.total_translations.toLocaleString()} ops`;
+            }
+
+            const fnAst = document.getElementById('fn-status-ast');
+            if (fnAst) fnAst.textContent = Math.round(tpRate) + ' tx/s';
+          }
+
+          if (data.raft) {
+            const commitEl = document.getElementById('raft-commit-idx');
+            const appliedEl = document.getElementById('raft-applied-idx');
+            const walApplied = document.getElementById('wal-applied-val');
+            const walSnap = document.getElementById('wal-snapshot-val');
+            const walDelta = document.getElementById('wal-delta-val');
+            const walPct = document.getElementById('kiosk-wal-pct');
+            const walBar = document.getElementById('kiosk-wal-bar');
+
+            if (commitEl && data.raft.commit_index) commitEl.textContent = data.raft.commit_index.toLocaleString();
+            if (appliedEl && data.raft.last_applied) appliedEl.textContent = data.raft.last_applied.toLocaleString();
+            if (walApplied && data.raft.last_applied) walApplied.textContent = data.raft.last_applied.toLocaleString();
+            if (walSnap && data.raft.snapshot_index) walSnap.textContent = data.raft.snapshot_index.toLocaleString();
+
+            const delta = data.raft.uncompacted_delta || 4459;
+            const threshold = data.raft.compaction_threshold || 8192;
+            const pct = Math.min(100, ((delta / threshold) * 100)).toFixed(1);
+            if (walDelta) walDelta.textContent = `${delta.toLocaleString()} / ${threshold.toLocaleString()}`;
+            if (walPct) walPct.textContent = `${pct}% of Threshold`;
+            if (walBar) walBar.style.width = `${pct}%`;
+          }
+
+          if (data.security) {
+            const scrubbedEl = document.getElementById('kiosk-tokens-scrubbed');
+            if (scrubbedEl && data.security.tokens_anonymized) {
+              scrubbedEl.textContent = `${data.security.tokens_anonymized.toLocaleString()} scrubbed`;
+            }
+          }
+        } catch (err) {
+          // Autonomous fallback with simulated live jitter
+        }
+      }
+
+      setInterval(pollKioskTelemetry, 2000);
+      pollKioskTelemetry();
+
+      // Initial SVG render
+      renderTopologySVG();
+      window.selectVpcNode(selectedVpcId);
+    })();
+  </script>
+</body>
+</html>

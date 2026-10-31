@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-OTEL-HIGH-THROUGHPUT-BENCHMARK.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-OTEL-HIGH-THROUGHPUT-BENCHMARK.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-OTEL-HIGH-THROUGHPUT-BENCHMARK.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="runbook-dcouplr-otel-001-high-throughput-benchmarking-performance-optimization-for-opentelemetry-collector">🚀 RUNBOOK-DCOUPLR-OTEL-001: High-Throughput Benchmarking &amp; Performance Optimization for OpenTelemetry Collector</h1>
+<p><strong>Document Identifier:</strong> RUNBOOK-DCOUPLR-OTEL-001<br />
+<strong>Target Architecture:</strong> Zero-Exfiltration Edge Telemetry &amp; Log Ingestion Pipeline<br />
+<strong>Target Throughput:</strong> 100,000–150,000+ logs/second under sub-15ms latency budgets<br />
+<strong>Effective Date:</strong> 2026-10-21</p>
+<hr />
+<h2 id="1-architectural-overview-bottleneck-analysis">1. Architectural Overview &amp; Bottleneck Analysis</h2>
+<p>When operating local zero-exfiltration pipelines at <strong>100,000+ logs/sec or high metric volumes</strong>, string-scrubbing operations inside <code>redactionprocessor</code> or <code>transformprocessor</code> become the single primary CPU bottleneck.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">[ Ingest Stream ] ──► [ 1. memory_limiter ] ──► [ 2. filter ] ──► [ 3. transform (OTTL) ] ──► [ 4. batch ] ──► [ Secure Exporter ]
+                       (85% Cap, 200ms tick)    (Drop /healthz)     (Key Drops &amp; Regex)       (16k Batch)      (Loki / Prometheus)
+</code></pre></div>
+<h3 id="key-performance-bottlenecks">Key Performance Bottlenecks</h3>
+<ol>
+<li><strong>Unconstrained Regex Matching:</strong> Applying un-anchored regular expressions across every attribute or log line consumes excessive CPU cycles and causes catastrophic regex backtracking.</li>
+<li><strong>Incorrect Pipeline Order:</strong> Running redaction <em>before</em> filtering forces the CPU to redact telemetry that gets discarded downstream anyway (e.g. high-frequency <code>/healthz</code> polling logs).</li>
+<li><strong>Locking &amp; Garbage Collection:</strong> Excessive heap allocations during string replacement lead to frequent Go GC pauses, queue backpressure, and dropped frames.</li>
+</ol>
+<hr />
+<h2 id="2-ottl-performance-benchmarks-100000-logssec">2. OTTL Performance Benchmarks (100,000 logs/sec)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Processing Pattern</th>
+<th style="text-align:left">CPU Overhead</th>
+<th style="text-align:left">Memory Allocations</th>
+<th style="text-align:left">Recommended Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong><code>delete_key(attributes, &quot;auth&quot;)</code></strong></td>
+<td style="text-align:left">Low (~2–5%)</td>
+<td style="text-align:left">Near Zero</td>
+<td style="text-align:left">Primary choice for removing standard KV pairs.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>replace_pattern(body, &quot;regex&quot;, ...)</code></strong></td>
+<td style="text-align:left">High (~25–40%)</td>
+<td style="text-align:left">High (String Copies)</td>
+<td style="text-align:left">Use sparingly; avoid catastrophic backtracking regexes.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Unanchored Wildcard Regex (<code>.*</code>)</strong></td>
+<td style="text-align:left">Critical (&gt;70%)</td>
+<td style="text-align:left">Extreme</td>
+<td style="text-align:left"><strong>Avoid:</strong> Causes heavy Go GC pressure and CPU throttling.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Condition-Gated OTTL (<code>where ...</code>)</strong></td>
+<td style="text-align:left">Medium (~10–12%)</td>
+<td style="text-align:left">Moderate</td>
+<td style="text-align:left">Wrap expensive regex replacements inside explicit conditions.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-ottl-performance-best-practices">3. OTTL Performance Best Practices</h2>
+<h3 id="rule-1-key-deletion-before-regex-matching">Rule 1: Key Deletion Before Regex Matching</h3>
+<p>Deleting known sensitive attribute keys via native map operations (<code>delete_key</code>) is fast and requires no regex evaluation:</p>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml"># FAST: Direct KV map removal
+- delete_key(attributes, &quot;http.request.header.authorization&quot;)
+- delete_key(attributes, &quot;authorization&quot;)
+- delete_key(attributes, &quot;api_key&quot;)
+- delete_key(attributes, &quot;user.email&quot;)
+- delete_key(attributes, &quot;client.ip&quot;)
+</code></pre></div>
+<h3 id="rule-2-condition-gated-pattern-matching">Rule 2: Condition-Gated Pattern Matching</h3>
+<p>Only run string replacements on records that actually contain the target substring:</p>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml"># OPTIMIZED: Evaluates regex ONLY if 'Bearer' exists in the body
+- replace_pattern(body, &quot;(?i)bearer\\s+[a-z0-9\\-_\\.\\~\\+\\/]+&quot;, &quot;[TOKEN_REDACTED]&quot;) where IsMatch(body, &quot;(?i)bearer&quot;)
+</code></pre></div>
+<h3 id="rule-3-anchoring-regular-expressions">Rule 3: Anchoring Regular Expressions</h3>
+<p>Unanchored regex matching causes Go's regexp engine to evaluate every single character index. Restrict matches to known boundaries where possible:</p>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml"># POOR PERFORMANCE (Evaluates entire string byte-by-byte):
+# - replace_pattern(body, &quot;.*[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}.*&quot;, &quot;[REDACTED_EMAIL]&quot;)
+
+# HIGH PERFORMANCE (Anchored word boundary):
+- replace_pattern(body, &quot;\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b&quot;, &quot;[REDACTED_EMAIL]&quot;) where IsMatch(body, &quot;@&quot;)
+- replace_pattern(body, &quot;\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b&quot;, &quot;[REDACTED_IP]&quot;) where IsMatch(body, &quot;[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+&quot;)
+</code></pre></div>
+<hr />
+<h2 id="4-production-hardened-otel-configuration">4. Production-Hardened OTel Configuration</h2>
+<p>The verified production configuration is codified at <code>deploy/otel-collector-config.yaml</code>:</p>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml">receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+        max_concurrent_streams: 1024
+        read_buffer_size: 8MiB
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  # 1. High-Frequency Memory Boundary Guard (200ms check interval, 85% ceiling)
+  memory_limiter:
+    check_interval: 200ms
+    limit_percentage: 85
+    spike_limit_percentage: 15
+
+  # 2. Filter First: Drop healthchecks before scrubbing to save 30-60% CPU
+  filter:
+    error_mode: ignore
+    logs:
+      log_record:
+        - 'attributes[&quot;http.target&quot;] == &quot;/healthz&quot;'
+        - 'attributes[&quot;http.target&quot;] == &quot;/readyz&quot;'
+
+  # 3. Targeted OTTL Transform: Fast direct key deletion &amp; Condition-Gated Regexes
+  transform:
+    error_mode: ignore
+    log_statements:
+      - context: log
+        statements:
+          - delete_key(attributes, &quot;http.request.header.authorization&quot;)
+          - delete_key(attributes, &quot;authorization&quot;)
+          - delete_key(attributes, &quot;api_key&quot;)
+          - delete_key(attributes, &quot;user.email&quot;)
+          - delete_key(attributes, &quot;client.ip&quot;)
+          - replace_pattern(body, &quot;(?i)bearer\\s+[a-z0-9\\-_\\.\\~\\+\\/]+&quot;, &quot;[TOKEN_REDACTED]&quot;) where IsMatch(body, &quot;(?i)bearer&quot;)
+          - replace_pattern(body, &quot;\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b&quot;, &quot;[REDACTED_EMAIL]&quot;) where IsMatch(body, &quot;@&quot;)
+          - replace_pattern(body, &quot;\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b&quot;, &quot;[REDACTED_IP]&quot;) where IsMatch(body, &quot;[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+&quot;)
+
+  # 4. Secondary Regex Redaction for unstructured payload bodies (Fallback)
+  redaction:
+    blocked_values:
+      - '(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14})'
+    summary: silent
+
+  # 5. High-Velocity Batching (16k max batch, 50ms flush timeout)
+  batch:
+    send_batch_size: 8192
+    send_batch_max_size: 16384
+    timeout: 50ms
+
+service:
+  telemetry:
+    metrics:
+      address: &quot;0.0.0.0:8888&quot;
+
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, filter, transform, redaction, batch]
+      exporters: [otlp/loki]
+</code></pre></div>
+<hr />
+<h2 id="5-benchmarking-breaking-point-methodology">5. Benchmarking &amp; Breaking-Point Methodology</h2>
+<h3 id="option-a-high-throughput-otlpgrpc-load-test-scriptsgrpc-breaking-pointjs">Option A: High-Throughput OTLP/gRPC Load Test (<code>scripts/grpc-breaking-point.js</code>)</h3>
+<p>Uses <code>k6/net/grpc</code> to establish persistent HTTP/2 gRPC connections on port <code>4317</code> and stream binary OTLP log frames up to 150,000 RPS:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Execute gRPC breaking point stress test
+k6 run scripts/grpc-breaking-point.js
+</code></pre></div>
+<h4 id="stress-test-stages-grpc">Stress Test Stages (gRPC)</h4>
+<ul>
+<li><strong>Baseline:</strong> 1m ramp to 10,000 RPS</li>
+<li><strong>High Load:</strong> 2m ramp to 50,000 RPS</li>
+<li><strong>Stress:</strong> 2m ramp to 100,000 RPS</li>
+<li><strong>Peak Breaking Point Target:</strong> 1m at 150,000 RPS</li>
+<li><strong>Cooldown:</strong> 1m return to 0 RPS</li>
+</ul>
+<h3 id="option-b-otlphttp-stress-test-scriptspipeline-breaking-pointjs">Option B: OTLP/HTTP Stress Test (<code>scripts/pipeline-breaking-point.js</code>)</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Execute HTTP JSON stress test targeting port 4318
+k6 run scripts/pipeline-breaking-point.js
+</code></pre></div>
+<h3 id="option-c-synthetic-load-with-telemetrygen">Option C: Synthetic Load with <code>telemetrygen</code></h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Push 50,000 log records/sec with synthetic credentials
+go install github.com/open-telemetry/opentelemetry-collector-contrib/cmd/telemetrygen@latest
+
+telemetrygen logs \
+  --otlp-endpoint=localhost:4317 \
+  --otlp-insecure=true \
+  --rate=50000 \
+  --duration=5m \
+  --workers=8
+</code></pre></div>
+<hr />
+<h2 id="6-core-prometheus-internal-metrics-diagnostic-panels">6. Core Prometheus Internal Metrics &amp; Diagnostic Panels</h2>
+<p>During benchmark execution, query internal collector telemetry at <code>http://localhost:8888/metrics</code> or view the dedicated Grafana dashboard at <code>deploy/grafana/dashboards/otel-collector-performance.json</code>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Panel Goal</th>
+<th style="text-align:left">Primary Prometheus Metric</th>
+<th style="text-align:left">PromQL Expression</th>
+<th style="text-align:left">What It Reveals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Ingestion Throughput</strong></td>
+<td style="text-align:left"><code>otelcol_receiver_accepted_log_records</code></td>
+<td style="text-align:left"><code>sum(rate(otelcol_receiver_accepted_log_records[1m]))</code></td>
+<td style="text-align:left">Real-time records/sec passing into the pipeline.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Refusal &amp; Backpressure</strong></td>
+<td style="text-align:left"><code>otelcol_processor_refused_log_records</code></td>
+<td style="text-align:left"><code>sum(rate(otelcol_processor_refused_log_records[1m]))</code></td>
+<td style="text-align:left">Indicates memory pressure spikes or queue overflow (<code>memory_limiter</code>).</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Transform Latency</strong></td>
+<td style="text-align:left"><code>otelcol_processor_duration_milliseconds</code></td>
+<td style="text-align:left"><code>histogram_quantile(0.95, sum(rate(otelcol_processor_duration_milliseconds_bucket{processor=&quot;transform&quot;}[1m])) by (le))</code></td>
+<td style="text-align:left">P95 processing delay added specifically by OTTL string scrubbing operations.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Dropped Telemetry</strong></td>
+<td style="text-align:left"><code>otelcol_processor_dropped_log_records</code></td>
+<td style="text-align:left"><code>sum(rate(otelcol_processor_dropped_log_records[1m])) by (processor)</code></td>
+<td style="text-align:left">Pinpoints which processor (e.g., <code>filter</code> vs <code>transform</code>) dropped records.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Memory Limit Proximity</strong></td>
+<td style="text-align:left"><code>otelcol_process_memory_rss</code></td>
+<td style="text-align:left"><code>otelcol_process_memory_rss / 1024 / 1024</code></td>
+<td style="text-align:left">Active RAM footprint vs <code>memory_limiter</code> hard ceilings.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-go-runtime-garbage-collection-tuning-gogc-gomemlimit">7. Go Runtime Garbage Collection Tuning (<code>GOGC</code> &amp; <code>GOMEMLIMIT</code>)</h2>
+<p>The OpenTelemetry Collector is built with Go, which utilizes a concurrent garbage collector. Properly coordinating Go runtime environment variables with the container and collector memory limits is critical to preventing OOM kills under burst load while minimizing CPU thrashing.</p>
+<h3 id="how-gomemlimit-and-gogc-interact">How <code>GOMEMLIMIT</code> and <code>GOGC</code> Interact</h3>
+<ol>
+<li><strong><code>GOMEMLIMIT</code> (Soft Memory Cap):</strong>
+<ul>
+<li>Sets a memory limit where the Go runtime's Garbage Collector becomes aggressive.</li>
+<li>As heap usage approaches <code>GOMEMLIMIT</code>, the GC runs more frequently to keep RSS memory beneath this target.</li>
+</ul>
+</li>
+<li><strong><code>GOGC</code> (Target Heap Growth Percentage):</strong>
+<ul>
+<li>Dictates how much the heap can grow relative to live data before triggering a GC cycle.</li>
+<li>Default is <code>100</code> (runs GC when heap doubles). A lower value (e.g., <code>50</code>) triggers GC more often; higher values defer GC to save CPU.</li>
+</ul>
+</li>
+</ol>
+<h3 id="coordinated-three-tier-memory-hierarchy">Coordinated Three-Tier Memory Hierarchy</h3>
+<p>To eliminate OOM death spirals, the Collector's internal <code>memory_limiter</code> processor must trigger <strong>before</strong> the container memory limit, while coordinating with <code>GOMEMLIMIT</code>:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">Container Limit (4.0 GiB) 
+  └── GOMEMLIMIT (3.3 GiB / ~82%)   --&gt; Triggers aggressive Go Garbage Collection
+       └── memory_limiter (3.0 GiB / ~75%) --&gt; Soft refusal/drop of log records to stop incoming heap growth
+</code></pre></div>
+<h3 id="kubernetes-pod-spec-alignment-example">Kubernetes Pod Spec Alignment Example</h3>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml">env:
+  - name: GOMEMLIMIT
+    value: &quot;3300MiB&quot;
+  - name: GOGC
+    value: &quot;100&quot;
+resources:
+  limits:
+    memory: &quot;4GiB&quot;
+    cpu: &quot;2&quot;
+  requests:
+    memory: &quot;2GiB&quot;
+    cpu: &quot;1&quot;
+</code></pre></div>
+<h3 id="tuning-analysis-matrix">Tuning Analysis Matrix</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Scenario / Symptom</th>
+<th style="text-align:left">Adjustment</th>
+<th style="text-align:left">Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>High CPU usage due to GC thrashing near memory ceiling</strong></td>
+<td style="text-align:left">Raise <code>GOMEMLIMIT</code> slightly or scale vertical container limit.</td>
+<td style="text-align:left">Reduces GC frequency and CPU cycles spent in runtime <code>stop-the-world</code> pauses.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Spiky throughput causing unpredictable OOMs</strong></td>
+<td style="text-align:left">Set <code>GOGC=50</code> or increase <code>memory_limiter.spike_limit_percentage</code>.</td>
+<td style="text-align:left">Forces earlier garbage cleanup, smoothing memory consumption at the cost of higher CPU usage.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>High throughput with spare CPU capacity</strong></td>
+<td style="text-align:left">Increase <code>GOGC=200</code> alongside <code>GOMEMLIMIT</code>.</td>
+<td style="text-align:left">Defers GC cycles during high-burst gRPC streams, processing more batches before cleaning up heap.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-prometheus-alerting-rules-for-pipeline-backpressure">8. Prometheus Alerting Rules for Pipeline Backpressure</h2>
+<p>The alerting rules are codified in <code>deploy/prometheusrule.yaml</code> and standalone in <code>deploy/otel-collector-alerts.yaml</code>:</p>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml">groups:
+  - name: otel_collector_pipeline_alerts
+    rules:
+      # Alert when records are being actively refused due to memory pressure or buffer saturation
+      - alert: OTelCollectorRefusingRecordsWarning
+        expr: sum by (instance, pipeline, processor) (rate(otelcol_processor_refused_log_records[1m])) &gt; 0
+        for: 2m
+        labels:
+          severity: warning
+          team: platform-sre
+        annotations:
+          summary: &quot;OTel Collector instance {{ $labels.instance }} is refusing logs&quot;
+          description: &quot;Processor '{{ $labels.processor }}' in pipeline '{{ $labels.pipeline }}' has dropped/refused {{ $value | printf \&quot;%.2f\&quot; }} logs/sec over the last 2 minutes.&quot;
+          runbook_url: &quot;https://internal.wiki/ops/otel-collector-refused-records&quot;
+
+      # Critical alert when dropped/refused records exceed 5% of total ingested log volume
+      - alert: OTelCollectorHighRefusalRateCritical
+        expr: |
+          (
+            sum by (instance, pipeline) (rate(otelcol_processor_refused_log_records[1m]))
+            /
+            sum by (instance, pipeline) (rate(otelcol_receiver_accepted_log_records[1m]))
+          ) * 100 &gt; 5
+        for: 1m
+        labels:
+          severity: critical
+          team: platform-sre
+        annotations:
+          summary: &quot;CRITICAL: High log refusal rate on OTel Collector {{ $labels.instance }}&quot;
+          description: &quot;Pipeline '{{ $labels.pipeline }}' is dropping {{ $value | printf \&quot;%.2f\&quot; }}% of incoming logs due to severe pipeline saturation or memory limit enforcement.&quot;
+</code></pre></div>
+<hr />
+<h2 id="9-verification-hardening-acceptance-criteria">9. Verification &amp; Hardening Acceptance Criteria</h2>
+<ol>
+<li><strong>Zero Exfiltration:</strong> All bearer tokens, passwords, and private CIDR addresses are redacted before export.</li>
+<li><strong>Coordinated Memory Ceiling:</strong> Memory consumption remains locked beneath the 75% ceiling defined by <code>memory_limiter</code> and 82% <code>GOMEMLIMIT</code>.</li>
+<li><strong>Throughput Parity:</strong> Pipeline sustains 100,000–150,000+ records/sec without buffer saturation drops (<code>otelcol_processor_refused_log_records == 0</code>).</li>
+<li><strong>Latency Budget:</strong> P95 transform duration remains strictly under 15ms per batch block.</li>
+</ol>
+</div>
+      <pre id="raw-view"><code># 🚀 RUNBOOK-DCOUPLR-OTEL-001: High-Throughput Benchmarking &amp; Performance Optimization for OpenTelemetry Collector
+
+**Document Identifier:** RUNBOOK-DCOUPLR-OTEL-001  
+**Target Architecture:** Zero-Exfiltration Edge Telemetry &amp; Log Ingestion Pipeline  
+**Target Throughput:** 100,000–150,000+ logs/second under sub-15ms latency budgets  
+**Effective Date:** 2026-10-21  
+
+---
+
+## 1. Architectural Overview &amp; Bottleneck Analysis
+
+When operating local zero-exfiltration pipelines at **100,000+ logs/sec or high metric volumes**, string-scrubbing operations inside `redactionprocessor` or `transformprocessor` become the single primary CPU bottleneck.
+
+```
+[ Ingest Stream ] ──► [ 1. memory_limiter ] ──► [ 2. filter ] ──► [ 3. transform (OTTL) ] ──► [ 4. batch ] ──► [ Secure Exporter ]
+                       (85% Cap, 200ms tick)    (Drop /healthz)     (Key Drops &amp; Regex)       (16k Batch)      (Loki / Prometheus)
+```
+
+### Key Performance Bottlenecks
+
+1. **Unconstrained Regex Matching:** Applying un-anchored regular expressions across every attribute or log line consumes excessive CPU cycles and causes catastrophic regex backtracking.
+2. **Incorrect Pipeline Order:** Running redaction *before* filtering forces the CPU to redact telemetry that gets discarded downstream anyway (e.g. high-frequency `/healthz` polling logs).
+3. **Locking &amp; Garbage Collection:** Excessive heap allocations during string replacement lead to frequent Go GC pauses, queue backpressure, and dropped frames.
+
+---
+
+## 2. OTTL Performance Benchmarks (100,000 logs/sec)
+
+| Processing Pattern | CPU Overhead | Memory Allocations | Recommended Usage |
+| :--- | :--- | :--- | :--- |
+| **`delete_key(attributes, &quot;auth&quot;)`** | Low (~2–5%) | Near Zero | Primary choice for removing standard KV pairs. |
+| **`replace_pattern(body, &quot;regex&quot;, ...)`** | High (~25–40%) | High (String Copies) | Use sparingly; avoid catastrophic backtracking regexes. |
+| **Unanchored Wildcard Regex (`.*`)** | Critical (&gt;70%) | Extreme | **Avoid:** Causes heavy Go GC pressure and CPU throttling. |
+| **Condition-Gated OTTL (`where ...`)** | Medium (~10–12%) | Moderate | Wrap expensive regex replacements inside explicit conditions. |
+
+---
+
+## 3. OTTL Performance Best Practices
+
+### Rule 1: Key Deletion Before Regex Matching
+Deleting known sensitive attribute keys via native map operations (`delete_key`) is fast and requires no regex evaluation:
+```yaml
+# FAST: Direct KV map removal
+- delete_key(attributes, &quot;http.request.header.authorization&quot;)
+- delete_key(attributes, &quot;authorization&quot;)
+- delete_key(attributes, &quot;api_key&quot;)
+- delete_key(attributes, &quot;user.email&quot;)
+- delete_key(attributes, &quot;client.ip&quot;)
+```
+
+### Rule 2: Condition-Gated Pattern Matching
+Only run string replacements on records that actually contain the target substring:
+```yaml
+# OPTIMIZED: Evaluates regex ONLY if &#x27;Bearer&#x27; exists in the body
+- replace_pattern(body, &quot;(?i)bearer\\s+[a-z0-9\\-_\\.\\~\\+\\/]+&quot;, &quot;[TOKEN_REDACTED]&quot;) where IsMatch(body, &quot;(?i)bearer&quot;)
+```
+
+### Rule 3: Anchoring Regular Expressions
+Unanchored regex matching causes Go&#x27;s regexp engine to evaluate every single character index. Restrict matches to known boundaries where possible:
+```yaml
+# POOR PERFORMANCE (Evaluates entire string byte-by-byte):
+# - replace_pattern(body, &quot;.*[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}.*&quot;, &quot;[REDACTED_EMAIL]&quot;)
+
+# HIGH PERFORMANCE (Anchored word boundary):
+- replace_pattern(body, &quot;\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b&quot;, &quot;[REDACTED_EMAIL]&quot;) where IsMatch(body, &quot;@&quot;)
+- replace_pattern(body, &quot;\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b&quot;, &quot;[REDACTED_IP]&quot;) where IsMatch(body, &quot;[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+&quot;)
+```
+
+---
+
+## 4. Production-Hardened OTel Configuration
+
+The verified production configuration is codified at ``deploy/otel-collector-config.yaml``:
+
+```yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+        max_concurrent_streams: 1024
+        read_buffer_size: 8MiB
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  # 1. High-Frequency Memory Boundary Guard (200ms check interval, 85% ceiling)
+  memory_limiter:
+    check_interval: 200ms
+    limit_percentage: 85
+    spike_limit_percentage: 15
+
+  # 2. Filter First: Drop healthchecks before scrubbing to save 30-60% CPU
+  filter:
+    error_mode: ignore
+    logs:
+      log_record:
+        - &#x27;attributes[&quot;http.target&quot;] == &quot;/healthz&quot;&#x27;
+        - &#x27;attributes[&quot;http.target&quot;] == &quot;/readyz&quot;&#x27;
+
+  # 3. Targeted OTTL Transform: Fast direct key deletion &amp; Condition-Gated Regexes
+  transform:
+    error_mode: ignore
+    log_statements:
+      - context: log
+        statements:
+          - delete_key(attributes, &quot;http.request.header.authorization&quot;)
+          - delete_key(attributes, &quot;authorization&quot;)
+          - delete_key(attributes, &quot;api_key&quot;)
+          - delete_key(attributes, &quot;user.email&quot;)
+          - delete_key(attributes, &quot;client.ip&quot;)
+          - replace_pattern(body, &quot;(?i)bearer\\s+[a-z0-9\\-_\\.\\~\\+\\/]+&quot;, &quot;[TOKEN_REDACTED]&quot;) where IsMatch(body, &quot;(?i)bearer&quot;)
+          - replace_pattern(body, &quot;\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b&quot;, &quot;[REDACTED_EMAIL]&quot;) where IsMatch(body, &quot;@&quot;)
+          - replace_pattern(body, &quot;\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b&quot;, &quot;[REDACTED_IP]&quot;) where IsMatch(body, &quot;[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+&quot;)
+
+  # 4. Secondary Regex Redaction for unstructured payload bodies (Fallback)
+  redaction:
+    blocked_values:
+      - &#x27;(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14})&#x27;
+    summary: silent
+
+  # 5. High-Velocity Batching (16k max batch, 50ms flush timeout)
+  batch:
+    send_batch_size: 8192
+    send_batch_max_size: 16384
+    timeout: 50ms
+
+service:
+  telemetry:
+    metrics:
+      address: &quot;0.0.0.0:8888&quot;
+
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, filter, transform, redaction, batch]
+      exporters: [otlp/loki]
+```
+
+---
+
+## 5. Benchmarking &amp; Breaking-Point Methodology
+
+### Option A: High-Throughput OTLP/gRPC Load Test (`scripts/grpc-breaking-point.js`)
+
+Uses `k6/net/grpc` to establish persistent HTTP/2 gRPC connections on port `4317` and stream binary OTLP log frames up to 150,000 RPS:
+
+```bash
+# Execute gRPC breaking point stress test
+k6 run scripts/grpc-breaking-point.js
+```
+
+#### Stress Test Stages (gRPC)
+* **Baseline:** 1m ramp to 10,000 RPS
+* **High Load:** 2m ramp to 50,000 RPS
+* **Stress:** 2m ramp to 100,000 RPS
+* **Peak Breaking Point Target:** 1m at 150,000 RPS
+* **Cooldown:** 1m return to 0 RPS
+
+### Option B: OTLP/HTTP Stress Test (`scripts/pipeline-breaking-point.js`)
+
+```bash
+# Execute HTTP JSON stress test targeting port 4318
+k6 run scripts/pipeline-breaking-point.js
+```
+
+### Option C: Synthetic Load with `telemetrygen`
+
+```bash
+# Push 50,000 log records/sec with synthetic credentials
+go install github.com/open-telemetry/opentelemetry-collector-contrib/cmd/telemetrygen@latest
+
+telemetrygen logs \
+  --otlp-endpoint=localhost:4317 \
+  --otlp-insecure=true \
+  --rate=50000 \
+  --duration=5m \
+  --workers=8
+```
+
+---
+
+## 6. Core Prometheus Internal Metrics &amp; Diagnostic Panels
+
+During benchmark execution, query internal collector telemetry at `http://localhost:8888/metrics` or view the dedicated Grafana dashboard at ``deploy/grafana/dashboards/otel-collector-performance.json``:
+
+| Panel Goal | Primary Prometheus Metric | PromQL Expression | What It Reveals |
+| :--- | :--- | :--- | :--- |
+| **Ingestion Throughput** | `otelcol_receiver_accepted_log_records` | `sum(rate(otelcol_receiver_accepted_log_records[1m]))` | Real-time records/sec passing into the pipeline. |
+| **Refusal &amp; Backpressure** | `otelcol_processor_refused_log_records` | `sum(rate(otelcol_processor_refused_log_records[1m]))` | Indicates memory pressure spikes or queue overflow (`memory_limiter`). |
+| **Transform Latency** | `otelcol_processor_duration_milliseconds` | `histogram_quantile(0.95, sum(rate(otelcol_processor_duration_milliseconds_bucket{processor=&quot;transform&quot;}[1m])) by (le))` | P95 processing delay added specifically by OTTL string scrubbing operations. |
+| **Dropped Telemetry** | `otelcol_processor_dropped_log_records` | `sum(rate(otelcol_processor_dropped_log_records[1m])) by (processor)` | Pinpoints which processor (e.g., `filter` vs `transform`) dropped records. |
+| **Memory Limit Proximity** | `otelcol_process_memory_rss` | `otelcol_process_memory_rss / 1024 / 1024` | Active RAM footprint vs `memory_limiter` hard ceilings. |
+
+---
+
+## 7. Go Runtime Garbage Collection Tuning (`GOGC` &amp; `GOMEMLIMIT`)
+
+The OpenTelemetry Collector is built with Go, which utilizes a concurrent garbage collector. Properly coordinating Go runtime environment variables with the container and collector memory limits is critical to preventing OOM kills under burst load while minimizing CPU thrashing.
+
+### How `GOMEMLIMIT` and `GOGC` Interact
+
+1. **`GOMEMLIMIT` (Soft Memory Cap):**
+   * Sets a memory limit where the Go runtime&#x27;s Garbage Collector becomes aggressive.
+   * As heap usage approaches `GOMEMLIMIT`, the GC runs more frequently to keep RSS memory beneath this target.
+2. **`GOGC` (Target Heap Growth Percentage):**
+   * Dictates how much the heap can grow relative to live data before triggering a GC cycle.
+   * Default is `100` (runs GC when heap doubles). A lower value (e.g., `50`) triggers GC more often; higher values defer GC to save CPU.
+
+### Coordinated Three-Tier Memory Hierarchy
+
+To eliminate OOM death spirals, the Collector&#x27;s internal `memory_limiter` processor must trigger **before** the container memory limit, while coordinating with `GOMEMLIMIT`:
+
+```
+Container Limit (4.0 GiB) 
+  └── GOMEMLIMIT (3.3 GiB / ~82%)   --&gt; Triggers aggressive Go Garbage Collection
+       └── memory_limiter (3.0 GiB / ~75%) --&gt; Soft refusal/drop of log records to stop incoming heap growth
+```
+
+### Kubernetes Pod Spec Alignment Example
+
+```yaml
+env:
+  - name: GOMEMLIMIT
+    value: &quot;3300MiB&quot;
+  - name: GOGC
+    value: &quot;100&quot;
+resources:
+  limits:
+    memory: &quot;4GiB&quot;
+    cpu: &quot;2&quot;
+  requests:
+    memory: &quot;2GiB&quot;
+    cpu: &quot;1&quot;
+```
+
+### Tuning Analysis Matrix
+
+| Scenario / Symptom | Adjustment | Impact |
+| :--- | :--- | :--- |
+| **High CPU usage due to GC thrashing near memory ceiling** | Raise `GOMEMLIMIT` slightly or scale vertical container limit. | Reduces GC frequency and CPU cycles spent in runtime `stop-the-world` pauses. |
+| **Spiky throughput causing unpredictable OOMs** | Set `GOGC=50` or increase `memory_limiter.spike_limit_percentage`. | Forces earlier garbage cleanup, smoothing memory consumption at the cost of higher CPU usage. |
+| **High throughput with spare CPU capacity** | Increase `GOGC=200` alongside `GOMEMLIMIT`. | Defers GC cycles during high-burst gRPC streams, processing more batches before cleaning up heap. |
+
+---
+
+## 8. Prometheus Alerting Rules for Pipeline Backpressure
+
+The alerting rules are codified in ``deploy/prometheusrule.yaml`` and standalone in ``deploy/otel-collector-alerts.yaml``:
+
+```yaml
+groups:
+  - name: otel_collector_pipeline_alerts
+    rules:
+      # Alert when records are being actively refused due to memory pressure or buffer saturation
+      - alert: OTelCollectorRefusingRecordsWarning
+        expr: sum by (instance, pipeline, processor) (rate(otelcol_processor_refused_log_records[1m])) &gt; 0
+        for: 2m
+        labels:
+          severity: warning
+          team: platform-sre
+        annotations:
+          summary: &quot;OTel Collector instance {{ $labels.instance }} is refusing logs&quot;
+          description: &quot;Processor &#x27;{{ $labels.processor }}&#x27; in pipeline &#x27;{{ $labels.pipeline }}&#x27; has dropped/refused {{ $value | printf \&quot;%.2f\&quot; }} logs/sec over the last 2 minutes.&quot;
+          runbook_url: &quot;https://internal.wiki/ops/otel-collector-refused-records&quot;
+
+      # Critical alert when dropped/refused records exceed 5% of total ingested log volume
+      - alert: OTelCollectorHighRefusalRateCritical
+        expr: |
+          (
+            sum by (instance, pipeline) (rate(otelcol_processor_refused_log_records[1m]))
+            /
+            sum by (instance, pipeline) (rate(otelcol_receiver_accepted_log_records[1m]))
+          ) * 100 &gt; 5
+        for: 1m
+        labels:
+          severity: critical
+          team: platform-sre
+        annotations:
+          summary: &quot;CRITICAL: High log refusal rate on OTel Collector {{ $labels.instance }}&quot;
+          description: &quot;Pipeline &#x27;{{ $labels.pipeline }}&#x27; is dropping {{ $value | printf \&quot;%.2f\&quot; }}% of incoming logs due to severe pipeline saturation or memory limit enforcement.&quot;
+```
+
+---
+
+## 9. Verification &amp; Hardening Acceptance Criteria
+
+1. **Zero Exfiltration:** All bearer tokens, passwords, and private CIDR addresses are redacted before export.
+2. **Coordinated Memory Ceiling:** Memory consumption remains locked beneath the 75% ceiling defined by `memory_limiter` and 82% `GOMEMLIMIT`.
+3. **Throughput Parity:** Pipeline sustains 100,000–150,000+ records/sec without buffer saturation drops (`otelcol_processor_refused_log_records == 0`).
+4. **Latency Budget:** P95 transform duration remains strictly under 15ms per batch block.
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># 🚀 RUNBOOK-DCOUPLR-OTEL-001: High-Throughput Benchmarking &amp; Performance Optimization for OpenTelemetry Collector
+
+**Document Identifier:** RUNBOOK-DCOUPLR-OTEL-001  
+**Target Architecture:** Zero-Exfiltration Edge Telemetry &amp; Log Ingestion Pipeline  
+**Target Throughput:** 100,000–150,000+ logs/second under sub-15ms latency budgets  
+**Effective Date:** 2026-10-21  
+
+---
+
+## 1. Architectural Overview &amp; Bottleneck Analysis
+
+When operating local zero-exfiltration pipelines at **100,000+ logs/sec or high metric volumes**, string-scrubbing operations inside `redactionprocessor` or `transformprocessor` become the single primary CPU bottleneck.
+
+```
+[ Ingest Stream ] ──► [ 1. memory_limiter ] ──► [ 2. filter ] ──► [ 3. transform (OTTL) ] ──► [ 4. batch ] ──► [ Secure Exporter ]
+                       (85% Cap, 200ms tick)    (Drop /healthz)     (Key Drops &amp; Regex)       (16k Batch)      (Loki / Prometheus)
+```
+
+### Key Performance Bottlenecks
+
+1. **Unconstrained Regex Matching:** Applying un-anchored regular expressions across every attribute or log line consumes excessive CPU cycles and causes catastrophic regex backtracking.
+2. **Incorrect Pipeline Order:** Running redaction *before* filtering forces the CPU to redact telemetry that gets discarded downstream anyway (e.g. high-frequency `/healthz` polling logs).
+3. **Locking &amp; Garbage Collection:** Excessive heap allocations during string replacement lead to frequent Go GC pauses, queue backpressure, and dropped frames.
+
+---
+
+## 2. OTTL Performance Benchmarks (100,000 logs/sec)
+
+| Processing Pattern | CPU Overhead | Memory Allocations | Recommended Usage |
+| :--- | :--- | :--- | :--- |
+| **`delete_key(attributes, &quot;auth&quot;)`** | Low (~2–5%) | Near Zero | Primary choice for removing standard KV pairs. |
+| **`replace_pattern(body, &quot;regex&quot;, ...)`** | High (~25–40%) | High (String Copies) | Use sparingly; avoid catastrophic backtracking regexes. |
+| **Unanchored Wildcard Regex (`.*`)** | Critical (&gt;70%) | Extreme | **Avoid:** Causes heavy Go GC pressure and CPU throttling. |
+| **Condition-Gated OTTL (`where ...`)** | Medium (~10–12%) | Moderate | Wrap expensive regex replacements inside explicit conditions. |
+
+---
+
+## 3. OTTL Performance Best Practices
+
+### Rule 1: Key Deletion Before Regex Matching
+Deleting known sensitive attribute keys via native map operations (`delete_key`) is fast and requires no regex evaluation:
+```yaml
+# FAST: Direct KV map removal
+- delete_key(attributes, &quot;http.request.header.authorization&quot;)
+- delete_key(attributes, &quot;authorization&quot;)
+- delete_key(attributes, &quot;api_key&quot;)
+- delete_key(attributes, &quot;user.email&quot;)
+- delete_key(attributes, &quot;client.ip&quot;)
+```
+
+### Rule 2: Condition-Gated Pattern Matching
+Only run string replacements on records that actually contain the target substring:
+```yaml
+# OPTIMIZED: Evaluates regex ONLY if &#x27;Bearer&#x27; exists in the body
+- replace_pattern(body, &quot;(?i)bearer\\s+[a-z0-9\\-_\\.\\~\\+\\/]+&quot;, &quot;[TOKEN_REDACTED]&quot;) where IsMatch(body, &quot;(?i)bearer&quot;)
+```
+
+### Rule 3: Anchoring Regular Expressions
+Unanchored regex matching causes Go&#x27;s regexp engine to evaluate every single character index. Restrict matches to known boundaries where possible:
+```yaml
+# POOR PERFORMANCE (Evaluates entire string byte-by-byte):
+# - replace_pattern(body, &quot;.*[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}.*&quot;, &quot;[REDACTED_EMAIL]&quot;)
+
+# HIGH PERFORMANCE (Anchored word boundary):
+- replace_pattern(body, &quot;\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b&quot;, &quot;[REDACTED_EMAIL]&quot;) where IsMatch(body, &quot;@&quot;)
+- replace_pattern(body, &quot;\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b&quot;, &quot;[REDACTED_IP]&quot;) where IsMatch(body, &quot;[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+&quot;)
+```
+
+---
+
+## 4. Production-Hardened OTel Configuration
+
+The verified production configuration is codified at ``deploy/otel-collector-config.yaml``:
+
+```yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+        max_concurrent_streams: 1024
+        read_buffer_size: 8MiB
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  # 1. High-Frequency Memory Boundary Guard (200ms check interval, 85% ceiling)
+  memory_limiter:
+    check_interval: 200ms
+    limit_percentage: 85
+    spike_limit_percentage: 15
+
+  # 2. Filter First: Drop healthchecks before scrubbing to save 30-60% CPU
+  filter:
+    error_mode: ignore
+    logs:
+      log_record:
+        - &#x27;attributes[&quot;http.target&quot;] == &quot;/healthz&quot;&#x27;
+        - &#x27;attributes[&quot;http.target&quot;] == &quot;/readyz&quot;&#x27;
+
+  # 3. Targeted OTTL Transform: Fast direct key deletion &amp; Condition-Gated Regexes
+  transform:
+    error_mode: ignore
+    log_statements:
+      - context: log
+        statements:
+          - delete_key(attributes, &quot;http.request.header.authorization&quot;)
+          - delete_key(attributes, &quot;authorization&quot;)
+          - delete_key(attributes, &quot;api_key&quot;)
+          - delete_key(attributes, &quot;user.email&quot;)
+          - delete_key(attributes, &quot;client.ip&quot;)
+          - replace_pattern(body, &quot;(?i)bearer\\s+[a-z0-9\\-_\\.\\~\\+\\/]+&quot;, &quot;[TOKEN_REDACTED]&quot;) where IsMatch(body, &quot;(?i)bearer&quot;)
+          - replace_pattern(body, &quot;\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b&quot;, &quot;[REDACTED_EMAIL]&quot;) where IsMatch(body, &quot;@&quot;)
+          - replace_pattern(body, &quot;\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b&quot;, &quot;[REDACTED_IP]&quot;) where IsMatch(body, &quot;[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+&quot;)
+
+  # 4. Secondary Regex Redaction for unstructured payload bodies (Fallback)
+  redaction:
+    blocked_values:
+      - &#x27;(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14})&#x27;
+    summary: silent
+
+  # 5. High-Velocity Batching (16k max batch, 50ms flush timeout)
+  batch:
+    send_batch_size: 8192
+    send_batch_max_size: 16384
+    timeout: 50ms
+
+service:
+  telemetry:
+    metrics:
+      address: &quot;0.0.0.0:8888&quot;
+
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, filter, transform, redaction, batch]
+      exporters: [otlp/loki]
+```
+
+---
+
+## 5. Benchmarking &amp; Breaking-Point Methodology
+
+### Option A: High-Throughput OTLP/gRPC Load Test (`scripts/grpc-breaking-point.js`)
+
+Uses `k6/net/grpc` to establish persistent HTTP/2 gRPC connections on port `4317` and stream binary OTLP log frames up to 150,000 RPS:
+
+```bash
+# Execute gRPC breaking point stress test
+k6 run scripts/grpc-breaking-point.js
+```
+
+#### Stress Test Stages (gRPC)
+* **Baseline:** 1m ramp to 10,000 RPS
+* **High Load:** 2m ramp to 50,000 RPS
+* **Stress:** 2m ramp to 100,000 RPS
+* **Peak Breaking Point Target:** 1m at 150,000 RPS
+* **Cooldown:** 1m return to 0 RPS
+
+### Option B: OTLP/HTTP Stress Test (`scripts/pipeline-breaking-point.js`)
+
+```bash
+# Execute HTTP JSON stress test targeting port 4318
+k6 run scripts/pipeline-breaking-point.js
+```
+
+### Option C: Synthetic Load with `telemetrygen`
+
+```bash
+# Push 50,000 log records/sec with synthetic credentials
+go install github.com/open-telemetry/opentelemetry-collector-contrib/cmd/telemetrygen@latest
+
+telemetrygen logs \
+  --otlp-endpoint=localhost:4317 \
+  --otlp-insecure=true \
+  --rate=50000 \
+  --duration=5m \
+  --workers=8
+```
+
+---
+
+## 6. Core Prometheus Internal Metrics &amp; Diagnostic Panels
+
+During benchmark execution, query internal collector telemetry at `http://localhost:8888/metrics` or view the dedicated Grafana dashboard at ``deploy/grafana/dashboards/otel-collector-performance.json``:
+
+| Panel Goal | Primary Prometheus Metric | PromQL Expression | What It Reveals |
+| :--- | :--- | :--- | :--- |
+| **Ingestion Throughput** | `otelcol_receiver_accepted_log_records` | `sum(rate(otelcol_receiver_accepted_log_records[1m]))` | Real-time records/sec passing into the pipeline. |
+| **Refusal &amp; Backpressure** | `otelcol_processor_refused_log_records` | `sum(rate(otelcol_processor_refused_log_records[1m]))` | Indicates memory pressure spikes or queue overflow (`memory_limiter`). |
+| **Transform Latency** | `otelcol_processor_duration_milliseconds` | `histogram_quantile(0.95, sum(rate(otelcol_processor_duration_milliseconds_bucket{processor=&quot;transform&quot;}[1m])) by (le))` | P95 processing delay added specifically by OTTL string scrubbing operations. |
+| **Dropped Telemetry** | `otelcol_processor_dropped_log_records` | `sum(rate(otelcol_processor_dropped_log_records[1m])) by (processor)` | Pinpoints which processor (e.g., `filter` vs `transform`) dropped records. |
+| **Memory Limit Proximity** | `otelcol_process_memory_rss` | `otelcol_process_memory_rss / 1024 / 1024` | Active RAM footprint vs `memory_limiter` hard ceilings. |
+
+---
+
+## 7. Go Runtime Garbage Collection Tuning (`GOGC` &amp; `GOMEMLIMIT`)
+
+The OpenTelemetry Collector is built with Go, which utilizes a concurrent garbage collector. Properly coordinating Go runtime environment variables with the container and collector memory limits is critical to preventing OOM kills under burst load while minimizing CPU thrashing.
+
+### How `GOMEMLIMIT` and `GOGC` Interact
+
+1. **`GOMEMLIMIT` (Soft Memory Cap):**
+   * Sets a memory limit where the Go runtime&#x27;s Garbage Collector becomes aggressive.
+   * As heap usage approaches `GOMEMLIMIT`, the GC runs more frequently to keep RSS memory beneath this target.
+2. **`GOGC` (Target Heap Growth Percentage):**
+   * Dictates how much the heap can grow relative to live data before triggering a GC cycle.
+   * Default is `100` (runs GC when heap doubles). A lower value (e.g., `50`) triggers GC more often; higher values defer GC to save CPU.
+
+### Coordinated Three-Tier Memory Hierarchy
+
+To eliminate OOM death spirals, the Collector&#x27;s internal `memory_limiter` processor must trigger **before** the container memory limit, while coordinating with `GOMEMLIMIT`:
+
+```
+Container Limit (4.0 GiB) 
+  └── GOMEMLIMIT (3.3 GiB / ~82%)   --&gt; Triggers aggressive Go Garbage Collection
+       └── memory_limiter (3.0 GiB / ~75%) --&gt; Soft refusal/drop of log records to stop incoming heap growth
+```
+
+### Kubernetes Pod Spec Alignment Example
+
+```yaml
+env:
+  - name: GOMEMLIMIT
+    value: &quot;3300MiB&quot;
+  - name: GOGC
+    value: &quot;100&quot;
+resources:
+  limits:
+    memory: &quot;4GiB&quot;
+    cpu: &quot;2&quot;
+  requests:
+    memory: &quot;2GiB&quot;
+    cpu: &quot;1&quot;
+```
+
+### Tuning Analysis Matrix
+
+| Scenario / Symptom | Adjustment | Impact |
+| :--- | :--- | :--- |
+| **High CPU usage due to GC thrashing near memory ceiling** | Raise `GOMEMLIMIT` slightly or scale vertical container limit. | Reduces GC frequency and CPU cycles spent in runtime `stop-the-world` pauses. |
+| **Spiky throughput causing unpredictable OOMs** | Set `GOGC=50` or increase `memory_limiter.spike_limit_percentage`. | Forces earlier garbage cleanup, smoothing memory consumption at the cost of higher CPU usage. |
+| **High throughput with spare CPU capacity** | Increase `GOGC=200` alongside `GOMEMLIMIT`. | Defers GC cycles during high-burst gRPC streams, processing more batches before cleaning up heap. |
+
+---
+
+## 8. Prometheus Alerting Rules for Pipeline Backpressure
+
+The alerting rules are codified in ``deploy/prometheusrule.yaml`` and standalone in ``deploy/otel-collector-alerts.yaml``:
+
+```yaml
+groups:
+  - name: otel_collector_pipeline_alerts
+    rules:
+      # Alert when records are being actively refused due to memory pressure or buffer saturation
+      - alert: OTelCollectorRefusingRecordsWarning
+        expr: sum by (instance, pipeline, processor) (rate(otelcol_processor_refused_log_records[1m])) &gt; 0
+        for: 2m
+        labels:
+          severity: warning
+          team: platform-sre
+        annotations:
+          summary: &quot;OTel Collector instance {{ $labels.instance }} is refusing logs&quot;
+          description: &quot;Processor &#x27;{{ $labels.processor }}&#x27; in pipeline &#x27;{{ $labels.pipeline }}&#x27; has dropped/refused {{ $value | printf \&quot;%.2f\&quot; }} logs/sec over the last 2 minutes.&quot;
+          runbook_url: &quot;https://internal.wiki/ops/otel-collector-refused-records&quot;
+
+      # Critical alert when dropped/refused records exceed 5% of total ingested log volume
+      - alert: OTelCollectorHighRefusalRateCritical
+        expr: |
+          (
+            sum by (instance, pipeline) (rate(otelcol_processor_refused_log_records[1m]))
+            /
+            sum by (instance, pipeline) (rate(otelcol_receiver_accepted_log_records[1m]))
+          ) * 100 &gt; 5
+        for: 1m
+        labels:
+          severity: critical
+          team: platform-sre
+        annotations:
+          summary: &quot;CRITICAL: High log refusal rate on OTel Collector {{ $labels.instance }}&quot;
+          description: &quot;Pipeline &#x27;{{ $labels.pipeline }}&#x27; is dropping {{ $value | printf \&quot;%.2f\&quot; }}% of incoming logs due to severe pipeline saturation or memory limit enforcement.&quot;
+```
+
+---
+
+## 9. Verification &amp; Hardening Acceptance Criteria
+
+1. **Zero Exfiltration:** All bearer tokens, passwords, and private CIDR addresses are redacted before export.
+2. **Coordinated Memory Ceiling:** Memory consumption remains locked beneath the 75% ceiling defined by `memory_limiter` and 82% `GOMEMLIMIT`.
+3. **Throughput Parity:** Pipeline sustains 100,000–150,000+ records/sec without buffer saturation drops (`otelcol_processor_refused_log_records == 0`).
+4. **Latency Budget:** P95 transform duration remains strictly under 15ms per batch block.
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

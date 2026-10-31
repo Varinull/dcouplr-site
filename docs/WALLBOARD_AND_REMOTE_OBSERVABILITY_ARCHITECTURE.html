@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - WALLBOARD_AND_REMOTE_OBSERVABILITY_ARCHITECTURE.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/WALLBOARD_AND_REMOTE_OBSERVABILITY_ARCHITECTURE.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="WALLBOARD_AND_REMOTE_OBSERVABILITY_ARCHITECTURE.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="enterprise-architecture-specification-24x7-remote-wallboard-zero-cost-outside-vpc-observability">Enterprise Architecture Specification: 24x7 Remote Wallboard &amp; Zero-Cost Outside-VPC Observability</h1>
+<p><strong>Document Identifier:</strong> <code>VA-SPEC-WALLBOARD-OBS-001</code><br />
+<strong>Classification:</strong> Enterprise Standard Operating Procedure &amp; Architecture Blueprint<br />
+<strong>Target Audience:</strong> Chief Technology Officers, SRE Directors, Infrastructure Architects, NOC/SOC Operations Teams<br />
+<strong>Governing Standard:</strong> <code>VA-SPEC-FINOPS-BRIDGE-001</code> / <code>D-41</code><br />
+<strong>Core Objective:</strong> Provide an always-on 24x7 visual wallboard display of the entire multi-cloud infrastructure outside the VPC without incurring SaaS ingestion charges or cloud WAN egress fees.</p>
+<hr />
+<h2 id="1-executive-summary-the-problem-statement">1. Executive Summary &amp; The Problem Statement</h2>
+<p>Organizations require a visual, real-time representation of their entire infrastructure displayed 24 hours a day, 7 days a week on office TV walls, NOC (Network Operations Center) displays, and executive dashboards.</p>
+<p>However, traditional monitoring approaches present a severe dilemma:</p>
+<ol>
+<li><strong>The Traditional SaaS Trap (Datadog, Dynatrace, New Relic):</strong>
+<ul>
+<li>Continuously streaming telemetry from 50–500 in-VPC nodes over public NAT Gateways to a SaaS vendor generates <strong>thousands of dollars every month</strong> in cloud provider WAN egress taxes ($0.08–$0.12/GB) plus SaaS volumetric ingestion fees ($15–$25 per host/month).</li>
+<li>Wallboard TVs frequently disconnect due to corporate SSO session timeouts (Okta/Entra ID 8-hour token expiries), requiring manual operator logins on physical TVs.</li>
+</ul>
+</li>
+<li><strong>The Pure In-VPC Dilemma:</strong>
+<ul>
+<li>While keeping <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> CLI and telemetry 100% in-VPC guarantees zero egress fees and strict regulatory compliance (HIPAA, PCI-DSS, FedRAMP), office TVs, home monitors, and leadership laptops cannot directly access internal RFC 1918 IPs (<code>http://10.100.1.50:8000/dashboard</code>) without active VPN clients that sleep or timeout.</li>
+</ul>
+</li>
+</ol>
+<p>This specification documents:</p>
+<ul>
+<li><strong>Part 1:</strong> How the in-VPC dashboard natively covers heterogeneous VPCs across all cloud providers.</li>
+<li><strong>Part 2:</strong> The architectural, security, and cost trade-offs between In-VPC and Online Hosted SaaS dashboards.</li>
+<li><strong>Part 3:</strong> The industry-standard <strong>Zero-Cost 24x7 NOC Wallboard Architecture</strong> that projects the in-VPC dashboard outside the VPC for <strong>less than $0.10 per month in total bandwidth</strong>.</li>
+</ul>
+<hr />
+<h2 id="2-in-vpc-dashboard-multi-cloud-coverage-http1270018000dashboard">2. In-VPC Dashboard Multi-Cloud Coverage (<code>http://127.0.0.1:8000/dashboard</code>)</h2>
+<h3 id="will-this-cover-all-vpcs-regardless-of-provider">Will this cover all VPCs regardless of provider?</h3>
+<p><strong>Yes, 100%.</strong> The in-VPC dashboard is designed from the ground up as a <strong>vendor-agnostic, multi-cloud topology mesh</strong>. It covers AWS VPCs, GCP VPCs, Azure VNets, and On-Premises bare-metal datacenters simultaneously inside a single pane of glass.</p>
+<h3 id="how-it-works-under-the-hood">How It Works Under the Hood</h3>
+<p>The architecture implemented in <code>migration_tools/api/telemetry.py</code> utilizes a decentralized agent mesh:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">                      ┌────────────────────────────────────────────────────────┐
+                      │              In-VPC Telemetry Dashboard                │
+                      │             http://127.0.0.1:8000/dashboard            │
+                      └───────────────────────────▲────────────────────────────┘
+                                                  │ (Local REST / SSE Port 8000)
+┌─────────────────────────────────────────────────┴─────────────────────────────────────────────────┐
+│                       <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Decentralized Multi-VPC Mesh                                      │
+├───────────────────────┬─────────────────────────┬─────────────────────────┬───────────────────────┤
+│    AWS US-East-1      │      AWS US-West-2      │     GCP US-Central1     │     On-Prem Chicago   │
+│   (vpc-aws-prod-01)   │   (vpc-aws-stage-02)    │ (vpc-gcp-analytics-03)  │  (dc-onprem-core-01)  │
+│      10.100.0.0/16    │      10.101.0.0/16      │      10.200.0.0/16      │     172.16.0.0/16     │
+├───────────────────────┼─────────────────────────┼─────────────────────────┼───────────────────────┤
+│ Agent: dcouplr-agent-01│ Agent: dcouplr-agent-02 │ Agent: dcouplr-agent-03 │ Agent: legacy-01      │
+│ Role:  LEADER (Raft)  │ Role:  FOLLOWER         │ Role:  FOLLOWER         │ Role:  FOLLOWER       │
+│ ALB / NLB / EC2 Pods  │ Staging App ALB         │ GKE / Cloud Interconnect│ F5 BIG-IP / BareMetal │
+└───────────▲───────────┴────────────▲────────────┴────────────▲────────────┴───────────▲───────────┘
+            │                        │                         │                        │
+            └────────────────────────┴─────────────────────────┴────────────────────────┘
+                 Internal Private Backbone (mTLS gRPC Ports 8300 / 8301)
+                 • AWS Transit Gateway / Direct Connect
+                 • GCP Cloud Interconnect / Cross-Cloud Interconnect
+                 • Azure ExpressRoute / IPSec VPN Tunnels
+                 * 0 BYTES WAN EGRESS — STRICT RFC 1918 PRIVATE PEERING *
+</code></pre></div>
+<ol>
+<li><strong>Decentralized In-VPC Agents:</strong>
+A lightweight <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> daemon agent runs inside each isolated network environment (EC2 instance in AWS, GCE/GKE node in GCP, VM in Azure, or bare-metal host on-prem).</li>
+<li><strong>Private Inter-Cloud Transport (Zero Public Internet):</strong>
+Agents communicate strictly over existing private interconnects (AWS Transit Gateway, GCP Cloud Interconnect, Azure ExpressRoute, or dedicated IPSec VPN tunnels). They synchronize Raft WAL logs and telemetry over internal ports <code>8300/8301</code> via mutual TLS (mTLS).</li>
+<li><strong>Unified Multi-Cloud Topology Aggregation:</strong>
+The leader agent aggregates all registered VPCs into a single in-memory graph. When accessing <code>http://127.0.0.1:8000/dashboard</code>, the frontend queries <code>/v1/telemetry/topology</code> and <code>/v1/telemetry/stream</code>. You see all heterogeneous environments side-by-side in real time:
+<ul>
+<li><strong>AWS:</strong> <code>vpc-aws-prod-01</code> (ALBs, NLBs, subnets, EC2 instances)</li>
+<li><strong>GCP:</strong> <code>vpc-gcp-analytics-03</code> (Global Anycast VIPs, GKE node pools, BigLake)</li>
+<li><strong>Azure:</strong> <code>vnet-azure-core</code> (App Gateways, ExpressRoute circuits)</li>
+<li><strong>On-Prem:</strong> <code>dc-onprem-core-01</code> (F5 BIG-IP appliances, BGP AS65001 anycast edge)</li>
+</ul>
+</li>
+<li><strong>Dynamic VPC Registration:</strong>
+New VPCs can be joined on the fly via <code>POST /v1/telemetry/topology/vpcs</code> or through the dashboard UI.</li>
+<li><strong>Zero WAN Egress Preserved:</strong>
+Because all telemetry data flows over internal RFC 1918 routes, <strong>zero bytes ever exit to the public internet</strong>, guaranteeing $0 egress fees and zero data leaks.</li>
+</ol>
+<hr />
+<h2 id="3-in-vpc-dashboard-vs-online-hosted-saas-dashboard">3. In-VPC Dashboard vs. Online Hosted SaaS Dashboard</h2>
+<h3 id="31-architectural-comparison-matrix">3.1 Architectural Comparison Matrix</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Dimension</th>
+<th style="text-align:left">In-VPC Dashboard (<code>http://127.0.0.1:8000/dashboard</code>)</th>
+<th style="text-align:left">Online Dashboard (Hosted SaaS / Multi-Tenant)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Data Residency</strong></td>
+<td style="text-align:left"><strong>100% Inside Customer Perimeter</strong> (Volatile RAM ring buffer)</td>
+<td style="text-align:left"><strong>Third-Party Hosted</strong> (External cloud database)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Network Path</strong></td>
+<td style="text-align:left">Private RFC 1918 (VPC Peering, Transit Gateway, Direct Connect)</td>
+<td style="text-align:left">Public Internet (NAT Gateways, Internet Gateways, Public WAN)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Cloud Egress Fees</strong></td>
+<td style="text-align:left"><strong>$0.00</strong> (Strict Zero-Egress Invariant)</td>
+<td style="text-align:left"><strong>Billable Hyperscaler Egress Tax</strong> ($0.08–$0.12 / GB)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Compliance &amp; InfoSec</strong></td>
+<td style="text-align:left"><strong>Immediate Approval</strong> (HIPAA, PCI-DSS, FedRAMP, SOC2 compliant)</td>
+<td style="text-align:left"><strong>High Friction</strong> (Requires vendor risk audit, SOC2 Type II, DPA)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Access Method</strong></td>
+<td style="text-align:left">Corporate VPN, Tailscale, AWS SSM Session, or Bastion</td>
+<td style="text-align:left">Any public web browser via standard SSO (Okta, Entra ID)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Resilience to WAN Outage</strong></td>
+<td style="text-align:left"><strong>100% Operational</strong> even if external internet drops</td>
+<td style="text-align:left"><strong>Blinded</strong> if NAT Gateway, DNS, or WAN transit has packet loss</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Hosting Infrastructure Cost</strong></td>
+<td style="text-align:left"><strong>$0.00</strong> (Runs on existing compute nodes)</td>
+<td style="text-align:left"><strong>$800 – $4,500 / month</strong> (TSDB cluster, brokers, WAF, LB)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="32-pros-and-cons-of-an-online-dashboard">3.2 Pros and Cons of an Online Dashboard</h3>
+<h4 id="pros-of-an-online-dashboard">Pros of an Online Dashboard:</h4>
+<ul>
+<li><strong>Frictionless Executive &amp; Remote Access:</strong> SREs, architects, and engineering leadership can log in from any laptop or mobile device via corporate SSO (Okta, Google Workspace, Entra ID) without needing corporate VPNs, SSH tunnels, or AWS SSM sessions.</li>
+<li><strong>Centralized Multi-Organization / Multi-Client Oversight:</strong> Ideal for Managed Service Providers (MSPs) or enterprises with completely siloed cloud organizations (e.g. 50 distinct AWS Accounts or GCP Organizations with no interconnecting Transit Gateway). All migrations report to one central portal.</li>
+<li><strong>Long-Term Multi-Year Historical Analytics:</strong> An external cloud database (ClickHouse / TimescaleDB) can retain migration metrics, replication velocity curves, and audit trails for 1–5 years without consuming RAM or disk space inside customer VPCs.</li>
+<li><strong>Zero Customer Maintenance:</strong> Customers don't need to monitor or patch the dashboard server daemon; high availability and backups are managed automatically.</li>
+</ul>
+<h4 id="cons-of-an-online-dashboard">Cons of an Online Dashboard:</h4>
+<ul>
+<li><strong>Breaks <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>'s Core &quot;Zero-Egress&quot; Guarantee:</strong> The primary selling point of <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> is that telemetry and transpilation never leave the VPC. An online dashboard forces agents inside every VPC to continuously stream packets over NAT/Internet Gateways to the SaaS endpoint.</li>
+<li><strong>Enterprise InfoSec &amp; Legal Roadblocks:</strong> Enterprise security teams strictly forbid streaming internal IP addresses, subnet CIDRs, routing tables, and server hostnames to a public multi-tenant SaaS. Requires extensive SOC2 Type II certification, vendor risk reviews (VRM), and Data Processing Agreements (DPA), which can delay enterprise adoption by 3 to 6 months.</li>
+<li><strong>Public Attack Surface:</strong> Public-facing ingestion endpoints and web dashboards require 24/7 protection against DDoS attacks, credential stuffing, and zero-day vulnerabilities.</li>
+<li><strong>Vulnerability to Cloud Provider Internet Outages:</strong> If AWS NAT Gateways or Cloudflare experience latency spikes or route drops, the migration dashboard goes blind during the most critical moment: live production cutover.</li>
+</ul>
+<hr />
+<h3 id="33-real-world-cost-breakdown-for-an-online-dashboard">3.3 Real-World Cost Breakdown for an Online Dashboard</h3>
+<p>Running an online SaaS telemetry dashboard introduces three distinct cost buckets:</p>
+<h4 id="bucket-a-the-hyperscaler-wan-egress-tax-paid-to-awsgcpazure">Bucket A: The Hyperscaler WAN Egress Tax (Paid to AWS/GCP/Azure)</h4>
+<p>Hyperscalers charge customers $0.08 to $0.12 per GB for data leaving the VPC to the internet.</p>
+<p>$$\text{Monthly Egress Cost} = \text{Nodes} \times \text{Metric Stream Rate} \times \text{Seconds in Month} \times \text{Egress Rate/GB}$$</p>
+<p><strong>Example for a mid-sized migration (50 monitored nodes):</strong></p>
+<ul>
+<li>50 nodes emitting eBPF network telemetry, replication heartbeats, and disk I/O at ~200 KB/s per node:
+$$50 \times 200\text{ KB/s} = 10\text{ MB/s} = 36\text{ GB/hour} = 864\text{ GB/day} \approx \mathbf{26\text{ TB/month}}$$</li>
+<li>At AWS standard egress pricing ($0.09/GB):
+$$26,000\text{ GB} \times $0.09 = \mathbf{$2,340\text{ / month in hidden egress fees}}$$</li>
+<li><strong>With In-VPC <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>:</strong> <strong>$0.00</strong>.</li>
+</ul>
+<h4 id="bucket-b-saas-cloud-infrastructure-run-rate-hosted-platform-costs">Bucket B: SaaS Cloud Infrastructure Run-Rate (Hosted Platform Costs)</h4>
+<p>To host a scalable, highly available SaaS dashboard:</p>
+<ul>
+<li>Managed Time-Series Database (ClickHouse Cloud / TimescaleDB Cloud): ~$400 – $1,800/mo</li>
+<li>Streaming Message Ingestion (Kafka / Redpanda Serverless): ~$200 – $800/mo</li>
+<li>API Workers &amp; Application Cluster (Kubernetes EKS/GKE, Multi-AZ): ~$300 – $1,200/mo</li>
+<li>Edge Security &amp; WAF (Cloudflare Enterprise / AWS WAF / DDoS shield): ~$250 – $700/mo</li>
+<li><strong>Total SaaS Hosting Run-Rate:</strong> <strong>$1,150 – $4,500 / month</strong> ($13,800 – $54,000 / year).</li>
+</ul>
+<h4 id="bucket-c-security-compliance-audit-overhead">Bucket C: Security Compliance &amp; Audit Overhead</h4>
+<ul>
+<li>Annual SOC2 Type II audit: ~$15,000 – $25,000/year</li>
+<li>Annual Third-Party Penetration Testing: ~$10,000 – $18,000/year</li>
+<li>Continuous compliance monitoring tools (Vanta / Drata): ~$8,000 – $12,000/year</li>
+<li><strong>Total Compliance Overhead:</strong> <strong>~$33,000 – $55,000 / year</strong>.</li>
+</ul>
+<hr />
+<h2 id="4-the-best-recommendation-24x7-noc-wallboard-remote-viewing-without-high-costs">4. The Best Recommendation: 24x7 NOC Wallboard &amp; Remote Viewing Without High Costs</h2>
+<p>To solve the exact requirement of an <strong>always-on 24x7 visual wallboard outside the VPC without incurring high costs</strong>, here are the two battle-tested enterprise architectures:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌────────────────────────────────────────────────────────────────────────────────────────┐
+│               24x7 REMOTE NOC WALLBOARD &amp; DISPLAY OPTIONS ARCHITECTURE                 │
+├───────────────────────────────┬────────────────────────────────────────────────────────┤
+│ Display Option                │ Operational Scope &amp; Best For                           │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ NOC Desk                      │ High-Density SRE War-Room &amp; Active Operator Desks      │
+│ (Operator Recommended):       │ • Exact replica of In-VPC Telemetry Dashboard          │
+│ <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AirLock™           │ • Strips non-operational panels: Financial Calculator  │
+│ (Zero-Trust Ingress Tunnel)   │   and Alert Simulator Sandbox are removed for focus    │
+│                               │ • Real-time 60 FPS charts, topology map &amp; Raft health  │
+│                               │ • Zero open inbound firewall ports, Zero VPN friction  │
+│                               │ • Monthly Cost: ~$0.01 / month (Practically Free!)     │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ Wallboard                     │ Public Lobby TVs, Kiosk Displays, SecOps Multi-NOC     │
+│ (Air-Gapped SecOps):          │ • 100% read-only static snapshot push every 5 seconds  │
+│ <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> PulseCast™         │ • Internal VPC cluster NEVER receives inbound traffic  │
+│ (Edge CDN Pulse Mirror)       │ • Standalone client with Screen Wake Lock API          │
+│                               │ • Monthly Cost: ~$0.00 (R2) to ~$0.05 / month (S3)     │
+└───────────────────────────────┴────────────────────────────────────────────────────────┘
+</code></pre></div>
+<hr />
+<h3 id="noc-desk-operator-recommended-cloudflare-zero-trust-tunnel-with-service-token">NOC Desk (Operator Recommended): Cloudflare Zero Trust Tunnel with Service Token</h3>
+<p>This option allows any NOC operator console, SRE multi-monitor workstation, or wallboard display to view the <strong>exact operational replica</strong> of the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> dashboard (<code>http://127.0.0.1:8000/dashboard?view=noc-desk</code> or <code>/noc</code>) continuously 24x7.</p>
+<h4 id="operational-high-density-invariant">Operational High-Density Invariant:</h4>
+<p>To maximize operator clarity during live incidents, the <strong>NOC Desk</strong> view removes non-operational panels:</p>
+<ol>
+<li><strong>In-VPC Financial Cost Breakdown &amp; Bandwidth Calculator</strong> (<code>#panel-financial-calculator</code>): Financial SaaS comparison and egress calculator widgets are hidden.</li>
+<li><strong>Interactive Alert Rule Threshold Simulator Sandbox</strong> (<code>#panel-alert-simulator</code>): Rule sandbox and code export tabs are hidden.</li>
+</ol>
+<p>The resulting view provides an uninterrupted, high-density stream of:</p>
+<ul>
+<li>Live 60 FPS translation velocity and tail latency waveforms.</li>
+<li>Container RSS memory headroom vs. strict 50 MiB cap.</li>
+<li>Real-time cross-cloud VPC topology map with live link status.</li>
+<li>Raft 3-node consensus state and WAL compaction progress.</li>
+</ul>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌────────────────────────────────────────────────────────────────────────┐
+│             NOC DESK (OPERATOR RECOMMENDED): ZERO-TRUST TUNNEL         │
+└────────────────────────────────────────────────────────────────────────┘
+
+ [ 24x7 NOC Desk / SRE Workstation ] (Dual-Monitor / Chromium Kiosk)
+
+            │
+            │ Continuous HTTPS Browser Request to:
+            │ https://noc-wallboard.company.com/dashboard
+            ▼
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │ Cloudflare Edge Network (Zero Trust Access Gateway)                   │
+ │ • Authenticates Wallboard via Persistent Service Token (Never Expires)│
+ │ • Blocks unauthorized public traffic                                  │
+ │ • Caches static assets (HTML/CSS/JS) at edge                          │
+ └───────────────────────────────────┬───────────────────────────────────┘
+                                     │
+                                     │ Outbound Encrypted WireGuard Tunnel
+                                     ▼ (No open inbound ports on VPC!)
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │ In-VPC <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Control Node                                        │
+ │ • Runs `cloudflared` tunnel connector sidecar (Port 8000)             │
+ │ • Serves local dashboard &amp; Server-Sent Events (SSE)                   │
+ │ • Only streams lightweight JSON deltas (~50 bytes/second)             │
+ └───────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<h4 id="why-this-cuts-costs-to-nearly-000">Why This Cuts Costs to Nearly $0.00:</h4>
+<ol>
+<li><strong>Zero Egress on Static Assets:</strong>
+The dashboard UI (HTML, CSS, JS icons) is fetched once upon boot and cached at the Cloudflare edge. It is not re-downloaded from the VPC.</li>
+<li><strong>Ultra-Low Bandwidth JSON SSE Streams:</strong>
+Instead of streaming multi-megabyte log files or volumetric timeseries, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> pushes tiny Server-Sent Event (SSE) deltas only when state changes (~50 bytes/s).
+<ul>
+<li><strong>Monthly Egress Calculation:</strong>
+$$50\text{ bytes/s} \times 86,400\text{ s/day} \times 30\text{ days} = 129.6\text{ MB / month}$$</li>
+<li><strong>Cloud Provider Egress Cost:</strong>
+$$0.13\text{ GB} \times $0.09 = \mathbf{$0.01\text{ / month (1 cent!)}}$$</li>
+</ul>
+</li>
+<li><strong>No VPN Timeout / No Sleeping:</strong>
+By configuring a <strong>Cloudflare Service Token</strong> (HTTP Headers: <code>CF-Access-Client-Id</code> and <code>CF-Access-Client-Secret</code>), the wallboard TV stays authenticated <strong>permanently</strong> without requiring human MFA or password re-entry at 3 AM.</li>
+</ol>
+<h4 id="step-by-step-implementation-guide">Step-by-Step Implementation Guide:</h4>
+<h5 id="step-1-deploy-cloudflared-inside-the-target-vpc">Step 1: Deploy <code>cloudflared</code> inside the Target VPC</h5>
+<p>Run <code>cloudflared</code> as a lightweight systemd service or Docker sidecar next to <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># 1. Install cloudflared on the <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> node
+curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i cloudflared.deb
+
+# 2. Authenticate tunnel
+cloudflared tunnel login
+
+# 3. Create persistent tunnel
+cloudflared tunnel create dcouplr-noc-wallboard
+
+# 4. Route hostname to internal port 8000
+cat &lt;&lt; 'EOF' &gt; ~/.cloudflared/config.yml
+tunnel: &lt;TUNNEL_ID&gt;
+credentials-file: /root/.cloudflared/&lt;TUNNEL_ID&gt;.json
+ingress:
+  - hostname: noc-wallboard.yourcompany.com
+    service: http://127.0.0.1:8000
+  - service: http_status:404
+EOF
+
+# 5. Start tunnel daemon
+sudo cloudflared service install
+sudo systemctl start cloudflared
+</code></pre></div>
+<h5 id="step-2-configure-wallboard-service-token-zero-auth-friction">Step 2: Configure Wallboard Service Token (Zero-Auth Friction)</h5>
+<p>In the Cloudflare Zero Trust dashboard:</p>
+<ol>
+<li>Go to <strong>Access &gt; Service Auth &gt; Create Service Token</strong> named <code>NOC-Wallboard-Display</code>.</li>
+<li>Go to <strong>Applications &gt; Add an Application &gt; Self-Hosted</strong> (<code>noc-wallboard.yourcompany.com</code>).</li>
+<li>Set Policy Rule: <code>Action: Service Auth</code> → Include: <code>Service Token: NOC-Wallboard-Display</code>.</li>
+<li>(Optional) Restrict by <strong>Office Source IP CIDR</strong> for defense-in-depth.</li>
+</ol>
+<hr />
+<h3 id="pattern-b-air-gapped-secops-static-cdn-pulse-mirror">Pattern B (Air-Gapped SecOps): Static CDN Pulse Mirror</h3>
+<p>For organizations where enterprise security policy strictly forbids any inbound tunnel into the VPC, use <strong>Outbound-Only Static Pulse Mirroring</strong>.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌────────────────────────────────────────────────────────────────────────┐
+│                   PATTERN B: STATIC CDN PULSE MIRROR                   │
+└────────────────────────────────────────────────────────────────────────┘
+
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │ In-VPC <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Control Node                                        │
+ │ • Cron worker exports 1.5 KB aggregated topology JSON every 5s        │
+ │ • Performs HTTPS PUT to Cloudflare R2 / AWS S3 ($0 egress on R2)      │
+ └───────────────────────────────────┬───────────────────────────────────┘
+                                     │
+                                     ▼ (Outbound-only HTTPS upload)
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │ Cloudflare R2 / AWS S3 + CloudFront CDN                               │
+ │ • Hosts static wallboard UI (index.html, wallboard.js)                │
+ │ • Serves `/topology-pulse.json` from Edge Cache                       │
+ └───────────────────────────────────┬───────────────────────────────────┘
+                                     │
+                                     ▼ (Cached CDN pull)
+ [ 24x7 NOC Wallboard Display / Office TVs / Remote Stakeholders ]
+</code></pre></div>
+<ol>
+<li><strong>How It Operates:</strong>
+<ul>
+<li>A lightweight cron inside the VPC polls <code>http://127.0.0.1:8000/v1/telemetry/topology</code> and writes a sanitized summary JSON (active nodes, migration wave progress, consensus health, circuit breaker state) to Cloudflare R2 or an S3 bucket every 5 seconds.</li>
+<li>The Wallboard display loads a static page from the CDN and polls <code>topology-pulse.json</code>.</li>
+</ul>
+</li>
+<li><strong>Cost:</strong>
+<ul>
+<li>Cloudflare R2 has <strong>$0.00 egress fees</strong>.</li>
+<li>Total Monthly Cost: <strong>~$0.05 / month</strong> (Storage for 1 file).</li>
+</ul>
+</li>
+<li><strong>Security:</strong>
+<ul>
+<li>The VPC has <strong>zero incoming connections</strong>. If the wallboard display is compromised, the attacker only has access to a public static JSON file with no network access into the VPC.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<hr />
+<h2 id="45-wallboard-ergonomics-visual-layout-options-option-a-vs-option-b">4.5 Wallboard Ergonomics &amp; Visual Layout Options: Option A vs. Option B</h2>
+<p>In 24x7 SRE and NOC operations, the primary design challenge is <strong>Macro Glanceability vs. Micro Depth</strong>:</p>
+<ul>
+<li><strong>Macro View (High-Level):</strong> Multi-VPC mesh topology, Raft consensus quorum, global throughput, and cross-cloud latency. Essential for 10–15 ft distance viewing on 55&quot;–85&quot; overhead displays.</li>
+<li><strong>Micro Depth (Granular):</strong> 122 evaluated invariants across 24 components in all 7 tiers (PostgreSQL lock queues, ETCD WAL fsync latency, switch buffer drops, fan RPMs, Kirchhoff current conservation).</li>
+<li><strong>The Ergonomic Pitfall:</strong> Displaying all 122 metric gauges simultaneously creates an illegible &quot;wall of tiny numbers&quot; causing visual fatigue. Conversely, hiding them completely prevents operators from catching localized bottlenecks before customer-facing outages occur.</li>
+</ul>
+<p>To resolve this, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> standardizes on two approved display architectures:</p>
+<h3 id="recommendation-1-management-by-exception-dynamic-priority-spotlight">🌟 Recommendation 1: &quot;Management-by-Exception&quot; &amp; Dynamic Priority Spotlight</h3>
+<p>In operations ergonomics, <strong>normal metrics should be invisible; only anomalous metrics should demand attention.</strong></p>
+<ul>
+<li><strong>Nominal State (Green):</strong> When all 122 metrics are within thresholds, the wallboard remains calm and uncluttered, displaying:<br />
+<code>🟢 122/122 Invariants Nominal • Zero Breaches • 0 WAN Packets ($0.00 Egress)</code>.</li>
+<li><strong>Breach State (Amber/Red):</strong> The instant any metric breaches (e.g. Tier 5 PostgreSQL Connection Saturation &gt; 80% or Tier 4 Etcd Quorum Drop), a dedicated <strong>Active Incident Spotlight</strong> card dynamically animates onto the screen in high-contrast triage mode, spotlighting the exact failing metric, affected host, breach severity (P1 Critical / P2 Warning), and recommended remediation.</li>
+</ul>
+<h3 id="recommendation-2-the-7-tier-micro-led-status-ribbon">🌟 Recommendation 2: The 7-Tier Micro-LED Status Ribbon</h3>
+<p>A compact, ultra-dense ribbon placed directly beneath the header navigation. It displays <strong>24 micro-LED status dots</strong> mapped across all 7 infrastructure tiers:</p>
+<ul>
+<li><strong>Tier 01:</strong> Physical DC &amp; Hardware (IPMI, PDU, HVAC, Rack Temp)</li>
+<li><strong>Tier 02:</strong> Core Networking &amp; WAN (BGP, Spine-Leaf, Optics, Cross-Connect)</li>
+<li><strong>Tier 03:</strong> Cloud VPC Invariants (eBPF, Flow Logs, NAT GW, Peering)</li>
+<li><strong>Tier 04:</strong> Virtualization &amp; K8s (Kubelet, Etcd Quorum, Control Plane, Pod Evictions)</li>
+<li><strong>Tier 05:</strong> Middleware &amp; DBs (Postgres, Oracle, MSSQL, Redis, Cassandra, TiDB, SAP HANA)</li>
+<li><strong>Tier 06:</strong> App Services &amp; APM (OTLP Traces, HTTP 5xx, P99 Latency, Synthetic Probes)</li>
+<li><strong>Tier 07:</strong> Security SIEM &amp; Logs (LogQL, Audit Spool, Anomaly Spikes, Zero-WAN Ring)</li>
+</ul>
+<p>Each micro-LED pulses green for nominal, amber for warning, and flashing crimson red for critical, providing instant glanceability across the entire full-stack estate in minimal vertical pixels.</p>
+<hr />
+<h3 id="option-a-the-sweet-spot-architecture-recommended-for-noc-ops-desks">🏆 Option A: The &quot;Sweet Spot&quot; Architecture (Recommended for NOC Ops Desks)</h3>
+<p><strong>Combination of Recommendation 1 + Recommendation 2</strong> on a unified single-screen canvas:</p>
+<ol>
+<li><strong>Header &amp; 7-Tier Micro-LED Ribbon:</strong> Instantaneous 24-component status across Tiers 01–07 right below the top navigation bar.</li>
+<li><strong>3-Column Macro Canvas:</strong>
+<ul>
+<li><strong>Column 1:</strong> Multi-VPC Topology Mesh (AWS US-East-1, AWS US-West-2, GCP US-Central1, Chicago On-Prem DC1) with active node counts and inter-region latency.</li>
+<li><strong>Column 2:</strong> Real-Time Network Throughput Waveform (60 FPS SVG line chart) and P50/P95/P99 latency distribution curves.</li>
+<li><strong>Column 3:</strong> Raft 3-Node Consensus Mesh (Leader, Term, WAL Compaction Index) and Zero-WAN Packet Meter ($0.00 WAN Egress).</li>
+</ul>
+</li>
+<li><strong>Dynamic Incident Spotlight Box:</strong> Anchored in the center-right panel. Displays invariant parity proof when calm; expands into high-contrast triage on breach.</li>
+</ol>
+<ul>
+<li><strong>Direct Access URL:</strong> <code>http://127.0.0.1:8000/wallboard?layout=sweet-spot</code></li>
+</ul>
+<hr />
+<h3 id="option-b-multi-scene-kiosk-carousel-recommended-for-unattended-video-walls">🔄 Option B: Multi-Scene Kiosk Carousel (Recommended for Unattended Video Walls)</h3>
+<p>An automated rotating kiosk engine designed for unattended lobby TVs, executive hallways, and secondary war-room displays. It auto-rotates every 30 seconds across three dedicated full-screen scenes:</p>
+<ol>
+<li><strong>Scene 1 (0:00 – 0:30): Multi-VPC Macro Topology &amp; Cloud WAN Transit</strong><br />
+Full-screen geographical network topology, BGP peering health, inter-cloud transit latencies, and regional egress monitors.</li>
+<li><strong>Scene 2 (0:30 – 1:00): 7-Tier Component Deep Dive &amp; Invariant Heatmap</strong><br />
+Granular diagnostic cards for all 24 components across all 7 layers, detailing buffer cache hit ratios, worker connection saturation, and system fsync times.</li>
+<li><strong>Scene 3 (1:00 – 1:30): Enterprise Incident Queue &amp; Node Probes</strong><br />
+Live incident ticket backlog, automated root-cause diagnosis logs, priority-ranked remediation playbooks, and per-node health across the 71 census hosts.</li>
+</ol>
+<ul>
+<li><strong>Emergency Critical Freeze:</strong> If any P1 Critical breach occurs during rotation, the carousel <strong>automatically locks rotation</strong> and freezes onto the active failing scene until resolved or acknowledged by an operator.</li>
+<li><strong>Direct Access URL:</strong> <code>http://127.0.0.1:8000/wallboard?layout=carousel&amp;interval=30s</code></li>
+<li><strong>Keyboard Hotkeys:</strong> <code>[Space]</code> Pause/Resume rotation, <code>[1]</code> Scene 1, <code>[2]</code> Scene 2, <code>[3]</code> Scene 3, <code>[A]</code> Option A, <code>[B]</code> Option B.</li>
+</ul>
+<h2 id="5-dedicated-24x7-wallboard-hardware-kiosk-setup-guide">5. Dedicated 24x7 Wallboard Hardware &amp; Kiosk Setup Guide</h2>
+<p>To ensure office TVs or wallboard displays never sleep, dim, or crash, use the following low-cost hardware and kiosk configuration:</p>
+<h3 id="recommended-wallboard-hardware">Recommended Wallboard Hardware:</h3>
+<ul>
+<li><strong>Option 1 (Budget):</strong> Raspberry Pi 5 (4GB RAM) with official active cooler (~$70).</li>
+<li><strong>Option 2 (Enterprise):</strong> Intel N100 Mini PC (8GB RAM, Dual HDMI 4K output) (~$130).</li>
+</ul>
+<h3 id="kiosk-auto-start-configuration-linux-raspberry-pi-os">Kiosk Auto-Start Configuration (Linux / Raspberry Pi OS):</h3>
+<p>Create an auto-starting systemd service that launches Chromium in full-screen kiosk mode with all sleep modes disabled:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt install -y chromium-browser unclutter xdotool
+</code></pre></div>
+<p>Create kiosk launcher script <code>/home/pi/launch-wallboard.sh</code>:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">#!/bin/bash
+# Disable screen blanking, power management, and screensaver
+xset s off
+xset s noblank
+xset -dpms
+
+# Hide mouse cursor after 2 seconds of inactivity
+unclutter -idle 2 &amp;
+
+# Launch Chromium in dedicated non-sleeping Kiosk Mode with Service Token Headers
+chromium-browser \
+  --noerrdialogs \
+  --disable-infobars \
+  --kiosk \
+  --check-for-update-interval=31536000 \
+  --disable-session-crashed-bubble \
+  --disable-features=Translate \
+  --disable-pinch \
+  --overscroll-history-navigation=0 \
+  --header=&quot;CF-Access-Client-Id: &lt;YOUR_SERVICE_TOKEN_CLIENT_ID&gt;&quot; \
+  --header=&quot;CF-Access-Client-Secret: &lt;YOUR_SERVICE_TOKEN_SECRET&gt;&quot; \
+  &quot;https://noc-wallboard.yourcompany.com/dashboard&quot;
+</code></pre></div>
+<p>Make executable and register in desktop autostart:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">chmod +x /home/pi/launch-wallboard.sh
+mkdir -p ~/.config/autostart
+cat &lt;&lt; 'EOF' &gt; ~/.config/autostart/wallboard.desktop
+[Desktop Entry]
+Type=Application
+Name=NOC Wallboard
+Exec=/home/pi/launch-wallboard.sh
+EOF
+</code></pre></div>
+<hr />
+<h2 id="6-financial-summary-wallboard-tco-comparison">6. Financial Summary: Wallboard TCO Comparison</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric</th>
+<th style="text-align:left">Traditional Monitoring SaaS (Datadog/Dynatrace)</th>
+<th style="text-align:left"><dcouplr/> In-VPC + Cloudflare Zero Trust (Pattern A)</th>
+<th style="text-align:left"><dcouplr/> CDN Static Pulse (Pattern B)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Agent / Ingestion License</strong></td>
+<td style="text-align:left">$15 – $25 / host / month</td>
+<td style="text-align:left"><strong>$0.00</strong> (Open-Core / Community)</td>
+<td style="text-align:left"><strong>$0.00</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Hyperscaler WAN Egress</strong></td>
+<td style="text-align:left">~$2,340 / month (26 TB @ $0.09)</td>
+<td style="text-align:left"><strong>$0.01 / month</strong> (129 MB SSE deltas)</td>
+<td style="text-align:left"><strong>$0.05 / month</strong> (Zero egress on R2)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SaaS Hosting / DB Cluster</strong></td>
+<td style="text-align:left">$1,150 – $4,500 / month</td>
+<td style="text-align:left"><strong>$0.00</strong> (Uses existing In-VPC node)</td>
+<td style="text-align:left"><strong>$0.00</strong> (Cloudflare Pages free tier)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Wallboard Display Uptime</strong></td>
+<td style="text-align:left">Fragile (SSO token expires every 8h)</td>
+<td style="text-align:left"><strong>Unbreakable (Persistent Service Token)</strong></td>
+<td style="text-align:left"><strong>Unbreakable (Static CDN Cache)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Annual Total Cost</strong></td>
+<td style="text-align:left"><strong>$41,880 – $82,000 / year</strong></td>
+<td style="text-align:left"><strong>&lt;$1.00 / year</strong></td>
+<td style="text-align:left"><strong>&lt;$1.00 / year</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Net Cost Savings</strong></td>
+<td style="text-align:left">Baseline</td>
+<td style="text-align:left"><strong>99.99% Cost Reduction</strong></td>
+<td style="text-align:left"><strong>99.99% Cost Reduction</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-operational-checklist-for-implementation">7. Operational Checklist for Implementation</h2>
+<ul>
+<li>[ ] <strong>Step 1:</strong> Verify in-VPC <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> control node is running on port 8000 (<code>http://127.0.0.1:8000/dashboard</code>).</li>
+<li>[ ] <strong>Step 2:</strong> Deploy <code>cloudflared</code> on the control node pointing to <code>http://127.0.0.1:8000</code>.</li>
+<li>[ ] <strong>Step 3:</strong> Configure Cloudflare Zero Trust application hostname and generate a non-expiring <code>Service Token</code>.</li>
+<li>[ ] <strong>Step 4:</strong> Configure the wallboard mini-PC / Raspberry Pi with the kiosk script injecting the Service Token headers.</li>
+<li>[ ] <strong>Step 5:</strong> Verify the 24x7 display renders the multi-cloud topology mesh with zero sleep and zero manual logins.</li>
+<li>[ ] <strong>Step 6:</strong> Monitor cloud provider billing to attest that WAN egress fees remain under <strong>$0.05 / month</strong>.</li>
+</ul>
+</div>
+      <pre id="raw-view"><code># Enterprise Architecture Specification: 24x7 Remote Wallboard &amp; Zero-Cost Outside-VPC Observability
+
+**Document Identifier:** `VA-SPEC-WALLBOARD-OBS-001`  
+**Classification:** Enterprise Standard Operating Procedure &amp; Architecture Blueprint  
+**Target Audience:** Chief Technology Officers, SRE Directors, Infrastructure Architects, NOC/SOC Operations Teams  
+**Governing Standard:** `VA-SPEC-FINOPS-BRIDGE-001` / `D-41`  
+**Core Objective:** Provide an always-on 24x7 visual wallboard display of the entire multi-cloud infrastructure outside the VPC without incurring SaaS ingestion charges or cloud WAN egress fees.  
+
+---
+
+## 1. Executive Summary &amp; The Problem Statement
+
+Organizations require a visual, real-time representation of their entire infrastructure displayed 24 hours a day, 7 days a week on office TV walls, NOC (Network Operations Center) displays, and executive dashboards.
+
+However, traditional monitoring approaches present a severe dilemma:
+
+1. **The Traditional SaaS Trap (Datadog, Dynatrace, New Relic):**
+   - Continuously streaming telemetry from 50–500 in-VPC nodes over public NAT Gateways to a SaaS vendor generates **thousands of dollars every month** in cloud provider WAN egress taxes ($0.08–$0.12/GB) plus SaaS volumetric ingestion fees ($15–$25 per host/month).
+   - Wallboard TVs frequently disconnect due to corporate SSO session timeouts (Okta/Entra ID 8-hour token expiries), requiring manual operator logins on physical TVs.
+2. **The Pure In-VPC Dilemma:**
+   - While keeping `&lt;dcouplr/&gt;` CLI and telemetry 100% in-VPC guarantees zero egress fees and strict regulatory compliance (HIPAA, PCI-DSS, FedRAMP), office TVs, home monitors, and leadership laptops cannot directly access internal RFC 1918 IPs (`http://10.100.1.50:8000/dashboard`) without active VPN clients that sleep or timeout.
+
+This specification documents:
+- **Part 1:** How the in-VPC dashboard natively covers heterogeneous VPCs across all cloud providers.
+- **Part 2:** The architectural, security, and cost trade-offs between In-VPC and Online Hosted SaaS dashboards.
+- **Part 3:** The industry-standard **Zero-Cost 24x7 NOC Wallboard Architecture** that projects the in-VPC dashboard outside the VPC for **less than $0.10 per month in total bandwidth**.
+
+---
+
+## 2. In-VPC Dashboard Multi-Cloud Coverage (`http://127.0.0.1:8000/dashboard`)
+
+### Will this cover all VPCs regardless of provider?
+
+**Yes, 100%.** The in-VPC dashboard is designed from the ground up as a **vendor-agnostic, multi-cloud topology mesh**. It covers AWS VPCs, GCP VPCs, Azure VNets, and On-Premises bare-metal datacenters simultaneously inside a single pane of glass.
+
+### How It Works Under the Hood
+
+The architecture implemented in `migration_tools/api/telemetry.py` utilizes a decentralized agent mesh:
+
+```
+                      ┌────────────────────────────────────────────────────────┐
+                      │              In-VPC Telemetry Dashboard                │
+                      │             http://127.0.0.1:8000/dashboard            │
+                      └───────────────────────────▲────────────────────────────┘
+                                                  │ (Local REST / SSE Port 8000)
+┌─────────────────────────────────────────────────┴─────────────────────────────────────────────────┐
+│                       &lt;dcouplr/&gt; Decentralized Multi-VPC Mesh                                      │
+├───────────────────────┬─────────────────────────┬─────────────────────────┬───────────────────────┤
+│    AWS US-East-1      │      AWS US-West-2      │     GCP US-Central1     │     On-Prem Chicago   │
+│   (vpc-aws-prod-01)   │   (vpc-aws-stage-02)    │ (vpc-gcp-analytics-03)  │  (dc-onprem-core-01)  │
+│      10.100.0.0/16    │      10.101.0.0/16      │      10.200.0.0/16      │     172.16.0.0/16     │
+├───────────────────────┼─────────────────────────┼─────────────────────────┼───────────────────────┤
+│ Agent: dcouplr-agent-01│ Agent: dcouplr-agent-02 │ Agent: dcouplr-agent-03 │ Agent: legacy-01      │
+│ Role:  LEADER (Raft)  │ Role:  FOLLOWER         │ Role:  FOLLOWER         │ Role:  FOLLOWER       │
+│ ALB / NLB / EC2 Pods  │ Staging App ALB         │ GKE / Cloud Interconnect│ F5 BIG-IP / BareMetal │
+└───────────▲───────────┴────────────▲────────────┴────────────▲────────────┴───────────▲───────────┘
+            │                        │                         │                        │
+            └────────────────────────┴─────────────────────────┴────────────────────────┘
+                 Internal Private Backbone (mTLS gRPC Ports 8300 / 8301)
+                 • AWS Transit Gateway / Direct Connect
+                 • GCP Cloud Interconnect / Cross-Cloud Interconnect
+                 • Azure ExpressRoute / IPSec VPN Tunnels
+                 * 0 BYTES WAN EGRESS — STRICT RFC 1918 PRIVATE PEERING *
+```
+
+1. **Decentralized In-VPC Agents:**
+   A lightweight `&lt;dcouplr/&gt;` daemon agent runs inside each isolated network environment (EC2 instance in AWS, GCE/GKE node in GCP, VM in Azure, or bare-metal host on-prem).
+2. **Private Inter-Cloud Transport (Zero Public Internet):**
+   Agents communicate strictly over existing private interconnects (AWS Transit Gateway, GCP Cloud Interconnect, Azure ExpressRoute, or dedicated IPSec VPN tunnels). They synchronize Raft WAL logs and telemetry over internal ports `8300/8301` via mutual TLS (mTLS).
+3. **Unified Multi-Cloud Topology Aggregation:**
+   The leader agent aggregates all registered VPCs into a single in-memory graph. When accessing `http://127.0.0.1:8000/dashboard`, the frontend queries `/v1/telemetry/topology` and `/v1/telemetry/stream`. You see all heterogeneous environments side-by-side in real time:
+   - **AWS:** `vpc-aws-prod-01` (ALBs, NLBs, subnets, EC2 instances)
+   - **GCP:** `vpc-gcp-analytics-03` (Global Anycast VIPs, GKE node pools, BigLake)
+   - **Azure:** `vnet-azure-core` (App Gateways, ExpressRoute circuits)
+   - **On-Prem:** `dc-onprem-core-01` (F5 BIG-IP appliances, BGP AS65001 anycast edge)
+4. **Dynamic VPC Registration:**
+   New VPCs can be joined on the fly via `POST /v1/telemetry/topology/vpcs` or through the dashboard UI.
+5. **Zero WAN Egress Preserved:**
+   Because all telemetry data flows over internal RFC 1918 routes, **zero bytes ever exit to the public internet**, guaranteeing $0 egress fees and zero data leaks.
+
+---
+
+## 3. In-VPC Dashboard vs. Online Hosted SaaS Dashboard
+
+### 3.1 Architectural Comparison Matrix
+
+| Dimension | In-VPC Dashboard (`http://127.0.0.1:8000/dashboard`) | Online Dashboard (Hosted SaaS / Multi-Tenant) |
+| :--- | :--- | :--- |
+| **Data Residency** | **100% Inside Customer Perimeter** (Volatile RAM ring buffer) | **Third-Party Hosted** (External cloud database) |
+| **Network Path** | Private RFC 1918 (VPC Peering, Transit Gateway, Direct Connect) | Public Internet (NAT Gateways, Internet Gateways, Public WAN) |
+| **Cloud Egress Fees** | **$0.00** (Strict Zero-Egress Invariant) | **Billable Hyperscaler Egress Tax** ($0.08–$0.12 / GB) |
+| **Compliance &amp; InfoSec** | **Immediate Approval** (HIPAA, PCI-DSS, FedRAMP, SOC2 compliant) | **High Friction** (Requires vendor risk audit, SOC2 Type II, DPA) |
+| **Access Method** | Corporate VPN, Tailscale, AWS SSM Session, or Bastion | Any public web browser via standard SSO (Okta, Entra ID) |
+| **Resilience to WAN Outage**| **100% Operational** even if external internet drops | **Blinded** if NAT Gateway, DNS, or WAN transit has packet loss |
+| **Hosting Infrastructure Cost**| **$0.00** (Runs on existing compute nodes) | **$800 – $4,500 / month** (TSDB cluster, brokers, WAF, LB) |
+
+---
+
+### 3.2 Pros and Cons of an Online Dashboard
+
+#### Pros of an Online Dashboard:
+- **Frictionless Executive &amp; Remote Access:** SREs, architects, and engineering leadership can log in from any laptop or mobile device via corporate SSO (Okta, Google Workspace, Entra ID) without needing corporate VPNs, SSH tunnels, or AWS SSM sessions.
+- **Centralized Multi-Organization / Multi-Client Oversight:** Ideal for Managed Service Providers (MSPs) or enterprises with completely siloed cloud organizations (e.g. 50 distinct AWS Accounts or GCP Organizations with no interconnecting Transit Gateway). All migrations report to one central portal.
+- **Long-Term Multi-Year Historical Analytics:** An external cloud database (ClickHouse / TimescaleDB) can retain migration metrics, replication velocity curves, and audit trails for 1–5 years without consuming RAM or disk space inside customer VPCs.
+- **Zero Customer Maintenance:** Customers don&#x27;t need to monitor or patch the dashboard server daemon; high availability and backups are managed automatically.
+
+#### Cons of an Online Dashboard:
+- **Breaks `&lt;dcouplr/&gt;`&#x27;s Core &quot;Zero-Egress&quot; Guarantee:** The primary selling point of `&lt;dcouplr/&gt;` is that telemetry and transpilation never leave the VPC. An online dashboard forces agents inside every VPC to continuously stream packets over NAT/Internet Gateways to the SaaS endpoint.
+- **Enterprise InfoSec &amp; Legal Roadblocks:** Enterprise security teams strictly forbid streaming internal IP addresses, subnet CIDRs, routing tables, and server hostnames to a public multi-tenant SaaS. Requires extensive SOC2 Type II certification, vendor risk reviews (VRM), and Data Processing Agreements (DPA), which can delay enterprise adoption by 3 to 6 months.
+- **Public Attack Surface:** Public-facing ingestion endpoints and web dashboards require 24/7 protection against DDoS attacks, credential stuffing, and zero-day vulnerabilities.
+- **Vulnerability to Cloud Provider Internet Outages:** If AWS NAT Gateways or Cloudflare experience latency spikes or route drops, the migration dashboard goes blind during the most critical moment: live production cutover.
+
+---
+
+### 3.3 Real-World Cost Breakdown for an Online Dashboard
+
+Running an online SaaS telemetry dashboard introduces three distinct cost buckets:
+
+#### Bucket A: The Hyperscaler WAN Egress Tax (Paid to AWS/GCP/Azure)
+Hyperscalers charge customers $0.08 to $0.12 per GB for data leaving the VPC to the internet.
+
+$$\text{Monthly Egress Cost} = \text{Nodes} \times \text{Metric Stream Rate} \times \text{Seconds in Month} \times \text{Egress Rate/GB}$$
+
+**Example for a mid-sized migration (50 monitored nodes):**
+- 50 nodes emitting eBPF network telemetry, replication heartbeats, and disk I/O at ~200 KB/s per node:
+  $$50 \times 200\text{ KB/s} = 10\text{ MB/s} = 36\text{ GB/hour} = 864\text{ GB/day} \approx \mathbf{26\text{ TB/month}}$$
+- At AWS standard egress pricing ($0.09/GB):
+  $$26,000\text{ GB} \times \$0.09 = \mathbf{\$2,340\text{ / month in hidden egress fees}}$$
+- **With In-VPC `&lt;dcouplr/&gt;`:** **$0.00**.
+
+#### Bucket B: SaaS Cloud Infrastructure Run-Rate (Hosted Platform Costs)
+To host a scalable, highly available SaaS dashboard:
+- Managed Time-Series Database (ClickHouse Cloud / TimescaleDB Cloud): ~$400 – $1,800/mo
+- Streaming Message Ingestion (Kafka / Redpanda Serverless): ~$200 – $800/mo
+- API Workers &amp; Application Cluster (Kubernetes EKS/GKE, Multi-AZ): ~$300 – $1,200/mo
+- Edge Security &amp; WAF (Cloudflare Enterprise / AWS WAF / DDoS shield): ~$250 – $700/mo
+- **Total SaaS Hosting Run-Rate:** **$1,150 – $4,500 / month** ($13,800 – $54,000 / year).
+
+#### Bucket C: Security Compliance &amp; Audit Overhead
+- Annual SOC2 Type II audit: ~$15,000 – $25,000/year
+- Annual Third-Party Penetration Testing: ~$10,000 – $18,000/year
+- Continuous compliance monitoring tools (Vanta / Drata): ~$8,000 – $12,000/year
+- **Total Compliance Overhead:** **~$33,000 – $55,000 / year**.
+
+---
+
+## 4. The Best Recommendation: 24x7 NOC Wallboard &amp; Remote Viewing Without High Costs
+
+To solve the exact requirement of an **always-on 24x7 visual wallboard outside the VPC without incurring high costs**, here are the two battle-tested enterprise architectures:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│               24x7 REMOTE NOC WALLBOARD &amp; DISPLAY OPTIONS ARCHITECTURE                 │
+├───────────────────────────────┬────────────────────────────────────────────────────────┤
+│ Display Option                │ Operational Scope &amp; Best For                           │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ NOC Desk                      │ High-Density SRE War-Room &amp; Active Operator Desks      │
+│ (Operator Recommended):       │ • Exact replica of In-VPC Telemetry Dashboard          │
+│ &lt;dcouplr/&gt; AirLock™           │ • Strips non-operational panels: Financial Calculator  │
+│ (Zero-Trust Ingress Tunnel)   │   and Alert Simulator Sandbox are removed for focus    │
+│                               │ • Real-time 60 FPS charts, topology map &amp; Raft health  │
+│                               │ • Zero open inbound firewall ports, Zero VPN friction  │
+│                               │ • Monthly Cost: ~$0.01 / month (Practically Free!)     │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ Wallboard                     │ Public Lobby TVs, Kiosk Displays, SecOps Multi-NOC     │
+│ (Air-Gapped SecOps):          │ • 100% read-only static snapshot push every 5 seconds  │
+│ &lt;dcouplr/&gt; PulseCast™         │ • Internal VPC cluster NEVER receives inbound traffic  │
+│ (Edge CDN Pulse Mirror)       │ • Standalone client with Screen Wake Lock API          │
+│                               │ • Monthly Cost: ~$0.00 (R2) to ~$0.05 / month (S3)     │
+└───────────────────────────────┴────────────────────────────────────────────────────────┘
+```
+
+---
+
+### NOC Desk (Operator Recommended): Cloudflare Zero Trust Tunnel with Service Token
+
+This option allows any NOC operator console, SRE multi-monitor workstation, or wallboard display to view the **exact operational replica** of the `&lt;dcouplr/&gt;` dashboard (`http://127.0.0.1:8000/dashboard?view=noc-desk` or `/noc`) continuously 24x7.
+
+#### Operational High-Density Invariant:
+To maximize operator clarity during live incidents, the **NOC Desk** view removes non-operational panels:
+1. **In-VPC Financial Cost Breakdown &amp; Bandwidth Calculator** (`#panel-financial-calculator`): Financial SaaS comparison and egress calculator widgets are hidden.
+2. **Interactive Alert Rule Threshold Simulator Sandbox** (`#panel-alert-simulator`): Rule sandbox and code export tabs are hidden.
+
+The resulting view provides an uninterrupted, high-density stream of:
+- Live 60 FPS translation velocity and tail latency waveforms.
+- Container RSS memory headroom vs. strict 50 MiB cap.
+- Real-time cross-cloud VPC topology map with live link status.
+- Raft 3-node consensus state and WAL compaction progress.
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│             NOC DESK (OPERATOR RECOMMENDED): ZERO-TRUST TUNNEL         │
+└────────────────────────────────────────────────────────────────────────┘
+
+ [ 24x7 NOC Desk / SRE Workstation ] (Dual-Monitor / Chromium Kiosk)
+
+            │
+            │ Continuous HTTPS Browser Request to:
+            │ https://noc-wallboard.company.com/dashboard
+            ▼
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │ Cloudflare Edge Network (Zero Trust Access Gateway)                   │
+ │ • Authenticates Wallboard via Persistent Service Token (Never Expires)│
+ │ • Blocks unauthorized public traffic                                  │
+ │ • Caches static assets (HTML/CSS/JS) at edge                          │
+ └───────────────────────────────────┬───────────────────────────────────┘
+                                     │
+                                     │ Outbound Encrypted WireGuard Tunnel
+                                     ▼ (No open inbound ports on VPC!)
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │ In-VPC &lt;dcouplr/&gt; Control Node                                        │
+ │ • Runs `cloudflared` tunnel connector sidecar (Port 8000)             │
+ │ • Serves local dashboard &amp; Server-Sent Events (SSE)                   │
+ │ • Only streams lightweight JSON deltas (~50 bytes/second)             │
+ └───────────────────────────────────────────────────────────────────────┘
+```
+
+#### Why This Cuts Costs to Nearly $0.00:
+1. **Zero Egress on Static Assets:**
+   The dashboard UI (HTML, CSS, JS icons) is fetched once upon boot and cached at the Cloudflare edge. It is not re-downloaded from the VPC.
+2. **Ultra-Low Bandwidth JSON SSE Streams:**
+   Instead of streaming multi-megabyte log files or volumetric timeseries, `&lt;dcouplr/&gt;` pushes tiny Server-Sent Event (SSE) deltas only when state changes (~50 bytes/s).
+   - **Monthly Egress Calculation:**
+     $$50\text{ bytes/s} \times 86,400\text{ s/day} \times 30\text{ days} = 129.6\text{ MB / month}$$
+   - **Cloud Provider Egress Cost:**
+     $$0.13\text{ GB} \times \$0.09 = \mathbf{\$0.01\text{ / month (1 cent!)}}$$
+3. **No VPN Timeout / No Sleeping:**
+   By configuring a **Cloudflare Service Token** (HTTP Headers: `CF-Access-Client-Id` and `CF-Access-Client-Secret`), the wallboard TV stays authenticated **permanently** without requiring human MFA or password re-entry at 3 AM.
+
+#### Step-by-Step Implementation Guide:
+
+##### Step 1: Deploy `cloudflared` inside the Target VPC
+Run `cloudflared` as a lightweight systemd service or Docker sidecar next to `&lt;dcouplr/&gt;`:
+```bash
+# 1. Install cloudflared on the &lt;dcouplr/&gt; node
+curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i cloudflared.deb
+
+# 2. Authenticate tunnel
+cloudflared tunnel login
+
+# 3. Create persistent tunnel
+cloudflared tunnel create dcouplr-noc-wallboard
+
+# 4. Route hostname to internal port 8000
+cat &lt;&lt; &#x27;EOF&#x27; &gt; ~/.cloudflared/config.yml
+tunnel: &lt;TUNNEL_ID&gt;
+credentials-file: /root/.cloudflared/&lt;TUNNEL_ID&gt;.json
+ingress:
+  - hostname: noc-wallboard.yourcompany.com
+    service: http://127.0.0.1:8000
+  - service: http_status:404
+EOF
+
+# 5. Start tunnel daemon
+sudo cloudflared service install
+sudo systemctl start cloudflared
+```
+
+##### Step 2: Configure Wallboard Service Token (Zero-Auth Friction)
+In the Cloudflare Zero Trust dashboard:
+1. Go to **Access &gt; Service Auth &gt; Create Service Token** named `NOC-Wallboard-Display`.
+2. Go to **Applications &gt; Add an Application &gt; Self-Hosted** (`noc-wallboard.yourcompany.com`).
+3. Set Policy Rule: `Action: Service Auth` &amp;rarr; Include: `Service Token: NOC-Wallboard-Display`.
+4. (Optional) Restrict by **Office Source IP CIDR** for defense-in-depth.
+
+---
+
+### Pattern B (Air-Gapped SecOps): Static CDN Pulse Mirror
+
+For organizations where enterprise security policy strictly forbids any inbound tunnel into the VPC, use **Outbound-Only Static Pulse Mirroring**.
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                   PATTERN B: STATIC CDN PULSE MIRROR                   │
+└────────────────────────────────────────────────────────────────────────┘
+
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │ In-VPC &lt;dcouplr/&gt; Control Node                                        │
+ │ • Cron worker exports 1.5 KB aggregated topology JSON every 5s        │
+ │ • Performs HTTPS PUT to Cloudflare R2 / AWS S3 ($0 egress on R2)      │
+ └───────────────────────────────────┬───────────────────────────────────┘
+                                     │
+                                     ▼ (Outbound-only HTTPS upload)
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │ Cloudflare R2 / AWS S3 + CloudFront CDN                               │
+ │ • Hosts static wallboard UI (index.html, wallboard.js)                │
+ │ • Serves `/topology-pulse.json` from Edge Cache                       │
+ └───────────────────────────────────┬───────────────────────────────────┘
+                                     │
+                                     ▼ (Cached CDN pull)
+ [ 24x7 NOC Wallboard Display / Office TVs / Remote Stakeholders ]
+```
+
+1. **How It Operates:**
+   - A lightweight cron inside the VPC polls `http://127.0.0.1:8000/v1/telemetry/topology` and writes a sanitized summary JSON (active nodes, migration wave progress, consensus health, circuit breaker state) to Cloudflare R2 or an S3 bucket every 5 seconds.
+   - The Wallboard display loads a static page from the CDN and polls `topology-pulse.json`.
+2. **Cost:**
+   - Cloudflare R2 has **$0.00 egress fees**.
+   - Total Monthly Cost: **~$0.05 / month** (Storage for 1 file).
+3. **Security:**
+   - The VPC has **zero incoming connections**. If the wallboard display is compromised, the attacker only has access to a public static JSON file with no network access into the VPC.
+
+---
+
+
+---
+
+## 4.5 Wallboard Ergonomics &amp; Visual Layout Options: Option A vs. Option B
+
+In 24x7 SRE and NOC operations, the primary design challenge is **Macro Glanceability vs. Micro Depth**:
+* **Macro View (High-Level):** Multi-VPC mesh topology, Raft consensus quorum, global throughput, and cross-cloud latency. Essential for 10–15 ft distance viewing on 55&quot;–85&quot; overhead displays.
+* **Micro Depth (Granular):** 122 evaluated invariants across 24 components in all 7 tiers (PostgreSQL lock queues, ETCD WAL fsync latency, switch buffer drops, fan RPMs, Kirchhoff current conservation).
+* **The Ergonomic Pitfall:** Displaying all 122 metric gauges simultaneously creates an illegible &quot;wall of tiny numbers&quot; causing visual fatigue. Conversely, hiding them completely prevents operators from catching localized bottlenecks before customer-facing outages occur.
+
+To resolve this, `&lt;dcouplr/&gt;` standardizes on two approved display architectures:
+
+### 🌟 Recommendation 1: &quot;Management-by-Exception&quot; &amp; Dynamic Priority Spotlight
+In operations ergonomics, **normal metrics should be invisible; only anomalous metrics should demand attention.**
+* **Nominal State (Green):** When all 122 metrics are within thresholds, the wallboard remains calm and uncluttered, displaying:  
+  `🟢 122/122 Invariants Nominal • Zero Breaches • 0 WAN Packets ($0.00 Egress)`.
+* **Breach State (Amber/Red):** The instant any metric breaches (e.g. Tier 5 PostgreSQL Connection Saturation &gt; 80% or Tier 4 Etcd Quorum Drop), a dedicated **Active Incident Spotlight** card dynamically animates onto the screen in high-contrast triage mode, spotlighting the exact failing metric, affected host, breach severity (P1 Critical / P2 Warning), and recommended remediation.
+
+### 🌟 Recommendation 2: The 7-Tier Micro-LED Status Ribbon
+A compact, ultra-dense ribbon placed directly beneath the header navigation. It displays **24 micro-LED status dots** mapped across all 7 infrastructure tiers:
+* **Tier 01:** Physical DC &amp; Hardware (IPMI, PDU, HVAC, Rack Temp)
+* **Tier 02:** Core Networking &amp; WAN (BGP, Spine-Leaf, Optics, Cross-Connect)
+* **Tier 03:** Cloud VPC Invariants (eBPF, Flow Logs, NAT GW, Peering)
+* **Tier 04:** Virtualization &amp; K8s (Kubelet, Etcd Quorum, Control Plane, Pod Evictions)
+* **Tier 05:** Middleware &amp; DBs (Postgres, Oracle, MSSQL, Redis, Cassandra, TiDB, SAP HANA)
+* **Tier 06:** App Services &amp; APM (OTLP Traces, HTTP 5xx, P99 Latency, Synthetic Probes)
+* **Tier 07:** Security SIEM &amp; Logs (LogQL, Audit Spool, Anomaly Spikes, Zero-WAN Ring)
+
+Each micro-LED pulses green for nominal, amber for warning, and flashing crimson red for critical, providing instant glanceability across the entire full-stack estate in minimal vertical pixels.
+
+---
+
+### 🏆 Option A: The &quot;Sweet Spot&quot; Architecture (Recommended for NOC Ops Desks)
+**Combination of Recommendation 1 + Recommendation 2** on a unified single-screen canvas:
+1. **Header &amp; 7-Tier Micro-LED Ribbon:** Instantaneous 24-component status across Tiers 01–07 right below the top navigation bar.
+2. **3-Column Macro Canvas:**
+   - **Column 1:** Multi-VPC Topology Mesh (AWS US-East-1, AWS US-West-2, GCP US-Central1, Chicago On-Prem DC1) with active node counts and inter-region latency.
+   - **Column 2:** Real-Time Network Throughput Waveform (60 FPS SVG line chart) and P50/P95/P99 latency distribution curves.
+   - **Column 3:** Raft 3-Node Consensus Mesh (Leader, Term, WAL Compaction Index) and Zero-WAN Packet Meter ($0.00 WAN Egress).
+3. **Dynamic Incident Spotlight Box:** Anchored in the center-right panel. Displays invariant parity proof when calm; expands into high-contrast triage on breach.
+* **Direct Access URL:** `http://127.0.0.1:8000/wallboard?layout=sweet-spot`
+
+---
+
+### 🔄 Option B: Multi-Scene Kiosk Carousel (Recommended for Unattended Video Walls)
+An automated rotating kiosk engine designed for unattended lobby TVs, executive hallways, and secondary war-room displays. It auto-rotates every 30 seconds across three dedicated full-screen scenes:
+1. **Scene 1 (0:00 – 0:30): Multi-VPC Macro Topology &amp; Cloud WAN Transit**  
+   Full-screen geographical network topology, BGP peering health, inter-cloud transit latencies, and regional egress monitors.
+2. **Scene 2 (0:30 – 1:00): 7-Tier Component Deep Dive &amp; Invariant Heatmap**  
+   Granular diagnostic cards for all 24 components across all 7 layers, detailing buffer cache hit ratios, worker connection saturation, and system fsync times.
+3. **Scene 3 (1:00 – 1:30): Enterprise Incident Queue &amp; Node Probes**  
+   Live incident ticket backlog, automated root-cause diagnosis logs, priority-ranked remediation playbooks, and per-node health across the 71 census hosts.
+* **Emergency Critical Freeze:** If any P1 Critical breach occurs during rotation, the carousel **automatically locks rotation** and freezes onto the active failing scene until resolved or acknowledged by an operator.
+* **Direct Access URL:** `http://127.0.0.1:8000/wallboard?layout=carousel&amp;interval=30s`
+* **Keyboard Hotkeys:** `[Space]` Pause/Resume rotation, `[1]` Scene 1, `[2]` Scene 2, `[3]` Scene 3, `[A]` Option A, `[B]` Option B.
+
+## 5. Dedicated 24x7 Wallboard Hardware &amp; Kiosk Setup Guide
+
+To ensure office TVs or wallboard displays never sleep, dim, or crash, use the following low-cost hardware and kiosk configuration:
+
+### Recommended Wallboard Hardware:
+- **Option 1 (Budget):** Raspberry Pi 5 (4GB RAM) with official active cooler (~$70).
+- **Option 2 (Enterprise):** Intel N100 Mini PC (8GB RAM, Dual HDMI 4K output) (~$130).
+
+### Kiosk Auto-Start Configuration (Linux / Raspberry Pi OS):
+Create an auto-starting systemd service that launches Chromium in full-screen kiosk mode with all sleep modes disabled:
+
+```bash
+sudo apt update &amp;&amp; sudo apt install -y chromium-browser unclutter xdotool
+```
+
+Create kiosk launcher script `/home/pi/launch-wallboard.sh`:
+```bash
+#!/bin/bash
+# Disable screen blanking, power management, and screensaver
+xset s off
+xset s noblank
+xset -dpms
+
+# Hide mouse cursor after 2 seconds of inactivity
+unclutter -idle 2 &amp;
+
+# Launch Chromium in dedicated non-sleeping Kiosk Mode with Service Token Headers
+chromium-browser \
+  --noerrdialogs \
+  --disable-infobars \
+  --kiosk \
+  --check-for-update-interval=31536000 \
+  --disable-session-crashed-bubble \
+  --disable-features=Translate \
+  --disable-pinch \
+  --overscroll-history-navigation=0 \
+  --header=&quot;CF-Access-Client-Id: &lt;YOUR_SERVICE_TOKEN_CLIENT_ID&gt;&quot; \
+  --header=&quot;CF-Access-Client-Secret: &lt;YOUR_SERVICE_TOKEN_SECRET&gt;&quot; \
+  &quot;https://noc-wallboard.yourcompany.com/dashboard&quot;
+```
+
+Make executable and register in desktop autostart:
+```bash
+chmod +x /home/pi/launch-wallboard.sh
+mkdir -p ~/.config/autostart
+cat &lt;&lt; &#x27;EOF&#x27; &gt; ~/.config/autostart/wallboard.desktop
+[Desktop Entry]
+Type=Application
+Name=NOC Wallboard
+Exec=/home/pi/launch-wallboard.sh
+EOF
+```
+
+---
+
+## 6. Financial Summary: Wallboard TCO Comparison
+
+| Metric | Traditional Monitoring SaaS (Datadog/Dynatrace) | &lt;dcouplr/&gt; In-VPC + Cloudflare Zero Trust (Pattern A) | &lt;dcouplr/&gt; CDN Static Pulse (Pattern B) |
+| :--- | :--- | :--- | :--- |
+| **Agent / Ingestion License** | $15 – $25 / host / month | **$0.00** (Open-Core / Community) | **$0.00** |
+| **Hyperscaler WAN Egress** | ~$2,340 / month (26 TB @ $0.09) | **$0.01 / month** (129 MB SSE deltas) | **$0.05 / month** (Zero egress on R2) |
+| **SaaS Hosting / DB Cluster** | $1,150 – $4,500 / month | **$0.00** (Uses existing In-VPC node) | **$0.00** (Cloudflare Pages free tier) |
+| **Wallboard Display Uptime** | Fragile (SSO token expires every 8h) | **Unbreakable (Persistent Service Token)** | **Unbreakable (Static CDN Cache)** |
+| **Annual Total Cost** | **$41,880 – $82,000 / year** | **&lt;$1.00 / year** | **&lt;$1.00 / year** |
+| **Net Cost Savings** | Baseline | **99.99% Cost Reduction** | **99.99% Cost Reduction** |
+
+---
+
+## 7. Operational Checklist for Implementation
+
+- [ ] **Step 1:** Verify in-VPC `&lt;dcouplr/&gt;` control node is running on port 8000 (`http://127.0.0.1:8000/dashboard`).
+- [ ] **Step 2:** Deploy `cloudflared` on the control node pointing to `http://127.0.0.1:8000`.
+- [ ] **Step 3:** Configure Cloudflare Zero Trust application hostname and generate a non-expiring `Service Token`.
+- [ ] **Step 4:** Configure the wallboard mini-PC / Raspberry Pi with the kiosk script injecting the Service Token headers.
+- [ ] **Step 5:** Verify the 24x7 display renders the multi-cloud topology mesh with zero sleep and zero manual logins.
+- [ ] **Step 6:** Monitor cloud provider billing to attest that WAN egress fees remain under **$0.05 / month**.
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># Enterprise Architecture Specification: 24x7 Remote Wallboard &amp; Zero-Cost Outside-VPC Observability
+
+**Document Identifier:** `VA-SPEC-WALLBOARD-OBS-001`  
+**Classification:** Enterprise Standard Operating Procedure &amp; Architecture Blueprint  
+**Target Audience:** Chief Technology Officers, SRE Directors, Infrastructure Architects, NOC/SOC Operations Teams  
+**Governing Standard:** `VA-SPEC-FINOPS-BRIDGE-001` / `D-41`  
+**Core Objective:** Provide an always-on 24x7 visual wallboard display of the entire multi-cloud infrastructure outside the VPC without incurring SaaS ingestion charges or cloud WAN egress fees.  
+
+---
+
+## 1. Executive Summary &amp; The Problem Statement
+
+Organizations require a visual, real-time representation of their entire infrastructure displayed 24 hours a day, 7 days a week on office TV walls, NOC (Network Operations Center) displays, and executive dashboards.
+
+However, traditional monitoring approaches present a severe dilemma:
+
+1. **The Traditional SaaS Trap (Datadog, Dynatrace, New Relic):**
+   - Continuously streaming telemetry from 50–500 in-VPC nodes over public NAT Gateways to a SaaS vendor generates **thousands of dollars every month** in cloud provider WAN egress taxes ($0.08–$0.12/GB) plus SaaS volumetric ingestion fees ($15–$25 per host/month).
+   - Wallboard TVs frequently disconnect due to corporate SSO session timeouts (Okta/Entra ID 8-hour token expiries), requiring manual operator logins on physical TVs.
+2. **The Pure In-VPC Dilemma:**
+   - While keeping `&lt;dcouplr/&gt;` CLI and telemetry 100% in-VPC guarantees zero egress fees and strict regulatory compliance (HIPAA, PCI-DSS, FedRAMP), office TVs, home monitors, and leadership laptops cannot directly access internal RFC 1918 IPs (`http://10.100.1.50:8000/dashboard`) without active VPN clients that sleep or timeout.
+
+This specification documents:
+- **Part 1:** How the in-VPC dashboard natively covers heterogeneous VPCs across all cloud providers.
+- **Part 2:** The architectural, security, and cost trade-offs between In-VPC and Online Hosted SaaS dashboards.
+- **Part 3:** The industry-standard **Zero-Cost 24x7 NOC Wallboard Architecture** that projects the in-VPC dashboard outside the VPC for **less than $0.10 per month in total bandwidth**.
+
+---
+
+## 2. In-VPC Dashboard Multi-Cloud Coverage (`http://127.0.0.1:8000/dashboard`)
+
+### Will this cover all VPCs regardless of provider?
+
+**Yes, 100%.** The in-VPC dashboard is designed from the ground up as a **vendor-agnostic, multi-cloud topology mesh**. It covers AWS VPCs, GCP VPCs, Azure VNets, and On-Premises bare-metal datacenters simultaneously inside a single pane of glass.
+
+### How It Works Under the Hood
+
+The architecture implemented in `migration_tools/api/telemetry.py` utilizes a decentralized agent mesh:
+
+```
+                      ┌────────────────────────────────────────────────────────┐
+                      │              In-VPC Telemetry Dashboard                │
+                      │             http://127.0.0.1:8000/dashboard            │
+                      └───────────────────────────▲────────────────────────────┘
+                                                  │ (Local REST / SSE Port 8000)
+┌─────────────────────────────────────────────────┴─────────────────────────────────────────────────┐
+│                       &lt;dcouplr/&gt; Decentralized Multi-VPC Mesh                                      │
+├───────────────────────┬─────────────────────────┬─────────────────────────┬───────────────────────┤
+│    AWS US-East-1      │      AWS US-West-2      │     GCP US-Central1     │     On-Prem Chicago   │
+│   (vpc-aws-prod-01)   │   (vpc-aws-stage-02)    │ (vpc-gcp-analytics-03)  │  (dc-onprem-core-01)  │
+│      10.100.0.0/16    │      10.101.0.0/16      │      10.200.0.0/16      │     172.16.0.0/16     │
+├───────────────────────┼─────────────────────────┼─────────────────────────┼───────────────────────┤
+│ Agent: dcouplr-agent-01│ Agent: dcouplr-agent-02 │ Agent: dcouplr-agent-03 │ Agent: legacy-01      │
+│ Role:  LEADER (Raft)  │ Role:  FOLLOWER         │ Role:  FOLLOWER         │ Role:  FOLLOWER       │
+│ ALB / NLB / EC2 Pods  │ Staging App ALB         │ GKE / Cloud Interconnect│ F5 BIG-IP / BareMetal │
+└───────────▲───────────┴────────────▲────────────┴────────────▲────────────┴───────────▲───────────┘
+            │                        │                         │                        │
+            └────────────────────────┴─────────────────────────┴────────────────────────┘
+                 Internal Private Backbone (mTLS gRPC Ports 8300 / 8301)
+                 • AWS Transit Gateway / Direct Connect
+                 • GCP Cloud Interconnect / Cross-Cloud Interconnect
+                 • Azure ExpressRoute / IPSec VPN Tunnels
+                 * 0 BYTES WAN EGRESS — STRICT RFC 1918 PRIVATE PEERING *
+```
+
+1. **Decentralized In-VPC Agents:**
+   A lightweight `&lt;dcouplr/&gt;` daemon agent runs inside each isolated network environment (EC2 instance in AWS, GCE/GKE node in GCP, VM in Azure, or bare-metal host on-prem).
+2. **Private Inter-Cloud Transport (Zero Public Internet):**
+   Agents communicate strictly over existing private interconnects (AWS Transit Gateway, GCP Cloud Interconnect, Azure ExpressRoute, or dedicated IPSec VPN tunnels). They synchronize Raft WAL logs and telemetry over internal ports `8300/8301` via mutual TLS (mTLS).
+3. **Unified Multi-Cloud Topology Aggregation:**
+   The leader agent aggregates all registered VPCs into a single in-memory graph. When accessing `http://127.0.0.1:8000/dashboard`, the frontend queries `/v1/telemetry/topology` and `/v1/telemetry/stream`. You see all heterogeneous environments side-by-side in real time:
+   - **AWS:** `vpc-aws-prod-01` (ALBs, NLBs, subnets, EC2 instances)
+   - **GCP:** `vpc-gcp-analytics-03` (Global Anycast VIPs, GKE node pools, BigLake)
+   - **Azure:** `vnet-azure-core` (App Gateways, ExpressRoute circuits)
+   - **On-Prem:** `dc-onprem-core-01` (F5 BIG-IP appliances, BGP AS65001 anycast edge)
+4. **Dynamic VPC Registration:**
+   New VPCs can be joined on the fly via `POST /v1/telemetry/topology/vpcs` or through the dashboard UI.
+5. **Zero WAN Egress Preserved:**
+   Because all telemetry data flows over internal RFC 1918 routes, **zero bytes ever exit to the public internet**, guaranteeing $0 egress fees and zero data leaks.
+
+---
+
+## 3. In-VPC Dashboard vs. Online Hosted SaaS Dashboard
+
+### 3.1 Architectural Comparison Matrix
+
+| Dimension | In-VPC Dashboard (`http://127.0.0.1:8000/dashboard`) | Online Dashboard (Hosted SaaS / Multi-Tenant) |
+| :--- | :--- | :--- |
+| **Data Residency** | **100% Inside Customer Perimeter** (Volatile RAM ring buffer) | **Third-Party Hosted** (External cloud database) |
+| **Network Path** | Private RFC 1918 (VPC Peering, Transit Gateway, Direct Connect) | Public Internet (NAT Gateways, Internet Gateways, Public WAN) |
+| **Cloud Egress Fees** | **$0.00** (Strict Zero-Egress Invariant) | **Billable Hyperscaler Egress Tax** ($0.08–$0.12 / GB) |
+| **Compliance &amp; InfoSec** | **Immediate Approval** (HIPAA, PCI-DSS, FedRAMP, SOC2 compliant) | **High Friction** (Requires vendor risk audit, SOC2 Type II, DPA) |
+| **Access Method** | Corporate VPN, Tailscale, AWS SSM Session, or Bastion | Any public web browser via standard SSO (Okta, Entra ID) |
+| **Resilience to WAN Outage**| **100% Operational** even if external internet drops | **Blinded** if NAT Gateway, DNS, or WAN transit has packet loss |
+| **Hosting Infrastructure Cost**| **$0.00** (Runs on existing compute nodes) | **$800 – $4,500 / month** (TSDB cluster, brokers, WAF, LB) |
+
+---
+
+### 3.2 Pros and Cons of an Online Dashboard
+
+#### Pros of an Online Dashboard:
+- **Frictionless Executive &amp; Remote Access:** SREs, architects, and engineering leadership can log in from any laptop or mobile device via corporate SSO (Okta, Google Workspace, Entra ID) without needing corporate VPNs, SSH tunnels, or AWS SSM sessions.
+- **Centralized Multi-Organization / Multi-Client Oversight:** Ideal for Managed Service Providers (MSPs) or enterprises with completely siloed cloud organizations (e.g. 50 distinct AWS Accounts or GCP Organizations with no interconnecting Transit Gateway). All migrations report to one central portal.
+- **Long-Term Multi-Year Historical Analytics:** An external cloud database (ClickHouse / TimescaleDB) can retain migration metrics, replication velocity curves, and audit trails for 1–5 years without consuming RAM or disk space inside customer VPCs.
+- **Zero Customer Maintenance:** Customers don&#x27;t need to monitor or patch the dashboard server daemon; high availability and backups are managed automatically.
+
+#### Cons of an Online Dashboard:
+- **Breaks `&lt;dcouplr/&gt;`&#x27;s Core &quot;Zero-Egress&quot; Guarantee:** The primary selling point of `&lt;dcouplr/&gt;` is that telemetry and transpilation never leave the VPC. An online dashboard forces agents inside every VPC to continuously stream packets over NAT/Internet Gateways to the SaaS endpoint.
+- **Enterprise InfoSec &amp; Legal Roadblocks:** Enterprise security teams strictly forbid streaming internal IP addresses, subnet CIDRs, routing tables, and server hostnames to a public multi-tenant SaaS. Requires extensive SOC2 Type II certification, vendor risk reviews (VRM), and Data Processing Agreements (DPA), which can delay enterprise adoption by 3 to 6 months.
+- **Public Attack Surface:** Public-facing ingestion endpoints and web dashboards require 24/7 protection against DDoS attacks, credential stuffing, and zero-day vulnerabilities.
+- **Vulnerability to Cloud Provider Internet Outages:** If AWS NAT Gateways or Cloudflare experience latency spikes or route drops, the migration dashboard goes blind during the most critical moment: live production cutover.
+
+---
+
+### 3.3 Real-World Cost Breakdown for an Online Dashboard
+
+Running an online SaaS telemetry dashboard introduces three distinct cost buckets:
+
+#### Bucket A: The Hyperscaler WAN Egress Tax (Paid to AWS/GCP/Azure)
+Hyperscalers charge customers $0.08 to $0.12 per GB for data leaving the VPC to the internet.
+
+$$\text{Monthly Egress Cost} = \text{Nodes} \times \text{Metric Stream Rate} \times \text{Seconds in Month} \times \text{Egress Rate/GB}$$
+
+**Example for a mid-sized migration (50 monitored nodes):**
+- 50 nodes emitting eBPF network telemetry, replication heartbeats, and disk I/O at ~200 KB/s per node:
+  $$50 \times 200\text{ KB/s} = 10\text{ MB/s} = 36\text{ GB/hour} = 864\text{ GB/day} \approx \mathbf{26\text{ TB/month}}$$
+- At AWS standard egress pricing ($0.09/GB):
+  $$26,000\text{ GB} \times \$0.09 = \mathbf{\$2,340\text{ / month in hidden egress fees}}$$
+- **With In-VPC `&lt;dcouplr/&gt;`:** **$0.00**.
+
+#### Bucket B: SaaS Cloud Infrastructure Run-Rate (Hosted Platform Costs)
+To host a scalable, highly available SaaS dashboard:
+- Managed Time-Series Database (ClickHouse Cloud / TimescaleDB Cloud): ~$400 – $1,800/mo
+- Streaming Message Ingestion (Kafka / Redpanda Serverless): ~$200 – $800/mo
+- API Workers &amp; Application Cluster (Kubernetes EKS/GKE, Multi-AZ): ~$300 – $1,200/mo
+- Edge Security &amp; WAF (Cloudflare Enterprise / AWS WAF / DDoS shield): ~$250 – $700/mo
+- **Total SaaS Hosting Run-Rate:** **$1,150 – $4,500 / month** ($13,800 – $54,000 / year).
+
+#### Bucket C: Security Compliance &amp; Audit Overhead
+- Annual SOC2 Type II audit: ~$15,000 – $25,000/year
+- Annual Third-Party Penetration Testing: ~$10,000 – $18,000/year
+- Continuous compliance monitoring tools (Vanta / Drata): ~$8,000 – $12,000/year
+- **Total Compliance Overhead:** **~$33,000 – $55,000 / year**.
+
+---
+
+## 4. The Best Recommendation: 24x7 NOC Wallboard &amp; Remote Viewing Without High Costs
+
+To solve the exact requirement of an **always-on 24x7 visual wallboard outside the VPC without incurring high costs**, here are the two battle-tested enterprise architectures:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│               24x7 REMOTE NOC WALLBOARD &amp; DISPLAY OPTIONS ARCHITECTURE                 │
+├───────────────────────────────┬────────────────────────────────────────────────────────┤
+│ Display Option                │ Operational Scope &amp; Best For                           │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ NOC Desk                      │ High-Density SRE War-Room &amp; Active Operator Desks      │
+│ (Operator Recommended):       │ • Exact replica of In-VPC Telemetry Dashboard          │
+│ &lt;dcouplr/&gt; AirLock™           │ • Strips non-operational panels: Financial Calculator  │
+│ (Zero-Trust Ingress Tunnel)   │   and Alert Simulator Sandbox are removed for focus    │
+│                               │ • Real-time 60 FPS charts, topology map &amp; Raft health  │
+│                               │ • Zero open inbound firewall ports, Zero VPN friction  │
+│                               │ • Monthly Cost: ~$0.01 / month (Practically Free!)     │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ Wallboard                     │ Public Lobby TVs, Kiosk Displays, SecOps Multi-NOC     │
+│ (Air-Gapped SecOps):          │ • 100% read-only static snapshot push every 5 seconds  │
+│ &lt;dcouplr/&gt; PulseCast™         │ • Internal VPC cluster NEVER receives inbound traffic  │
+│ (Edge CDN Pulse Mirror)       │ • Standalone client with Screen Wake Lock API          │
+│                               │ • Monthly Cost: ~$0.00 (R2) to ~$0.05 / month (S3)     │
+└───────────────────────────────┴────────────────────────────────────────────────────────┘
+```
+
+---
+
+### NOC Desk (Operator Recommended): Cloudflare Zero Trust Tunnel with Service Token
+
+This option allows any NOC operator console, SRE multi-monitor workstation, or wallboard display to view the **exact operational replica** of the `&lt;dcouplr/&gt;` dashboard (`http://127.0.0.1:8000/dashboard?view=noc-desk` or `/noc`) continuously 24x7.
+
+#### Operational High-Density Invariant:
+To maximize operator clarity during live incidents, the **NOC Desk** view removes non-operational panels:
+1. **In-VPC Financial Cost Breakdown &amp; Bandwidth Calculator** (`#panel-financial-calculator`): Financial SaaS comparison and egress calculator widgets are hidden.
+2. **Interactive Alert Rule Threshold Simulator Sandbox** (`#panel-alert-simulator`): Rule sandbox and code export tabs are hidden.
+
+The resulting view provides an uninterrupted, high-density stream of:
+- Live 60 FPS translation velocity and tail latency waveforms.
+- Container RSS memory headroom vs. strict 50 MiB cap.
+- Real-time cross-cloud VPC topology map with live link status.
+- Raft 3-node consensus state and WAL compaction progress.
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│             NOC DESK (OPERATOR RECOMMENDED): ZERO-TRUST TUNNEL         │
+└────────────────────────────────────────────────────────────────────────┘
+
+ [ 24x7 NOC Desk / SRE Workstation ] (Dual-Monitor / Chromium Kiosk)
+
+            │
+            │ Continuous HTTPS Browser Request to:
+            │ https://noc-wallboard.company.com/dashboard
+            ▼
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │ Cloudflare Edge Network (Zero Trust Access Gateway)                   │
+ │ • Authenticates Wallboard via Persistent Service Token (Never Expires)│
+ │ • Blocks unauthorized public traffic                                  │
+ │ • Caches static assets (HTML/CSS/JS) at edge                          │
+ └───────────────────────────────────┬───────────────────────────────────┘
+                                     │
+                                     │ Outbound Encrypted WireGuard Tunnel
+                                     ▼ (No open inbound ports on VPC!)
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │ In-VPC &lt;dcouplr/&gt; Control Node                                        │
+ │ • Runs `cloudflared` tunnel connector sidecar (Port 8000)             │
+ │ • Serves local dashboard &amp; Server-Sent Events (SSE)                   │
+ │ • Only streams lightweight JSON deltas (~50 bytes/second)             │
+ └───────────────────────────────────────────────────────────────────────┘
+```
+
+#### Why This Cuts Costs to Nearly $0.00:
+1. **Zero Egress on Static Assets:**
+   The dashboard UI (HTML, CSS, JS icons) is fetched once upon boot and cached at the Cloudflare edge. It is not re-downloaded from the VPC.
+2. **Ultra-Low Bandwidth JSON SSE Streams:**
+   Instead of streaming multi-megabyte log files or volumetric timeseries, `&lt;dcouplr/&gt;` pushes tiny Server-Sent Event (SSE) deltas only when state changes (~50 bytes/s).
+   - **Monthly Egress Calculation:**
+     $$50\text{ bytes/s} \times 86,400\text{ s/day} \times 30\text{ days} = 129.6\text{ MB / month}$$
+   - **Cloud Provider Egress Cost:**
+     $$0.13\text{ GB} \times \$0.09 = \mathbf{\$0.01\text{ / month (1 cent!)}}$$
+3. **No VPN Timeout / No Sleeping:**
+   By configuring a **Cloudflare Service Token** (HTTP Headers: `CF-Access-Client-Id` and `CF-Access-Client-Secret`), the wallboard TV stays authenticated **permanently** without requiring human MFA or password re-entry at 3 AM.
+
+#### Step-by-Step Implementation Guide:
+
+##### Step 1: Deploy `cloudflared` inside the Target VPC
+Run `cloudflared` as a lightweight systemd service or Docker sidecar next to `&lt;dcouplr/&gt;`:
+```bash
+# 1. Install cloudflared on the &lt;dcouplr/&gt; node
+curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i cloudflared.deb
+
+# 2. Authenticate tunnel
+cloudflared tunnel login
+
+# 3. Create persistent tunnel
+cloudflared tunnel create dcouplr-noc-wallboard
+
+# 4. Route hostname to internal port 8000
+cat &lt;&lt; &#x27;EOF&#x27; &gt; ~/.cloudflared/config.yml
+tunnel: &lt;TUNNEL_ID&gt;
+credentials-file: /root/.cloudflared/&lt;TUNNEL_ID&gt;.json
+ingress:
+  - hostname: noc-wallboard.yourcompany.com
+    service: http://127.0.0.1:8000
+  - service: http_status:404
+EOF
+
+# 5. Start tunnel daemon
+sudo cloudflared service install
+sudo systemctl start cloudflared
+```
+
+##### Step 2: Configure Wallboard Service Token (Zero-Auth Friction)
+In the Cloudflare Zero Trust dashboard:
+1. Go to **Access &gt; Service Auth &gt; Create Service Token** named `NOC-Wallboard-Display`.
+2. Go to **Applications &gt; Add an Application &gt; Self-Hosted** (`noc-wallboard.yourcompany.com`).
+3. Set Policy Rule: `Action: Service Auth` &amp;rarr; Include: `Service Token: NOC-Wallboard-Display`.
+4. (Optional) Restrict by **Office Source IP CIDR** for defense-in-depth.
+
+---
+
+### Pattern B (Air-Gapped SecOps): Static CDN Pulse Mirror
+
+For organizations where enterprise security policy strictly forbids any inbound tunnel into the VPC, use **Outbound-Only Static Pulse Mirroring**.
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                   PATTERN B: STATIC CDN PULSE MIRROR                   │
+└────────────────────────────────────────────────────────────────────────┘
+
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │ In-VPC &lt;dcouplr/&gt; Control Node                                        │
+ │ • Cron worker exports 1.5 KB aggregated topology JSON every 5s        │
+ │ • Performs HTTPS PUT to Cloudflare R2 / AWS S3 ($0 egress on R2)      │
+ └───────────────────────────────────┬───────────────────────────────────┘
+                                     │
+                                     ▼ (Outbound-only HTTPS upload)
+ ┌───────────────────────────────────────────────────────────────────────┐
+ │ Cloudflare R2 / AWS S3 + CloudFront CDN                               │
+ │ • Hosts static wallboard UI (index.html, wallboard.js)                │
+ │ • Serves `/topology-pulse.json` from Edge Cache                       │
+ └───────────────────────────────────┬───────────────────────────────────┘
+                                     │
+                                     ▼ (Cached CDN pull)
+ [ 24x7 NOC Wallboard Display / Office TVs / Remote Stakeholders ]
+```
+
+1. **How It Operates:**
+   - A lightweight cron inside the VPC polls `http://127.0.0.1:8000/v1/telemetry/topology` and writes a sanitized summary JSON (active nodes, migration wave progress, consensus health, circuit breaker state) to Cloudflare R2 or an S3 bucket every 5 seconds.
+   - The Wallboard display loads a static page from the CDN and polls `topology-pulse.json`.
+2. **Cost:**
+   - Cloudflare R2 has **$0.00 egress fees**.
+   - Total Monthly Cost: **~$0.05 / month** (Storage for 1 file).
+3. **Security:**
+   - The VPC has **zero incoming connections**. If the wallboard display is compromised, the attacker only has access to a public static JSON file with no network access into the VPC.
+
+---
+
+
+---
+
+## 4.5 Wallboard Ergonomics &amp; Visual Layout Options: Option A vs. Option B
+
+In 24x7 SRE and NOC operations, the primary design challenge is **Macro Glanceability vs. Micro Depth**:
+* **Macro View (High-Level):** Multi-VPC mesh topology, Raft consensus quorum, global throughput, and cross-cloud latency. Essential for 10–15 ft distance viewing on 55&quot;–85&quot; overhead displays.
+* **Micro Depth (Granular):** 122 evaluated invariants across 24 components in all 7 tiers (PostgreSQL lock queues, ETCD WAL fsync latency, switch buffer drops, fan RPMs, Kirchhoff current conservation).
+* **The Ergonomic Pitfall:** Displaying all 122 metric gauges simultaneously creates an illegible &quot;wall of tiny numbers&quot; causing visual fatigue. Conversely, hiding them completely prevents operators from catching localized bottlenecks before customer-facing outages occur.
+
+To resolve this, `&lt;dcouplr/&gt;` standardizes on two approved display architectures:
+
+### 🌟 Recommendation 1: &quot;Management-by-Exception&quot; &amp; Dynamic Priority Spotlight
+In operations ergonomics, **normal metrics should be invisible; only anomalous metrics should demand attention.**
+* **Nominal State (Green):** When all 122 metrics are within thresholds, the wallboard remains calm and uncluttered, displaying:  
+  `🟢 122/122 Invariants Nominal • Zero Breaches • 0 WAN Packets ($0.00 Egress)`.
+* **Breach State (Amber/Red):** The instant any metric breaches (e.g. Tier 5 PostgreSQL Connection Saturation &gt; 80% or Tier 4 Etcd Quorum Drop), a dedicated **Active Incident Spotlight** card dynamically animates onto the screen in high-contrast triage mode, spotlighting the exact failing metric, affected host, breach severity (P1 Critical / P2 Warning), and recommended remediation.
+
+### 🌟 Recommendation 2: The 7-Tier Micro-LED Status Ribbon
+A compact, ultra-dense ribbon placed directly beneath the header navigation. It displays **24 micro-LED status dots** mapped across all 7 infrastructure tiers:
+* **Tier 01:** Physical DC &amp; Hardware (IPMI, PDU, HVAC, Rack Temp)
+* **Tier 02:** Core Networking &amp; WAN (BGP, Spine-Leaf, Optics, Cross-Connect)
+* **Tier 03:** Cloud VPC Invariants (eBPF, Flow Logs, NAT GW, Peering)
+* **Tier 04:** Virtualization &amp; K8s (Kubelet, Etcd Quorum, Control Plane, Pod Evictions)
+* **Tier 05:** Middleware &amp; DBs (Postgres, Oracle, MSSQL, Redis, Cassandra, TiDB, SAP HANA)
+* **Tier 06:** App Services &amp; APM (OTLP Traces, HTTP 5xx, P99 Latency, Synthetic Probes)
+* **Tier 07:** Security SIEM &amp; Logs (LogQL, Audit Spool, Anomaly Spikes, Zero-WAN Ring)
+
+Each micro-LED pulses green for nominal, amber for warning, and flashing crimson red for critical, providing instant glanceability across the entire full-stack estate in minimal vertical pixels.
+
+---
+
+### 🏆 Option A: The &quot;Sweet Spot&quot; Architecture (Recommended for NOC Ops Desks)
+**Combination of Recommendation 1 + Recommendation 2** on a unified single-screen canvas:
+1. **Header &amp; 7-Tier Micro-LED Ribbon:** Instantaneous 24-component status across Tiers 01–07 right below the top navigation bar.
+2. **3-Column Macro Canvas:**
+   - **Column 1:** Multi-VPC Topology Mesh (AWS US-East-1, AWS US-West-2, GCP US-Central1, Chicago On-Prem DC1) with active node counts and inter-region latency.
+   - **Column 2:** Real-Time Network Throughput Waveform (60 FPS SVG line chart) and P50/P95/P99 latency distribution curves.
+   - **Column 3:** Raft 3-Node Consensus Mesh (Leader, Term, WAL Compaction Index) and Zero-WAN Packet Meter ($0.00 WAN Egress).
+3. **Dynamic Incident Spotlight Box:** Anchored in the center-right panel. Displays invariant parity proof when calm; expands into high-contrast triage on breach.
+* **Direct Access URL:** `http://127.0.0.1:8000/wallboard?layout=sweet-spot`
+
+---
+
+### 🔄 Option B: Multi-Scene Kiosk Carousel (Recommended for Unattended Video Walls)
+An automated rotating kiosk engine designed for unattended lobby TVs, executive hallways, and secondary war-room displays. It auto-rotates every 30 seconds across three dedicated full-screen scenes:
+1. **Scene 1 (0:00 – 0:30): Multi-VPC Macro Topology &amp; Cloud WAN Transit**  
+   Full-screen geographical network topology, BGP peering health, inter-cloud transit latencies, and regional egress monitors.
+2. **Scene 2 (0:30 – 1:00): 7-Tier Component Deep Dive &amp; Invariant Heatmap**  
+   Granular diagnostic cards for all 24 components across all 7 layers, detailing buffer cache hit ratios, worker connection saturation, and system fsync times.
+3. **Scene 3 (1:00 – 1:30): Enterprise Incident Queue &amp; Node Probes**  
+   Live incident ticket backlog, automated root-cause diagnosis logs, priority-ranked remediation playbooks, and per-node health across the 71 census hosts.
+* **Emergency Critical Freeze:** If any P1 Critical breach occurs during rotation, the carousel **automatically locks rotation** and freezes onto the active failing scene until resolved or acknowledged by an operator.
+* **Direct Access URL:** `http://127.0.0.1:8000/wallboard?layout=carousel&amp;interval=30s`
+* **Keyboard Hotkeys:** `[Space]` Pause/Resume rotation, `[1]` Scene 1, `[2]` Scene 2, `[3]` Scene 3, `[A]` Option A, `[B]` Option B.
+
+## 5. Dedicated 24x7 Wallboard Hardware &amp; Kiosk Setup Guide
+
+To ensure office TVs or wallboard displays never sleep, dim, or crash, use the following low-cost hardware and kiosk configuration:
+
+### Recommended Wallboard Hardware:
+- **Option 1 (Budget):** Raspberry Pi 5 (4GB RAM) with official active cooler (~$70).
+- **Option 2 (Enterprise):** Intel N100 Mini PC (8GB RAM, Dual HDMI 4K output) (~$130).
+
+### Kiosk Auto-Start Configuration (Linux / Raspberry Pi OS):
+Create an auto-starting systemd service that launches Chromium in full-screen kiosk mode with all sleep modes disabled:
+
+```bash
+sudo apt update &amp;&amp; sudo apt install -y chromium-browser unclutter xdotool
+```
+
+Create kiosk launcher script `/home/pi/launch-wallboard.sh`:
+```bash
+#!/bin/bash
+# Disable screen blanking, power management, and screensaver
+xset s off
+xset s noblank
+xset -dpms
+
+# Hide mouse cursor after 2 seconds of inactivity
+unclutter -idle 2 &amp;
+
+# Launch Chromium in dedicated non-sleeping Kiosk Mode with Service Token Headers
+chromium-browser \
+  --noerrdialogs \
+  --disable-infobars \
+  --kiosk \
+  --check-for-update-interval=31536000 \
+  --disable-session-crashed-bubble \
+  --disable-features=Translate \
+  --disable-pinch \
+  --overscroll-history-navigation=0 \
+  --header=&quot;CF-Access-Client-Id: &lt;YOUR_SERVICE_TOKEN_CLIENT_ID&gt;&quot; \
+  --header=&quot;CF-Access-Client-Secret: &lt;YOUR_SERVICE_TOKEN_SECRET&gt;&quot; \
+  &quot;https://noc-wallboard.yourcompany.com/dashboard&quot;
+```
+
+Make executable and register in desktop autostart:
+```bash
+chmod +x /home/pi/launch-wallboard.sh
+mkdir -p ~/.config/autostart
+cat &lt;&lt; &#x27;EOF&#x27; &gt; ~/.config/autostart/wallboard.desktop
+[Desktop Entry]
+Type=Application
+Name=NOC Wallboard
+Exec=/home/pi/launch-wallboard.sh
+EOF
+```
+
+---
+
+## 6. Financial Summary: Wallboard TCO Comparison
+
+| Metric | Traditional Monitoring SaaS (Datadog/Dynatrace) | &lt;dcouplr/&gt; In-VPC + Cloudflare Zero Trust (Pattern A) | &lt;dcouplr/&gt; CDN Static Pulse (Pattern B) |
+| :--- | :--- | :--- | :--- |
+| **Agent / Ingestion License** | $15 – $25 / host / month | **$0.00** (Open-Core / Community) | **$0.00** |
+| **Hyperscaler WAN Egress** | ~$2,340 / month (26 TB @ $0.09) | **$0.01 / month** (129 MB SSE deltas) | **$0.05 / month** (Zero egress on R2) |
+| **SaaS Hosting / DB Cluster** | $1,150 – $4,500 / month | **$0.00** (Uses existing In-VPC node) | **$0.00** (Cloudflare Pages free tier) |
+| **Wallboard Display Uptime** | Fragile (SSO token expires every 8h) | **Unbreakable (Persistent Service Token)** | **Unbreakable (Static CDN Cache)** |
+| **Annual Total Cost** | **$41,880 – $82,000 / year** | **&lt;$1.00 / year** | **&lt;$1.00 / year** |
+| **Net Cost Savings** | Baseline | **99.99% Cost Reduction** | **99.99% Cost Reduction** |
+
+---
+
+## 7. Operational Checklist for Implementation
+
+- [ ] **Step 1:** Verify in-VPC `&lt;dcouplr/&gt;` control node is running on port 8000 (`http://127.0.0.1:8000/dashboard`).
+- [ ] **Step 2:** Deploy `cloudflared` on the control node pointing to `http://127.0.0.1:8000`.
+- [ ] **Step 3:** Configure Cloudflare Zero Trust application hostname and generate a non-expiring `Service Token`.
+- [ ] **Step 4:** Configure the wallboard mini-PC / Raspberry Pi with the kiosk script injecting the Service Token headers.
+- [ ] **Step 5:** Verify the 24x7 display renders the multi-cloud topology mesh with zero sleep and zero manual logins.
+- [ ] **Step 6:** Monitor cloud provider billing to attest that WAN egress fees remain under **$0.05 / month**.
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>
