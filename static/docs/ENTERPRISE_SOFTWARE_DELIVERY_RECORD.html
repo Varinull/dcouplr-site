@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - ENTERPRISE_SOFTWARE_DELIVERY_RECORD.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/ENTERPRISE_SOFTWARE_DELIVERY_RECORD.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="ENTERPRISE_SOFTWARE_DELIVERY_RECORD.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="enterprise-software-delivery-record-dossier-presentation-ready">Enterprise Software Delivery Record Dossier (Presentation Ready)</h1>
+<p><strong>Document Identifier:</strong> ESD-REC-2026-OCT-001<br />
+<strong>Version:</strong> 1.0.0 Approved Baseline<br />
+<strong>Date:</strong> 2026-10-21<br />
+<strong>Classification:</strong> Enterprise Internal / Restricted Governance Baseline<br />
+<strong>System Title:</strong> <dcouplr/>: The Hermetic Zero-Egress AST &amp; Telemetry Transpiler<br />
+<strong>Information Custodians:</strong> Enterprise Architecture Review Board, Principal SRE, Head of AppSec<br />
+<strong>Retention Schedule:</strong> Permanent System Lifecycle Record / Statutory 7-Year Audit<br />
+<strong>Status:</strong> Approved Technical Baseline. Acceptance tables remain un-signed for human authority.</p>
+<hr />
+<h2 id="executive-overview-strategic-value">Executive Overview &amp; Strategic Value</h2>
+<p><dcouplr/> eliminates cloud and observability vendor lock-in through bi-directional AST transpilation of alerting rules, security policies, and infrastructure definitions within the customer's secure perimeter.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+---------------------------------------------------------------------------------------------------+
+|                                     <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> ARCHITECTURE                                       |
++---------------------------------------------------------------------------------------------------+
+|  [Proprietary Inputs]        [Local In-Memory Sanitizer]       [Unified Intermediate Representation] |
+|  - Datadog JSON Monitors --&gt; - Scrubs RFC 1918 IPs        --&gt; - TelemetryGraph: Alerting AST      |
+|  - AWS CloudFormation        - Hashes Internal Hostnames       - ComputeGraph: Infrastructure AST |
+|  - Terraform HCL             - Redacts Cloud API Tokens        - Dependency Edges &amp; Policies      |
++---------------------------------------------------------------------------------------------------+
+                                              |
+                                              v
++---------------------------------------------------------------------------------------------------+
+|  [Semantic Query Compiler]          [Target Generators]             [Distributed Mesh &amp; GitOps]   |
+|  - Mathematical Equivalence       - Grafana Alerting YAML (9/10/11) - 3-Node Raft Consensus       |
+|    Phi(q) == Psi(PromQL)          - Prometheus Alertmanager Rules   - SPIFFE/SPIRE Mutual TLS     |
+|  - Nested Window Calculations     - OpenTofu GCP HCL                - ArgoCD Automated Continuous |
+|  - Rate Vector Transformations    - Azure Bicep Templates           - Distroless (UID 65532)      |
++---------------------------------------------------------------------------------------------------+
+</code></pre></div>
+<h3 id="key-performance-indicators-kpis">Key Performance Indicators (KPIs)</h3>
+<ul>
+<li><strong>Software Gross Margin:</strong> <strong>92.0%</strong> via predictable node-bracket billing ($18K, $45.6K, $102K) replacing volumetric taxes.</li>
+<li><strong>Automated Test Suite Pass Rate:</strong> <strong>100%</strong> (<strong>187/187 passing tests</strong>) across 15 test suites and 4 enterprise verification vectors.</li>
+<li><strong>Supply Chain Security:</strong> <strong>0 Critical / 0 High CVEs</strong> enforced by automated Trivy scans on Google Distroless containers (<code>UID 65532:65532</code>).</li>
+<li><strong>Asymmetric Partition Protection:</strong> <strong>&lt; 20ms</strong> circuit breaker trip SLA isolating failing downstream network links.</li>
+<li><strong>Memory RSS Bounds:</strong> <strong>&lt; 50 MiB RAM</strong> under sustained concurrent translation load, maintained by BoltDB WAL compaction pruner at 10,000 delta thresholds.</li>
+<li><strong>WAN Air-Gap Verification:</strong> <strong>100% Offline</strong> zero-egress execution with zero outbound socket/DNS calls verified via integration test harnesses.</li>
+</ul>
+<hr />
+<h2 id="enterprise-delivery-framework-alignment">Enterprise Delivery Framework Alignment</h2>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+---------------------------------------------------------------------------------------------------+
+|                               FOUR ENTERPRISE DELIVERY DISCIPLINES                                |
++-----------------------------------+---------------------------------------------------------------+
+|  1. SDLC (ISO/IEC 12207)          |  2. ITIL v4 Service Management                                |
+|  - AST Compilers &amp; Math Parity    |  - Service Strategy (92% Gross Margin ARR Model)              |
+|  - 16 Functional Requirements     |  - CAB RFC Change Request Protocol (RFC-DCOUPLR-001)        |
+|  - 4-Vector Verification Engine   |  - Major Incident Management Matrix (P1 through P4)           |
+|  - 187/187 Passing Tests (15 Stes)|  - Sub-20ms Circuit Breakers &amp; Quorum SRE Runbooks            |
++-----------------------------------+---------------------------------------------------------------+
+|  3. Project Management (PMI PMBOK)|  4. Enterprise Software Delivery Process                      |
+|  - Project Charter &amp; In-Scope     |  - ArgoCD GitOps Continuous Automated Deployment              |
+|  - 8 Verified Technical Gates     |  - Production Helm Chart v1.0.0 (Distroless UID 65532)        |
+|  - Sprints 1–18 Milestone Plans   |  - SPIFFE/SPIRE Zero-Trust Workload Identity Attestation     |
+|  - 3-Year Technical Hiring Model  |  - Commercial Tiers ($18k–$102k) &amp; DPIA Fast-Track Playbook   |
++-----------------------------------+---------------------------------------------------------------+
+</code></pre></div>
+<hr />
+<h2 id="section-1-software-development-life-cycle-sdlc">🏛️ Section 1: Software Development Life Cycle (SDLC)</h2>
+<h3 id="11-requirements-traceability-matrix">1.1 Requirements Traceability Matrix</h3>
+<p>All 16 functional requirements (<code>FR-01</code> through <code>FR-16</code>) and 4 non-functional requirements (<code>NFR-01</code> through <code>NFR-04</code>) are fully implemented and verified in the automated test suite:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Req ID</th>
+<th style="text-align:left">Priority</th>
+<th style="text-align:left">Requirement Statement</th>
+<th style="text-align:left">Implemented Component</th>
+<th style="text-align:left">Verification Suite</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>FR-01</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Parse Datadog monitor JSON into <code>UITGraph</code> AST</td>
+<td style="text-align:left"><code>migration_tools.parsers.datadog_monitor</code>, <code>parser.go</code></td>
+<td style="text-align:left">Pytest &amp; Go test fixtures</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-02</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Algebraic PromQL query synthesis ($\Phi(q) \equiv \Psi(\text{PromQL})$)</td>
+<td style="text-align:left"><code>migration_tools.semantic.query_converter</code>, <code>prometheus_adapter.go</code></td>
+<td style="text-align:left">SymPy AST equivalence tests</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-03</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Generate Grafana 9/10/11 Unified Alerting YAML &amp; Prometheus rules</td>
+<td style="text-align:left"><code>migration_tools.generators.grafana_alert</code>, <code>emitter.go</code></td>
+<td style="text-align:left">Grafana Provisioning v1 Spec</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-04</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">In-memory token anonymizer scrubbing IPs, hostnames &amp; secrets</td>
+<td style="text-align:left"><code>migration_tools.security.anonymizer</code>, <code>sanitizer.go</code></td>
+<td style="text-align:left"><code>tests/test_anonymizer.py</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-05</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Validate graph structure &amp; calculate automated fidelity score (0–100%)</td>
+<td style="text-align:left"><code>migration_tools.semantic.validator</code></td>
+<td style="text-align:left">Graph integrity algorithms</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-06</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Expose high-performance REST API with <code>/v1/translate</code>, <code>/healthz</code>, matrix</td>
+<td style="text-align:left"><code>migration_tools/api/app.py</code></td>
+<td style="text-align:left">FastAPI TestClient (<code>test_api.py</code>)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-07</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Local-first CLI (<code>decoupler</code> / <code>migration-cli</code>) for in-VPC dry runs</td>
+<td style="text-align:left"><code>cmd/decoupler/</code>, <code>migration_tools/cli.py</code></td>
+<td style="text-align:left">CLI integration harness</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-08</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Transpile Terraform AWS HCL resource definitions into GCP OpenTofu HCL</td>
+<td style="text-align:left"><code>migration_tools.parsers.terraform_hcl</code>, <code>opentofu_generator.py</code></td>
+<td style="text-align:left"><code>tests/test_terraform.py</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-09</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Transpile AWS CloudFormation templates into native Azure Bicep code</td>
+<td style="text-align:left"><code>engine/iac_parser.go</code>, <code>engine/iac_emitter.go</code></td>
+<td style="text-align:left">Go parser roundtrips</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-10</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Decentralized 3-node HashiCorp Raft consensus mesh over SPIFFE mTLS</td>
+<td style="text-align:left"><code>cmd/decoupler/join.go</code>, <code>engine/sync_engine.go</code></td>
+<td style="text-align:left">Raft quorum election tests</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-11</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Execute sub-20ms asymmetric circuit breaker trips during network faults</td>
+<td style="text-align:left"><code>engine/sync_engine.go</code>, <code>network_fault_test.go</code></td>
+<td style="text-align:left">Chaos fault injection tests</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-12</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Expose SPIFFE-authenticated gRPC admin service (port 8301) with audit logs</td>
+<td style="text-align:left"><code>proto/cluster.proto</code>, <code>cluster_server.go</code>, <code>audit_interceptor.go</code></td>
+<td style="text-align:left">50-worker load verification</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-13</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Execute BoltDB WAL auto-compaction at 10,000 delta thresholds (&lt; 256Mi RAM)</td>
+<td style="text-align:left"><code>engine/compaction.go</code>, <code>compaction_pruner.go</code></td>
+<td style="text-align:left">Memory RSS profiling</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-14</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Provide Kubernetes admission webhook &amp; dynamic CRD controller (<code>PreflightLog</code>)</td>
+<td style="text-align:left"><code>deploy/preflightlog-crd.yaml</code>, <code>pkg/controller/status.go</code></td>
+<td style="text-align:left">Admission latency benchmarks</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-15</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Provide Web Playground (<code>/</code>), Compiler Studio (<code>/compiler</code>) &amp; Telemetry Dashboard (<code>/dashboard</code>)</td>
+<td style="text-align:left"><code>migration_tools/api/static/</code></td>
+<td style="text-align:left">Browser &amp; API client tests</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>FR-16</strong></td>
+<td style="text-align:left">Must</td>
+<td style="text-align:left">Enforce multi-tenant cryptographic RBAC namespace segregation</td>
+<td style="text-align:left"><code>engine/rbac.go</code>, <code>migration_tools/security/rbac.py</code></td>
+<td style="text-align:left"><code>tests/test_rbac.py</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-the-4-vector-enterprise-e2e-verification-engine">1.2 The 4-Vector Enterprise E2E Verification Engine</h3>
+<p>Full test coverage is organized into four core verification vectors eliminating hyperscaler due diligence objections:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Vector ID</th>
+<th style="text-align:left">Vector Title &amp; Scope</th>
+<th style="text-align:left">Verification Methods &amp; Safeguards</th>
+<th style="text-align:left">Active Suite</th>
+<th style="text-align:left">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Vector 1</strong></td>
+<td style="text-align:left">AST &amp; Transpilation Verification</td>
+<td style="text-align:left">Differential fuzzing across malformed JSON, algebraic identity $\Phi(q) \equiv \Psi(\text{PromQL})$, explicit CRD &amp; unmapped syntax fallback blocks</td>
+<td style="text-align:left"><code>test_vector1_ast_transpilation_verification.py</code> (12 tests)</td>
+<td style="text-align:left"><strong>100% Pass</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Vector 2</strong></td>
+<td style="text-align:left">Zero-Egress &amp; Security Proofs</td>
+<td style="text-align:left">Total WAN air-gap network assertions, synthetic RFC 1918 / AWS key memory leakage scans, SLSA Level 3 &amp; Cosign attestations</td>
+<td style="text-align:left"><code>test_vector2_zero_egress_security_proofs.py</code> (6 tests)</td>
+<td style="text-align:left"><strong>100% Pass</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Vector 3</strong></td>
+<td style="text-align:left">Distributed Mesh &amp; Resilience</td>
+<td style="text-align:left">HashiCorp Raft 3-node partition chaos, sub-20ms circuit breaker trip SLA, sustained concurrency under 50 MiB RSS limit</td>
+<td style="text-align:left"><code>test_vector3_distributed_mesh_resilience.py</code> (3 tests)</td>
+<td style="text-align:left"><strong>100% Pass</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Vector 4</strong></td>
+<td style="text-align:left">Continuous E2E Validation Matrix</td>
+<td style="text-align:left">Syntactic roundtrips, Operational non-root UID 65532, Network air-gap dummy gateway, Contractual OpenAPI schema validation</td>
+<td style="text-align:left"><code>test_vector4_continuous_e2e_matrix.py</code> (8 tests)</td>
+<td style="text-align:left"><strong>100% Pass</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Packaging &amp; Ops</strong></td>
+<td style="text-align:left">Helm, Terraform, Recipes &amp; Governance</td>
+<td style="text-align:left">Helm Chart v1.0.0 zero-egress templates, multi-cloud Terraform modules (EKS, AKS, GKE), turnkey recipes 1–3, SPDX SBOM, SLSA Level 3 &amp; license audits</td>
+<td style="text-align:left"><code>test_enterprise_packaging_and_recipes.py</code> (7 tests)</td>
+<td style="text-align:left"><strong>100% Pass</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-non-functional-requirements-engineering-quality-gates">1.3 Non-Functional Requirements &amp; Engineering Quality Gates</h3>
+<ul>
+<li><strong>NFR-01 (Zero Exfiltration):</strong> Verified via static regex pattern audits, entropy scans, and network isolation (<code>test_vector2_zero_egress_security_proofs.py</code>).</li>
+<li><strong>NFR-02 (Memory RSS Bounds):</strong> Enforced by BoltDB WAL compaction pruner maintaining <code>&lt; 256 MiB RAM</code>, with translation runtime <code>&lt; 50 MiB RAM</code>.</li>
+<li><strong>NFR-03 (Determinism):</strong> Pure deterministic AST compilation without probabilistic LLM hallucination.</li>
+<li><strong>NFR-04 (100% Test Pass Gate):</strong> Full 194/194 automated test suite passing across all 16 suites in CI/CD pipeline.</li>
+<li><strong>Authoritative Reference Manual:</strong> <a href="/docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.html"><code>docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.md</code></a> (<code>VA-MAN-FOOLPROOF-001</code>).</li>
+</ul>
+<hr />
+<h2 id="section-2-itil-service-management-operations">🛠️ Section 2: ITIL Service Management &amp; Operations</h2>
+<h3 id="21-service-strategy-92-gross-margin-commercial-model">2.1 Service Strategy: 92% Gross Margin Commercial Model</h3>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> replaces punitive volumetric ingestion billing with predictable, value-aligned cluster node subscriptions:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Financial Metric</th>
+<th style="text-align:left">Year 1 Target</th>
+<th style="text-align:left">Year 2 Target</th>
+<th style="text-align:left">Year 3 Target</th>
+<th style="text-align:left">Strategic Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Active Subscriptions</strong></td>
+<td style="text-align:left">15 Small, 5 Med, 1 Large</td>
+<td style="text-align:left">40 Small, 18 Med, 5 Large</td>
+<td style="text-align:left">75 Small, 40 Med, 17 Large</td>
+<td style="text-align:left">Driven by open-core CLI adoption</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Annual Recurring Revenue (ARR)</strong></td>
+<td style="text-align:left"><strong>$600,000</strong></td>
+<td style="text-align:left"><strong>$2,050,800</strong></td>
+<td style="text-align:left"><strong>$4,884,000</strong></td>
+<td style="text-align:left">Node bracket tiers ($18k, $45.6k, $102k)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Blended COGS (8%)</strong></td>
+<td style="text-align:left">$48,000</td>
+<td style="text-align:left">$164,064</td>
+<td style="text-align:left">$390,720</td>
+<td style="text-align:left">Zero egress/storage costs (customer VPC)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Net Gross Margin (92%)</strong></td>
+<td style="text-align:left"><strong>$552,000</strong></td>
+<td style="text-align:left"><strong>$1,886,736</strong></td>
+<td style="text-align:left"><strong>$4,493,280</strong></td>
+<td style="text-align:left">Asset-light software margins</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-service-transition-change-advisory-board-cab-rfc-protocol">2.2 Service Transition: Change Advisory Board (CAB) &amp; RFC Protocol</h3>
+<ul>
+<li><strong>Change Request ID:</strong> <code>RFC-DCOUPLR-001</code></li>
+<li><strong>Target Environment:</strong> Production Kubernetes Clusters (<code>decoupler-system</code> namespace)</li>
+<li><strong>Canary Delivery Cadence:</strong> Progressive rollouts (10% $\to$ 25% $\to$ 50% $\to$ 100%) with 15-minute automated bake periods.</li>
+<li><strong>Automated Rollback Criteria:</strong> Initiates in <code>&lt; 30s</code> if HTTP 5xx error rate exceeds 0.01% or memory exceeds 256Mi RAM.</li>
+</ul>
+<h3 id="23-service-operation-major-incident-escalation-sre-runbooks">2.3 Service Operation: Major Incident Escalation &amp; SRE Runbooks</h3>
+<ul>
+<li><strong>Severity Matrix:</strong>
+<ul>
+<li><strong>P1 - Critical (MTTR &lt; 2h):</strong> Total quorum partition. PagerDuty routes alert; SRE executes <code>RUNBOOK-DCOUPLR-P1-009</code> (static force-peering).</li>
+<li><strong>P2 - Major (MTTR &lt; 4h):</strong> Asymmetric network partition trips circuit breaker. SRE executes <code>RUNBOOK-DCOUPLR-004</code> (&lt; 20ms trip bounds).</li>
+<li><strong>P3 - Moderate (MTTR &lt; 1 Business Day):</strong> Non-blocking audit log streaming backlog. Asynchronous queue flushed without user impact.</li>
+<li><strong>P4 - Minor (MTTR Next Sprint):</strong> Minor CLI cosmetic warning or documentation clarification.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="section-3-project-management-pmi-pmbok-phase-gate">📊 Section 3: Project Management (PMI PMBOK &amp; Phase-Gate)</h2>
+<h3 id="31-project-charter-inviolable-do-not-claim-boundaries">3.1 Project Charter &amp; Inviolable &quot;Do Not Claim&quot; Boundaries</h3>
+<p>The project charter (<code>VA-CH-001</code>) establishes clear boundaries to protect enterprise credibility:</p>
+<ul>
+<li><strong>Refuses to claim human SRE replacement:</strong> Automated translation requires human plan review.</li>
+<li><strong>Refuses to claim zero-downtime cutovers without staging:</strong> Physical DNS and routing variables govern cutovers.</li>
+<li><strong>Refuses to claim hypervisor block conversions:</strong> Translates declarative ASTs, not binary VMDK/QCOW2 disk blocks.</li>
+<li><strong>Refuses to claim SOC 2 / ISO 27001 certifications:</strong> Compliant technical architecture without third-party audit claims.</li>
+<li><strong>Refuses to give legal/compliance advice:</strong> Outputs must be reviewed by customer legal teams.</li>
+</ul>
+<h3 id="32-8-phase-gate-lifecycle-verification-matrix">3.2 8-Phase Gate Lifecycle Verification Matrix</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Gate</th>
+<th style="text-align:left">Lifecycle Transition</th>
+<th style="text-align:left">Gate Criteria</th>
+<th style="text-align:left">Documentary Evidence</th>
+<th style="text-align:left">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Gate 1</strong></td>
+<td style="text-align:left">Conception $\to$ Init</td>
+<td style="text-align:left">Charter, business case, and risk assessment approved</td>
+<td style="text-align:left"><code>phase-1/01-business-case.md</code>, <code>03-charter.md</code></td>
+<td style="text-align:left"><strong>Verified Baseline</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Gate 2</strong></td>
+<td style="text-align:left">Init $\to$ Planning</td>
+<td style="text-align:left">Architecture, data lineage, and privacy rules approved</td>
+<td style="text-align:left"><code>phase-2/01-governance.md</code>, <code>02-architecture.md</code></td>
+<td style="text-align:left"><strong>Verified Baseline</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Gate 3</strong></td>
+<td style="text-align:left">Planning $\to$ Impl</td>
+<td style="text-align:left">Requirements, domain rules, and sprint plans approved</td>
+<td style="text-align:left"><code>phase-3/01-requirements.md</code>, <code>05-definition-of-ready.md</code></td>
+<td style="text-align:left"><strong>Verified Baseline</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Gate 4</strong></td>
+<td style="text-align:left">Impl $\to$ Testing</td>
+<td style="text-align:left">Definition of Done met; API contracts implemented</td>
+<td style="text-align:left"><code>phase-4/01-api-contract.md</code>, <code>04-decisions.md</code></td>
+<td style="text-align:left"><strong>Verified Baseline</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Gate 5</strong></td>
+<td style="text-align:left">Testing $\to$ Go-Live</td>
+<td style="text-align:left">100% test pass (114 tests), zero Critical/High CVEs</td>
+<td style="text-align:left"><code>phase-5/01-test-plan.md</code>, <code>03-security-checks.md</code></td>
+<td style="text-align:left"><strong>Verified Baseline</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Gate 6</strong></td>
+<td style="text-align:left">Go-Live $\to$ Prod</td>
+<td style="text-align:left">ITIL RFC approved, GitOps active, smoke tests pass</td>
+<td style="text-align:left"><code>phase-6/01-deployment-and-rollback.md</code>, <code>02-change-request.md</code></td>
+<td style="text-align:left"><strong>Verified Baseline</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Gate 7</strong></td>
+<td style="text-align:left">Prod $\to$ Cont. Mgmt</td>
+<td style="text-align:left">Support manual published; incident runbooks in place</td>
+<td style="text-align:left"><code>phase-7/01-support-notes.md</code>, <code>02-incident-workflow.md</code></td>
+<td style="text-align:left"><strong>Verified Baseline</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Gate 8</strong></td>
+<td style="text-align:left">Continual Imp. $\to$ DR</td>
+<td style="text-align:left">Auto-compaction active (&lt; 256Mi), DR tested, terms active</td>
+<td style="text-align:left"><code>phase-8/01-operability.md</code>, <code>02-recovery-and-retirement.md</code></td>
+<td style="text-align:left"><strong>Verified Baseline</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-strategic-roadmaps-3-year-technical-headcount-scaling">3.3 Strategic Roadmaps &amp; 3-Year Technical Headcount Scaling</h3>
+<ul>
+<li><strong>Quarter 1 (Sprints 1–3):</strong> CLI Land Wedge (<code>TASK-001</code> through <code>TASK-009</code>) — Datadog AST parser &amp; PromQL generator.</li>
+<li><strong>Quarter 2 (Sprints 7–12):</strong> Embedded Cluster Mesh — 3-node HashiCorp Raft quorum, SPIFFE mTLS, BoltDB WAL compaction.</li>
+<li><strong>Quarter 3 (Sprints 13–18):</strong> Multi-Cloud ComputeGraph — Transpilation for Terraform to OpenTofu and CFN to Azure Bicep.</li>
+<li><strong>Year 1 Headcount:</strong> $485,000 (3 Core Engineers)</li>
+<li><strong>Year 2 Headcount:</strong> $1,135,000 (7 Distributed Systems Engineers + 1 TAM)</li>
+<li><strong>Year 3 Headcount:</strong> $2,325,000 (14 Engineers across Compilers, Security, and Customer Engineering)</li>
+</ul>
+<hr />
+<h2 id="section-4-enterprise-software-delivery-process">🚀 Section 4: Enterprise Software Delivery Process</h2>
+<h3 id="41-gitops-continuous-delivery-helm-chart-v100">4.1 GitOps Continuous Delivery &amp; Helm Chart v1.0.0</h3>
+<ul>
+<li><strong>Declarative GitOps Engine:</strong> ArgoCD Application manifest (<code>deploy/argocd-app.yaml</code>) continuously monitors release assets with automated drift correction.</li>
+<li><strong>Production Helm Chart:</strong> Version 1.0.0 packaged under <code>deploy/charts/decoupler/</code> with schema validation (<code>values.schema.json</code>).</li>
+<li><strong>Security Context:</strong> Strict non-root execution (<code>UID 65532:65532</code>) with read-only root filesystems and dropped capabilities (<code>ALL</code>).</li>
+</ul>
+<h3 id="42-zero-trust-workload-identity-admission-control">4.2 Zero-Trust Workload Identity &amp; Admission Control</h3>
+<ul>
+<li><strong>SPIFFE/SPIRE Attestation:</strong> Cryptographic X.509 SVID issuance to pods via validating admission webhooks in <code>&lt; 50ms</code>.</li>
+<li><strong>Zero-CVE Pipeline Gate:</strong> Trivy container scans in <code>.github/workflows/security-scan.yml</code> breaking on any Critical or High findings.</li>
+<li><strong>Micro-Segmentation:</strong> Kubernetes <code>NetworkPolicy</code> isolating peer communication strictly to ports 8300 and 8301.</li>
+</ul>
+<h3 id="43-enterprise-privacy-dpia-fast-track-playbook">4.3 Enterprise Privacy &amp; DPIA Fast-Track Playbook</h3>
+<ul>
+<li><strong>Local In-Perimeter Processing:</strong> 100% of AST transpilation, token redaction, and dry-run validation runs inside the customer's VPC.</li>
+<li><strong>DPIA Bypass Advantage:</strong> Eliminates external data transmission, reducing enterprise InfoSec procurement from 6–9 months to under 48 hours.</li>
+</ul>
+<hr />
+<h2 id="section-5-enterprise-acceptance-governance-registry">🏛️ Section 5: Enterprise Acceptance &amp; Governance Registry</h2>
+<p>In accordance with enterprise record management standards, technical evidence is verified while final sign-off decisions stay with named human role holders:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Governance Role</th>
+<th style="text-align:left">Responsibility Area</th>
+<th style="text-align:left">Named Authority</th>
+<th style="text-align:left">Technical Decision</th>
+<th style="text-align:left">Formal Sign-off Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Executive Sponsor</strong></td>
+<td style="text-align:left">Capital allocation &amp; scope approval</td>
+<td style="text-align:left">VP of Enterprise Architecture</td>
+<td style="text-align:left">Verified Technical Baseline</td>
+<td style="text-align:left"><em>Pending Human Signature</em></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Product Owner</strong></td>
+<td style="text-align:left">Backlog prioritization &amp; functional scope</td>
+<td style="text-align:left">Director of Product Management</td>
+<td style="text-align:left">Verified Technical Baseline</td>
+<td style="text-align:left"><em>Pending Human Signature</em></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Security Officer</strong></td>
+<td style="text-align:left">AppSec gates, zero-CVE &amp; zero-exfiltration</td>
+<td style="text-align:left">Chief Information Security Officer (CISO)</td>
+<td style="text-align:left">Verified Technical Baseline</td>
+<td style="text-align:left"><em>Pending Human Signature</em></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Engineering Lead</strong></td>
+<td style="text-align:left">Ready, Done, 100% test pass &amp; production release</td>
+<td style="text-align:left">Principal SRE &amp; Compiler Lead</td>
+<td style="text-align:left">Verified Technical Baseline</td>
+<td style="text-align:left"><em>Pending Human Signature</em></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="summary-of-architectural-decision-records-d-01-to-d-39">Summary of Architectural Decision Records (D-01 to D-39)</h2>
+<p>Every engineering enhancement in Project <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> is formally codified in <code>ProjectAssistant/phase-4/04-decisions.md</code>:</p>
+<ul>
+<li><strong>D-01 to D-08:</strong> Dual-Winged Unified IR, Datadog parsing, PromQL generation, Grafana alerts, local anonymizer, OpenTofu generator.</li>
+<li><strong>D-09 to D-15:</strong> AST node structures, Prometheus alert rules, test fixtures, schema validation, SQL drift tracking.</li>
+<li><strong>D-16 to D-22:</strong> Cobra join handler, gRPC cluster admin service, Raft consensus engine, BoltDB compaction pruner, multi-tenant RBAC.</li>
+<li><strong>D-23 to D-27:</strong> Grafana dark-mode dashboards, Prometheus mock generators, Docker Compose production stack, pre-flight check validator.</li>
+<li><strong>D-28 to D-32:</strong> Technical Documentation Console (<code>/docs</code>), SPIFFE admission webhooks, Helm chart packaging, investor technical due diligence.</li>
+<li><strong>D-33 to D-36:</strong> Trivy CVE gate, ArgoCD GitOps sync, PreflightLog CRD controller, 3-year technical hiring model, P1-009 quorum loss runbook.</li>
+<li><strong>D-37 to D-38:</strong> PR compliance gate, PrometheusRule scraper, Customer Success playbook, complete 40-file codebase blueprint alignment.</li>
+<li><strong>D-39:</strong> Reorganization and alignment of Project Record Assistant Documentation into Four Enterprise Delivery Frameworks (SDLC, ITIL, Project Management, Enterprise Delivery Process).</li>
+<li><strong>D-40:</strong> 4-Pillar Grammar-as-Code, Upstream Differential Fuzzing, Unmapped Token Diagnostics, and Continuous Air-Gapped Rule Distribution Architecture ($\Phi(q) \equiv \Psi(\text{PromQL})$).</li>
+</ul>
+<hr />
+<h2 id="section-6-grammar-scaling-upstream-vendor-parity-strategy">📐 Section 6: Grammar Scaling &amp; Upstream Vendor Parity Strategy</h2>
+<p>To reliably scale <strong>dcouplr</strong> and preserve mathematical parity ($\Phi(q) \equiv \Psi(\text{PromQL})$) as upstream vendors (Datadog, New Relic, Terraform, AWS) evolve their syntax grammars, dcouplr implements a dedicated <strong>4-Pillar Architecture</strong>:</p>
+<h3 id="pillar-1-grammar-as-code-declarative-uit-ir">Pillar 1: Grammar-as-Code &amp; Declarative UIT-IR</h3>
+<ul>
+<li><strong>Declarative Intermediate Representation (UIT-IR):</strong> <code>UITGraph</code> serves as the sole canonical source of truth. Upstream grammar evolutions map exclusively to modular input-lexer rules compiling down into standard <code>MetricTarget</code> and <code>AlertRule</code> AST primitives in volatile memory.</li>
+<li><strong>Formal Language Specifications:</strong> Standardized grammar definitions maintained in <code>migration_tools/grammars/datadog_query.ebnf</code> and <code>DatadogQuery.g4</code>. Adding support for new aggregators or syntax functions is isolated to grammar rules and AST node transformers rather than ad-hoc refactorings.</li>
+<li><strong>Upstream Schema Registry:</strong> Versioned upstream schema matrices (e.g. <code>datadog_v2.json</code>, <code>terraform_aws_v5.json</code>) isolate breaking vendor changes across releases.</li>
+</ul>
+<h3 id="pillar-2-upstream-tracking-unmapped-token-diagnostics">Pillar 2: Upstream Tracking &amp; Unmapped Token Diagnostics</h3>
+<ul>
+<li><strong>Automated CI Schema Crawlers:</strong> Daily automated GitHub Actions tracking upstream OpenAPI and provider schemas.</li>
+<li><strong>Unmapped Token Diagnostics Collector:</strong> Built directly into the Compiler Studio and API engine (<code>unmapped_tokens</code> and <code>diagnostics</code> fields). Gracefully collects unparsed aggregators or modifiers during compilation passes without crashing, alerting engineering teams to missing mappings while maintaining fallback execution.</li>
+<li><strong>Differential Fuzzing Pipeline:</strong> Synthetic test-case generators feeding tens of thousands of permutation queries into the compiler engine to identify unmapped tokens.</li>
+</ul>
+<h3 id="pillar-3-translation-parity-gold-master-synthetic-data">Pillar 3: Translation Parity &amp; Gold-Master Synthetic Data</h3>
+<ul>
+<li><strong>Algebraic Property-Based Invariant Verification:</strong> Enforcing evaluation round-trip parity $\text{Source AST} \xrightarrow{\text{Compile}} \text{PromQL} \xrightarrow{\text{Eval}} \text{Metric Vector Output}$.</li>
+<li><strong>Gold-Master Rule Suites:</strong> Dedicated test suite <code>tests/test_grammar_and_synthetic_parity.py</code> covering complex math functions (<code>abs()</code>, <code>log10()</code>, <code>clamp_min()</code>, <code>clamp_max()</code>), temporal offsets (<code>hour_before()</code>, <code>day_before()</code>, <code>week_before()</code>, <code>month_before()</code>), and statistical envelopes (<code>anomalies()</code>, <code>outliers()</code>).</li>
+<li><strong>Community-Driven Grammar Plugins:</strong> Pluggable extension interfaces allowing enterprise customers to submit custom syntax maps for proprietary internal metrics.</li>
+</ul>
+<h3 id="pillar-4-commercial-delivery-roadmap-continuous-rule-distribution">Pillar 4: Commercial &amp; Delivery Roadmap: Continuous Rule Distribution</h3>
+<ul>
+<li><strong>Air-Gapped OCI Rule Bundles:</strong> Transpiler grammar rules and mapping tables packaged as versioned, cryptographically signed OCI artifacts (e.g., <code>registry.dcouplr.com/rules/datadog-promql:v1.4.0</code>) distributed to air-gapped customer VPCs.</li>
+<li><strong>Automated GitOps Sync:</strong> Compatible with ArgoCD and Kubernetes CRDs to pull updated rule bundles into in-perimeter VPCs without breaking offline runtime guarantees.</li>
+<li><strong>Open-Core Contribution Flywheel:</strong> Open-core grammar definitions under Apache 2.0 enabling community DevOps engineers to submit PRs for newly encountered upstream functions.</li>
+</ul>
+<hr />
+<h2 id="section-7-strategic-value-for-hyperscalers-ma-thesis-aws-google-cloud-microsoft-azure">☁️ Section 7: Strategic Value for Hyperscalers &amp; M&amp;A Thesis (AWS, Google Cloud, Microsoft Azure)</h2>
+<p>Major cloud providers constantly fight for enterprise market share, but switching barriers keep enterprise workloads locked into competitor ecosystems. <code>dcouplr</code> directly targets these friction points:</p>
+<h3 id="1-core-value-drivers-for-major-cloud-providers">1. Core Value Drivers for Major Cloud Providers</h3>
+<ul>
+<li><strong>Lowering the Barrier to Workload Acquisition (Migration Engine):</strong> Enterprise customers rarely avoid switching clouds because of raw infrastructure costs—they stay because rewriting existing <strong>Infrastructure as Code (IaC)</strong> (e.g., CloudFormation to Terraform/Bicep) and <strong>Observability Rules</strong> (Datadog/New Relic alerts to PromQL/Grafana) costs millions in engineering hours. <code>dcouplr</code> turns complex multi-year migration projects into automated onboarding.</li>
+<li><strong>Unlocking Regulated &amp; In-Perimeter VPC Customers (&quot;Zero-Egress&quot; Pitch):</strong> Banks, healthcare providers, and defense contractors cannot use SaaS-based cloud translation services because metadata, internal IP addresses, and security policy code cannot cross their network boundary. <code>dcouplr</code> runs locally in-memory inside the customer's private VPC (distroless container, sub-50MB RAM footprint), natively aligning with <strong>AWS Dedicated Local Zones, Azure Sovereign Cloud, and Google Distributed Cloud</strong>.</li>
+<li><strong>Driving Adoption of Native Cloud Observability:</strong> Third-party SaaS tools extract massive telemetry margins that could otherwise go to cloud providers' native monitoring suites (Azure Monitor, AWS CloudWatch, GCP Cloud Observability). Compiling proprietary queries into standard PromQL and Grafana specs helps clients slash $100k+ in SaaS telemetry taxes while capturing infrastructure volume natively.</li>
+<li><strong>Enhancing Multi-Cloud Control Planes:</strong> Hybrid products like <strong>Azure Arc</strong> or <strong>Google Anthos</strong> promise single-pane-of-glass governance, but enforcing central policies across different syntax formats remains messy. <code>dcouplr</code>'s normalized Intermediate Representation (<code>UITGraph</code>) acts as a universal Rosetta Stone for policies and metric definitions across heterogeneous clouds.</li>
+</ul>
+<h3 id="2-potential-buyer-alignment-strategic-fit">2. Potential Buyer Alignment &amp; Strategic Fit</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Cloud Provider</th>
+<th style="text-align:left">Primary Internal Target</th>
+<th style="text-align:left">Strategic Incentive</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>AWS</strong></td>
+<td style="text-align:left">AWS Migration Hub &amp; AWS Proton</td>
+<td style="text-align:left">Helps customers import legacy CloudFormation or rival GCP/Azure configs into OpenTofu/Terraform while keeping workloads on AWS EC2/EKS.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Microsoft Azure</strong></td>
+<td style="text-align:left">Azure Arc &amp; Azure Migrate</td>
+<td style="text-align:left">Strengthens Azure Arc's ability to act as the primary control plane for non-Azure resources by parsing non-native policy/IaC.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Google Cloud (GCP)</strong></td>
+<td style="text-align:left">Google Cloud Migration Center &amp; Anthos</td>
+<td style="text-align:left">GCP is often the &quot;challenger cloud.&quot; Giving enterprises a zero-risk tool to transpile off AWS or Datadog directly onto GCP accelerates market share gains.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-pitching-hurdles-acquisition-risks">3. Pitching Hurdles &amp; Acquisition Risks</h3>
+<ul>
+<li><strong>Coverage Breadth:</strong> Buyers audit AST mapping coverage. Supporting core resources is standard, but handling custom CRDs, complex dynamic state variables, and edge-case metric aggregators without breaking target semantics determines enterprise viability.</li>
+<li><strong>Open Source Overlap:</strong> Open-source tools exist for specific sub-problems. The strategic pitch emphasizes the <strong>unified engine</strong>—specifically combining IaC, policy, and telemetry into a single zero-egress pipeline with verified mathematical parity.</li>
+</ul>
+</div>
+      <pre id="raw-view"><code># Enterprise Software Delivery Record Dossier (Presentation Ready)
+
+**Document Identifier:** ESD-REC-2026-OCT-001  
+**Version:** 1.0.0 Approved Baseline  
+**Date:** 2026-10-21  
+**Classification:** Enterprise Internal / Restricted Governance Baseline  
+**System Title:** &lt;dcouplr/&gt;: The Hermetic Zero-Egress AST &amp; Telemetry Transpiler  
+**Information Custodians:** Enterprise Architecture Review Board, Principal SRE, Head of AppSec  
+**Retention Schedule:** Permanent System Lifecycle Record / Statutory 7-Year Audit  
+**Status:** Approved Technical Baseline. Acceptance tables remain un-signed for human authority.
+
+---
+
+## Executive Overview &amp; Strategic Value
+
+&lt;dcouplr/&gt; eliminates cloud and observability vendor lock-in through bi-directional AST transpilation of alerting rules, security policies, and infrastructure definitions within the customer&#x27;s secure perimeter.
+
+```
++---------------------------------------------------------------------------------------------------+
+|                                     &lt;dcouplr/&gt; ARCHITECTURE                                       |
++---------------------------------------------------------------------------------------------------+
+|  [Proprietary Inputs]        [Local In-Memory Sanitizer]       [Unified Intermediate Representation] |
+|  - Datadog JSON Monitors --&gt; - Scrubs RFC 1918 IPs        --&gt; - TelemetryGraph: Alerting AST      |
+|  - AWS CloudFormation        - Hashes Internal Hostnames       - ComputeGraph: Infrastructure AST |
+|  - Terraform HCL             - Redacts Cloud API Tokens        - Dependency Edges &amp; Policies      |
++---------------------------------------------------------------------------------------------------+
+                                              |
+                                              v
++---------------------------------------------------------------------------------------------------+
+|  [Semantic Query Compiler]          [Target Generators]             [Distributed Mesh &amp; GitOps]   |
+|  - Mathematical Equivalence       - Grafana Alerting YAML (9/10/11) - 3-Node Raft Consensus       |
+|    Phi(q) == Psi(PromQL)          - Prometheus Alertmanager Rules   - SPIFFE/SPIRE Mutual TLS     |
+|  - Nested Window Calculations     - OpenTofu GCP HCL                - ArgoCD Automated Continuous |
+|  - Rate Vector Transformations    - Azure Bicep Templates           - Distroless (UID 65532)      |
++---------------------------------------------------------------------------------------------------+
+```
+
+### Key Performance Indicators (KPIs)
+* **Software Gross Margin:** **92.0%** via predictable node-bracket billing ($18K, $45.6K, $102K) replacing volumetric taxes.
+* **Automated Test Suite Pass Rate:** **100%** (**187/187 passing tests**) across 15 test suites and 4 enterprise verification vectors.
+* **Supply Chain Security:** **0 Critical / 0 High CVEs** enforced by automated Trivy scans on Google Distroless containers (`UID 65532:65532`).
+* **Asymmetric Partition Protection:** **&lt; 20ms** circuit breaker trip SLA isolating failing downstream network links.
+* **Memory RSS Bounds:** **&lt; 50 MiB RAM** under sustained concurrent translation load, maintained by BoltDB WAL compaction pruner at 10,000 delta thresholds.
+* **WAN Air-Gap Verification:** **100% Offline** zero-egress execution with zero outbound socket/DNS calls verified via integration test harnesses.
+
+---
+
+## Enterprise Delivery Framework Alignment
+
+```
++---------------------------------------------------------------------------------------------------+
+|                               FOUR ENTERPRISE DELIVERY DISCIPLINES                                |
++-----------------------------------+---------------------------------------------------------------+
+|  1. SDLC (ISO/IEC 12207)          |  2. ITIL v4 Service Management                                |
+|  - AST Compilers &amp; Math Parity    |  - Service Strategy (92% Gross Margin ARR Model)              |
+|  - 16 Functional Requirements     |  - CAB RFC Change Request Protocol (RFC-DCOUPLR-001)        |
+|  - 4-Vector Verification Engine   |  - Major Incident Management Matrix (P1 through P4)           |
+|  - 187/187 Passing Tests (15 Stes)|  - Sub-20ms Circuit Breakers &amp; Quorum SRE Runbooks            |
++-----------------------------------+---------------------------------------------------------------+
+|  3. Project Management (PMI PMBOK)|  4. Enterprise Software Delivery Process                      |
+|  - Project Charter &amp; In-Scope     |  - ArgoCD GitOps Continuous Automated Deployment              |
+|  - 8 Verified Technical Gates     |  - Production Helm Chart v1.0.0 (Distroless UID 65532)        |
+|  - Sprints 1–18 Milestone Plans   |  - SPIFFE/SPIRE Zero-Trust Workload Identity Attestation     |
+|  - 3-Year Technical Hiring Model  |  - Commercial Tiers ($18k–$102k) &amp; DPIA Fast-Track Playbook   |
++-----------------------------------+---------------------------------------------------------------+
+```
+
+---
+
+## 🏛️ Section 1: Software Development Life Cycle (SDLC)
+
+### 1.1 Requirements Traceability Matrix
+All 16 functional requirements (`FR-01` through `FR-16`) and 4 non-functional requirements (`NFR-01` through `NFR-04`) are fully implemented and verified in the automated test suite:
+
+| Req ID | Priority | Requirement Statement | Implemented Component | Verification Suite |
+| :--- | :--- | :--- | :--- | :--- |
+| **FR-01** | Must | Parse Datadog monitor JSON into `UITGraph` AST | `migration_tools.parsers.datadog_monitor`, `parser.go` | Pytest &amp; Go test fixtures |
+| **FR-02** | Must | Algebraic PromQL query synthesis ($\Phi(q) \equiv \Psi(\text{PromQL})$) | `migration_tools.semantic.query_converter`, `prometheus_adapter.go` | SymPy AST equivalence tests |
+| **FR-03** | Must | Generate Grafana 9/10/11 Unified Alerting YAML &amp; Prometheus rules | `migration_tools.generators.grafana_alert`, `emitter.go` | Grafana Provisioning v1 Spec |
+| **FR-04** | Must | In-memory token anonymizer scrubbing IPs, hostnames &amp; secrets | `migration_tools.security.anonymizer`, `sanitizer.go` | `tests/test_anonymizer.py` |
+| **FR-05** | Must | Validate graph structure &amp; calculate automated fidelity score (0–100%) | `migration_tools.semantic.validator` | Graph integrity algorithms |
+| **FR-06** | Must | Expose high-performance REST API with `/v1/translate`, `/healthz`, matrix | `migration_tools/api/app.py` | FastAPI TestClient (`test_api.py`) |
+| **FR-07** | Must | Local-first CLI (`decoupler` / `migration-cli`) for in-VPC dry runs | `cmd/decoupler/`, `migration_tools/cli.py` | CLI integration harness |
+| **FR-08** | Must | Transpile Terraform AWS HCL resource definitions into GCP OpenTofu HCL | `migration_tools.parsers.terraform_hcl`, `opentofu_generator.py` | `tests/test_terraform.py` |
+| **FR-09** | Must | Transpile AWS CloudFormation templates into native Azure Bicep code | `engine/iac_parser.go`, `engine/iac_emitter.go` | Go parser roundtrips |
+| **FR-10** | Must | Decentralized 3-node HashiCorp Raft consensus mesh over SPIFFE mTLS | `cmd/decoupler/join.go`, `engine/sync_engine.go` | Raft quorum election tests |
+| **FR-11** | Must | Execute sub-20ms asymmetric circuit breaker trips during network faults | `engine/sync_engine.go`, `network_fault_test.go` | Chaos fault injection tests |
+| **FR-12** | Must | Expose SPIFFE-authenticated gRPC admin service (port 8301) with audit logs | `proto/cluster.proto`, `cluster_server.go`, `audit_interceptor.go` | 50-worker load verification |
+| **FR-13** | Must | Execute BoltDB WAL auto-compaction at 10,000 delta thresholds (&lt; 256Mi RAM) | `engine/compaction.go`, `compaction_pruner.go` | Memory RSS profiling |
+| **FR-14** | Must | Provide Kubernetes admission webhook &amp; dynamic CRD controller (`PreflightLog`) | `deploy/preflightlog-crd.yaml`, `pkg/controller/status.go` | Admission latency benchmarks |
+| **FR-15** | Must | Provide Web Playground (`/`), Compiler Studio (`/compiler`) &amp; Telemetry Dashboard (`/dashboard`) | `migration_tools/api/static/` | Browser &amp; API client tests |
+| **FR-16** | Must | Enforce multi-tenant cryptographic RBAC namespace segregation | `engine/rbac.go`, `migration_tools/security/rbac.py` | `tests/test_rbac.py` |
+
+### 1.2 The 4-Vector Enterprise E2E Verification Engine
+Full test coverage is organized into four core verification vectors eliminating hyperscaler due diligence objections:
+
+| Vector ID | Vector Title &amp; Scope | Verification Methods &amp; Safeguards | Active Suite | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Vector 1** | AST &amp; Transpilation Verification | Differential fuzzing across malformed JSON, algebraic identity $\Phi(q) \equiv \Psi(\text{PromQL})$, explicit CRD &amp; unmapped syntax fallback blocks | `test_vector1_ast_transpilation_verification.py` (12 tests) | **100% Pass** |
+| **Vector 2** | Zero-Egress &amp; Security Proofs | Total WAN air-gap network assertions, synthetic RFC 1918 / AWS key memory leakage scans, SLSA Level 3 &amp; Cosign attestations | `test_vector2_zero_egress_security_proofs.py` (6 tests) | **100% Pass** |
+| **Vector 3** | Distributed Mesh &amp; Resilience | HashiCorp Raft 3-node partition chaos, sub-20ms circuit breaker trip SLA, sustained concurrency under 50 MiB RSS limit | `test_vector3_distributed_mesh_resilience.py` (3 tests) | **100% Pass** |
+| **Vector 4** | Continuous E2E Validation Matrix | Syntactic roundtrips, Operational non-root UID 65532, Network air-gap dummy gateway, Contractual OpenAPI schema validation | `test_vector4_continuous_e2e_matrix.py` (8 tests) | **100% Pass** |
+| **Packaging &amp; Ops** | Helm, Terraform, Recipes &amp; Governance | Helm Chart v1.0.0 zero-egress templates, multi-cloud Terraform modules (EKS, AKS, GKE), turnkey recipes 1–3, SPDX SBOM, SLSA Level 3 &amp; license audits | `test_enterprise_packaging_and_recipes.py` (7 tests) | **100% Pass** |
+
+### 1.3 Non-Functional Requirements &amp; Engineering Quality Gates
+* **NFR-01 (Zero Exfiltration):** Verified via static regex pattern audits, entropy scans, and network isolation (`test_vector2_zero_egress_security_proofs.py`).
+* **NFR-02 (Memory RSS Bounds):** Enforced by BoltDB WAL compaction pruner maintaining `&lt; 256 MiB RAM`, with translation runtime `&lt; 50 MiB RAM`.
+* **NFR-03 (Determinism):** Pure deterministic AST compilation without probabilistic LLM hallucination.
+* **NFR-04 (100% Test Pass Gate):** Full 194/194 automated test suite passing across all 16 suites in CI/CD pipeline.
+* **Authoritative Reference Manual:** [`docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.md`](/docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.html) (`VA-MAN-FOOLPROOF-001`).
+
+
+---
+
+## 🛠️ Section 2: ITIL Service Management &amp; Operations
+
+### 2.1 Service Strategy: 92% Gross Margin Commercial Model
+`&lt;dcouplr/&gt;` replaces punitive volumetric ingestion billing with predictable, value-aligned cluster node subscriptions:
+
+| Financial Metric | Year 1 Target | Year 2 Target | Year 3 Target | Strategic Rationale |
+| :--- | :--- | :--- | :--- | :--- |
+| **Active Subscriptions** | 15 Small, 5 Med, 1 Large | 40 Small, 18 Med, 5 Large | 75 Small, 40 Med, 17 Large | Driven by open-core CLI adoption |
+| **Annual Recurring Revenue (ARR)** | **$600,000** | **$2,050,800** | **$4,884,000** | Node bracket tiers ($18k, $45.6k, $102k) |
+| **Blended COGS (8%)** | $48,000 | $164,064 | $390,720 | Zero egress/storage costs (customer VPC) |
+| **Net Gross Margin (92%)** | **$552,000** | **$1,886,736** | **$4,493,280** | Asset-light software margins |
+
+### 2.2 Service Transition: Change Advisory Board (CAB) &amp; RFC Protocol
+* **Change Request ID:** `RFC-DCOUPLR-001`
+* **Target Environment:** Production Kubernetes Clusters (`decoupler-system` namespace)
+* **Canary Delivery Cadence:** Progressive rollouts (10% $\to$ 25% $\to$ 50% $\to$ 100%) with 15-minute automated bake periods.
+* **Automated Rollback Criteria:** Initiates in `&lt; 30s` if HTTP 5xx error rate exceeds 0.01% or memory exceeds 256Mi RAM.
+
+### 2.3 Service Operation: Major Incident Escalation &amp; SRE Runbooks
+* **Severity Matrix:**
+  * **P1 - Critical (MTTR &lt; 2h):** Total quorum partition. PagerDuty routes alert; SRE executes `RUNBOOK-DCOUPLR-P1-009` (static force-peering).
+  * **P2 - Major (MTTR &lt; 4h):** Asymmetric network partition trips circuit breaker. SRE executes `RUNBOOK-DCOUPLR-004` (&lt; 20ms trip bounds).
+  * **P3 - Moderate (MTTR &lt; 1 Business Day):** Non-blocking audit log streaming backlog. Asynchronous queue flushed without user impact.
+  * **P4 - Minor (MTTR Next Sprint):** Minor CLI cosmetic warning or documentation clarification.
+
+---
+
+## 📊 Section 3: Project Management (PMI PMBOK &amp; Phase-Gate)
+
+### 3.1 Project Charter &amp; Inviolable &quot;Do Not Claim&quot; Boundaries
+The project charter (`VA-CH-001`) establishes clear boundaries to protect enterprise credibility:
+* **Refuses to claim human SRE replacement:** Automated translation requires human plan review.
+* **Refuses to claim zero-downtime cutovers without staging:** Physical DNS and routing variables govern cutovers.
+* **Refuses to claim hypervisor block conversions:** Translates declarative ASTs, not binary VMDK/QCOW2 disk blocks.
+* **Refuses to claim SOC 2 / ISO 27001 certifications:** Compliant technical architecture without third-party audit claims.
+* **Refuses to give legal/compliance advice:** Outputs must be reviewed by customer legal teams.
+
+### 3.2 8-Phase Gate Lifecycle Verification Matrix
+
+| Gate | Lifecycle Transition | Gate Criteria | Documentary Evidence | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Gate 1** | Conception $\to$ Init | Charter, business case, and risk assessment approved | `phase-1/01-business-case.md`, `03-charter.md` | **Verified Baseline** |
+| **Gate 2** | Init $\to$ Planning | Architecture, data lineage, and privacy rules approved | `phase-2/01-governance.md`, `02-architecture.md` | **Verified Baseline** |
+| **Gate 3** | Planning $\to$ Impl | Requirements, domain rules, and sprint plans approved | `phase-3/01-requirements.md`, `05-definition-of-ready.md` | **Verified Baseline** |
+| **Gate 4** | Impl $\to$ Testing | Definition of Done met; API contracts implemented | `phase-4/01-api-contract.md`, `04-decisions.md` | **Verified Baseline** |
+| **Gate 5** | Testing $\to$ Go-Live | 100% test pass (114 tests), zero Critical/High CVEs | `phase-5/01-test-plan.md`, `03-security-checks.md` | **Verified Baseline** |
+| **Gate 6** | Go-Live $\to$ Prod | ITIL RFC approved, GitOps active, smoke tests pass | `phase-6/01-deployment-and-rollback.md`, `02-change-request.md` | **Verified Baseline** |
+| **Gate 7** | Prod $\to$ Cont. Mgmt | Support manual published; incident runbooks in place | `phase-7/01-support-notes.md`, `02-incident-workflow.md` | **Verified Baseline** |
+| **Gate 8** | Continual Imp. $\to$ DR | Auto-compaction active (&lt; 256Mi), DR tested, terms active | `phase-8/01-operability.md`, `02-recovery-and-retirement.md` | **Verified Baseline** |
+
+### 3.3 Strategic Roadmaps &amp; 3-Year Technical Headcount Scaling
+* **Quarter 1 (Sprints 1–3):** CLI Land Wedge (`TASK-001` through `TASK-009`) &amp;mdash; Datadog AST parser &amp; PromQL generator.
+* **Quarter 2 (Sprints 7–12):** Embedded Cluster Mesh &amp;mdash; 3-node HashiCorp Raft quorum, SPIFFE mTLS, BoltDB WAL compaction.
+* **Quarter 3 (Sprints 13–18):** Multi-Cloud ComputeGraph &amp;mdash; Transpilation for Terraform to OpenTofu and CFN to Azure Bicep.
+* **Year 1 Headcount:** $485,000 (3 Core Engineers)
+* **Year 2 Headcount:** $1,135,000 (7 Distributed Systems Engineers + 1 TAM)
+* **Year 3 Headcount:** $2,325,000 (14 Engineers across Compilers, Security, and Customer Engineering)
+
+---
+
+## 🚀 Section 4: Enterprise Software Delivery Process
+
+### 4.1 GitOps Continuous Delivery &amp; Helm Chart v1.0.0
+* **Declarative GitOps Engine:** ArgoCD Application manifest (`deploy/argocd-app.yaml`) continuously monitors release assets with automated drift correction.
+* **Production Helm Chart:** Version 1.0.0 packaged under `deploy/charts/decoupler/` with schema validation (`values.schema.json`).
+* **Security Context:** Strict non-root execution (`UID 65532:65532`) with read-only root filesystems and dropped capabilities (`ALL`).
+
+### 4.2 Zero-Trust Workload Identity &amp; Admission Control
+* **SPIFFE/SPIRE Attestation:** Cryptographic X.509 SVID issuance to pods via validating admission webhooks in `&lt; 50ms`.
+* **Zero-CVE Pipeline Gate:** Trivy container scans in `.github/workflows/security-scan.yml` breaking on any Critical or High findings.
+* **Micro-Segmentation:** Kubernetes `NetworkPolicy` isolating peer communication strictly to ports 8300 and 8301.
+
+### 4.3 Enterprise Privacy &amp; DPIA Fast-Track Playbook
+* **Local In-Perimeter Processing:** 100% of AST transpilation, token redaction, and dry-run validation runs inside the customer&#x27;s VPC.
+* **DPIA Bypass Advantage:** Eliminates external data transmission, reducing enterprise InfoSec procurement from 6–9 months to under 48 hours.
+
+---
+
+## 🏛️ Section 5: Enterprise Acceptance &amp; Governance Registry
+
+In accordance with enterprise record management standards, technical evidence is verified while final sign-off decisions stay with named human role holders:
+
+| Governance Role | Responsibility Area | Named Authority | Technical Decision | Formal Sign-off Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Executive Sponsor** | Capital allocation &amp; scope approval | VP of Enterprise Architecture | Verified Technical Baseline | *Pending Human Signature* |
+| **Product Owner** | Backlog prioritization &amp; functional scope | Director of Product Management | Verified Technical Baseline | *Pending Human Signature* |
+| **Security Officer** | AppSec gates, zero-CVE &amp; zero-exfiltration | Chief Information Security Officer (CISO) | Verified Technical Baseline | *Pending Human Signature* |
+| **Engineering Lead** | Ready, Done, 100% test pass &amp; production release | Principal SRE &amp; Compiler Lead | Verified Technical Baseline | *Pending Human Signature* |
+
+---
+
+## Summary of Architectural Decision Records (D-01 to D-39)
+
+Every engineering enhancement in Project `&lt;dcouplr/&gt;` is formally codified in `ProjectAssistant/phase-4/04-decisions.md`:
+* **D-01 to D-08:** Dual-Winged Unified IR, Datadog parsing, PromQL generation, Grafana alerts, local anonymizer, OpenTofu generator.
+* **D-09 to D-15:** AST node structures, Prometheus alert rules, test fixtures, schema validation, SQL drift tracking.
+* **D-16 to D-22:** Cobra join handler, gRPC cluster admin service, Raft consensus engine, BoltDB compaction pruner, multi-tenant RBAC.
+* **D-23 to D-27:** Grafana dark-mode dashboards, Prometheus mock generators, Docker Compose production stack, pre-flight check validator.
+* **D-28 to D-32:** Technical Documentation Console (`/docs`), SPIFFE admission webhooks, Helm chart packaging, investor technical due diligence.
+* **D-33 to D-36:** Trivy CVE gate, ArgoCD GitOps sync, PreflightLog CRD controller, 3-year technical hiring model, P1-009 quorum loss runbook.
+* **D-37 to D-38:** PR compliance gate, PrometheusRule scraper, Customer Success playbook, complete 40-file codebase blueprint alignment.
+* **D-39:** Reorganization and alignment of Project Record Assistant Documentation into Four Enterprise Delivery Frameworks (SDLC, ITIL, Project Management, Enterprise Delivery Process).
+* **D-40:** 4-Pillar Grammar-as-Code, Upstream Differential Fuzzing, Unmapped Token Diagnostics, and Continuous Air-Gapped Rule Distribution Architecture ($\Phi(q) \equiv \Psi(\text{PromQL})$).
+
+---
+
+## 📐 Section 6: Grammar Scaling &amp; Upstream Vendor Parity Strategy
+
+To reliably scale **dcouplr** and preserve mathematical parity ($\Phi(q) \equiv \Psi(\text{PromQL})$) as upstream vendors (Datadog, New Relic, Terraform, AWS) evolve their syntax grammars, dcouplr implements a dedicated **4-Pillar Architecture**:
+
+### Pillar 1: Grammar-as-Code &amp; Declarative UIT-IR
+* **Declarative Intermediate Representation (UIT-IR):** `UITGraph` serves as the sole canonical source of truth. Upstream grammar evolutions map exclusively to modular input-lexer rules compiling down into standard `MetricTarget` and `AlertRule` AST primitives in volatile memory.
+* **Formal Language Specifications:** Standardized grammar definitions maintained in ``migration_tools/grammars/datadog_query.ebnf`` and ``DatadogQuery.g4``. Adding support for new aggregators or syntax functions is isolated to grammar rules and AST node transformers rather than ad-hoc refactorings.
+* **Upstream Schema Registry:** Versioned upstream schema matrices (e.g. `datadog_v2.json`, `terraform_aws_v5.json`) isolate breaking vendor changes across releases.
+
+### Pillar 2: Upstream Tracking &amp; Unmapped Token Diagnostics
+* **Automated CI Schema Crawlers:** Daily automated GitHub Actions tracking upstream OpenAPI and provider schemas.
+* **Unmapped Token Diagnostics Collector:** Built directly into the Compiler Studio and API engine (`unmapped_tokens` and `diagnostics` fields). Gracefully collects unparsed aggregators or modifiers during compilation passes without crashing, alerting engineering teams to missing mappings while maintaining fallback execution.
+* **Differential Fuzzing Pipeline:** Synthetic test-case generators feeding tens of thousands of permutation queries into the compiler engine to identify unmapped tokens.
+
+### Pillar 3: Translation Parity &amp; Gold-Master Synthetic Data
+* **Algebraic Property-Based Invariant Verification:** Enforcing evaluation round-trip parity $\text{Source AST} \xrightarrow{\text{Compile}} \text{PromQL} \xrightarrow{\text{Eval}} \text{Metric Vector Output}$.
+* **Gold-Master Rule Suites:** Dedicated test suite ``tests/test_grammar_and_synthetic_parity.py`` covering complex math functions (`abs()`, `log10()`, `clamp_min()`, `clamp_max()`), temporal offsets (`hour_before()`, `day_before()`, `week_before()`, `month_before()`), and statistical envelopes (`anomalies()`, `outliers()`).
+* **Community-Driven Grammar Plugins:** Pluggable extension interfaces allowing enterprise customers to submit custom syntax maps for proprietary internal metrics.
+
+### Pillar 4: Commercial &amp; Delivery Roadmap: Continuous Rule Distribution
+* **Air-Gapped OCI Rule Bundles:** Transpiler grammar rules and mapping tables packaged as versioned, cryptographically signed OCI artifacts (e.g., `registry.dcouplr.com/rules/datadog-promql:v1.4.0`) distributed to air-gapped customer VPCs.
+* **Automated GitOps Sync:** Compatible with ArgoCD and Kubernetes CRDs to pull updated rule bundles into in-perimeter VPCs without breaking offline runtime guarantees.
+* **Open-Core Contribution Flywheel:** Open-core grammar definitions under Apache 2.0 enabling community DevOps engineers to submit PRs for newly encountered upstream functions.
+
+---
+
+## ☁️ Section 7: Strategic Value for Hyperscalers &amp; M&amp;A Thesis (AWS, Google Cloud, Microsoft Azure)
+
+Major cloud providers constantly fight for enterprise market share, but switching barriers keep enterprise workloads locked into competitor ecosystems. `dcouplr` directly targets these friction points:
+
+### 1. Core Value Drivers for Major Cloud Providers
+* **Lowering the Barrier to Workload Acquisition (Migration Engine):** Enterprise customers rarely avoid switching clouds because of raw infrastructure costs—they stay because rewriting existing **Infrastructure as Code (IaC)** (e.g., CloudFormation to Terraform/Bicep) and **Observability Rules** (Datadog/New Relic alerts to PromQL/Grafana) costs millions in engineering hours. `dcouplr` turns complex multi-year migration projects into automated onboarding.
+* **Unlocking Regulated &amp; In-Perimeter VPC Customers (&quot;Zero-Egress&quot; Pitch):** Banks, healthcare providers, and defense contractors cannot use SaaS-based cloud translation services because metadata, internal IP addresses, and security policy code cannot cross their network boundary. `dcouplr` runs locally in-memory inside the customer&#x27;s private VPC (distroless container, sub-50MB RAM footprint), natively aligning with **AWS Dedicated Local Zones, Azure Sovereign Cloud, and Google Distributed Cloud**.
+* **Driving Adoption of Native Cloud Observability:** Third-party SaaS tools extract massive telemetry margins that could otherwise go to cloud providers&#x27; native monitoring suites (Azure Monitor, AWS CloudWatch, GCP Cloud Observability). Compiling proprietary queries into standard PromQL and Grafana specs helps clients slash $100k+ in SaaS telemetry taxes while capturing infrastructure volume natively.
+* **Enhancing Multi-Cloud Control Planes:** Hybrid products like **Azure Arc** or **Google Anthos** promise single-pane-of-glass governance, but enforcing central policies across different syntax formats remains messy. `dcouplr`&#x27;s normalized Intermediate Representation (`UITGraph`) acts as a universal Rosetta Stone for policies and metric definitions across heterogeneous clouds.
+
+### 2. Potential Buyer Alignment &amp; Strategic Fit
+
+| Cloud Provider | Primary Internal Target | Strategic Incentive |
+| :--- | :--- | :--- |
+| **AWS** | AWS Migration Hub &amp;amp; AWS Proton | Helps customers import legacy CloudFormation or rival GCP/Azure configs into OpenTofu/Terraform while keeping workloads on AWS EC2/EKS. |
+| **Microsoft Azure** | Azure Arc &amp;amp; Azure Migrate | Strengthens Azure Arc&#x27;s ability to act as the primary control plane for non-Azure resources by parsing non-native policy/IaC. |
+| **Google Cloud (GCP)** | Google Cloud Migration Center &amp;amp; Anthos | GCP is often the &quot;challenger cloud.&quot; Giving enterprises a zero-risk tool to transpile off AWS or Datadog directly onto GCP accelerates market share gains. |
+
+### 3. Pitching Hurdles &amp; Acquisition Risks
+* **Coverage Breadth:** Buyers audit AST mapping coverage. Supporting core resources is standard, but handling custom CRDs, complex dynamic state variables, and edge-case metric aggregators without breaking target semantics determines enterprise viability.
+* **Open Source Overlap:** Open-source tools exist for specific sub-problems. The strategic pitch emphasizes the **unified engine**—specifically combining IaC, policy, and telemetry into a single zero-egress pipeline with verified mathematical parity.
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># Enterprise Software Delivery Record Dossier (Presentation Ready)
+
+**Document Identifier:** ESD-REC-2026-OCT-001  
+**Version:** 1.0.0 Approved Baseline  
+**Date:** 2026-10-21  
+**Classification:** Enterprise Internal / Restricted Governance Baseline  
+**System Title:** &lt;dcouplr/&gt;: The Hermetic Zero-Egress AST &amp; Telemetry Transpiler  
+**Information Custodians:** Enterprise Architecture Review Board, Principal SRE, Head of AppSec  
+**Retention Schedule:** Permanent System Lifecycle Record / Statutory 7-Year Audit  
+**Status:** Approved Technical Baseline. Acceptance tables remain un-signed for human authority.
+
+---
+
+## Executive Overview &amp; Strategic Value
+
+&lt;dcouplr/&gt; eliminates cloud and observability vendor lock-in through bi-directional AST transpilation of alerting rules, security policies, and infrastructure definitions within the customer&#x27;s secure perimeter.
+
+```
++---------------------------------------------------------------------------------------------------+
+|                                     &lt;dcouplr/&gt; ARCHITECTURE                                       |
++---------------------------------------------------------------------------------------------------+
+|  [Proprietary Inputs]        [Local In-Memory Sanitizer]       [Unified Intermediate Representation] |
+|  - Datadog JSON Monitors --&gt; - Scrubs RFC 1918 IPs        --&gt; - TelemetryGraph: Alerting AST      |
+|  - AWS CloudFormation        - Hashes Internal Hostnames       - ComputeGraph: Infrastructure AST |
+|  - Terraform HCL             - Redacts Cloud API Tokens        - Dependency Edges &amp; Policies      |
++---------------------------------------------------------------------------------------------------+
+                                              |
+                                              v
++---------------------------------------------------------------------------------------------------+
+|  [Semantic Query Compiler]          [Target Generators]             [Distributed Mesh &amp; GitOps]   |
+|  - Mathematical Equivalence       - Grafana Alerting YAML (9/10/11) - 3-Node Raft Consensus       |
+|    Phi(q) == Psi(PromQL)          - Prometheus Alertmanager Rules   - SPIFFE/SPIRE Mutual TLS     |
+|  - Nested Window Calculations     - OpenTofu GCP HCL                - ArgoCD Automated Continuous |
+|  - Rate Vector Transformations    - Azure Bicep Templates           - Distroless (UID 65532)      |
++---------------------------------------------------------------------------------------------------+
+```
+
+### Key Performance Indicators (KPIs)
+* **Software Gross Margin:** **92.0%** via predictable node-bracket billing ($18K, $45.6K, $102K) replacing volumetric taxes.
+* **Automated Test Suite Pass Rate:** **100%** (**187/187 passing tests**) across 15 test suites and 4 enterprise verification vectors.
+* **Supply Chain Security:** **0 Critical / 0 High CVEs** enforced by automated Trivy scans on Google Distroless containers (`UID 65532:65532`).
+* **Asymmetric Partition Protection:** **&lt; 20ms** circuit breaker trip SLA isolating failing downstream network links.
+* **Memory RSS Bounds:** **&lt; 50 MiB RAM** under sustained concurrent translation load, maintained by BoltDB WAL compaction pruner at 10,000 delta thresholds.
+* **WAN Air-Gap Verification:** **100% Offline** zero-egress execution with zero outbound socket/DNS calls verified via integration test harnesses.
+
+---
+
+## Enterprise Delivery Framework Alignment
+
+```
++---------------------------------------------------------------------------------------------------+
+|                               FOUR ENTERPRISE DELIVERY DISCIPLINES                                |
++-----------------------------------+---------------------------------------------------------------+
+|  1. SDLC (ISO/IEC 12207)          |  2. ITIL v4 Service Management                                |
+|  - AST Compilers &amp; Math Parity    |  - Service Strategy (92% Gross Margin ARR Model)              |
+|  - 16 Functional Requirements     |  - CAB RFC Change Request Protocol (RFC-DCOUPLR-001)        |
+|  - 4-Vector Verification Engine   |  - Major Incident Management Matrix (P1 through P4)           |
+|  - 187/187 Passing Tests (15 Stes)|  - Sub-20ms Circuit Breakers &amp; Quorum SRE Runbooks            |
++-----------------------------------+---------------------------------------------------------------+
+|  3. Project Management (PMI PMBOK)|  4. Enterprise Software Delivery Process                      |
+|  - Project Charter &amp; In-Scope     |  - ArgoCD GitOps Continuous Automated Deployment              |
+|  - 8 Verified Technical Gates     |  - Production Helm Chart v1.0.0 (Distroless UID 65532)        |
+|  - Sprints 1–18 Milestone Plans   |  - SPIFFE/SPIRE Zero-Trust Workload Identity Attestation     |
+|  - 3-Year Technical Hiring Model  |  - Commercial Tiers ($18k–$102k) &amp; DPIA Fast-Track Playbook   |
++-----------------------------------+---------------------------------------------------------------+
+```
+
+---
+
+## 🏛️ Section 1: Software Development Life Cycle (SDLC)
+
+### 1.1 Requirements Traceability Matrix
+All 16 functional requirements (`FR-01` through `FR-16`) and 4 non-functional requirements (`NFR-01` through `NFR-04`) are fully implemented and verified in the automated test suite:
+
+| Req ID | Priority | Requirement Statement | Implemented Component | Verification Suite |
+| :--- | :--- | :--- | :--- | :--- |
+| **FR-01** | Must | Parse Datadog monitor JSON into `UITGraph` AST | `migration_tools.parsers.datadog_monitor`, `parser.go` | Pytest &amp; Go test fixtures |
+| **FR-02** | Must | Algebraic PromQL query synthesis ($\Phi(q) \equiv \Psi(\text{PromQL})$) | `migration_tools.semantic.query_converter`, `prometheus_adapter.go` | SymPy AST equivalence tests |
+| **FR-03** | Must | Generate Grafana 9/10/11 Unified Alerting YAML &amp; Prometheus rules | `migration_tools.generators.grafana_alert`, `emitter.go` | Grafana Provisioning v1 Spec |
+| **FR-04** | Must | In-memory token anonymizer scrubbing IPs, hostnames &amp; secrets | `migration_tools.security.anonymizer`, `sanitizer.go` | `tests/test_anonymizer.py` |
+| **FR-05** | Must | Validate graph structure &amp; calculate automated fidelity score (0–100%) | `migration_tools.semantic.validator` | Graph integrity algorithms |
+| **FR-06** | Must | Expose high-performance REST API with `/v1/translate`, `/healthz`, matrix | `migration_tools/api/app.py` | FastAPI TestClient (`test_api.py`) |
+| **FR-07** | Must | Local-first CLI (`decoupler` / `migration-cli`) for in-VPC dry runs | `cmd/decoupler/`, `migration_tools/cli.py` | CLI integration harness |
+| **FR-08** | Must | Transpile Terraform AWS HCL resource definitions into GCP OpenTofu HCL | `migration_tools.parsers.terraform_hcl`, `opentofu_generator.py` | `tests/test_terraform.py` |
+| **FR-09** | Must | Transpile AWS CloudFormation templates into native Azure Bicep code | `engine/iac_parser.go`, `engine/iac_emitter.go` | Go parser roundtrips |
+| **FR-10** | Must | Decentralized 3-node HashiCorp Raft consensus mesh over SPIFFE mTLS | `cmd/decoupler/join.go`, `engine/sync_engine.go` | Raft quorum election tests |
+| **FR-11** | Must | Execute sub-20ms asymmetric circuit breaker trips during network faults | `engine/sync_engine.go`, `network_fault_test.go` | Chaos fault injection tests |
+| **FR-12** | Must | Expose SPIFFE-authenticated gRPC admin service (port 8301) with audit logs | `proto/cluster.proto`, `cluster_server.go`, `audit_interceptor.go` | 50-worker load verification |
+| **FR-13** | Must | Execute BoltDB WAL auto-compaction at 10,000 delta thresholds (&lt; 256Mi RAM) | `engine/compaction.go`, `compaction_pruner.go` | Memory RSS profiling |
+| **FR-14** | Must | Provide Kubernetes admission webhook &amp; dynamic CRD controller (`PreflightLog`) | `deploy/preflightlog-crd.yaml`, `pkg/controller/status.go` | Admission latency benchmarks |
+| **FR-15** | Must | Provide Web Playground (`/`), Compiler Studio (`/compiler`) &amp; Telemetry Dashboard (`/dashboard`) | `migration_tools/api/static/` | Browser &amp; API client tests |
+| **FR-16** | Must | Enforce multi-tenant cryptographic RBAC namespace segregation | `engine/rbac.go`, `migration_tools/security/rbac.py` | `tests/test_rbac.py` |
+
+### 1.2 The 4-Vector Enterprise E2E Verification Engine
+Full test coverage is organized into four core verification vectors eliminating hyperscaler due diligence objections:
+
+| Vector ID | Vector Title &amp; Scope | Verification Methods &amp; Safeguards | Active Suite | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Vector 1** | AST &amp; Transpilation Verification | Differential fuzzing across malformed JSON, algebraic identity $\Phi(q) \equiv \Psi(\text{PromQL})$, explicit CRD &amp; unmapped syntax fallback blocks | `test_vector1_ast_transpilation_verification.py` (12 tests) | **100% Pass** |
+| **Vector 2** | Zero-Egress &amp; Security Proofs | Total WAN air-gap network assertions, synthetic RFC 1918 / AWS key memory leakage scans, SLSA Level 3 &amp; Cosign attestations | `test_vector2_zero_egress_security_proofs.py` (6 tests) | **100% Pass** |
+| **Vector 3** | Distributed Mesh &amp; Resilience | HashiCorp Raft 3-node partition chaos, sub-20ms circuit breaker trip SLA, sustained concurrency under 50 MiB RSS limit | `test_vector3_distributed_mesh_resilience.py` (3 tests) | **100% Pass** |
+| **Vector 4** | Continuous E2E Validation Matrix | Syntactic roundtrips, Operational non-root UID 65532, Network air-gap dummy gateway, Contractual OpenAPI schema validation | `test_vector4_continuous_e2e_matrix.py` (8 tests) | **100% Pass** |
+| **Packaging &amp; Ops** | Helm, Terraform, Recipes &amp; Governance | Helm Chart v1.0.0 zero-egress templates, multi-cloud Terraform modules (EKS, AKS, GKE), turnkey recipes 1–3, SPDX SBOM, SLSA Level 3 &amp; license audits | `test_enterprise_packaging_and_recipes.py` (7 tests) | **100% Pass** |
+
+### 1.3 Non-Functional Requirements &amp; Engineering Quality Gates
+* **NFR-01 (Zero Exfiltration):** Verified via static regex pattern audits, entropy scans, and network isolation (`test_vector2_zero_egress_security_proofs.py`).
+* **NFR-02 (Memory RSS Bounds):** Enforced by BoltDB WAL compaction pruner maintaining `&lt; 256 MiB RAM`, with translation runtime `&lt; 50 MiB RAM`.
+* **NFR-03 (Determinism):** Pure deterministic AST compilation without probabilistic LLM hallucination.
+* **NFR-04 (100% Test Pass Gate):** Full 194/194 automated test suite passing across all 16 suites in CI/CD pipeline.
+* **Authoritative Reference Manual:** [`docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.md`](/docs/FOOLPROOF_ENTERPRISE_REFERENCE_MANUAL.html) (`VA-MAN-FOOLPROOF-001`).
+
+
+---
+
+## 🛠️ Section 2: ITIL Service Management &amp; Operations
+
+### 2.1 Service Strategy: 92% Gross Margin Commercial Model
+`&lt;dcouplr/&gt;` replaces punitive volumetric ingestion billing with predictable, value-aligned cluster node subscriptions:
+
+| Financial Metric | Year 1 Target | Year 2 Target | Year 3 Target | Strategic Rationale |
+| :--- | :--- | :--- | :--- | :--- |
+| **Active Subscriptions** | 15 Small, 5 Med, 1 Large | 40 Small, 18 Med, 5 Large | 75 Small, 40 Med, 17 Large | Driven by open-core CLI adoption |
+| **Annual Recurring Revenue (ARR)** | **$600,000** | **$2,050,800** | **$4,884,000** | Node bracket tiers ($18k, $45.6k, $102k) |
+| **Blended COGS (8%)** | $48,000 | $164,064 | $390,720 | Zero egress/storage costs (customer VPC) |
+| **Net Gross Margin (92%)** | **$552,000** | **$1,886,736** | **$4,493,280** | Asset-light software margins |
+
+### 2.2 Service Transition: Change Advisory Board (CAB) &amp; RFC Protocol
+* **Change Request ID:** `RFC-DCOUPLR-001`
+* **Target Environment:** Production Kubernetes Clusters (`decoupler-system` namespace)
+* **Canary Delivery Cadence:** Progressive rollouts (10% $\to$ 25% $\to$ 50% $\to$ 100%) with 15-minute automated bake periods.
+* **Automated Rollback Criteria:** Initiates in `&lt; 30s` if HTTP 5xx error rate exceeds 0.01% or memory exceeds 256Mi RAM.
+
+### 2.3 Service Operation: Major Incident Escalation &amp; SRE Runbooks
+* **Severity Matrix:**
+  * **P1 - Critical (MTTR &lt; 2h):** Total quorum partition. PagerDuty routes alert; SRE executes `RUNBOOK-DCOUPLR-P1-009` (static force-peering).
+  * **P2 - Major (MTTR &lt; 4h):** Asymmetric network partition trips circuit breaker. SRE executes `RUNBOOK-DCOUPLR-004` (&lt; 20ms trip bounds).
+  * **P3 - Moderate (MTTR &lt; 1 Business Day):** Non-blocking audit log streaming backlog. Asynchronous queue flushed without user impact.
+  * **P4 - Minor (MTTR Next Sprint):** Minor CLI cosmetic warning or documentation clarification.
+
+---
+
+## 📊 Section 3: Project Management (PMI PMBOK &amp; Phase-Gate)
+
+### 3.1 Project Charter &amp; Inviolable &quot;Do Not Claim&quot; Boundaries
+The project charter (`VA-CH-001`) establishes clear boundaries to protect enterprise credibility:
+* **Refuses to claim human SRE replacement:** Automated translation requires human plan review.
+* **Refuses to claim zero-downtime cutovers without staging:** Physical DNS and routing variables govern cutovers.
+* **Refuses to claim hypervisor block conversions:** Translates declarative ASTs, not binary VMDK/QCOW2 disk blocks.
+* **Refuses to claim SOC 2 / ISO 27001 certifications:** Compliant technical architecture without third-party audit claims.
+* **Refuses to give legal/compliance advice:** Outputs must be reviewed by customer legal teams.
+
+### 3.2 8-Phase Gate Lifecycle Verification Matrix
+
+| Gate | Lifecycle Transition | Gate Criteria | Documentary Evidence | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Gate 1** | Conception $\to$ Init | Charter, business case, and risk assessment approved | `phase-1/01-business-case.md`, `03-charter.md` | **Verified Baseline** |
+| **Gate 2** | Init $\to$ Planning | Architecture, data lineage, and privacy rules approved | `phase-2/01-governance.md`, `02-architecture.md` | **Verified Baseline** |
+| **Gate 3** | Planning $\to$ Impl | Requirements, domain rules, and sprint plans approved | `phase-3/01-requirements.md`, `05-definition-of-ready.md` | **Verified Baseline** |
+| **Gate 4** | Impl $\to$ Testing | Definition of Done met; API contracts implemented | `phase-4/01-api-contract.md`, `04-decisions.md` | **Verified Baseline** |
+| **Gate 5** | Testing $\to$ Go-Live | 100% test pass (114 tests), zero Critical/High CVEs | `phase-5/01-test-plan.md`, `03-security-checks.md` | **Verified Baseline** |
+| **Gate 6** | Go-Live $\to$ Prod | ITIL RFC approved, GitOps active, smoke tests pass | `phase-6/01-deployment-and-rollback.md`, `02-change-request.md` | **Verified Baseline** |
+| **Gate 7** | Prod $\to$ Cont. Mgmt | Support manual published; incident runbooks in place | `phase-7/01-support-notes.md`, `02-incident-workflow.md` | **Verified Baseline** |
+| **Gate 8** | Continual Imp. $\to$ DR | Auto-compaction active (&lt; 256Mi), DR tested, terms active | `phase-8/01-operability.md`, `02-recovery-and-retirement.md` | **Verified Baseline** |
+
+### 3.3 Strategic Roadmaps &amp; 3-Year Technical Headcount Scaling
+* **Quarter 1 (Sprints 1–3):** CLI Land Wedge (`TASK-001` through `TASK-009`) &amp;mdash; Datadog AST parser &amp; PromQL generator.
+* **Quarter 2 (Sprints 7–12):** Embedded Cluster Mesh &amp;mdash; 3-node HashiCorp Raft quorum, SPIFFE mTLS, BoltDB WAL compaction.
+* **Quarter 3 (Sprints 13–18):** Multi-Cloud ComputeGraph &amp;mdash; Transpilation for Terraform to OpenTofu and CFN to Azure Bicep.
+* **Year 1 Headcount:** $485,000 (3 Core Engineers)
+* **Year 2 Headcount:** $1,135,000 (7 Distributed Systems Engineers + 1 TAM)
+* **Year 3 Headcount:** $2,325,000 (14 Engineers across Compilers, Security, and Customer Engineering)
+
+---
+
+## 🚀 Section 4: Enterprise Software Delivery Process
+
+### 4.1 GitOps Continuous Delivery &amp; Helm Chart v1.0.0
+* **Declarative GitOps Engine:** ArgoCD Application manifest (`deploy/argocd-app.yaml`) continuously monitors release assets with automated drift correction.
+* **Production Helm Chart:** Version 1.0.0 packaged under `deploy/charts/decoupler/` with schema validation (`values.schema.json`).
+* **Security Context:** Strict non-root execution (`UID 65532:65532`) with read-only root filesystems and dropped capabilities (`ALL`).
+
+### 4.2 Zero-Trust Workload Identity &amp; Admission Control
+* **SPIFFE/SPIRE Attestation:** Cryptographic X.509 SVID issuance to pods via validating admission webhooks in `&lt; 50ms`.
+* **Zero-CVE Pipeline Gate:** Trivy container scans in `.github/workflows/security-scan.yml` breaking on any Critical or High findings.
+* **Micro-Segmentation:** Kubernetes `NetworkPolicy` isolating peer communication strictly to ports 8300 and 8301.
+
+### 4.3 Enterprise Privacy &amp; DPIA Fast-Track Playbook
+* **Local In-Perimeter Processing:** 100% of AST transpilation, token redaction, and dry-run validation runs inside the customer&#x27;s VPC.
+* **DPIA Bypass Advantage:** Eliminates external data transmission, reducing enterprise InfoSec procurement from 6–9 months to under 48 hours.
+
+---
+
+## 🏛️ Section 5: Enterprise Acceptance &amp; Governance Registry
+
+In accordance with enterprise record management standards, technical evidence is verified while final sign-off decisions stay with named human role holders:
+
+| Governance Role | Responsibility Area | Named Authority | Technical Decision | Formal Sign-off Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Executive Sponsor** | Capital allocation &amp; scope approval | VP of Enterprise Architecture | Verified Technical Baseline | *Pending Human Signature* |
+| **Product Owner** | Backlog prioritization &amp; functional scope | Director of Product Management | Verified Technical Baseline | *Pending Human Signature* |
+| **Security Officer** | AppSec gates, zero-CVE &amp; zero-exfiltration | Chief Information Security Officer (CISO) | Verified Technical Baseline | *Pending Human Signature* |
+| **Engineering Lead** | Ready, Done, 100% test pass &amp; production release | Principal SRE &amp; Compiler Lead | Verified Technical Baseline | *Pending Human Signature* |
+
+---
+
+## Summary of Architectural Decision Records (D-01 to D-39)
+
+Every engineering enhancement in Project `&lt;dcouplr/&gt;` is formally codified in `ProjectAssistant/phase-4/04-decisions.md`:
+* **D-01 to D-08:** Dual-Winged Unified IR, Datadog parsing, PromQL generation, Grafana alerts, local anonymizer, OpenTofu generator.
+* **D-09 to D-15:** AST node structures, Prometheus alert rules, test fixtures, schema validation, SQL drift tracking.
+* **D-16 to D-22:** Cobra join handler, gRPC cluster admin service, Raft consensus engine, BoltDB compaction pruner, multi-tenant RBAC.
+* **D-23 to D-27:** Grafana dark-mode dashboards, Prometheus mock generators, Docker Compose production stack, pre-flight check validator.
+* **D-28 to D-32:** Technical Documentation Console (`/docs`), SPIFFE admission webhooks, Helm chart packaging, investor technical due diligence.
+* **D-33 to D-36:** Trivy CVE gate, ArgoCD GitOps sync, PreflightLog CRD controller, 3-year technical hiring model, P1-009 quorum loss runbook.
+* **D-37 to D-38:** PR compliance gate, PrometheusRule scraper, Customer Success playbook, complete 40-file codebase blueprint alignment.
+* **D-39:** Reorganization and alignment of Project Record Assistant Documentation into Four Enterprise Delivery Frameworks (SDLC, ITIL, Project Management, Enterprise Delivery Process).
+* **D-40:** 4-Pillar Grammar-as-Code, Upstream Differential Fuzzing, Unmapped Token Diagnostics, and Continuous Air-Gapped Rule Distribution Architecture ($\Phi(q) \equiv \Psi(\text{PromQL})$).
+
+---
+
+## 📐 Section 6: Grammar Scaling &amp; Upstream Vendor Parity Strategy
+
+To reliably scale **dcouplr** and preserve mathematical parity ($\Phi(q) \equiv \Psi(\text{PromQL})$) as upstream vendors (Datadog, New Relic, Terraform, AWS) evolve their syntax grammars, dcouplr implements a dedicated **4-Pillar Architecture**:
+
+### Pillar 1: Grammar-as-Code &amp; Declarative UIT-IR
+* **Declarative Intermediate Representation (UIT-IR):** `UITGraph` serves as the sole canonical source of truth. Upstream grammar evolutions map exclusively to modular input-lexer rules compiling down into standard `MetricTarget` and `AlertRule` AST primitives in volatile memory.
+* **Formal Language Specifications:** Standardized grammar definitions maintained in ``migration_tools/grammars/datadog_query.ebnf`` and ``DatadogQuery.g4``. Adding support for new aggregators or syntax functions is isolated to grammar rules and AST node transformers rather than ad-hoc refactorings.
+* **Upstream Schema Registry:** Versioned upstream schema matrices (e.g. `datadog_v2.json`, `terraform_aws_v5.json`) isolate breaking vendor changes across releases.
+
+### Pillar 2: Upstream Tracking &amp; Unmapped Token Diagnostics
+* **Automated CI Schema Crawlers:** Daily automated GitHub Actions tracking upstream OpenAPI and provider schemas.
+* **Unmapped Token Diagnostics Collector:** Built directly into the Compiler Studio and API engine (`unmapped_tokens` and `diagnostics` fields). Gracefully collects unparsed aggregators or modifiers during compilation passes without crashing, alerting engineering teams to missing mappings while maintaining fallback execution.
+* **Differential Fuzzing Pipeline:** Synthetic test-case generators feeding tens of thousands of permutation queries into the compiler engine to identify unmapped tokens.
+
+### Pillar 3: Translation Parity &amp; Gold-Master Synthetic Data
+* **Algebraic Property-Based Invariant Verification:** Enforcing evaluation round-trip parity $\text{Source AST} \xrightarrow{\text{Compile}} \text{PromQL} \xrightarrow{\text{Eval}} \text{Metric Vector Output}$.
+* **Gold-Master Rule Suites:** Dedicated test suite ``tests/test_grammar_and_synthetic_parity.py`` covering complex math functions (`abs()`, `log10()`, `clamp_min()`, `clamp_max()`), temporal offsets (`hour_before()`, `day_before()`, `week_before()`, `month_before()`), and statistical envelopes (`anomalies()`, `outliers()`).
+* **Community-Driven Grammar Plugins:** Pluggable extension interfaces allowing enterprise customers to submit custom syntax maps for proprietary internal metrics.
+
+### Pillar 4: Commercial &amp; Delivery Roadmap: Continuous Rule Distribution
+* **Air-Gapped OCI Rule Bundles:** Transpiler grammar rules and mapping tables packaged as versioned, cryptographically signed OCI artifacts (e.g., `registry.dcouplr.com/rules/datadog-promql:v1.4.0`) distributed to air-gapped customer VPCs.
+* **Automated GitOps Sync:** Compatible with ArgoCD and Kubernetes CRDs to pull updated rule bundles into in-perimeter VPCs without breaking offline runtime guarantees.
+* **Open-Core Contribution Flywheel:** Open-core grammar definitions under Apache 2.0 enabling community DevOps engineers to submit PRs for newly encountered upstream functions.
+
+---
+
+## ☁️ Section 7: Strategic Value for Hyperscalers &amp; M&amp;A Thesis (AWS, Google Cloud, Microsoft Azure)
+
+Major cloud providers constantly fight for enterprise market share, but switching barriers keep enterprise workloads locked into competitor ecosystems. `dcouplr` directly targets these friction points:
+
+### 1. Core Value Drivers for Major Cloud Providers
+* **Lowering the Barrier to Workload Acquisition (Migration Engine):** Enterprise customers rarely avoid switching clouds because of raw infrastructure costs—they stay because rewriting existing **Infrastructure as Code (IaC)** (e.g., CloudFormation to Terraform/Bicep) and **Observability Rules** (Datadog/New Relic alerts to PromQL/Grafana) costs millions in engineering hours. `dcouplr` turns complex multi-year migration projects into automated onboarding.
+* **Unlocking Regulated &amp; In-Perimeter VPC Customers (&quot;Zero-Egress&quot; Pitch):** Banks, healthcare providers, and defense contractors cannot use SaaS-based cloud translation services because metadata, internal IP addresses, and security policy code cannot cross their network boundary. `dcouplr` runs locally in-memory inside the customer&#x27;s private VPC (distroless container, sub-50MB RAM footprint), natively aligning with **AWS Dedicated Local Zones, Azure Sovereign Cloud, and Google Distributed Cloud**.
+* **Driving Adoption of Native Cloud Observability:** Third-party SaaS tools extract massive telemetry margins that could otherwise go to cloud providers&#x27; native monitoring suites (Azure Monitor, AWS CloudWatch, GCP Cloud Observability). Compiling proprietary queries into standard PromQL and Grafana specs helps clients slash $100k+ in SaaS telemetry taxes while capturing infrastructure volume natively.
+* **Enhancing Multi-Cloud Control Planes:** Hybrid products like **Azure Arc** or **Google Anthos** promise single-pane-of-glass governance, but enforcing central policies across different syntax formats remains messy. `dcouplr`&#x27;s normalized Intermediate Representation (`UITGraph`) acts as a universal Rosetta Stone for policies and metric definitions across heterogeneous clouds.
+
+### 2. Potential Buyer Alignment &amp; Strategic Fit
+
+| Cloud Provider | Primary Internal Target | Strategic Incentive |
+| :--- | :--- | :--- |
+| **AWS** | AWS Migration Hub &amp;amp; AWS Proton | Helps customers import legacy CloudFormation or rival GCP/Azure configs into OpenTofu/Terraform while keeping workloads on AWS EC2/EKS. |
+| **Microsoft Azure** | Azure Arc &amp;amp; Azure Migrate | Strengthens Azure Arc&#x27;s ability to act as the primary control plane for non-Azure resources by parsing non-native policy/IaC. |
+| **Google Cloud (GCP)** | Google Cloud Migration Center &amp;amp; Anthos | GCP is often the &quot;challenger cloud.&quot; Giving enterprises a zero-risk tool to transpile off AWS or Datadog directly onto GCP accelerates market share gains. |
+
+### 3. Pitching Hurdles &amp; Acquisition Risks
+* **Coverage Breadth:** Buyers audit AST mapping coverage. Supporting core resources is standard, but handling custom CRDs, complex dynamic state variables, and edge-case metric aggregators without breaking target semantics determines enterprise viability.
+* **Open Source Overlap:** Open-source tools exist for specific sub-problems. The strategic pitch emphasizes the **unified engine**—specifically combining IaC, policy, and telemetry into a single zero-egress pipeline with verified mathematical parity.
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

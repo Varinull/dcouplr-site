@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - NETWORK_HIERARCHY_GLOBAL_ACCELERATOR_AND_LOAD_BALANCER_SPECIFICATION.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/NETWORK_HIERARCHY_GLOBAL_ACCELERATOR_AND_LOAD_BALANCER_SPECIFICATION.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="NETWORK_HIERARCHY_GLOBAL_ACCELERATOR_AND_LOAD_BALANCER_SPECIFICATION.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="network-hierarchy-specification-global-accelerators-vpc-load-balancers-node-targets">Network Hierarchy Specification: Global Accelerators, VPC Load Balancers &amp; Node Targets</h1>
+<p><strong>Document Identifier:</strong> SPEC-NET-HIERARCHY-2026-001<br />
+<strong>System:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>: Zero-Egress In-VPC Observability &amp; IaC Transpiler<br />
+<strong>Classification:</strong> Enterprise Engineering Specification<br />
+<strong>Status:</strong> Approved Technical Standard<br />
+<strong>Date of Record:</strong> October 26, 2026</p>
+<hr />
+<h2 id="1-executive-architecture-systems-model">1. Executive Architecture &amp; Systems Model</h2>
+<p>In enterprise cloud and on-premises hybrid architectures, ingress networking is organized into a <strong>strict 3-tier hierarchy</strong>. Conflating these layers leads to broken state migrations, misconfigured security boundaries, and volumetric billing leakage.</p>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> models and captures each tier distinctly in its Universal Intermediate Representation (<code>UITGraph</code>):</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+===================================================================================================+
+|  TIER 1: GLOBAL / WAN EDGE INGRESS (Above-VPC)                                                    |
+|  -----------------------------------------------------------------------------------------------  |
+|  - AWS Global Accelerator | GCP Anycast VIP | Azure Front Door | Cloudflare Magic | BGP Anycast   |
+|  - Scope: Operates outside and across regional VPCs; ingests traffic at Anycast PoPs worldwide.   |
+|  - Graph Node: `network.global_accelerator`                                                       |
++===================================================================================================+
+                                                |
+                                                |  [ROUTES_TO]  (Cross-Region / Cross-Cloud / Hybrid)
+                                                v
++===================================================================================================+
+|  TIER 2: VPC / NETWORK INFRASTRUCTURE TIER (VPC-Level)                                            |
+|  -----------------------------------------------------------------------------------------------  |
+|  - AWS ALB/NLB/GWLB | GCP URL Map | Azure App Gateway | F5 BIG-IP Appliance | Citrix ADC NetScaler|
+|  - Scope: Lives inside private VPC subnets; manages SSL termination, routing tables, and security.|
+|  - Graph Node: `network.load_balancer` (Bound to `network.vpc` and `network.subnet`)              |
++===================================================================================================+
+                                                |
+                                                |  [ROUTER_FOR] -&gt; Target Groups &amp; Routing Pools
+                                                v
++===================================================================================================+
+|  TIER 3: SERVER / NODE TARGET TIER (Compute &amp; Container Level)                                    |
+|  -----------------------------------------------------------------------------------------------  |
+|  - EC2 Instances | GCE VMs | K8s Pod IPs (NEGs) | Bare-Metal Servers | Serverless Functions       |
+|  - Scope: Workloads executing application logic; registered as listener endpoints behind LBs.     |
+|  - Graph Node: `compute.instance` / `container.kubernetes_nodepool` registered to Target Group     |
++===================================================================================================+
+</code></pre></div>
+<hr />
+<h2 id="2-exhaustive-attribute-capture-matrix">2. Exhaustive Attribute Capture Matrix</h2>
+<p>Below is the definitive catalog of all metadata, parameters, and telemetry attributes captured by <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> at each tier:</p>
+<h3 id="21-tier-1-global-wan-edge-ingress-networkglobalaccelerator">2.1 Tier 1: Global / WAN Edge Ingress (<code>network.global_accelerator</code>)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Field / Attribute</th>
+<th style="text-align:left">Data Type</th>
+<th style="text-align:left">Description</th>
+<th style="text-align:left">Cloud &amp; On-Prem Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>id</code></td>
+<td style="text-align:left"><code>string</code></td>
+<td style="text-align:left">Unique entity identifier</td>
+<td style="text-align:left"><code>aws_globalaccelerator_accelerator.prod_edge</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>name</code></td>
+<td style="text-align:left"><code>string</code></td>
+<td style="text-align:left">Resource name</td>
+<td style="text-align:left"><code>prod-global-anycast</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>accelerator_type</code></td>
+<td style="text-align:left"><code>string</code></td>
+<td style="text-align:left">Architecture classification</td>
+<td style="text-align:left"><code>AWS Global Accelerator</code>, <code>GCP Global Anycast VIP</code>, <code>Azure Front Door</code>, <code>BGP Anycast Edge Router</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>routing_type</code></td>
+<td style="text-align:left"><code>string</code></td>
+<td style="text-align:left">Ingress mechanism</td>
+<td style="text-align:left"><code>Anycast BGP Edge VIP</code>, <code>Layer 7 Global HTTP Anycast</code>, <code>DNS Geo-Steering</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>ip_address_type</code></td>
+<td style="text-align:left"><code>enum</code></td>
+<td style="text-align:left">IP Protocol Version</td>
+<td style="text-align:left"><code>IPV4</code>, <code>DUAL_STACK</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>static_ips</code></td>
+<td style="text-align:left"><code>list[string]</code></td>
+<td style="text-align:left">Fixed Anycast IP addresses</td>
+<td style="text-align:left"><code>[&quot;15.197.142.18&quot;, &quot;15.197.142.19&quot;]</code>, <code>[&quot;34.120.218.44&quot;]</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>flow_logs_enabled</code></td>
+<td style="text-align:left"><code>bool</code></td>
+<td style="text-align:left">Edge traffic telemetry logging</td>
+<td style="text-align:left"><code>true</code> (Emitted to internal in-VPC ring buffer)</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>endpoint_groups</code></td>
+<td style="text-align:left"><code>list[dict]</code></td>
+<td style="text-align:left">Regional VPC endpoints &amp; dials</td>
+<td style="text-align:left"><code>region: &quot;us-east-1&quot;, traffic_dial_percentage: 100.0, health_check_port: 443</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>client_affinity</code></td>
+<td style="text-align:left"><code>enum</code></td>
+<td style="text-align:left">Session persistence at edge</td>
+<td style="text-align:left"><code>NONE</code>, <code>SOURCE_IP</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="22-tier-2-vpc-network-infrastructure-tier-networkloadbalancer">2.2 Tier 2: VPC Network Infrastructure Tier (<code>network.load_balancer</code>)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Field / Attribute</th>
+<th style="text-align:left">Data Type</th>
+<th style="text-align:left">Description</th>
+<th style="text-align:left">Cloud &amp; On-Prem Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>id</code></td>
+<td style="text-align:left"><code>string</code></td>
+<td style="text-align:left">Unique entity identifier</td>
+<td style="text-align:left"><code>aws_lb.public_alb</code>, <code>f5_bigip_ltm.chicago_dc1</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>name</code></td>
+<td style="text-align:left"><code>string</code></td>
+<td style="text-align:left">Resource name</td>
+<td style="text-align:left"><code>prod-public-alb</code>, <code>f5-vip-cluster-01</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>load_balancer_type</code></td>
+<td style="text-align:left"><code>string</code></td>
+<td style="text-align:left">Architectural subtype</td>
+<td style="text-align:left"><code>application</code> (ALB), <code>network</code> (NLB), <code>gateway</code> (GWLB), <code>classic</code> (ELB), <code>f5_bigip_ltm</code>, <code>citrix_adc_netscaler</code>, <code>haproxy</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>layer</code></td>
+<td style="text-align:left"><code>string</code></td>
+<td style="text-align:left">OSI Network Layer</td>
+<td style="text-align:left"><code>Layer 7 (HTTP/HTTPS)</code>, <code>Layer 4 (TCP/UDP/TLS)</code>, <code>Layer 3/4 Gateway</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>scheme</code></td>
+<td style="text-align:left"><code>enum</code></td>
+<td style="text-align:left">Ingress boundary</td>
+<td style="text-align:left"><code>internet-facing</code>, <code>internal</code> (Private VPC Subnet VIP), <code>hardware-vip</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>vpc_id</code></td>
+<td style="text-align:left"><code>string</code></td>
+<td style="text-align:left">Bound VPC container</td>
+<td style="text-align:left"><code>vpc-aws-prod-01</code>, <code>dc-onprem-core-01</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>subnets</code></td>
+<td style="text-align:left"><code>list[string]</code></td>
+<td style="text-align:left">Subnet availability placement</td>
+<td style="text-align:left"><code>[&quot;subnet-prod-pub-1a&quot;, &quot;subnet-prod-pub-1b&quot;]</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>security_groups</code></td>
+<td style="text-align:left"><code>list[string]</code></td>
+<td style="text-align:left">Firewall perimeter bindings</td>
+<td style="text-align:left"><code>[&quot;sg-prod-web-ingress-443&quot;]</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>listeners</code></td>
+<td style="text-align:left"><code>list[dict]</code></td>
+<td style="text-align:left">Port/protocol entrypoints</td>
+<td style="text-align:left"><code>port: 443, protocol: &quot;HTTPS&quot;, ssl_policy: &quot;ELBSecurityPolicy-TLS13-1-2-2021-06&quot;</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>ssl_certificates</code></td>
+<td style="text-align:left"><code>list[string]</code></td>
+<td style="text-align:left">Certificate bindings</td>
+<td style="text-align:left">ACM ARN, Key Vault Secret URI, Local PEM File</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>default_action</code></td>
+<td style="text-align:left"><code>dict</code></td>
+<td style="text-align:left">Ingress routing decision</td>
+<td style="text-align:left"><code>type: &quot;forward&quot;, target_group: &quot;tg-app-prod&quot;</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>cross_zone</code></td>
+<td style="text-align:left"><code>bool</code></td>
+<td style="text-align:left">Cross-AZ load distribution</td>
+<td style="text-align:left"><code>true</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>hardware_appliance</code></td>
+<td style="text-align:left"><code>bool</code></td>
+<td style="text-align:left">Physical on-prem hardware flag</td>
+<td style="text-align:left"><code>true</code> (F5 BIG-IP i5800 Dual AC Power, Citrix VPX)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="23-tier-3-server-node-target-tier-networkloadbalancertargetgroup">2.3 Tier 3: Server / Node Target Tier (<code>network.load_balancer_target_group</code>)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Field / Attribute</th>
+<th style="text-align:left">Data Type</th>
+<th style="text-align:left">Description</th>
+<th style="text-align:left">Cloud &amp; On-Prem Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>target_group_id</code></td>
+<td style="text-align:left"><code>string</code></td>
+<td style="text-align:left">Target group identifier</td>
+<td style="text-align:left"><code>aws_lb_target_group.app_backend</code>, <code>bigip_ltm_pool.app_pool</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>target_type</code></td>
+<td style="text-align:left"><code>enum</code></td>
+<td style="text-align:left">Target registration primitive</td>
+<td style="text-align:left"><code>instance</code> (VM ID), <code>ip</code> (Private CIDR IP), <code>k8s_pod_neg</code> (GKE NEG / EKS Target), <code>lambda</code>, <code>bare_metal</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>protocol</code></td>
+<td style="text-align:left"><code>string</code></td>
+<td style="text-align:left">Backend pool protocol</td>
+<td style="text-align:left"><code>HTTP</code>, <code>HTTPS</code>, <code>TCP</code>, <code>gRPC</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>port</code></td>
+<td style="text-align:left"><code>int</code></td>
+<td style="text-align:left">Backend listening port</td>
+<td style="text-align:left"><code>8000</code>, <code>8080</code>, <code>9092</code>, <code>443</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>health_check</code></td>
+<td style="text-align:left"><code>dict</code></td>
+<td style="text-align:left">Probing specifications</td>
+<td style="text-align:left"><code>protocol: &quot;HTTP&quot;, path: &quot;/healthz&quot;, interval: 10, timeout: 5, healthy_threshold: 3, unhealthy_threshold: 2</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>routing_algorithm</code></td>
+<td style="text-align:left"><code>string</code></td>
+<td style="text-align:left">Balancing algorithm</td>
+<td style="text-align:left"><code>round_robin</code>, <code>least_outstanding_requests</code>, <code>ip_hash</code>, <code>weighted</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>stickiness</code></td>
+<td style="text-align:left"><code>dict</code></td>
+<td style="text-align:left">Session stickiness rules</td>
+<td style="text-align:left"><code>enabled: true, type: &quot;lb_cookie&quot;, duration: 86400</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>registered_targets</code></td>
+<td style="text-align:left"><code>list[dict]</code></td>
+<td style="text-align:left">Active compute nodes/servers</td>
+<td style="text-align:left"><code>id: &quot;i-0a1b2c3d&quot;</code>, <code>ip: &quot;10.100.1.15&quot;</code>, <code>port: 8000</code>, <code>weight: 100</code>, <code>status: &quot;HEALTHY&quot;</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-dependency-graph-representation-uitgraph">3. Dependency Graph Representation (<code>UITGraph</code>)</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> normalizes these three tiers into a directed acyclic graph (DAG) maintaining full bi-directional lineage:</p>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;schema_version&quot;: &quot;1.0.0&quot;,
+  &quot;source_system&quot;: &quot;terraform_hcl&quot;,
+  &quot;resources&quot;: [
+    {
+      &quot;id&quot;: &quot;aws_globalaccelerator_accelerator.prod_edge&quot;,
+      &quot;name&quot;: &quot;prod_edge&quot;,
+      &quot;resource_type&quot;: &quot;network.global_accelerator&quot;,
+      &quot;source_provider&quot;: &quot;aws&quot;,
+      &quot;properties&quot;: {
+        &quot;accelerator_type&quot;: &quot;AWS Global Accelerator&quot;,
+        &quot;routing_type&quot;: &quot;Anycast Edge VIP&quot;,
+        &quot;ip_address_type&quot;: &quot;IPV4&quot;,
+        &quot;static_ips&quot;: [&quot;15.197.142.18&quot;, &quot;15.197.142.19&quot;]
+      }
+    },
+    {
+      &quot;id&quot;: &quot;aws_lb.public_alb&quot;,
+      &quot;name&quot;: &quot;public_alb&quot;,
+      &quot;resource_type&quot;: &quot;network.load_balancer&quot;,
+      &quot;source_provider&quot;: &quot;aws&quot;,
+      &quot;properties&quot;: {
+        &quot;load_balancer_type&quot;: &quot;application&quot;,
+        &quot;layer&quot;: &quot;Layer 7 (HTTP/HTTPS)&quot;,
+        &quot;scheme&quot;: &quot;internet-facing&quot;,
+        &quot;listeners&quot;: [&quot;443/HTTPS&quot;, &quot;80/HTTP&quot;]
+      }
+    },
+    {
+      &quot;id&quot;: &quot;aws_lb_target_group.api_backend&quot;,
+      &quot;name&quot;: &quot;api_backend&quot;,
+      &quot;resource_type&quot;: &quot;network.load_balancer_target_group&quot;,
+      &quot;source_provider&quot;: &quot;aws&quot;,
+      &quot;properties&quot;: {
+        &quot;target_type&quot;: &quot;ip&quot;,
+        &quot;protocol&quot;: &quot;HTTP&quot;,
+        &quot;port&quot;: 8000,
+        &quot;health_check_path&quot;: &quot;/healthz&quot;
+      }
+    },
+    {
+      &quot;id&quot;: &quot;aws_instance.api_node_01&quot;,
+      &quot;name&quot;: &quot;api_node_01&quot;,
+      &quot;resource_type&quot;: &quot;compute.instance&quot;,
+      &quot;source_provider&quot;: &quot;aws&quot;,
+      &quot;properties&quot;: {
+        &quot;private_ip&quot;: &quot;10.100.1.15&quot;,
+        &quot;instance_type&quot;: &quot;c6i.xlarge&quot;
+      }
+    }
+  ],
+  &quot;edges&quot;: [
+    {
+      &quot;source_id&quot;: &quot;aws_globalaccelerator_accelerator.prod_edge&quot;,
+      &quot;target_id&quot;: &quot;aws_lb.public_alb&quot;,
+      &quot;relationship&quot;: &quot;ROUTES_TO&quot;
+    },
+    {
+      &quot;source_id&quot;: &quot;aws_lb.public_alb&quot;,
+      &quot;target_id&quot;: &quot;aws_vpc.production_vpc&quot;,
+      &quot;relationship&quot;: &quot;ATTACHED_TO&quot;
+    },
+    {
+      &quot;source_id&quot;: &quot;aws_lb.public_alb&quot;,
+      &quot;target_id&quot;: &quot;aws_lb_target_group.api_backend&quot;,
+      &quot;relationship&quot;: &quot;ROUTER_FOR&quot;
+    },
+    {
+      &quot;source_id&quot;: &quot;aws_lb_target_group.api_backend&quot;,
+      &quot;target_id&quot;: &quot;aws_instance.api_node_01&quot;,
+      &quot;relationship&quot;: &quot;DISTRIBUTES_TO&quot;
+    }
+  ]
+}
+</code></pre></div>
+<hr />
+<h2 id="4-multi-cloud-on-premises-cross-compilation-rules">4. Multi-Cloud &amp; On-Premises Cross-Compilation Rules</h2>
+<p>When transpiling between providers, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> maps each tier to its direct equivalent:</p>
+<h3 id="41-tier-1-global-edge-transpilation">4.1 Tier 1: Global Edge Transpilation</h3>
+<ul>
+<li><strong>AWS Global Accelerator</strong> → <strong>Google Cloud Global External Anycast Forwarding Rule</strong> (<code>load_balancing_scheme = &quot;EXTERNAL_MANAGED&quot;</code>) or <strong>Azure Front Door Standard/Premium</strong>.</li>
+<li>Preserves Anycast global routing invariants and eliminates multi-region DNS failover latency.</li>
+</ul>
+<h3 id="42-tier-2-load-balancer-transpilation">4.2 Tier 2: Load Balancer Transpilation</h3>
+<ul>
+<li><strong>AWS ALB (Layer 7)</strong> → <strong>Google Cloud URL Map (<code>google_compute_url_map</code>) + Target HTTP(S) Proxy</strong> → <strong>Azure Application Gateway v2</strong>.</li>
+<li><strong>AWS NLB (Layer 4)</strong> → <strong>Google Cloud Regional Passthrough Backend Service (<code>google_compute_region_backend_service</code>)</strong> → <strong>Azure Standard Load Balancer (Layer 4)</strong>.</li>
+<li><strong>F5 BIG-IP LTM (On-Premises)</strong> → Transpiled into <strong>Google Cloud Application Load Balancer</strong> with Cloud Armor WAF policies or OpenTofu HCL modules, eliminating recurring hardware maintenance fees ($45k/appliance).</li>
+</ul>
+<h3 id="43-tier-3-target-group-health-probes-transpilation">4.3 Tier 3: Target Group &amp; Health Probes Transpilation</h3>
+<ul>
+<li><code>aws_lb_target_group</code> with <code>health_check.path = &quot;/healthz&quot;</code> → <code>google_compute_health_check</code> with <code>http_health_check.request_path = &quot;/healthz&quot;</code> → <code>azurerm_application_gateway</code> probe with <code>path = &quot;/healthz&quot;</code>.</li>
+</ul>
+<hr />
+<h2 id="5-verification-telemetry-invariants">5. Verification &amp; Telemetry Invariants</h2>
+<ol>
+<li><strong>Zero-Egress Invariant:</strong> All load balancer definitions and node targets are parsed and stored in volatile memory with <strong>0 bytes external WAN telemetry</strong>.</li>
+<li><strong>FinOps Cost Impact:</strong> Identifying whether an ingress is an <strong>Edge Accelerator</strong> vs <strong>Regional ALB</strong> vs <strong>Internal NLB</strong> directly impacts billing analysis:
+<ul>
+<li>AWS Global Accelerator: Fixed fee ($0.025/hr) + Data Transfer-Premium (DT-P).</li>
+<li>AWS ALB: Fixed fee ($0.0225/hr) + LCU hours.</li>
+<li>Internal Passthrough LB: $0 data processing fees within the same AZ.
+<code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> models these parameters in <code>GET /v1/telemetry/finops/cost-comparison</code> to prove true infrastructure ROI.</li>
+</ul>
+</li>
+</ol>
+</div>
+      <pre id="raw-view"><code># Network Hierarchy Specification: Global Accelerators, VPC Load Balancers &amp; Node Targets
+
+**Document Identifier:** SPEC-NET-HIERARCHY-2026-001  
+**System:** `&lt;dcouplr/&gt;`: Zero-Egress In-VPC Observability &amp; IaC Transpiler  
+**Classification:** Enterprise Engineering Specification  
+**Status:** Approved Technical Standard  
+**Date of Record:** October 26, 2026  
+
+---
+
+## 1. Executive Architecture &amp; Systems Model
+
+In enterprise cloud and on-premises hybrid architectures, ingress networking is organized into a **strict 3-tier hierarchy**. Conflating these layers leads to broken state migrations, misconfigured security boundaries, and volumetric billing leakage.
+
+`&lt;dcouplr/&gt;` models and captures each tier distinctly in its Universal Intermediate Representation (`UITGraph`):
+
+```text
++===================================================================================================+
+|  TIER 1: GLOBAL / WAN EDGE INGRESS (Above-VPC)                                                    |
+|  -----------------------------------------------------------------------------------------------  |
+|  - AWS Global Accelerator | GCP Anycast VIP | Azure Front Door | Cloudflare Magic | BGP Anycast   |
+|  - Scope: Operates outside and across regional VPCs; ingests traffic at Anycast PoPs worldwide.   |
+|  - Graph Node: `network.global_accelerator`                                                       |
++===================================================================================================+
+                                                |
+                                                |  [ROUTES_TO]  (Cross-Region / Cross-Cloud / Hybrid)
+                                                v
++===================================================================================================+
+|  TIER 2: VPC / NETWORK INFRASTRUCTURE TIER (VPC-Level)                                            |
+|  -----------------------------------------------------------------------------------------------  |
+|  - AWS ALB/NLB/GWLB | GCP URL Map | Azure App Gateway | F5 BIG-IP Appliance | Citrix ADC NetScaler|
+|  - Scope: Lives inside private VPC subnets; manages SSL termination, routing tables, and security.|
+|  - Graph Node: `network.load_balancer` (Bound to `network.vpc` and `network.subnet`)              |
++===================================================================================================+
+                                                |
+                                                |  [ROUTER_FOR] -&gt; Target Groups &amp; Routing Pools
+                                                v
++===================================================================================================+
+|  TIER 3: SERVER / NODE TARGET TIER (Compute &amp; Container Level)                                    |
+|  -----------------------------------------------------------------------------------------------  |
+|  - EC2 Instances | GCE VMs | K8s Pod IPs (NEGs) | Bare-Metal Servers | Serverless Functions       |
+|  - Scope: Workloads executing application logic; registered as listener endpoints behind LBs.     |
+|  - Graph Node: `compute.instance` / `container.kubernetes_nodepool` registered to Target Group     |
++===================================================================================================+
+```
+
+---
+
+## 2. Exhaustive Attribute Capture Matrix
+
+Below is the definitive catalog of all metadata, parameters, and telemetry attributes captured by `&lt;dcouplr/&gt;` at each tier:
+
+### 2.1 Tier 1: Global / WAN Edge Ingress (`network.global_accelerator`)
+
+| Field / Attribute | Data Type | Description | Cloud &amp; On-Prem Examples |
+| :--- | :--- | :--- | :--- |
+| `id` | `string` | Unique entity identifier | `aws_globalaccelerator_accelerator.prod_edge` |
+| `name` | `string` | Resource name | `prod-global-anycast` |
+| `accelerator_type` | `string` | Architecture classification | `AWS Global Accelerator`, `GCP Global Anycast VIP`, `Azure Front Door`, `BGP Anycast Edge Router` |
+| `routing_type` | `string` | Ingress mechanism | `Anycast BGP Edge VIP`, `Layer 7 Global HTTP Anycast`, `DNS Geo-Steering` |
+| `ip_address_type` | `enum` | IP Protocol Version | `IPV4`, `DUAL_STACK` |
+| `static_ips` | `list[string]` | Fixed Anycast IP addresses | `[&quot;15.197.142.18&quot;, &quot;15.197.142.19&quot;]`, `[&quot;34.120.218.44&quot;]` |
+| `flow_logs_enabled` | `bool` | Edge traffic telemetry logging | `true` (Emitted to internal in-VPC ring buffer) |
+| `endpoint_groups` | `list[dict]` | Regional VPC endpoints &amp; dials | `region: &quot;us-east-1&quot;, traffic_dial_percentage: 100.0, health_check_port: 443` |
+| `client_affinity` | `enum` | Session persistence at edge | `NONE`, `SOURCE_IP` |
+
+---
+
+### 2.2 Tier 2: VPC Network Infrastructure Tier (`network.load_balancer`)
+
+| Field / Attribute | Data Type | Description | Cloud &amp; On-Prem Examples |
+| :--- | :--- | :--- | :--- |
+| `id` | `string` | Unique entity identifier | `aws_lb.public_alb`, `f5_bigip_ltm.chicago_dc1` |
+| `name` | `string` | Resource name | `prod-public-alb`, `f5-vip-cluster-01` |
+| `load_balancer_type` | `string` | Architectural subtype | `application` (ALB), `network` (NLB), `gateway` (GWLB), `classic` (ELB), `f5_bigip_ltm`, `citrix_adc_netscaler`, `haproxy` |
+| `layer` | `string` | OSI Network Layer | `Layer 7 (HTTP/HTTPS)`, `Layer 4 (TCP/UDP/TLS)`, `Layer 3/4 Gateway` |
+| `scheme` | `enum` | Ingress boundary | `internet-facing`, `internal` (Private VPC Subnet VIP), `hardware-vip` |
+| `vpc_id` | `string` | Bound VPC container | `vpc-aws-prod-01`, `dc-onprem-core-01` |
+| `subnets` | `list[string]` | Subnet availability placement | `[&quot;subnet-prod-pub-1a&quot;, &quot;subnet-prod-pub-1b&quot;]` |
+| `security_groups` | `list[string]` | Firewall perimeter bindings | `[&quot;sg-prod-web-ingress-443&quot;]` |
+| `listeners` | `list[dict]` | Port/protocol entrypoints | `port: 443, protocol: &quot;HTTPS&quot;, ssl_policy: &quot;ELBSecurityPolicy-TLS13-1-2-2021-06&quot;` |
+| `ssl_certificates` | `list[string]` | Certificate bindings | ACM ARN, Key Vault Secret URI, Local PEM File |
+| `default_action` | `dict` | Ingress routing decision | `type: &quot;forward&quot;, target_group: &quot;tg-app-prod&quot;` |
+| `cross_zone` | `bool` | Cross-AZ load distribution | `true` |
+| `hardware_appliance` | `bool` | Physical on-prem hardware flag | `true` (F5 BIG-IP i5800 Dual AC Power, Citrix VPX) |
+
+---
+
+### 2.3 Tier 3: Server / Node Target Tier (`network.load_balancer_target_group`)
+
+| Field / Attribute | Data Type | Description | Cloud &amp; On-Prem Examples |
+| :--- | :--- | :--- | :--- |
+| `target_group_id` | `string` | Target group identifier | `aws_lb_target_group.app_backend`, `bigip_ltm_pool.app_pool` |
+| `target_type` | `enum` | Target registration primitive | `instance` (VM ID), `ip` (Private CIDR IP), `k8s_pod_neg` (GKE NEG / EKS Target), `lambda`, `bare_metal` |
+| `protocol` | `string` | Backend pool protocol | `HTTP`, `HTTPS`, `TCP`, `gRPC` |
+| `port` | `int` | Backend listening port | `8000`, `8080`, `9092`, `443` |
+| `health_check` | `dict` | Probing specifications | `protocol: &quot;HTTP&quot;, path: &quot;/healthz&quot;, interval: 10, timeout: 5, healthy_threshold: 3, unhealthy_threshold: 2` |
+| `routing_algorithm` | `string` | Balancing algorithm | `round_robin`, `least_outstanding_requests`, `ip_hash`, `weighted` |
+| `stickiness` | `dict` | Session stickiness rules | `enabled: true, type: &quot;lb_cookie&quot;, duration: 86400` |
+| `registered_targets` | `list[dict]` | Active compute nodes/servers | `id: &quot;i-0a1b2c3d&quot;`, `ip: &quot;10.100.1.15&quot;`, `port: 8000`, `weight: 100`, `status: &quot;HEALTHY&quot;` |
+
+---
+
+## 3. Dependency Graph Representation (`UITGraph`)
+
+`&lt;dcouplr/&gt;` normalizes these three tiers into a directed acyclic graph (DAG) maintaining full bi-directional lineage:
+
+```json
+{
+  &quot;schema_version&quot;: &quot;1.0.0&quot;,
+  &quot;source_system&quot;: &quot;terraform_hcl&quot;,
+  &quot;resources&quot;: [
+    {
+      &quot;id&quot;: &quot;aws_globalaccelerator_accelerator.prod_edge&quot;,
+      &quot;name&quot;: &quot;prod_edge&quot;,
+      &quot;resource_type&quot;: &quot;network.global_accelerator&quot;,
+      &quot;source_provider&quot;: &quot;aws&quot;,
+      &quot;properties&quot;: {
+        &quot;accelerator_type&quot;: &quot;AWS Global Accelerator&quot;,
+        &quot;routing_type&quot;: &quot;Anycast Edge VIP&quot;,
+        &quot;ip_address_type&quot;: &quot;IPV4&quot;,
+        &quot;static_ips&quot;: [&quot;15.197.142.18&quot;, &quot;15.197.142.19&quot;]
+      }
+    },
+    {
+      &quot;id&quot;: &quot;aws_lb.public_alb&quot;,
+      &quot;name&quot;: &quot;public_alb&quot;,
+      &quot;resource_type&quot;: &quot;network.load_balancer&quot;,
+      &quot;source_provider&quot;: &quot;aws&quot;,
+      &quot;properties&quot;: {
+        &quot;load_balancer_type&quot;: &quot;application&quot;,
+        &quot;layer&quot;: &quot;Layer 7 (HTTP/HTTPS)&quot;,
+        &quot;scheme&quot;: &quot;internet-facing&quot;,
+        &quot;listeners&quot;: [&quot;443/HTTPS&quot;, &quot;80/HTTP&quot;]
+      }
+    },
+    {
+      &quot;id&quot;: &quot;aws_lb_target_group.api_backend&quot;,
+      &quot;name&quot;: &quot;api_backend&quot;,
+      &quot;resource_type&quot;: &quot;network.load_balancer_target_group&quot;,
+      &quot;source_provider&quot;: &quot;aws&quot;,
+      &quot;properties&quot;: {
+        &quot;target_type&quot;: &quot;ip&quot;,
+        &quot;protocol&quot;: &quot;HTTP&quot;,
+        &quot;port&quot;: 8000,
+        &quot;health_check_path&quot;: &quot;/healthz&quot;
+      }
+    },
+    {
+      &quot;id&quot;: &quot;aws_instance.api_node_01&quot;,
+      &quot;name&quot;: &quot;api_node_01&quot;,
+      &quot;resource_type&quot;: &quot;compute.instance&quot;,
+      &quot;source_provider&quot;: &quot;aws&quot;,
+      &quot;properties&quot;: {
+        &quot;private_ip&quot;: &quot;10.100.1.15&quot;,
+        &quot;instance_type&quot;: &quot;c6i.xlarge&quot;
+      }
+    }
+  ],
+  &quot;edges&quot;: [
+    {
+      &quot;source_id&quot;: &quot;aws_globalaccelerator_accelerator.prod_edge&quot;,
+      &quot;target_id&quot;: &quot;aws_lb.public_alb&quot;,
+      &quot;relationship&quot;: &quot;ROUTES_TO&quot;
+    },
+    {
+      &quot;source_id&quot;: &quot;aws_lb.public_alb&quot;,
+      &quot;target_id&quot;: &quot;aws_vpc.production_vpc&quot;,
+      &quot;relationship&quot;: &quot;ATTACHED_TO&quot;
+    },
+    {
+      &quot;source_id&quot;: &quot;aws_lb.public_alb&quot;,
+      &quot;target_id&quot;: &quot;aws_lb_target_group.api_backend&quot;,
+      &quot;relationship&quot;: &quot;ROUTER_FOR&quot;
+    },
+    {
+      &quot;source_id&quot;: &quot;aws_lb_target_group.api_backend&quot;,
+      &quot;target_id&quot;: &quot;aws_instance.api_node_01&quot;,
+      &quot;relationship&quot;: &quot;DISTRIBUTES_TO&quot;
+    }
+  ]
+}
+```
+
+---
+
+## 4. Multi-Cloud &amp; On-Premises Cross-Compilation Rules
+
+When transpiling between providers, `&lt;dcouplr/&gt;` maps each tier to its direct equivalent:
+
+### 4.1 Tier 1: Global Edge Transpilation
+* **AWS Global Accelerator** &amp;rarr; **Google Cloud Global External Anycast Forwarding Rule** (`load_balancing_scheme = &quot;EXTERNAL_MANAGED&quot;`) or **Azure Front Door Standard/Premium**.
+* Preserves Anycast global routing invariants and eliminates multi-region DNS failover latency.
+
+### 4.2 Tier 2: Load Balancer Transpilation
+* **AWS ALB (Layer 7)** &amp;rarr; **Google Cloud URL Map (`google_compute_url_map`) + Target HTTP(S) Proxy** &amp;rarr; **Azure Application Gateway v2**.
+* **AWS NLB (Layer 4)** &amp;rarr; **Google Cloud Regional Passthrough Backend Service (`google_compute_region_backend_service`)** &amp;rarr; **Azure Standard Load Balancer (Layer 4)**.
+* **F5 BIG-IP LTM (On-Premises)** &amp;rarr; Transpiled into **Google Cloud Application Load Balancer** with Cloud Armor WAF policies or OpenTofu HCL modules, eliminating recurring hardware maintenance fees ($45k/appliance).
+
+### 4.3 Tier 3: Target Group &amp; Health Probes Transpilation
+* `aws_lb_target_group` with `health_check.path = &quot;/healthz&quot;` &amp;rarr; `google_compute_health_check` with `http_health_check.request_path = &quot;/healthz&quot;` &amp;rarr; `azurerm_application_gateway` probe with `path = &quot;/healthz&quot;`.
+
+---
+
+## 5. Verification &amp; Telemetry Invariants
+
+1. **Zero-Egress Invariant:** All load balancer definitions and node targets are parsed and stored in volatile memory with **0 bytes external WAN telemetry**.
+2. **FinOps Cost Impact:** Identifying whether an ingress is an **Edge Accelerator** vs **Regional ALB** vs **Internal NLB** directly impacts billing analysis:
+   - AWS Global Accelerator: Fixed fee ($0.025/hr) + Data Transfer-Premium (DT-P).
+   - AWS ALB: Fixed fee ($0.0225/hr) + LCU hours.
+   - Internal Passthrough LB: $0 data processing fees within the same AZ.
+   `&lt;dcouplr/&gt;` models these parameters in `GET /v1/telemetry/finops/cost-comparison` to prove true infrastructure ROI.
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># Network Hierarchy Specification: Global Accelerators, VPC Load Balancers &amp; Node Targets
+
+**Document Identifier:** SPEC-NET-HIERARCHY-2026-001  
+**System:** `&lt;dcouplr/&gt;`: Zero-Egress In-VPC Observability &amp; IaC Transpiler  
+**Classification:** Enterprise Engineering Specification  
+**Status:** Approved Technical Standard  
+**Date of Record:** October 26, 2026  
+
+---
+
+## 1. Executive Architecture &amp; Systems Model
+
+In enterprise cloud and on-premises hybrid architectures, ingress networking is organized into a **strict 3-tier hierarchy**. Conflating these layers leads to broken state migrations, misconfigured security boundaries, and volumetric billing leakage.
+
+`&lt;dcouplr/&gt;` models and captures each tier distinctly in its Universal Intermediate Representation (`UITGraph`):
+
+```text
++===================================================================================================+
+|  TIER 1: GLOBAL / WAN EDGE INGRESS (Above-VPC)                                                    |
+|  -----------------------------------------------------------------------------------------------  |
+|  - AWS Global Accelerator | GCP Anycast VIP | Azure Front Door | Cloudflare Magic | BGP Anycast   |
+|  - Scope: Operates outside and across regional VPCs; ingests traffic at Anycast PoPs worldwide.   |
+|  - Graph Node: `network.global_accelerator`                                                       |
++===================================================================================================+
+                                                |
+                                                |  [ROUTES_TO]  (Cross-Region / Cross-Cloud / Hybrid)
+                                                v
++===================================================================================================+
+|  TIER 2: VPC / NETWORK INFRASTRUCTURE TIER (VPC-Level)                                            |
+|  -----------------------------------------------------------------------------------------------  |
+|  - AWS ALB/NLB/GWLB | GCP URL Map | Azure App Gateway | F5 BIG-IP Appliance | Citrix ADC NetScaler|
+|  - Scope: Lives inside private VPC subnets; manages SSL termination, routing tables, and security.|
+|  - Graph Node: `network.load_balancer` (Bound to `network.vpc` and `network.subnet`)              |
++===================================================================================================+
+                                                |
+                                                |  [ROUTER_FOR] -&gt; Target Groups &amp; Routing Pools
+                                                v
++===================================================================================================+
+|  TIER 3: SERVER / NODE TARGET TIER (Compute &amp; Container Level)                                    |
+|  -----------------------------------------------------------------------------------------------  |
+|  - EC2 Instances | GCE VMs | K8s Pod IPs (NEGs) | Bare-Metal Servers | Serverless Functions       |
+|  - Scope: Workloads executing application logic; registered as listener endpoints behind LBs.     |
+|  - Graph Node: `compute.instance` / `container.kubernetes_nodepool` registered to Target Group     |
++===================================================================================================+
+```
+
+---
+
+## 2. Exhaustive Attribute Capture Matrix
+
+Below is the definitive catalog of all metadata, parameters, and telemetry attributes captured by `&lt;dcouplr/&gt;` at each tier:
+
+### 2.1 Tier 1: Global / WAN Edge Ingress (`network.global_accelerator`)
+
+| Field / Attribute | Data Type | Description | Cloud &amp; On-Prem Examples |
+| :--- | :--- | :--- | :--- |
+| `id` | `string` | Unique entity identifier | `aws_globalaccelerator_accelerator.prod_edge` |
+| `name` | `string` | Resource name | `prod-global-anycast` |
+| `accelerator_type` | `string` | Architecture classification | `AWS Global Accelerator`, `GCP Global Anycast VIP`, `Azure Front Door`, `BGP Anycast Edge Router` |
+| `routing_type` | `string` | Ingress mechanism | `Anycast BGP Edge VIP`, `Layer 7 Global HTTP Anycast`, `DNS Geo-Steering` |
+| `ip_address_type` | `enum` | IP Protocol Version | `IPV4`, `DUAL_STACK` |
+| `static_ips` | `list[string]` | Fixed Anycast IP addresses | `[&quot;15.197.142.18&quot;, &quot;15.197.142.19&quot;]`, `[&quot;34.120.218.44&quot;]` |
+| `flow_logs_enabled` | `bool` | Edge traffic telemetry logging | `true` (Emitted to internal in-VPC ring buffer) |
+| `endpoint_groups` | `list[dict]` | Regional VPC endpoints &amp; dials | `region: &quot;us-east-1&quot;, traffic_dial_percentage: 100.0, health_check_port: 443` |
+| `client_affinity` | `enum` | Session persistence at edge | `NONE`, `SOURCE_IP` |
+
+---
+
+### 2.2 Tier 2: VPC Network Infrastructure Tier (`network.load_balancer`)
+
+| Field / Attribute | Data Type | Description | Cloud &amp; On-Prem Examples |
+| :--- | :--- | :--- | :--- |
+| `id` | `string` | Unique entity identifier | `aws_lb.public_alb`, `f5_bigip_ltm.chicago_dc1` |
+| `name` | `string` | Resource name | `prod-public-alb`, `f5-vip-cluster-01` |
+| `load_balancer_type` | `string` | Architectural subtype | `application` (ALB), `network` (NLB), `gateway` (GWLB), `classic` (ELB), `f5_bigip_ltm`, `citrix_adc_netscaler`, `haproxy` |
+| `layer` | `string` | OSI Network Layer | `Layer 7 (HTTP/HTTPS)`, `Layer 4 (TCP/UDP/TLS)`, `Layer 3/4 Gateway` |
+| `scheme` | `enum` | Ingress boundary | `internet-facing`, `internal` (Private VPC Subnet VIP), `hardware-vip` |
+| `vpc_id` | `string` | Bound VPC container | `vpc-aws-prod-01`, `dc-onprem-core-01` |
+| `subnets` | `list[string]` | Subnet availability placement | `[&quot;subnet-prod-pub-1a&quot;, &quot;subnet-prod-pub-1b&quot;]` |
+| `security_groups` | `list[string]` | Firewall perimeter bindings | `[&quot;sg-prod-web-ingress-443&quot;]` |
+| `listeners` | `list[dict]` | Port/protocol entrypoints | `port: 443, protocol: &quot;HTTPS&quot;, ssl_policy: &quot;ELBSecurityPolicy-TLS13-1-2-2021-06&quot;` |
+| `ssl_certificates` | `list[string]` | Certificate bindings | ACM ARN, Key Vault Secret URI, Local PEM File |
+| `default_action` | `dict` | Ingress routing decision | `type: &quot;forward&quot;, target_group: &quot;tg-app-prod&quot;` |
+| `cross_zone` | `bool` | Cross-AZ load distribution | `true` |
+| `hardware_appliance` | `bool` | Physical on-prem hardware flag | `true` (F5 BIG-IP i5800 Dual AC Power, Citrix VPX) |
+
+---
+
+### 2.3 Tier 3: Server / Node Target Tier (`network.load_balancer_target_group`)
+
+| Field / Attribute | Data Type | Description | Cloud &amp; On-Prem Examples |
+| :--- | :--- | :--- | :--- |
+| `target_group_id` | `string` | Target group identifier | `aws_lb_target_group.app_backend`, `bigip_ltm_pool.app_pool` |
+| `target_type` | `enum` | Target registration primitive | `instance` (VM ID), `ip` (Private CIDR IP), `k8s_pod_neg` (GKE NEG / EKS Target), `lambda`, `bare_metal` |
+| `protocol` | `string` | Backend pool protocol | `HTTP`, `HTTPS`, `TCP`, `gRPC` |
+| `port` | `int` | Backend listening port | `8000`, `8080`, `9092`, `443` |
+| `health_check` | `dict` | Probing specifications | `protocol: &quot;HTTP&quot;, path: &quot;/healthz&quot;, interval: 10, timeout: 5, healthy_threshold: 3, unhealthy_threshold: 2` |
+| `routing_algorithm` | `string` | Balancing algorithm | `round_robin`, `least_outstanding_requests`, `ip_hash`, `weighted` |
+| `stickiness` | `dict` | Session stickiness rules | `enabled: true, type: &quot;lb_cookie&quot;, duration: 86400` |
+| `registered_targets` | `list[dict]` | Active compute nodes/servers | `id: &quot;i-0a1b2c3d&quot;`, `ip: &quot;10.100.1.15&quot;`, `port: 8000`, `weight: 100`, `status: &quot;HEALTHY&quot;` |
+
+---
+
+## 3. Dependency Graph Representation (`UITGraph`)
+
+`&lt;dcouplr/&gt;` normalizes these three tiers into a directed acyclic graph (DAG) maintaining full bi-directional lineage:
+
+```json
+{
+  &quot;schema_version&quot;: &quot;1.0.0&quot;,
+  &quot;source_system&quot;: &quot;terraform_hcl&quot;,
+  &quot;resources&quot;: [
+    {
+      &quot;id&quot;: &quot;aws_globalaccelerator_accelerator.prod_edge&quot;,
+      &quot;name&quot;: &quot;prod_edge&quot;,
+      &quot;resource_type&quot;: &quot;network.global_accelerator&quot;,
+      &quot;source_provider&quot;: &quot;aws&quot;,
+      &quot;properties&quot;: {
+        &quot;accelerator_type&quot;: &quot;AWS Global Accelerator&quot;,
+        &quot;routing_type&quot;: &quot;Anycast Edge VIP&quot;,
+        &quot;ip_address_type&quot;: &quot;IPV4&quot;,
+        &quot;static_ips&quot;: [&quot;15.197.142.18&quot;, &quot;15.197.142.19&quot;]
+      }
+    },
+    {
+      &quot;id&quot;: &quot;aws_lb.public_alb&quot;,
+      &quot;name&quot;: &quot;public_alb&quot;,
+      &quot;resource_type&quot;: &quot;network.load_balancer&quot;,
+      &quot;source_provider&quot;: &quot;aws&quot;,
+      &quot;properties&quot;: {
+        &quot;load_balancer_type&quot;: &quot;application&quot;,
+        &quot;layer&quot;: &quot;Layer 7 (HTTP/HTTPS)&quot;,
+        &quot;scheme&quot;: &quot;internet-facing&quot;,
+        &quot;listeners&quot;: [&quot;443/HTTPS&quot;, &quot;80/HTTP&quot;]
+      }
+    },
+    {
+      &quot;id&quot;: &quot;aws_lb_target_group.api_backend&quot;,
+      &quot;name&quot;: &quot;api_backend&quot;,
+      &quot;resource_type&quot;: &quot;network.load_balancer_target_group&quot;,
+      &quot;source_provider&quot;: &quot;aws&quot;,
+      &quot;properties&quot;: {
+        &quot;target_type&quot;: &quot;ip&quot;,
+        &quot;protocol&quot;: &quot;HTTP&quot;,
+        &quot;port&quot;: 8000,
+        &quot;health_check_path&quot;: &quot;/healthz&quot;
+      }
+    },
+    {
+      &quot;id&quot;: &quot;aws_instance.api_node_01&quot;,
+      &quot;name&quot;: &quot;api_node_01&quot;,
+      &quot;resource_type&quot;: &quot;compute.instance&quot;,
+      &quot;source_provider&quot;: &quot;aws&quot;,
+      &quot;properties&quot;: {
+        &quot;private_ip&quot;: &quot;10.100.1.15&quot;,
+        &quot;instance_type&quot;: &quot;c6i.xlarge&quot;
+      }
+    }
+  ],
+  &quot;edges&quot;: [
+    {
+      &quot;source_id&quot;: &quot;aws_globalaccelerator_accelerator.prod_edge&quot;,
+      &quot;target_id&quot;: &quot;aws_lb.public_alb&quot;,
+      &quot;relationship&quot;: &quot;ROUTES_TO&quot;
+    },
+    {
+      &quot;source_id&quot;: &quot;aws_lb.public_alb&quot;,
+      &quot;target_id&quot;: &quot;aws_vpc.production_vpc&quot;,
+      &quot;relationship&quot;: &quot;ATTACHED_TO&quot;
+    },
+    {
+      &quot;source_id&quot;: &quot;aws_lb.public_alb&quot;,
+      &quot;target_id&quot;: &quot;aws_lb_target_group.api_backend&quot;,
+      &quot;relationship&quot;: &quot;ROUTER_FOR&quot;
+    },
+    {
+      &quot;source_id&quot;: &quot;aws_lb_target_group.api_backend&quot;,
+      &quot;target_id&quot;: &quot;aws_instance.api_node_01&quot;,
+      &quot;relationship&quot;: &quot;DISTRIBUTES_TO&quot;
+    }
+  ]
+}
+```
+
+---
+
+## 4. Multi-Cloud &amp; On-Premises Cross-Compilation Rules
+
+When transpiling between providers, `&lt;dcouplr/&gt;` maps each tier to its direct equivalent:
+
+### 4.1 Tier 1: Global Edge Transpilation
+* **AWS Global Accelerator** &amp;rarr; **Google Cloud Global External Anycast Forwarding Rule** (`load_balancing_scheme = &quot;EXTERNAL_MANAGED&quot;`) or **Azure Front Door Standard/Premium**.
+* Preserves Anycast global routing invariants and eliminates multi-region DNS failover latency.
+
+### 4.2 Tier 2: Load Balancer Transpilation
+* **AWS ALB (Layer 7)** &amp;rarr; **Google Cloud URL Map (`google_compute_url_map`) + Target HTTP(S) Proxy** &amp;rarr; **Azure Application Gateway v2**.
+* **AWS NLB (Layer 4)** &amp;rarr; **Google Cloud Regional Passthrough Backend Service (`google_compute_region_backend_service`)** &amp;rarr; **Azure Standard Load Balancer (Layer 4)**.
+* **F5 BIG-IP LTM (On-Premises)** &amp;rarr; Transpiled into **Google Cloud Application Load Balancer** with Cloud Armor WAF policies or OpenTofu HCL modules, eliminating recurring hardware maintenance fees ($45k/appliance).
+
+### 4.3 Tier 3: Target Group &amp; Health Probes Transpilation
+* `aws_lb_target_group` with `health_check.path = &quot;/healthz&quot;` &amp;rarr; `google_compute_health_check` with `http_health_check.request_path = &quot;/healthz&quot;` &amp;rarr; `azurerm_application_gateway` probe with `path = &quot;/healthz&quot;`.
+
+---
+
+## 5. Verification &amp; Telemetry Invariants
+
+1. **Zero-Egress Invariant:** All load balancer definitions and node targets are parsed and stored in volatile memory with **0 bytes external WAN telemetry**.
+2. **FinOps Cost Impact:** Identifying whether an ingress is an **Edge Accelerator** vs **Regional ALB** vs **Internal NLB** directly impacts billing analysis:
+   - AWS Global Accelerator: Fixed fee ($0.025/hr) + Data Transfer-Premium (DT-P).
+   - AWS ALB: Fixed fee ($0.0225/hr) + LCU hours.
+   - Internal Passthrough LB: $0 data processing fees within the same AZ.
+   `&lt;dcouplr/&gt;` models these parameters in `GET /v1/telemetry/finops/cost-comparison` to prove true infrastructure ROI.
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

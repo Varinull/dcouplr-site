@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - WALLBOARD_OPTIONS_BUILD_AND_DEPLOYMENT_RUNBOOK.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/WALLBOARD_OPTIONS_BUILD_AND_DEPLOYMENT_RUNBOOK.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="WALLBOARD_OPTIONS_BUILD_AND_DEPLOYMENT_RUNBOOK.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="operations-runbook-24x7-remote-noc-wallboard-display-options">Operations Runbook: 24x7 Remote NOC Wallboard &amp; Display Options</h1>
+<p><strong>Document Identifier:</strong> <code>VA-RUNBOOK-WALLBOARD-001</code><br />
+<strong>Classification:</strong> Enterprise Standard Operating Procedure &amp; Field Deployment Guide<br />
+<strong>Target Audience:</strong> NOC Operators, SREs, Cloud Infrastructure Engineers, Display Admins<br />
+<strong>Display Options:</strong></p>
+<ul>
+<li><strong>Option 1: NOC Desk (Operator Recommended)</strong> — <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AirLock™</code> (Zero-Trust Ingress Tunnel • Exact In-VPC Replica without Financial/Simulator Panels)</li>
+<li><strong>Option 2: Wallboard (Air-Gapped SecOps)</strong> — <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> PulseCast™</code> (Edge CDN Pulse Mirror • Standalone Public TV Display)
+<strong>Full Architectural Master:</strong> Available in Admin Vault at <code>ProjectAssistant/admin-runbooks/ADMIN-RUNBOOK-WALLBOARD-ARCHITECTURE-MASTER.md</code></li>
+</ul>
+<hr />
+<h2 id="1-executive-summary-display-options-matrix">1. Executive Summary &amp; Display Options Matrix</h2>
+<p>Modern enterprise operations centers require visual, real-time infrastructure displays running 24 hours a day, 7 days a week across office TV walls, Network Operations Centers (NOC), and SRE workstations.</p>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> provides two distinct, cost-optimized deployment options:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Display Option</th>
+<th style="text-align:left">Best For</th>
+<th style="text-align:left">Architecture</th>
+<th style="text-align:left">Where It Runs</th>
+<th style="text-align:left">Security Profile</th>
+<th style="text-align:left">Bandwidth / Egress</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Option 1: NOC Desk (Operator Recommended)</strong></td>
+<td style="text-align:left">SRE War-Rooms, Operator Desks</td>
+<td style="text-align:left"><strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AirLock™</code></strong>: Outbound mTLS tunnel to Cloudflare Zero Trust. Serves exact replica of in-VPC dashboard with financial and simulator panels hidden.</td>
+<td style="text-align:left">Workstation Chrome / Edge browser</td>
+<td style="text-align:left"><strong>Zero Open Ports on VPC</strong>. Authenticated via permanent Service Tokens.</td>
+<td style="text-align:left">~129 MB / month (~$0.01/mo WAN fees)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Option 2: Wallboard (Air-Gapped SecOps)</strong></td>
+<td style="text-align:left">Public Office TV Walls, Overhead Kiosks</td>
+<td style="text-align:left"><strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> PulseCast™</code></strong>: Unidirectional publisher pushes 1.14 KB JSON snapshot every 5s to an edge CDN (Cloudflare R2 / S3).</td>
+<td style="text-align:left">Wall TV Raspberry Pi / Intel N100</td>
+<td style="text-align:left"><strong>VPC receives ZERO inbound connections</strong>. Fully air-gapped from internal network.</td>
+<td style="text-align:left">~648 MB / month ($0.00 on R2, $0.05 on S3)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-option-1-noc-desk-operator-recommended-dcouplr-airlock">2. Option 1: NOC Desk (Operator Recommended) — <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AirLock™</code></h2>
+<h3 id="21-what-tools-are-needed">2.1 What Tools Are Needed</h3>
+<ul>
+<li><strong>On the in-VPC <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> host:</strong>
+<ul>
+<li><code>curl</code> (v7.68+)</li>
+<li><code>systemd</code> (Linux daemon manager) or Docker</li>
+<li><code>cloudflared</code> CLI binary (free Cloudflare Zero Trust connector)</li>
+<li>Outbound network egress: TCP port <code>443</code> (HTTPS) and UDP port <code>7844</code> (QUIC). <strong>Zero inbound firewall rules required.</strong></li>
+</ul>
+</li>
+<li><strong>On the Operator Workstation:</strong>
+<ul>
+<li>Modern web browser: Google Chrome (v115+), Microsoft Edge (v115+), Brave, or Firefox.</li>
+</ul>
+</li>
+</ul>
+<h3 id="22-where-to-get-it">2.2 Where to Get It</h3>
+<p>Download the deployment artifacts directly from your <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> in-VPC appliance:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># 1. Systemd Service Unit for the tunnel connector
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/airlock/dcouplr-airlock.service -o ./dcouplr-airlock.service
+
+# 2. Automated Tunnel Provisioning Script
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/airlock/setup_airlock_tunnel.sh -o ./setup_airlock_tunnel.sh
+
+# 3. Docker Compose Stack (Alternative to Systemd)
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/airlock/docker-compose.airlock.yml -o ./docker-compose.airlock.yml
+</code></pre></div>
+<h3 id="23-where-to-put-it">2.3 Where to Put It</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">File</th>
+<th style="text-align:left">Target Destination Path</th>
+<th style="text-align:left">Permissions</th>
+<th style="text-align:left">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>dcouplr-airlock.service</code></td>
+<td style="text-align:left"><code>/etc/systemd/system/dcouplr-airlock.service</code></td>
+<td style="text-align:left"><code>chmod 644</code> (root:root)</td>
+<td style="text-align:left">Systemd unit managing the background tunnel daemon.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>config.yml</code></td>
+<td style="text-align:left"><code>/etc/cloudflared/config.yml</code></td>
+<td style="text-align:left"><code>chmod 600</code> (root:root)</td>
+<td style="text-align:left">Tunnel ingress rules routing to local <code>http://127.0.0.1:8000</code>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>setup_airlock_tunnel.sh</code></td>
+<td style="text-align:left"><code>/opt/dcouplr/setup_airlock_tunnel.sh</code></td>
+<td style="text-align:left"><code>chmod 700</code> (root:root)</td>
+<td style="text-align:left">Initial tunnel setup helper script.</td>
+</tr>
+<tr>
+<td style="text-align:left">Workstation Shortcut</td>
+<td style="text-align:left">Desktop / Taskbar</td>
+<td style="text-align:left">Standard user</td>
+<td style="text-align:left">Kiosk browser launch shortcut.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="24-step-by-step-implementation-procedure">2.4 Step-by-Step Implementation Procedure</h3>
+<h4 id="step-1-install-cloudflared-on-the-dcouplr-host">Step 1: Install <code>cloudflared</code> on the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Host</h4>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># On Debian / Ubuntu:
+curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg &gt;/dev/null
+echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared bookworm main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
+sudo apt-get update &amp;&amp; sudo apt-get install -y cloudflared
+
+# On RHEL / AlmaLinux / Amazon Linux 2023:
+sudo dnf install -y https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-x86_64.rpm
+</code></pre></div>
+<h4 id="step-2-configure-the-airlock-ingress-tunnel">Step 2: Configure the AirLock™ Ingress Tunnel</h4>
+<p>Create the configuration file at <code>/etc/cloudflared/config.yml</code>:</p>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml">tunnel: &lt;YOUR-TUNNEL-ID&gt;
+credentials-file: /etc/cloudflared/&lt;YOUR-TUNNEL-ID&gt;.json
+
+ingress:
+  # Routes external requests to local <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> daemon
+  - hostname: noc.yourcompany.com
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+  - service: http_status:404
+</code></pre></div>
+<h4 id="step-3-install-start-the-systemd-service">Step 3: Install &amp; Start the Systemd Service</h4>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">sudo cp ./dcouplr-airlock.service /etc/systemd/system/dcouplr-airlock.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now dcouplr-airlock.service
+sudo systemctl status dcouplr-airlock.service
+</code></pre></div>
+<p><strong>Expected Status Output:</strong></p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">● dcouplr-airlock.service - <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AirLock Zero-Trust Tunnel Connector
+     Loaded: loaded (/etc/systemd/system/dcouplr-airlock.service; enabled)
+     Active: active (running) since Wed 2026-10-28 02:00:00 UTC
+   Main PID: 18240 (cloudflared)
+     Status: &quot;Registered at Cloudflare edge: 4 connections active (QUIC)&quot;
+</code></pre></div>
+<h4 id="step-4-launch-noc-desk-on-operator-workstations">Step 4: Launch NOC Desk on Operator Workstations</h4>
+<p>On any operator desk or NOC workstation, open the browser in dedicated kiosk mode:</p>
+<div class="code-box"><div class="code-box-header"><span>powershell</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-powershell"># Windows Operator Workstation (PowerShell):
+chrome.exe --app=&quot;https://noc.yourcompany.com/dashboard?view=noc-desk&quot; --start-fullscreen
+</code></pre></div>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Linux Operator Workstation (Bash):
+google-chrome --kiosk --app=&quot;https://noc.yourcompany.com/dashboard?view=noc-desk&quot;
+</code></pre></div>
+<blockquote>
+<p>[!TIP]
+<strong>Operator Focused View:</strong> Appending <code>?view=noc-desk</code> automatically loads the exact replica of <code>http://localhost:8000/dashboard</code> with the <strong>In-VPC Financial Cost Breakdown</strong> and <strong>Alert Rule Threshold Simulator</strong> hidden, keeping the screen 100% focused on active incidents, Raft consensus, and topology health.</p>
+</blockquote>
+<hr />
+<h2 id="3-option-2-wallboard-air-gapped-secops-dcouplr-pulsecast">3. Option 2: Wallboard (Air-Gapped SecOps) — <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> PulseCast™</code></h2>
+<h3 id="31-what-tools-are-needed">3.1 What Tools Are Needed</h3>
+<ul>
+<li><strong>On the in-VPC <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> host:</strong>
+<ul>
+<li>Python 3.10+ (for the lightweight pulse synchronizer daemon)</li>
+<li><code>aws-cli</code> or <code>rclone</code> (to sync JSON file to S3 / Cloudflare R2 bucket)</li>
+<li>Outbound HTTPS (Port 443) to your CDN / bucket endpoint.</li>
+</ul>
+</li>
+<li><strong>On the Wall Display (TV Monitor / Overhead Screen):</strong>
+<ul>
+<li>Raspberry Pi 4/5, Intel N100 mini PC, or Smart TV browser.</li>
+<li>No VPN, no SSH keys, and no internal credentials needed.</li>
+</ul>
+</li>
+</ul>
+<h3 id="32-where-to-get-it">3.2 Where to Get It</h3>
+<p>Retrieve the static bundle from the repository or your <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> instance:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># 1. Standalone Single-File Static Wallboard HTML
+curl -sSL http://127.0.0.1:8000/dist/pulsecast-cdn/index.html -o ./index.html
+
+# 2. PulseCast Publisher Sync Script
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/pulsecast/sync_pulse_to_cdn.py -o ./sync_pulse_to_cdn.py
+
+# 3. Systemd Service Unit for Pulse Sync
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/pulsecast/dcouplr-pulsecast.service -o ./dcouplr-pulsecast.service
+</code></pre></div>
+<h3 id="33-where-to-put-it">3.3 Where to Put It</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">File</th>
+<th style="text-align:left">Target Destination Path</th>
+<th style="text-align:left">Permissions</th>
+<th style="text-align:left">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>index.html</code></td>
+<td style="text-align:left"><code>/var/www/html/wallboard/index.html</code> (or S3/R2 bucket root)</td>
+<td style="text-align:left"><code>chmod 644</code></td>
+<td style="text-align:left">Client-side static wallboard application.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>sync_pulse_to_cdn.py</code></td>
+<td style="text-align:left"><code>/opt/dcouplr/pulsecast/sync_pulse_to_cdn.py</code></td>
+<td style="text-align:left"><code>chmod 750</code></td>
+<td style="text-align:left">5-second background publisher script.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>dcouplr-pulsecast.service</code></td>
+<td style="text-align:left"><code>/etc/systemd/system/dcouplr-pulsecast.service</code></td>
+<td style="text-align:left"><code>chmod 644</code></td>
+<td style="text-align:left">Systemd service running the publisher daemon.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="34-step-by-step-implementation-procedure">3.4 Step-by-Step Implementation Procedure</h3>
+<h4 id="step-1-host-the-static-html-file">Step 1: Host the Static HTML File</h4>
+<p>Upload <code>index.html</code> to any static web server (Nginx, Apache, or Cloudflare R2 / S3 website):</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Example: Deploying to internal Nginx server:
+sudo mkdir -p /var/www/html/wallboard
+sudo cp ./index.html /var/www/html/wallboard/index.html
+sudo chown -R www-data:www-data /var/www/html/wallboard
+</code></pre></div>
+<h4 id="step-2-configure-the-5-second-background-pulse-publisher">Step 2: Configure the 5-Second Background Pulse Publisher</h4>
+<p>On your in-VPC <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> appliance, deploy the publisher daemon:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">sudo mkdir -p /opt/dcouplr/pulsecast
+sudo cp ./sync_pulse_to_cdn.py /opt/dcouplr/pulsecast/sync_pulse_to_cdn.py
+sudo cp ./dcouplr-pulsecast.service /etc/systemd/system/dcouplr-pulsecast.service
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now dcouplr-pulsecast.service
+sudo systemctl status dcouplr-pulsecast.service
+</code></pre></div>
+<p><strong>Expected Publisher Output:</strong></p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">[INFO] <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> PulseCast Publisher started.
+[INFO] Local loopback source: http://127.0.0.1:8000/v1/telemetry/topology-pulse
+[INFO] Target CDN endpoint: https://pulse.yourcompany.com/topology-pulse.json
+[PULSE] 2026-10-28T02:15:00Z: 1,142 bytes synced (HTTP 200) • SHA: e3b0c442...
+[PULSE] 2026-10-28T02:15:05Z: 1,142 bytes synced (HTTP 200) • SHA: 9f86d081...
+</code></pre></div>
+<h4 id="step-3-open-the-wallboard-on-the-physical-tv-display">Step 3: Open the Wallboard on the Physical TV Display</h4>
+<p>Launch Chromium on your TV wall PC (Raspberry Pi or Intel N100):</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">chromium-browser \
+  --kiosk \
+  --noerrdialogs \
+  --disable-infobars \
+  --check-for-update-interval=31536000 \
+  &quot;https://wallboard.yourcompany.com/?pulse=https://pulse.yourcompany.com/topology-pulse.json&quot;
+</code></pre></div>
+<h4 id="step-4-enable-display-wake-lock">Step 4: Enable Display Wake Lock</h4>
+<p>On first launch, click <strong><code>☕ Wake Lock Active</code></strong> in the top navigation bar. This uses the browser W3C Screen Wake Lock API to prevent the screen from sleeping or turning off overnight.</p>
+<hr />
+<h2 id="4-disconnection-root-cause-analysis-rca-troubleshooting">4. Disconnection Root Cause Analysis (RCA) &amp; Troubleshooting</h2>
+<p>If your wall display loses connection, locate the symptom in the table below to resolve it immediately:</p>
+<h3 id="option-1-noc-desk-airlock-disconnections">Option 1: NOC Desk (AirLock™) Disconnections</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Failure Mode</th>
+<th style="text-align:left">Root Cause</th>
+<th style="text-align:left">Operator Symptom</th>
+<th style="text-align:left">Immediate Fix Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Service Token Expiry</strong></td>
+<td style="text-align:left">Cloudflare Access Service Token reached validity limit.</td>
+<td style="text-align:left">HTTP 403 Forbidden or redirect to corporate SSO login screen.</td>
+<td style="text-align:left">Regenerate token in Cloudflare Zero Trust console and update browser credentials header.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>TCP Keepalive Timeout</strong></td>
+<td style="text-align:left">Corporate firewall dropped idle TCP connections after 300s.</td>
+<td style="text-align:left">Stale graphs; WebSocket indicator changes from Green to Amber.</td>
+<td style="text-align:left">Ensure <code>originRequest.keepAliveTimeout: 90s</code> is configured in <code>/etc/cloudflared/config.yml</code>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>In-VPC Daemon Restart</strong></td>
+<td style="text-align:left"><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> daemon restarted during an update.</td>
+<td style="text-align:left">HTTP 502 Bad Gateway.</td>
+<td style="text-align:left">Check local daemon status: <code>sudo systemctl status dcouplr</code>. AirLock reconnects automatically within 3 seconds of service recovery.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>DNS Resolution Failure</strong></td>
+<td style="text-align:left">Local ISP DNS cache poisoned or workstation disconnected from internet.</td>
+<td style="text-align:left"><code>ERR_NAME_NOT_RESOLVED</code>.</td>
+<td style="text-align:left">Test tunnel endpoint directly: <code>curl -I https://noc.yourcompany.com/v1/health</code>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Local Sleep Mode</strong></td>
+<td style="text-align:left">Workstation entered OS sleep or power-saving mode.</td>
+<td style="text-align:left">Display froze at historical timestamp.</td>
+<td style="text-align:left">Disable OS display sleep in Windows Power Settings (<code>powercfg -change -monitor-timeout-ac 0</code>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="option-2-wallboard-pulsecast-disconnections">Option 2: Wallboard (PulseCast™) Disconnections</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Failure Mode</th>
+<th style="text-align:left">Root Cause</th>
+<th style="text-align:left">Operator Symptom</th>
+<th style="text-align:left">Immediate Fix Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Stale Edge Cache</strong></td>
+<td style="text-align:left">Publisher daemon crashed or stopped syncing pulse JSON.</td>
+<td style="text-align:left">Pulse indicator turns Amber: <code>STALE PULSE (&gt; 15s)</code>.</td>
+<td style="text-align:left">Restart publisher service: <code>sudo systemctl restart dcouplr-pulsecast.service</code>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>CDN HTTP 404 Not Found</strong></td>
+<td style="text-align:left">Pulse JSON path mismatch in URL configuration.</td>
+<td style="text-align:left">Red banner: <code>SOURCE UNREACHABLE (HTTP 404)</code>.</td>
+<td style="text-align:left">Click <code>⚙ Source</code> in HUD header and verify URL matches your CDN path.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>CORS Header Missing</strong></td>
+<td style="text-align:left">CDN bucket is missing <code>Access-Control-Allow-Origin: *</code>.</td>
+<td style="text-align:left">Browser console shows <code>CORS header missing</code>.</td>
+<td style="text-align:left">Add CORS rule on Cloudflare R2 / S3 bucket: <code>AllowedOrigins: [&quot;*&quot;], AllowedMethods: [&quot;GET&quot;]</code>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Network Cable Unplugged</strong></td>
+<td style="text-align:left">Physical Ethernet disconnect on wall monitor PC.</td>
+<td style="text-align:left">Red badge: <code>OFFLINE (RETRYING IN 5s)</code>.</td>
+<td style="text-align:left">Check physical LAN cable or Wi-Fi status on the TV PC. Wallboard retries automatically every 5s.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>TV Display Burn-In / Sleep</strong></td>
+<td style="text-align:left">TV hardware timer turned off panel after 4 hours of static video.</td>
+<td style="text-align:left">Black screen on physical television.</td>
+<td style="text-align:left">Disable &quot;Eco Mode&quot; and &quot;Auto Standby&quot; in physical TV hardware settings.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-in-vpc-dashboard-health-watch-indicator-matrix">5. In-VPC Dashboard Health Watch &amp; Indicator Matrix</h2>
+<p>When monitoring the live dashboard (<code>http://localhost:8000/dashboard</code> or the NOC Desk), monitor these <strong>6 critical operational indicators</strong>:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        DASHBOARD INDICATORS TO WATCH OUT FOR                           │
+├──────────────────────┬──────────────────────┬─────────────────┬────────────────────────┤
+│ Indicator            │ Normal (Healthy)     │ Warning / Alert │ Action Required        │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 1. Consensus Quorum  │ 3/3 NODES OPTIMAL    │ 2/3 DEGRADED    │ Peer dropped; check    │
+│                      │ (Neon Emerald)       │ (Amber / Red)   │ journalctl on node     │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 2. p99 Ingestion Lag │ &lt; 1.00 ms            │ &gt; 5.00 ms       │ Check network egress   │
+│                      │ (Emerald / Purple)   │ (Rose Spikes)   │ or packet saturation   │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 3. Memory Leak Drift │ 0.00 MB (Stable)     │ &gt; 10.0 MB       │ Inspect memory gauge;  │
+│                      │ (Emerald)            │ (Trending Up)   │ restart agent if leak  │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 4. WAN Egress Attest │ $0.00 WAN FEES       │ Non-Zero Value  │ Air-gap breached!      │
+│                      │ (Emerald Lock)       │ (Security Red)  │ Check firewall rules   │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 5. Live Pulse Dot    │ Blinking Green       │ Solid Red       │ Data feed lost; check  │
+│                      │ (Every 2 seconds)    │ (Disconnected)  │ Section 4 troubleshooting│
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 6. Node License Pill │ Green (≤75% Cap)     │ Red (100% Full) │ Cluster full; upgrade  │
+│                      │ Blue (76–89% Cap)    │ (Exhausted)     │ license tier via admin │
+└──────────────────────┴──────────────────────┴─────────────────┴────────────────────────┘
+</code></pre></div>
+<h3 id="node-license-color-coding-breakdown">Node License Color-Coding Breakdown:</h3>
+<ul>
+<li>🟢 <strong>Green (Comfort Zone ≤ 75%):</strong> e.g., <code>0–56 / 75 Nodes</code>. Healthy operational capacity.</li>
+<li>🔵 <strong>Blue (Operational Active 76%–89%):</strong> e.g., <code>57–67 / 75 Nodes</code>. Standard load; plan for next wave.</li>
+<li>🟡 <strong>Amber (Warning 90%–99%):</strong> e.g., <code>68–74 / 75 Nodes</code>. Near quota limit; contact procurement to expand cluster tier.</li>
+<li>🔴 <strong>Red (Critical 100% Full):</strong> e.g., <code>75 / 75 Nodes</code>. License fully exhausted. Additional nodes will be throttled.</li>
+</ul>
+</div>
+      <pre id="raw-view"><code># Operations Runbook: 24x7 Remote NOC Wallboard &amp; Display Options
+
+**Document Identifier:** `VA-RUNBOOK-WALLBOARD-001`  
+**Classification:** Enterprise Standard Operating Procedure &amp; Field Deployment Guide  
+**Target Audience:** NOC Operators, SREs, Cloud Infrastructure Engineers, Display Admins  
+**Display Options:**
+- **Option 1: NOC Desk (Operator Recommended)** — `&lt;dcouplr/&gt; AirLock™` (Zero-Trust Ingress Tunnel • Exact In-VPC Replica without Financial/Simulator Panels)
+- **Option 2: Wallboard (Air-Gapped SecOps)** — `&lt;dcouplr/&gt; PulseCast™` (Edge CDN Pulse Mirror • Standalone Public TV Display)
+**Full Architectural Master:** Available in Admin Vault at `ProjectAssistant/admin-runbooks/ADMIN-RUNBOOK-WALLBOARD-ARCHITECTURE-MASTER.md`
+
+---
+
+## 1. Executive Summary &amp; Display Options Matrix
+
+Modern enterprise operations centers require visual, real-time infrastructure displays running 24 hours a day, 7 days a week across office TV walls, Network Operations Centers (NOC), and SRE workstations.
+
+`&lt;dcouplr/&gt;` provides two distinct, cost-optimized deployment options:
+
+| Display Option | Best For | Architecture | Where It Runs | Security Profile | Bandwidth / Egress |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Option 1: NOC Desk (Operator Recommended)** | SRE War-Rooms, Operator Desks | **`&lt;dcouplr/&gt; AirLock™`**: Outbound mTLS tunnel to Cloudflare Zero Trust. Serves exact replica of in-VPC dashboard with financial and simulator panels hidden. | Workstation Chrome / Edge browser | **Zero Open Ports on VPC**. Authenticated via permanent Service Tokens. | ~129 MB / month (~$0.01/mo WAN fees) |
+| **Option 2: Wallboard (Air-Gapped SecOps)** | Public Office TV Walls, Overhead Kiosks | **`&lt;dcouplr/&gt; PulseCast™`**: Unidirectional publisher pushes 1.14 KB JSON snapshot every 5s to an edge CDN (Cloudflare R2 / S3). | Wall TV Raspberry Pi / Intel N100 | **VPC receives ZERO inbound connections**. Fully air-gapped from internal network. | ~648 MB / month ($0.00 on R2, $0.05 on S3) |
+
+---
+
+## 2. Option 1: NOC Desk (Operator Recommended) — `&lt;dcouplr/&gt; AirLock™`
+
+### 2.1 What Tools Are Needed
+- **On the in-VPC `&lt;dcouplr/&gt;` host:**
+  - `curl` (v7.68+)
+  - `systemd` (Linux daemon manager) or Docker
+  - `cloudflared` CLI binary (free Cloudflare Zero Trust connector)
+  - Outbound network egress: TCP port `443` (HTTPS) and UDP port `7844` (QUIC). **Zero inbound firewall rules required.**
+- **On the Operator Workstation:**
+  - Modern web browser: Google Chrome (v115+), Microsoft Edge (v115+), Brave, or Firefox.
+
+### 2.2 Where to Get It
+Download the deployment artifacts directly from your `&lt;dcouplr/&gt;` in-VPC appliance:
+
+```bash
+# 1. Systemd Service Unit for the tunnel connector
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/airlock/dcouplr-airlock.service -o ./dcouplr-airlock.service
+
+# 2. Automated Tunnel Provisioning Script
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/airlock/setup_airlock_tunnel.sh -o ./setup_airlock_tunnel.sh
+
+# 3. Docker Compose Stack (Alternative to Systemd)
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/airlock/docker-compose.airlock.yml -o ./docker-compose.airlock.yml
+```
+
+### 2.3 Where to Put It
+
+| File | Target Destination Path | Permissions | Purpose |
+| :--- | :--- | :--- | :--- |
+| `dcouplr-airlock.service` | `/etc/systemd/system/dcouplr-airlock.service` | `chmod 644` (root:root) | Systemd unit managing the background tunnel daemon. |
+| `config.yml` | `/etc/cloudflared/config.yml` | `chmod 600` (root:root) | Tunnel ingress rules routing to local `http://127.0.0.1:8000`. |
+| `setup_airlock_tunnel.sh` | `/opt/dcouplr/setup_airlock_tunnel.sh` | `chmod 700` (root:root) | Initial tunnel setup helper script. |
+| Workstation Shortcut | Desktop / Taskbar | Standard user | Kiosk browser launch shortcut. |
+
+### 2.4 Step-by-Step Implementation Procedure
+
+#### Step 1: Install `cloudflared` on the `&lt;dcouplr/&gt;` Host
+```bash
+# On Debian / Ubuntu:
+curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg &gt;/dev/null
+echo &#x27;deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared bookworm main&#x27; | sudo tee /etc/apt/sources.list.d/cloudflared.list
+sudo apt-get update &amp;&amp; sudo apt-get install -y cloudflared
+
+# On RHEL / AlmaLinux / Amazon Linux 2023:
+sudo dnf install -y https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-x86_64.rpm
+```
+
+#### Step 2: Configure the AirLock™ Ingress Tunnel
+Create the configuration file at `/etc/cloudflared/config.yml`:
+
+```yaml
+tunnel: &lt;YOUR-TUNNEL-ID&gt;
+credentials-file: /etc/cloudflared/&lt;YOUR-TUNNEL-ID&gt;.json
+
+ingress:
+  # Routes external requests to local &lt;dcouplr/&gt; daemon
+  - hostname: noc.yourcompany.com
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+  - service: http_status:404
+```
+
+#### Step 3: Install &amp; Start the Systemd Service
+```bash
+sudo cp ./dcouplr-airlock.service /etc/systemd/system/dcouplr-airlock.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now dcouplr-airlock.service
+sudo systemctl status dcouplr-airlock.service
+```
+
+**Expected Status Output:**
+```text
+● dcouplr-airlock.service - &lt;dcouplr/&gt; AirLock Zero-Trust Tunnel Connector
+     Loaded: loaded (/etc/systemd/system/dcouplr-airlock.service; enabled)
+     Active: active (running) since Wed 2026-10-28 02:00:00 UTC
+   Main PID: 18240 (cloudflared)
+     Status: &quot;Registered at Cloudflare edge: 4 connections active (QUIC)&quot;
+```
+
+#### Step 4: Launch NOC Desk on Operator Workstations
+On any operator desk or NOC workstation, open the browser in dedicated kiosk mode:
+
+```powershell
+# Windows Operator Workstation (PowerShell):
+chrome.exe --app=&quot;https://noc.yourcompany.com/dashboard?view=noc-desk&quot; --start-fullscreen
+```
+```bash
+# Linux Operator Workstation (Bash):
+google-chrome --kiosk --app=&quot;https://noc.yourcompany.com/dashboard?view=noc-desk&quot;
+```
+
+&gt; [!TIP]
+&gt; **Operator Focused View:** Appending `?view=noc-desk` automatically loads the exact replica of `http://localhost:8000/dashboard` with the **In-VPC Financial Cost Breakdown** and **Alert Rule Threshold Simulator** hidden, keeping the screen 100% focused on active incidents, Raft consensus, and topology health.
+
+---
+
+## 3. Option 2: Wallboard (Air-Gapped SecOps) — `&lt;dcouplr/&gt; PulseCast™`
+
+### 3.1 What Tools Are Needed
+- **On the in-VPC `&lt;dcouplr/&gt;` host:**
+  - Python 3.10+ (for the lightweight pulse synchronizer daemon)
+  - `aws-cli` or `rclone` (to sync JSON file to S3 / Cloudflare R2 bucket)
+  - Outbound HTTPS (Port 443) to your CDN / bucket endpoint.
+- **On the Wall Display (TV Monitor / Overhead Screen):**
+  - Raspberry Pi 4/5, Intel N100 mini PC, or Smart TV browser.
+  - No VPN, no SSH keys, and no internal credentials needed.
+
+### 3.2 Where to Get It
+Retrieve the static bundle from the repository or your `&lt;dcouplr/&gt;` instance:
+
+```bash
+# 1. Standalone Single-File Static Wallboard HTML
+curl -sSL http://127.0.0.1:8000/dist/pulsecast-cdn/index.html -o ./index.html
+
+# 2. PulseCast Publisher Sync Script
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/pulsecast/sync_pulse_to_cdn.py -o ./sync_pulse_to_cdn.py
+
+# 3. Systemd Service Unit for Pulse Sync
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/pulsecast/dcouplr-pulsecast.service -o ./dcouplr-pulsecast.service
+```
+
+### 3.3 Where to Put It
+
+| File | Target Destination Path | Permissions | Purpose |
+| :--- | :--- | :--- | :--- |
+| `index.html` | `/var/www/html/wallboard/index.html` (or S3/R2 bucket root) | `chmod 644` | Client-side static wallboard application. |
+| `sync_pulse_to_cdn.py` | `/opt/dcouplr/pulsecast/sync_pulse_to_cdn.py` | `chmod 750` | 5-second background publisher script. |
+| `dcouplr-pulsecast.service` | `/etc/systemd/system/dcouplr-pulsecast.service` | `chmod 644` | Systemd service running the publisher daemon. |
+
+### 3.4 Step-by-Step Implementation Procedure
+
+#### Step 1: Host the Static HTML File
+Upload `index.html` to any static web server (Nginx, Apache, or Cloudflare R2 / S3 website):
+
+```bash
+# Example: Deploying to internal Nginx server:
+sudo mkdir -p /var/www/html/wallboard
+sudo cp ./index.html /var/www/html/wallboard/index.html
+sudo chown -R www-data:www-data /var/www/html/wallboard
+```
+
+#### Step 2: Configure the 5-Second Background Pulse Publisher
+On your in-VPC `&lt;dcouplr/&gt;` appliance, deploy the publisher daemon:
+
+```bash
+sudo mkdir -p /opt/dcouplr/pulsecast
+sudo cp ./sync_pulse_to_cdn.py /opt/dcouplr/pulsecast/sync_pulse_to_cdn.py
+sudo cp ./dcouplr-pulsecast.service /etc/systemd/system/dcouplr-pulsecast.service
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now dcouplr-pulsecast.service
+sudo systemctl status dcouplr-pulsecast.service
+```
+
+**Expected Publisher Output:**
+```text
+[INFO] &lt;dcouplr/&gt; PulseCast Publisher started.
+[INFO] Local loopback source: http://127.0.0.1:8000/v1/telemetry/topology-pulse
+[INFO] Target CDN endpoint: https://pulse.yourcompany.com/topology-pulse.json
+[PULSE] 2026-10-28T02:15:00Z: 1,142 bytes synced (HTTP 200) • SHA: e3b0c442...
+[PULSE] 2026-10-28T02:15:05Z: 1,142 bytes synced (HTTP 200) • SHA: 9f86d081...
+```
+
+#### Step 3: Open the Wallboard on the Physical TV Display
+Launch Chromium on your TV wall PC (Raspberry Pi or Intel N100):
+
+```bash
+chromium-browser \
+  --kiosk \
+  --noerrdialogs \
+  --disable-infobars \
+  --check-for-update-interval=31536000 \
+  &quot;https://wallboard.yourcompany.com/?pulse=https://pulse.yourcompany.com/topology-pulse.json&quot;
+```
+
+#### Step 4: Enable Display Wake Lock
+On first launch, click **`☕ Wake Lock Active`** in the top navigation bar. This uses the browser W3C Screen Wake Lock API to prevent the screen from sleeping or turning off overnight.
+
+---
+
+## 4. Disconnection Root Cause Analysis (RCA) &amp; Troubleshooting
+
+If your wall display loses connection, locate the symptom in the table below to resolve it immediately:
+
+### Option 1: NOC Desk (AirLock™) Disconnections
+
+| Failure Mode | Root Cause | Operator Symptom | Immediate Fix Command |
+| :--- | :--- | :--- | :--- |
+| **Service Token Expiry** | Cloudflare Access Service Token reached validity limit. | HTTP 403 Forbidden or redirect to corporate SSO login screen. | Regenerate token in Cloudflare Zero Trust console and update browser credentials header. |
+| **TCP Keepalive Timeout** | Corporate firewall dropped idle TCP connections after 300s. | Stale graphs; WebSocket indicator changes from Green to Amber. | Ensure `originRequest.keepAliveTimeout: 90s` is configured in `/etc/cloudflared/config.yml`. |
+| **In-VPC Daemon Restart** | `&lt;dcouplr/&gt;` daemon restarted during an update. | HTTP 502 Bad Gateway. | Check local daemon status: `sudo systemctl status dcouplr`. AirLock reconnects automatically within 3 seconds of service recovery. |
+| **DNS Resolution Failure** | Local ISP DNS cache poisoned or workstation disconnected from internet. | `ERR_NAME_NOT_RESOLVED`. | Test tunnel endpoint directly: `curl -I https://noc.yourcompany.com/v1/health`. |
+| **Local Sleep Mode** | Workstation entered OS sleep or power-saving mode. | Display froze at historical timestamp. | Disable OS display sleep in Windows Power Settings (`powercfg -change -monitor-timeout-ac 0`). |
+
+### Option 2: Wallboard (PulseCast™) Disconnections
+
+| Failure Mode | Root Cause | Operator Symptom | Immediate Fix Command |
+| :--- | :--- | :--- | :--- |
+| **Stale Edge Cache** | Publisher daemon crashed or stopped syncing pulse JSON. | Pulse indicator turns Amber: `STALE PULSE (&gt; 15s)`. | Restart publisher service: `sudo systemctl restart dcouplr-pulsecast.service`. |
+| **CDN HTTP 404 Not Found** | Pulse JSON path mismatch in URL configuration. | Red banner: `SOURCE UNREACHABLE (HTTP 404)`. | Click `⚙ Source` in HUD header and verify URL matches your CDN path. |
+| **CORS Header Missing** | CDN bucket is missing `Access-Control-Allow-Origin: *`. | Browser console shows `CORS header missing`. | Add CORS rule on Cloudflare R2 / S3 bucket: `AllowedOrigins: [&quot;*&quot;], AllowedMethods: [&quot;GET&quot;]`. |
+| **Network Cable Unplugged** | Physical Ethernet disconnect on wall monitor PC. | Red badge: `OFFLINE (RETRYING IN 5s)`. | Check physical LAN cable or Wi-Fi status on the TV PC. Wallboard retries automatically every 5s. |
+| **TV Display Burn-In / Sleep** | TV hardware timer turned off panel after 4 hours of static video. | Black screen on physical television. | Disable &quot;Eco Mode&quot; and &quot;Auto Standby&quot; in physical TV hardware settings. |
+
+---
+
+## 5. In-VPC Dashboard Health Watch &amp; Indicator Matrix
+
+When monitoring the live dashboard (`http://localhost:8000/dashboard` or the NOC Desk), monitor these **6 critical operational indicators**:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        DASHBOARD INDICATORS TO WATCH OUT FOR                           │
+├──────────────────────┬──────────────────────┬─────────────────┬────────────────────────┤
+│ Indicator            │ Normal (Healthy)     │ Warning / Alert │ Action Required        │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 1. Consensus Quorum  │ 3/3 NODES OPTIMAL    │ 2/3 DEGRADED    │ Peer dropped; check    │
+│                      │ (Neon Emerald)       │ (Amber / Red)   │ journalctl on node     │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 2. p99 Ingestion Lag │ &lt; 1.00 ms            │ &gt; 5.00 ms       │ Check network egress   │
+│                      │ (Emerald / Purple)   │ (Rose Spikes)   │ or packet saturation   │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 3. Memory Leak Drift │ 0.00 MB (Stable)     │ &gt; 10.0 MB       │ Inspect memory gauge;  │
+│                      │ (Emerald)            │ (Trending Up)   │ restart agent if leak  │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 4. WAN Egress Attest │ $0.00 WAN FEES       │ Non-Zero Value  │ Air-gap breached!      │
+│                      │ (Emerald Lock)       │ (Security Red)  │ Check firewall rules   │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 5. Live Pulse Dot    │ Blinking Green       │ Solid Red       │ Data feed lost; check  │
+│                      │ (Every 2 seconds)    │ (Disconnected)  │ Section 4 troubleshooting│
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 6. Node License Pill │ Green (≤75% Cap)     │ Red (100% Full) │ Cluster full; upgrade  │
+│                      │ Blue (76–89% Cap)    │ (Exhausted)     │ license tier via admin │
+└──────────────────────┴──────────────────────┴─────────────────┴────────────────────────┘
+```
+
+### Node License Color-Coding Breakdown:
+- 🟢 **Green (Comfort Zone &amp;le; 75%):** e.g., `0–56 / 75 Nodes`. Healthy operational capacity.
+- 🔵 **Blue (Operational Active 76%–89%):** e.g., `57–67 / 75 Nodes`. Standard load; plan for next wave.
+- 🟡 **Amber (Warning 90%–99%):** e.g., `68–74 / 75 Nodes`. Near quota limit; contact procurement to expand cluster tier.
+- 🔴 **Red (Critical 100% Full):** e.g., `75 / 75 Nodes`. License fully exhausted. Additional nodes will be throttled.
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># Operations Runbook: 24x7 Remote NOC Wallboard &amp; Display Options
+
+**Document Identifier:** `VA-RUNBOOK-WALLBOARD-001`  
+**Classification:** Enterprise Standard Operating Procedure &amp; Field Deployment Guide  
+**Target Audience:** NOC Operators, SREs, Cloud Infrastructure Engineers, Display Admins  
+**Display Options:**
+- **Option 1: NOC Desk (Operator Recommended)** — `&lt;dcouplr/&gt; AirLock™` (Zero-Trust Ingress Tunnel • Exact In-VPC Replica without Financial/Simulator Panels)
+- **Option 2: Wallboard (Air-Gapped SecOps)** — `&lt;dcouplr/&gt; PulseCast™` (Edge CDN Pulse Mirror • Standalone Public TV Display)
+**Full Architectural Master:** Available in Admin Vault at `ProjectAssistant/admin-runbooks/ADMIN-RUNBOOK-WALLBOARD-ARCHITECTURE-MASTER.md`
+
+---
+
+## 1. Executive Summary &amp; Display Options Matrix
+
+Modern enterprise operations centers require visual, real-time infrastructure displays running 24 hours a day, 7 days a week across office TV walls, Network Operations Centers (NOC), and SRE workstations.
+
+`&lt;dcouplr/&gt;` provides two distinct, cost-optimized deployment options:
+
+| Display Option | Best For | Architecture | Where It Runs | Security Profile | Bandwidth / Egress |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Option 1: NOC Desk (Operator Recommended)** | SRE War-Rooms, Operator Desks | **`&lt;dcouplr/&gt; AirLock™`**: Outbound mTLS tunnel to Cloudflare Zero Trust. Serves exact replica of in-VPC dashboard with financial and simulator panels hidden. | Workstation Chrome / Edge browser | **Zero Open Ports on VPC**. Authenticated via permanent Service Tokens. | ~129 MB / month (~$0.01/mo WAN fees) |
+| **Option 2: Wallboard (Air-Gapped SecOps)** | Public Office TV Walls, Overhead Kiosks | **`&lt;dcouplr/&gt; PulseCast™`**: Unidirectional publisher pushes 1.14 KB JSON snapshot every 5s to an edge CDN (Cloudflare R2 / S3). | Wall TV Raspberry Pi / Intel N100 | **VPC receives ZERO inbound connections**. Fully air-gapped from internal network. | ~648 MB / month ($0.00 on R2, $0.05 on S3) |
+
+---
+
+## 2. Option 1: NOC Desk (Operator Recommended) — `&lt;dcouplr/&gt; AirLock™`
+
+### 2.1 What Tools Are Needed
+- **On the in-VPC `&lt;dcouplr/&gt;` host:**
+  - `curl` (v7.68+)
+  - `systemd` (Linux daemon manager) or Docker
+  - `cloudflared` CLI binary (free Cloudflare Zero Trust connector)
+  - Outbound network egress: TCP port `443` (HTTPS) and UDP port `7844` (QUIC). **Zero inbound firewall rules required.**
+- **On the Operator Workstation:**
+  - Modern web browser: Google Chrome (v115+), Microsoft Edge (v115+), Brave, or Firefox.
+
+### 2.2 Where to Get It
+Download the deployment artifacts directly from your `&lt;dcouplr/&gt;` in-VPC appliance:
+
+```bash
+# 1. Systemd Service Unit for the tunnel connector
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/airlock/dcouplr-airlock.service -o ./dcouplr-airlock.service
+
+# 2. Automated Tunnel Provisioning Script
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/airlock/setup_airlock_tunnel.sh -o ./setup_airlock_tunnel.sh
+
+# 3. Docker Compose Stack (Alternative to Systemd)
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/airlock/docker-compose.airlock.yml -o ./docker-compose.airlock.yml
+```
+
+### 2.3 Where to Put It
+
+| File | Target Destination Path | Permissions | Purpose |
+| :--- | :--- | :--- | :--- |
+| `dcouplr-airlock.service` | `/etc/systemd/system/dcouplr-airlock.service` | `chmod 644` (root:root) | Systemd unit managing the background tunnel daemon. |
+| `config.yml` | `/etc/cloudflared/config.yml` | `chmod 600` (root:root) | Tunnel ingress rules routing to local `http://127.0.0.1:8000`. |
+| `setup_airlock_tunnel.sh` | `/opt/dcouplr/setup_airlock_tunnel.sh` | `chmod 700` (root:root) | Initial tunnel setup helper script. |
+| Workstation Shortcut | Desktop / Taskbar | Standard user | Kiosk browser launch shortcut. |
+
+### 2.4 Step-by-Step Implementation Procedure
+
+#### Step 1: Install `cloudflared` on the `&lt;dcouplr/&gt;` Host
+```bash
+# On Debian / Ubuntu:
+curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg &gt;/dev/null
+echo &#x27;deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared bookworm main&#x27; | sudo tee /etc/apt/sources.list.d/cloudflared.list
+sudo apt-get update &amp;&amp; sudo apt-get install -y cloudflared
+
+# On RHEL / AlmaLinux / Amazon Linux 2023:
+sudo dnf install -y https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-x86_64.rpm
+```
+
+#### Step 2: Configure the AirLock™ Ingress Tunnel
+Create the configuration file at `/etc/cloudflared/config.yml`:
+
+```yaml
+tunnel: &lt;YOUR-TUNNEL-ID&gt;
+credentials-file: /etc/cloudflared/&lt;YOUR-TUNNEL-ID&gt;.json
+
+ingress:
+  # Routes external requests to local &lt;dcouplr/&gt; daemon
+  - hostname: noc.yourcompany.com
+    service: http://127.0.0.1:8000
+    originRequest:
+      connectTimeout: 5s
+      noTLSVerify: true
+  - service: http_status:404
+```
+
+#### Step 3: Install &amp; Start the Systemd Service
+```bash
+sudo cp ./dcouplr-airlock.service /etc/systemd/system/dcouplr-airlock.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now dcouplr-airlock.service
+sudo systemctl status dcouplr-airlock.service
+```
+
+**Expected Status Output:**
+```text
+● dcouplr-airlock.service - &lt;dcouplr/&gt; AirLock Zero-Trust Tunnel Connector
+     Loaded: loaded (/etc/systemd/system/dcouplr-airlock.service; enabled)
+     Active: active (running) since Wed 2026-10-28 02:00:00 UTC
+   Main PID: 18240 (cloudflared)
+     Status: &quot;Registered at Cloudflare edge: 4 connections active (QUIC)&quot;
+```
+
+#### Step 4: Launch NOC Desk on Operator Workstations
+On any operator desk or NOC workstation, open the browser in dedicated kiosk mode:
+
+```powershell
+# Windows Operator Workstation (PowerShell):
+chrome.exe --app=&quot;https://noc.yourcompany.com/dashboard?view=noc-desk&quot; --start-fullscreen
+```
+```bash
+# Linux Operator Workstation (Bash):
+google-chrome --kiosk --app=&quot;https://noc.yourcompany.com/dashboard?view=noc-desk&quot;
+```
+
+&gt; [!TIP]
+&gt; **Operator Focused View:** Appending `?view=noc-desk` automatically loads the exact replica of `http://localhost:8000/dashboard` with the **In-VPC Financial Cost Breakdown** and **Alert Rule Threshold Simulator** hidden, keeping the screen 100% focused on active incidents, Raft consensus, and topology health.
+
+---
+
+## 3. Option 2: Wallboard (Air-Gapped SecOps) — `&lt;dcouplr/&gt; PulseCast™`
+
+### 3.1 What Tools Are Needed
+- **On the in-VPC `&lt;dcouplr/&gt;` host:**
+  - Python 3.10+ (for the lightweight pulse synchronizer daemon)
+  - `aws-cli` or `rclone` (to sync JSON file to S3 / Cloudflare R2 bucket)
+  - Outbound HTTPS (Port 443) to your CDN / bucket endpoint.
+- **On the Wall Display (TV Monitor / Overhead Screen):**
+  - Raspberry Pi 4/5, Intel N100 mini PC, or Smart TV browser.
+  - No VPN, no SSH keys, and no internal credentials needed.
+
+### 3.2 Where to Get It
+Retrieve the static bundle from the repository or your `&lt;dcouplr/&gt;` instance:
+
+```bash
+# 1. Standalone Single-File Static Wallboard HTML
+curl -sSL http://127.0.0.1:8000/dist/pulsecast-cdn/index.html -o ./index.html
+
+# 2. PulseCast Publisher Sync Script
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/pulsecast/sync_pulse_to_cdn.py -o ./sync_pulse_to_cdn.py
+
+# 3. Systemd Service Unit for Pulse Sync
+curl -sSL http://127.0.0.1:8000/static/deploy/wallboard/pulsecast/dcouplr-pulsecast.service -o ./dcouplr-pulsecast.service
+```
+
+### 3.3 Where to Put It
+
+| File | Target Destination Path | Permissions | Purpose |
+| :--- | :--- | :--- | :--- |
+| `index.html` | `/var/www/html/wallboard/index.html` (or S3/R2 bucket root) | `chmod 644` | Client-side static wallboard application. |
+| `sync_pulse_to_cdn.py` | `/opt/dcouplr/pulsecast/sync_pulse_to_cdn.py` | `chmod 750` | 5-second background publisher script. |
+| `dcouplr-pulsecast.service` | `/etc/systemd/system/dcouplr-pulsecast.service` | `chmod 644` | Systemd service running the publisher daemon. |
+
+### 3.4 Step-by-Step Implementation Procedure
+
+#### Step 1: Host the Static HTML File
+Upload `index.html` to any static web server (Nginx, Apache, or Cloudflare R2 / S3 website):
+
+```bash
+# Example: Deploying to internal Nginx server:
+sudo mkdir -p /var/www/html/wallboard
+sudo cp ./index.html /var/www/html/wallboard/index.html
+sudo chown -R www-data:www-data /var/www/html/wallboard
+```
+
+#### Step 2: Configure the 5-Second Background Pulse Publisher
+On your in-VPC `&lt;dcouplr/&gt;` appliance, deploy the publisher daemon:
+
+```bash
+sudo mkdir -p /opt/dcouplr/pulsecast
+sudo cp ./sync_pulse_to_cdn.py /opt/dcouplr/pulsecast/sync_pulse_to_cdn.py
+sudo cp ./dcouplr-pulsecast.service /etc/systemd/system/dcouplr-pulsecast.service
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now dcouplr-pulsecast.service
+sudo systemctl status dcouplr-pulsecast.service
+```
+
+**Expected Publisher Output:**
+```text
+[INFO] &lt;dcouplr/&gt; PulseCast Publisher started.
+[INFO] Local loopback source: http://127.0.0.1:8000/v1/telemetry/topology-pulse
+[INFO] Target CDN endpoint: https://pulse.yourcompany.com/topology-pulse.json
+[PULSE] 2026-10-28T02:15:00Z: 1,142 bytes synced (HTTP 200) • SHA: e3b0c442...
+[PULSE] 2026-10-28T02:15:05Z: 1,142 bytes synced (HTTP 200) • SHA: 9f86d081...
+```
+
+#### Step 3: Open the Wallboard on the Physical TV Display
+Launch Chromium on your TV wall PC (Raspberry Pi or Intel N100):
+
+```bash
+chromium-browser \
+  --kiosk \
+  --noerrdialogs \
+  --disable-infobars \
+  --check-for-update-interval=31536000 \
+  &quot;https://wallboard.yourcompany.com/?pulse=https://pulse.yourcompany.com/topology-pulse.json&quot;
+```
+
+#### Step 4: Enable Display Wake Lock
+On first launch, click **`☕ Wake Lock Active`** in the top navigation bar. This uses the browser W3C Screen Wake Lock API to prevent the screen from sleeping or turning off overnight.
+
+---
+
+## 4. Disconnection Root Cause Analysis (RCA) &amp; Troubleshooting
+
+If your wall display loses connection, locate the symptom in the table below to resolve it immediately:
+
+### Option 1: NOC Desk (AirLock™) Disconnections
+
+| Failure Mode | Root Cause | Operator Symptom | Immediate Fix Command |
+| :--- | :--- | :--- | :--- |
+| **Service Token Expiry** | Cloudflare Access Service Token reached validity limit. | HTTP 403 Forbidden or redirect to corporate SSO login screen. | Regenerate token in Cloudflare Zero Trust console and update browser credentials header. |
+| **TCP Keepalive Timeout** | Corporate firewall dropped idle TCP connections after 300s. | Stale graphs; WebSocket indicator changes from Green to Amber. | Ensure `originRequest.keepAliveTimeout: 90s` is configured in `/etc/cloudflared/config.yml`. |
+| **In-VPC Daemon Restart** | `&lt;dcouplr/&gt;` daemon restarted during an update. | HTTP 502 Bad Gateway. | Check local daemon status: `sudo systemctl status dcouplr`. AirLock reconnects automatically within 3 seconds of service recovery. |
+| **DNS Resolution Failure** | Local ISP DNS cache poisoned or workstation disconnected from internet. | `ERR_NAME_NOT_RESOLVED`. | Test tunnel endpoint directly: `curl -I https://noc.yourcompany.com/v1/health`. |
+| **Local Sleep Mode** | Workstation entered OS sleep or power-saving mode. | Display froze at historical timestamp. | Disable OS display sleep in Windows Power Settings (`powercfg -change -monitor-timeout-ac 0`). |
+
+### Option 2: Wallboard (PulseCast™) Disconnections
+
+| Failure Mode | Root Cause | Operator Symptom | Immediate Fix Command |
+| :--- | :--- | :--- | :--- |
+| **Stale Edge Cache** | Publisher daemon crashed or stopped syncing pulse JSON. | Pulse indicator turns Amber: `STALE PULSE (&gt; 15s)`. | Restart publisher service: `sudo systemctl restart dcouplr-pulsecast.service`. |
+| **CDN HTTP 404 Not Found** | Pulse JSON path mismatch in URL configuration. | Red banner: `SOURCE UNREACHABLE (HTTP 404)`. | Click `⚙ Source` in HUD header and verify URL matches your CDN path. |
+| **CORS Header Missing** | CDN bucket is missing `Access-Control-Allow-Origin: *`. | Browser console shows `CORS header missing`. | Add CORS rule on Cloudflare R2 / S3 bucket: `AllowedOrigins: [&quot;*&quot;], AllowedMethods: [&quot;GET&quot;]`. |
+| **Network Cable Unplugged** | Physical Ethernet disconnect on wall monitor PC. | Red badge: `OFFLINE (RETRYING IN 5s)`. | Check physical LAN cable or Wi-Fi status on the TV PC. Wallboard retries automatically every 5s. |
+| **TV Display Burn-In / Sleep** | TV hardware timer turned off panel after 4 hours of static video. | Black screen on physical television. | Disable &quot;Eco Mode&quot; and &quot;Auto Standby&quot; in physical TV hardware settings. |
+
+---
+
+## 5. In-VPC Dashboard Health Watch &amp; Indicator Matrix
+
+When monitoring the live dashboard (`http://localhost:8000/dashboard` or the NOC Desk), monitor these **6 critical operational indicators**:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        DASHBOARD INDICATORS TO WATCH OUT FOR                           │
+├──────────────────────┬──────────────────────┬─────────────────┬────────────────────────┤
+│ Indicator            │ Normal (Healthy)     │ Warning / Alert │ Action Required        │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 1. Consensus Quorum  │ 3/3 NODES OPTIMAL    │ 2/3 DEGRADED    │ Peer dropped; check    │
+│                      │ (Neon Emerald)       │ (Amber / Red)   │ journalctl on node     │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 2. p99 Ingestion Lag │ &lt; 1.00 ms            │ &gt; 5.00 ms       │ Check network egress   │
+│                      │ (Emerald / Purple)   │ (Rose Spikes)   │ or packet saturation   │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 3. Memory Leak Drift │ 0.00 MB (Stable)     │ &gt; 10.0 MB       │ Inspect memory gauge;  │
+│                      │ (Emerald)            │ (Trending Up)   │ restart agent if leak  │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 4. WAN Egress Attest │ $0.00 WAN FEES       │ Non-Zero Value  │ Air-gap breached!      │
+│                      │ (Emerald Lock)       │ (Security Red)  │ Check firewall rules   │
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 5. Live Pulse Dot    │ Blinking Green       │ Solid Red       │ Data feed lost; check  │
+│                      │ (Every 2 seconds)    │ (Disconnected)  │ Section 4 troubleshooting│
+├──────────────────────┼──────────────────────┼─────────────────┼────────────────────────┤
+│ 6. Node License Pill │ Green (≤75% Cap)     │ Red (100% Full) │ Cluster full; upgrade  │
+│                      │ Blue (76–89% Cap)    │ (Exhausted)     │ license tier via admin │
+└──────────────────────┴──────────────────────┴─────────────────┴────────────────────────┘
+```
+
+### Node License Color-Coding Breakdown:
+- 🟢 **Green (Comfort Zone &amp;le; 75%):** e.g., `0–56 / 75 Nodes`. Healthy operational capacity.
+- 🔵 **Blue (Operational Active 76%–89%):** e.g., `57–67 / 75 Nodes`. Standard load; plan for next wave.
+- 🟡 **Amber (Warning 90%–99%):** e.g., `68–74 / 75 Nodes`. Near quota limit; contact procurement to expand cluster tier.
+- 🔴 **Red (Critical 100% Full):** e.g., `75 / 75 Nodes`. License fully exhausted. Additional nodes will be throttled.
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

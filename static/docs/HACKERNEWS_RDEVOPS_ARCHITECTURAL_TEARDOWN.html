@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - HACKERNEWS_RDEVOPS_ARCHITECTURAL_TEARDOWN.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/HACKERNEWS_RDEVOPS_ARCHITECTURAL_TEARDOWN.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="HACKERNEWS_RDEVOPS_ARCHITECTURAL_TEARDOWN.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="why-we-dont-want-your-data-logs-building-a-zero-egress-92-gross-margin-open-core-transpiler-to-bypass-volumetric-saas-lock-in">📢 Why We Don't Want Your Data Logs: Building a Zero-Egress, 92% Gross-Margin Open-Core Transpiler to Bypass Volumetric SaaS Lock-In</h1>
+<p><strong>Target Publication:</strong> Hacker News (<em>Show HN</em> / <em>Ask HN</em>), Reddit (<code>r/devops</code>, <code>r/golang</code>, <code>r/kubernetes</code>), dev.to<br />
+<strong>Document ID:</strong> <code>VA-PUB-HN-TEARDOWN-001</code><br />
+<strong>Classification:</strong> Engineering Architecture Teardown &amp; Technical Manifesto<br />
+<strong>Author:</strong> Jennifer Cleta Lee &amp; The <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Core Engineering Team<br />
+<strong>Status:</strong> Approved for Community Distribution</p>
+<hr />
+<h2 id="the-elephant-in-the-server-room-the-volumetric-observability-tax">🎯 The Elephant in the Server Room: The Volumetric Observability Tax</h2>
+<p>Every DevOps team knows the feeling of getting the monthly Datadog, Splunk, or New Relic invoice.</p>
+<p>What began as a convenient $5,000/month monitoring pilot has quietly mutated into a $45,000/month monster. But the worst part isn't even the cost of the agent—it's the <strong>volumetric egress tax</strong> and the <strong>proprietary alert query syntax trap</strong>:</p>
+<ol>
+<li><strong>Network Egress Fees:</strong> Pumping gigabytes of raw metric timeseries and debug logs out of your AWS/GCP VPCs across the public Internet to a multi-tenant SaaS ingest endpoint costs real hyperscaler egress dollars.</li>
+<li><strong>Syntax Vendor Lock-In:</strong> Your engineers spent 3 years crafting hundreds of nuanced threshold alerts, rate anomalies, and monitor formulas using vendor-specific syntax (e.g., <code>avg(last_5m):system.cpu.user{env:prod} by {host} &gt; 85</code>).</li>
+<li><strong>Security &amp; Privacy Liability:</strong> Security and compliance officers are terrified of engineers pasting production queries containing private RFC 1918 IPs, internal cluster hostnames, or database connection tags into public SaaS tools or cloud AI converters.</li>
+</ol>
+<p>When teams attempt to migrate to open-source standards like Prometheus, Mimir, and Grafana 11, they discover that manually rewriting 500 alerts takes 6 to 9 months of engineering toil.</p>
+<p>We built <strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code></strong> to blow that entire trap wide open.</p>
+<hr />
+<h2 id="principle-1-zero-exfiltration-egresswan-equiv-000text-kb">🛡️ Principle #1: Zero-Exfiltration ($Egress_{WAN} \equiv 0.00\text{ KB}$)</h2>
+<p>Most migration tools want to ingest your data into <em>their</em> SaaS cloud. They ask you for your Datadog API keys, pull your configs to their servers, and charge you a subscription to host a middleman proxy.</p>
+<p><strong>We don't want your data logs. Period.</strong></p>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> is architected as an <strong>air-gapped, local-first engine</strong>:</p>
+<ul>
+<li>It executes as a standalone static binary inside your local terminal or private VPC Kubernetes cluster.</li>
+<li>All parsing, token redacting, AST construction, and PromQL synthesis take place <strong>exclusively in volatile RAM</strong>.</li>
+<li>Socket monitoring proves that during transpilation, <strong>zero outbound WAN calls are made</strong>.</li>
+</ul>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">  ┌────────────────────────────────────────────────────────────────────────┐
+  │                    CUSTOMER PRIVATE WORKSTATION / VPC                  │
+  │                                                                        │
+  │  Datadog Monitor JSON                                                  │
+  │  (Proprietary Syntax)                                                  │
+  │          │                                                             │
+  │          ▼                                                             │
+  │  ┌──────────────────────────────────────────────────────────────┐     │
+  │  │ <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> IN-MEMORY TOKEN SCRUBBER                          │     │
+  │  │  - Scans RFC 1918 IPs (10.0.0.0/8, 172.16.0.0/12)           │     │
+  │  │  - Redacts AWS Key patterns (AKIA...) &amp; Auth Tokens         │     │
+  │  │  - Masks internal DNS &amp; database node topologies            │     │
+  │  └──────────────────────────────┬───────────────────────────────┘     │
+  │                                 ▼                                      │
+  │  ┌──────────────────────────────────────────────────────────────┐     │
+  │  │ DETERMINISTIC ABSTRACT SYNTAX TREE (AST) ENGINE              │     │
+  │  │  - Mathematical Identity Parity: Φ(q) ≡ Ψ(PromQL)            │     │
+  │  │  - Sub-20ms Latency Budget (Avg hot-path: &lt; 2.0ms)           │     │
+  │  │  - Zero Silent Drops (Explicit fallback comment blocks)      │     │
+  │  └──────────────────────────────┬───────────────────────────────┘     │
+  │                                 ▼                                      │
+  │  Native Prometheus Alerting Rules &amp; Grafana 11 JSON Dashboard          │
+  │  (Vendor-Neutral Cloud Native Standards)                               │
+  │                                                                        │
+  │             ═══════════ ZERO DATA EXFILTRATION ═══════════             │
+  │                                                                        │
+  └────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="principle-2-sub-20ms-latency-budget-2ms-hot-path">⚡ Principle #2: Sub-20ms Latency Budget (&lt; 2ms Hot Path)</h2>
+<p>Probabilistic LLM converters suffer from two fatal engineering flaws:</p>
+<ol>
+<li><strong>Hallucination Risk:</strong> They hallucinate metric names or drop alert duration clauses (<code>for: 5m</code>), leading to silent production outages.</li>
+<li><strong>Lag:</strong> Calling an external LLM API takes 800ms to 3,000ms per alert rule.</li>
+</ol>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> utilizes formal <strong>Abstract Syntax Trees (AST)</strong>:</p>
+<ul>
+<li>Queries are lexed and parsed into formal grammatical constructs (<code>MetricTarget</code>, <code>AggregationFunction</code>, <code>TimeWindow</code>, <code>ComparisonOperator</code>).</li>
+<li>The semantic converter applies deterministic mathematical identity transformations in <strong>less than 2 milliseconds</strong> per rule.</li>
+<li>Our automated regression test suite executes <strong>79 full semantic translation test cases in just 1.22 seconds</strong> (<code>tests/test_translation.py</code>).</li>
+</ul>
+<hr />
+<h2 id="principle-3-distroless-safety-boundary-non-root-uid-65532">🔒 Principle #3: Distroless Safety Boundary (Non-Root UID 65532)</h2>
+<p>Enterprise security teams will not allow privileged containers with shell access into their clusters. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> is packaged using a multi-stage distroless build:</p>
+<div class="code-box"><div class="code-box-header"><span>dockerfile</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-dockerfile">FROM golang:1.23-alpine AS builder
+WORKDIR /src
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    -ldflags &quot;-s -w -extldflags '-static'&quot; \
+    -o /bin/decoupler ./cmd/decoupler/*.go
+
+FROM gcr.io/distroless/static-debian12:latest-amd64 AS final
+USER 65532:65532
+COPY --from=builder --chown=65532:65532 /bin/decoupler /app/decoupler
+ENTRYPOINT [&quot;/app/decoupler&quot;]
+</code></pre></div>
+<ul>
+<li><strong>No Shell (<code>/bin/sh</code> does not exist).</strong></li>
+<li><strong>No Package Manager (<code>apt</code>, <code>apk</code> omitted).</strong></li>
+<li><strong>Zero Root Privileges:</strong> Executes under unprivileged <code>UID 65532</code>.</li>
+<li><strong>Zero CVEs:</strong> Clean Trivy and Grype container security scans.</li>
+</ul>
+<hr />
+<h2 id="quickstart-try-it-in-30-seconds">🚀 Quickstart: Try It in 30 Seconds</h2>
+<h3 id="install-via-one-line-script">Install via One-Line Script:</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Linux / macOS
+curl -fsSL https://get.dcouplr.com | sh
+
+# Windows (PowerShell)
+irm https://get.dcouplr.com/install.ps1 | iex
+</code></pre></div>
+<h3 id="run-local-system-diagnostics">Run Local System Diagnostics:</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">dcouplr doctor
+</code></pre></div>
+<h3 id="transpile-datadog-alerts-to-prometheus">Transpile Datadog Alerts to Prometheus:</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Feed your Datadog monitor JSON directly:
+dcouplr translate -i datadog_monitors.json -t prometheus -o alert_rules.yaml
+</code></pre></div>
+<p>Inspect the output—your rate modifiers, time aggregation buckets, threshold limits, and notification channels are preserved with 100% mathematical determinism.</p>
+<hr />
+<h2 id="the-economics-92-gross-margins-by-eliminating-cloud-cogs">📈 The Economics: 92% Gross Margins by Eliminating Cloud COGS</h2>
+<p>Because <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> does not operate massive centralized compute clusters to process customer telemetry data, our operational cost of goods sold (COGS) is virtually zero:</p>
+<ul>
+<li><strong>Customer Benefits:</strong> You pay predictable, transparent node-tier licenses ($0.00/GB data ingestion fees).</li>
+<li><strong>Company Economics:</strong> 92%+ software gross margins that scale sustainably without burning venture capital on AWS hosting bills.</li>
+</ul>
+<hr />
+<h2 id="join-the-community">🤝 Join the Community</h2>
+<p>The Community Core CLI and installers are 100% open-source under the <strong>Apache License 2.0</strong>:</p>
+<ul>
+<li>📦 <strong>GitHub Repository:</strong> <a href="https://github.com/Varinull/dcouplr-community">https://github.com/Varinull/dcouplr-community</a></li>
+<li>📖 <strong>Documentation:</strong> <a href="https://dcouplr.com/docs">https://dcouplr.com/docs</a></li>
+<li>💬 <strong>Discussion &amp; Issues:</strong> <a href="https://github.com/Varinull/dcouplr-community/issues">https://github.com/Varinull/dcouplr-community/issues</a></li>
+</ul>
+<p>Feedback and PRs for new query parser plugins are warmly welcomed!</p>
+</div>
+      <pre id="raw-view"><code># 📢 Why We Don&#x27;t Want Your Data Logs: Building a Zero-Egress, 92% Gross-Margin Open-Core Transpiler to Bypass Volumetric SaaS Lock-In
+
+**Target Publication:** Hacker News (*Show HN* / *Ask HN*), Reddit (`r/devops`, `r/golang`, `r/kubernetes`), dev.to  
+**Document ID:** `VA-PUB-HN-TEARDOWN-001`  
+**Classification:** Engineering Architecture Teardown &amp; Technical Manifesto  
+**Author:** Jennifer Cleta Lee &amp; The `&lt;dcouplr/&gt;` Core Engineering Team  
+**Status:** Approved for Community Distribution  
+
+---
+
+## 🎯 The Elephant in the Server Room: The Volumetric Observability Tax
+
+Every DevOps team knows the feeling of getting the monthly Datadog, Splunk, or New Relic invoice. 
+
+What began as a convenient $5,000/month monitoring pilot has quietly mutated into a $45,000/month monster. But the worst part isn&#x27;t even the cost of the agent—it&#x27;s the **volumetric egress tax** and the **proprietary alert query syntax trap**:
+1. **Network Egress Fees:** Pumping gigabytes of raw metric timeseries and debug logs out of your AWS/GCP VPCs across the public Internet to a multi-tenant SaaS ingest endpoint costs real hyperscaler egress dollars.
+2. **Syntax Vendor Lock-In:** Your engineers spent 3 years crafting hundreds of nuanced threshold alerts, rate anomalies, and monitor formulas using vendor-specific syntax (e.g., `avg(last_5m):system.cpu.user{env:prod} by {host} &gt; 85`).
+3. **Security &amp; Privacy Liability:** Security and compliance officers are terrified of engineers pasting production queries containing private RFC 1918 IPs, internal cluster hostnames, or database connection tags into public SaaS tools or cloud AI converters.
+
+When teams attempt to migrate to open-source standards like Prometheus, Mimir, and Grafana 11, they discover that manually rewriting 500 alerts takes 6 to 9 months of engineering toil.
+
+We built **`&lt;dcouplr/&gt;`** to blow that entire trap wide open.
+
+---
+
+## 🛡️ Principle #1: Zero-Exfiltration ($Egress_{WAN} \equiv 0.00\text{ KB}$)
+
+Most migration tools want to ingest your data into *their* SaaS cloud. They ask you for your Datadog API keys, pull your configs to their servers, and charge you a subscription to host a middleman proxy.
+
+**We don&#x27;t want your data logs. Period.**
+
+`&lt;dcouplr/&gt;` is architected as an **air-gapped, local-first engine**:
+* It executes as a standalone static binary inside your local terminal or private VPC Kubernetes cluster.
+* All parsing, token redacting, AST construction, and PromQL synthesis take place **exclusively in volatile RAM**.
+* Socket monitoring proves that during transpilation, **zero outbound WAN calls are made**.
+
+```
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │                    CUSTOMER PRIVATE WORKSTATION / VPC                  │
+  │                                                                        │
+  │  Datadog Monitor JSON                                                  │
+  │  (Proprietary Syntax)                                                  │
+  │          │                                                             │
+  │          ▼                                                             │
+  │  ┌──────────────────────────────────────────────────────────────┐     │
+  │  │ &lt;dcouplr/&gt; IN-MEMORY TOKEN SCRUBBER                          │     │
+  │  │  - Scans RFC 1918 IPs (10.0.0.0/8, 172.16.0.0/12)           │     │
+  │  │  - Redacts AWS Key patterns (AKIA...) &amp; Auth Tokens         │     │
+  │  │  - Masks internal DNS &amp; database node topologies            │     │
+  │  └──────────────────────────────┬───────────────────────────────┘     │
+  │                                 ▼                                      │
+  │  ┌──────────────────────────────────────────────────────────────┐     │
+  │  │ DETERMINISTIC ABSTRACT SYNTAX TREE (AST) ENGINE              │     │
+  │  │  - Mathematical Identity Parity: Φ(q) ≡ Ψ(PromQL)            │     │
+  │  │  - Sub-20ms Latency Budget (Avg hot-path: &lt; 2.0ms)           │     │
+  │  │  - Zero Silent Drops (Explicit fallback comment blocks)      │     │
+  │  └──────────────────────────────┬───────────────────────────────┘     │
+  │                                 ▼                                      │
+  │  Native Prometheus Alerting Rules &amp; Grafana 11 JSON Dashboard          │
+  │  (Vendor-Neutral Cloud Native Standards)                               │
+  │                                                                        │
+  │             ═══════════ ZERO DATA EXFILTRATION ═══════════             │
+  │                                                                        │
+  └────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## ⚡ Principle #2: Sub-20ms Latency Budget (&lt; 2ms Hot Path)
+
+Probabilistic LLM converters suffer from two fatal engineering flaws:
+1. **Hallucination Risk:** They hallucinate metric names or drop alert duration clauses (`for: 5m`), leading to silent production outages.
+2. **Lag:** Calling an external LLM API takes 800ms to 3,000ms per alert rule.
+
+`&lt;dcouplr/&gt;` utilizes formal **Abstract Syntax Trees (AST)**:
+* Queries are lexed and parsed into formal grammatical constructs (`MetricTarget`, `AggregationFunction`, `TimeWindow`, `ComparisonOperator`).
+* The semantic converter applies deterministic mathematical identity transformations in **less than 2 milliseconds** per rule.
+* Our automated regression test suite executes **79 full semantic translation test cases in just 1.22 seconds** (`tests/test_translation.py`).
+
+---
+
+## 🔒 Principle #3: Distroless Safety Boundary (Non-Root UID 65532)
+
+Enterprise security teams will not allow privileged containers with shell access into their clusters. `&lt;dcouplr/&gt;` is packaged using a multi-stage distroless build:
+```dockerfile
+FROM golang:1.23-alpine AS builder
+WORKDIR /src
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    -ldflags &quot;-s -w -extldflags &#x27;-static&#x27;&quot; \
+    -o /bin/decoupler ./cmd/decoupler/*.go
+
+FROM gcr.io/distroless/static-debian12:latest-amd64 AS final
+USER 65532:65532
+COPY --from=builder --chown=65532:65532 /bin/decoupler /app/decoupler
+ENTRYPOINT [&quot;/app/decoupler&quot;]
+```
+
+* **No Shell (`/bin/sh` does not exist).**
+* **No Package Manager (`apt`, `apk` omitted).**
+* **Zero Root Privileges:** Executes under unprivileged `UID 65532`.
+* **Zero CVEs:** Clean Trivy and Grype container security scans.
+
+---
+
+## 🚀 Quickstart: Try It in 30 Seconds
+
+### Install via One-Line Script:
+```bash
+# Linux / macOS
+curl -fsSL https://get.dcouplr.com | sh
+
+# Windows (PowerShell)
+irm https://get.dcouplr.com/install.ps1 | iex
+```
+
+### Run Local System Diagnostics:
+```bash
+dcouplr doctor
+```
+
+### Transpile Datadog Alerts to Prometheus:
+```bash
+# Feed your Datadog monitor JSON directly:
+dcouplr translate -i datadog_monitors.json -t prometheus -o alert_rules.yaml
+```
+
+Inspect the output—your rate modifiers, time aggregation buckets, threshold limits, and notification channels are preserved with 100% mathematical determinism.
+
+---
+
+## 📈 The Economics: 92% Gross Margins by Eliminating Cloud COGS
+
+Because `&lt;dcouplr/&gt;` does not operate massive centralized compute clusters to process customer telemetry data, our operational cost of goods sold (COGS) is virtually zero:
+* **Customer Benefits:** You pay predictable, transparent node-tier licenses ($0.00/GB data ingestion fees).
+* **Company Economics:** 92%+ software gross margins that scale sustainably without burning venture capital on AWS hosting bills.
+
+---
+
+## 🤝 Join the Community
+
+The Community Core CLI and installers are 100% open-source under the **Apache License 2.0**:
+- 📦 **GitHub Repository:** [https://github.com/Varinull/dcouplr-community](https://github.com/Varinull/dcouplr-community)
+- 📖 **Documentation:** [https://dcouplr.com/docs](https://dcouplr.com/docs)
+- 💬 **Discussion &amp; Issues:** [https://github.com/Varinull/dcouplr-community/issues](https://github.com/Varinull/dcouplr-community/issues)
+
+Feedback and PRs for new query parser plugins are warmly welcomed!
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># 📢 Why We Don&#x27;t Want Your Data Logs: Building a Zero-Egress, 92% Gross-Margin Open-Core Transpiler to Bypass Volumetric SaaS Lock-In
+
+**Target Publication:** Hacker News (*Show HN* / *Ask HN*), Reddit (`r/devops`, `r/golang`, `r/kubernetes`), dev.to  
+**Document ID:** `VA-PUB-HN-TEARDOWN-001`  
+**Classification:** Engineering Architecture Teardown &amp; Technical Manifesto  
+**Author:** Jennifer Cleta Lee &amp; The `&lt;dcouplr/&gt;` Core Engineering Team  
+**Status:** Approved for Community Distribution  
+
+---
+
+## 🎯 The Elephant in the Server Room: The Volumetric Observability Tax
+
+Every DevOps team knows the feeling of getting the monthly Datadog, Splunk, or New Relic invoice. 
+
+What began as a convenient $5,000/month monitoring pilot has quietly mutated into a $45,000/month monster. But the worst part isn&#x27;t even the cost of the agent—it&#x27;s the **volumetric egress tax** and the **proprietary alert query syntax trap**:
+1. **Network Egress Fees:** Pumping gigabytes of raw metric timeseries and debug logs out of your AWS/GCP VPCs across the public Internet to a multi-tenant SaaS ingest endpoint costs real hyperscaler egress dollars.
+2. **Syntax Vendor Lock-In:** Your engineers spent 3 years crafting hundreds of nuanced threshold alerts, rate anomalies, and monitor formulas using vendor-specific syntax (e.g., `avg(last_5m):system.cpu.user{env:prod} by {host} &gt; 85`).
+3. **Security &amp; Privacy Liability:** Security and compliance officers are terrified of engineers pasting production queries containing private RFC 1918 IPs, internal cluster hostnames, or database connection tags into public SaaS tools or cloud AI converters.
+
+When teams attempt to migrate to open-source standards like Prometheus, Mimir, and Grafana 11, they discover that manually rewriting 500 alerts takes 6 to 9 months of engineering toil.
+
+We built **`&lt;dcouplr/&gt;`** to blow that entire trap wide open.
+
+---
+
+## 🛡️ Principle #1: Zero-Exfiltration ($Egress_{WAN} \equiv 0.00\text{ KB}$)
+
+Most migration tools want to ingest your data into *their* SaaS cloud. They ask you for your Datadog API keys, pull your configs to their servers, and charge you a subscription to host a middleman proxy.
+
+**We don&#x27;t want your data logs. Period.**
+
+`&lt;dcouplr/&gt;` is architected as an **air-gapped, local-first engine**:
+* It executes as a standalone static binary inside your local terminal or private VPC Kubernetes cluster.
+* All parsing, token redacting, AST construction, and PromQL synthesis take place **exclusively in volatile RAM**.
+* Socket monitoring proves that during transpilation, **zero outbound WAN calls are made**.
+
+```
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │                    CUSTOMER PRIVATE WORKSTATION / VPC                  │
+  │                                                                        │
+  │  Datadog Monitor JSON                                                  │
+  │  (Proprietary Syntax)                                                  │
+  │          │                                                             │
+  │          ▼                                                             │
+  │  ┌──────────────────────────────────────────────────────────────┐     │
+  │  │ &lt;dcouplr/&gt; IN-MEMORY TOKEN SCRUBBER                          │     │
+  │  │  - Scans RFC 1918 IPs (10.0.0.0/8, 172.16.0.0/12)           │     │
+  │  │  - Redacts AWS Key patterns (AKIA...) &amp; Auth Tokens         │     │
+  │  │  - Masks internal DNS &amp; database node topologies            │     │
+  │  └──────────────────────────────┬───────────────────────────────┘     │
+  │                                 ▼                                      │
+  │  ┌──────────────────────────────────────────────────────────────┐     │
+  │  │ DETERMINISTIC ABSTRACT SYNTAX TREE (AST) ENGINE              │     │
+  │  │  - Mathematical Identity Parity: Φ(q) ≡ Ψ(PromQL)            │     │
+  │  │  - Sub-20ms Latency Budget (Avg hot-path: &lt; 2.0ms)           │     │
+  │  │  - Zero Silent Drops (Explicit fallback comment blocks)      │     │
+  │  └──────────────────────────────┬───────────────────────────────┘     │
+  │                                 ▼                                      │
+  │  Native Prometheus Alerting Rules &amp; Grafana 11 JSON Dashboard          │
+  │  (Vendor-Neutral Cloud Native Standards)                               │
+  │                                                                        │
+  │             ═══════════ ZERO DATA EXFILTRATION ═══════════             │
+  │                                                                        │
+  └────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## ⚡ Principle #2: Sub-20ms Latency Budget (&lt; 2ms Hot Path)
+
+Probabilistic LLM converters suffer from two fatal engineering flaws:
+1. **Hallucination Risk:** They hallucinate metric names or drop alert duration clauses (`for: 5m`), leading to silent production outages.
+2. **Lag:** Calling an external LLM API takes 800ms to 3,000ms per alert rule.
+
+`&lt;dcouplr/&gt;` utilizes formal **Abstract Syntax Trees (AST)**:
+* Queries are lexed and parsed into formal grammatical constructs (`MetricTarget`, `AggregationFunction`, `TimeWindow`, `ComparisonOperator`).
+* The semantic converter applies deterministic mathematical identity transformations in **less than 2 milliseconds** per rule.
+* Our automated regression test suite executes **79 full semantic translation test cases in just 1.22 seconds** (`tests/test_translation.py`).
+
+---
+
+## 🔒 Principle #3: Distroless Safety Boundary (Non-Root UID 65532)
+
+Enterprise security teams will not allow privileged containers with shell access into their clusters. `&lt;dcouplr/&gt;` is packaged using a multi-stage distroless build:
+```dockerfile
+FROM golang:1.23-alpine AS builder
+WORKDIR /src
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    -ldflags &quot;-s -w -extldflags &#x27;-static&#x27;&quot; \
+    -o /bin/decoupler ./cmd/decoupler/*.go
+
+FROM gcr.io/distroless/static-debian12:latest-amd64 AS final
+USER 65532:65532
+COPY --from=builder --chown=65532:65532 /bin/decoupler /app/decoupler
+ENTRYPOINT [&quot;/app/decoupler&quot;]
+```
+
+* **No Shell (`/bin/sh` does not exist).**
+* **No Package Manager (`apt`, `apk` omitted).**
+* **Zero Root Privileges:** Executes under unprivileged `UID 65532`.
+* **Zero CVEs:** Clean Trivy and Grype container security scans.
+
+---
+
+## 🚀 Quickstart: Try It in 30 Seconds
+
+### Install via One-Line Script:
+```bash
+# Linux / macOS
+curl -fsSL https://get.dcouplr.com | sh
+
+# Windows (PowerShell)
+irm https://get.dcouplr.com/install.ps1 | iex
+```
+
+### Run Local System Diagnostics:
+```bash
+dcouplr doctor
+```
+
+### Transpile Datadog Alerts to Prometheus:
+```bash
+# Feed your Datadog monitor JSON directly:
+dcouplr translate -i datadog_monitors.json -t prometheus -o alert_rules.yaml
+```
+
+Inspect the output—your rate modifiers, time aggregation buckets, threshold limits, and notification channels are preserved with 100% mathematical determinism.
+
+---
+
+## 📈 The Economics: 92% Gross Margins by Eliminating Cloud COGS
+
+Because `&lt;dcouplr/&gt;` does not operate massive centralized compute clusters to process customer telemetry data, our operational cost of goods sold (COGS) is virtually zero:
+* **Customer Benefits:** You pay predictable, transparent node-tier licenses ($0.00/GB data ingestion fees).
+* **Company Economics:** 92%+ software gross margins that scale sustainably without burning venture capital on AWS hosting bills.
+
+---
+
+## 🤝 Join the Community
+
+The Community Core CLI and installers are 100% open-source under the **Apache License 2.0**:
+- 📦 **GitHub Repository:** [https://github.com/Varinull/dcouplr-community](https://github.com/Varinull/dcouplr-community)
+- 📖 **Documentation:** [https://dcouplr.com/docs](https://dcouplr.com/docs)
+- 💬 **Discussion &amp; Issues:** [https://github.com/Varinull/dcouplr-community/issues](https://github.com/Varinull/dcouplr-community/issues)
+
+Feedback and PRs for new query parser plugins are warmly welcomed!
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-DECOUPLER-P1-009.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-DECOUPLER-P1-009.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-DECOUPLER-P1-009.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="tier-3-platform-engineering-escalation-runbook-distributed-raft-quorum-failure-mitigation">Tier-3 Platform Engineering Escalation Runbook: Distributed Raft Quorum Failure Mitigation</h1>
+<p><strong>Runbook Identifier:</strong> <code>RUNBOOK-DECOUPLER-P1-009</code><br />
+<strong>Escalation Trigger:</strong> Complete Cluster Quorum Loss / Raft Split-Vote State Saturation<br />
+<strong>Target Group:</strong> Tier-3 Core Infrastructure Platform Engineers<br />
+<strong>Target SLA Bound:</strong> Strict 2-hour initial enterprise service mitigation SLA<br />
+<strong>Applicability:</strong> Production Multi-Zone Node Meshes, Raft Consensus Rings, and Localized Storage Engines</p>
+<hr />
+<h2 id="1-executive-summary-triage-overview">1. Executive Summary &amp; Triage Overview</h2>
+<p>When multi-agent nodes experience extreme packet drops, cross-availability-zone partitions, or cascading node terminations, the embedded HashiCorp Raft consensus ring can drop below quorum limits ($N/2 + 1$), causing live transactions, state mirroring, and configuration synchronizations to stall.</p>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">flowchart TD
+    A[&quot;P1 Escalation Trigger: Raft Quorum Loss / Split-Vote Saturation&quot;] --&gt; B[&quot;Step 1: In-Perimeter Triage (Within 10m)&quot;]
+    B --&gt; C[&quot;Execute: /app/dcouplr status --config=/etc/dcouplr/bootstrap.json&quot;]
+    C --&gt; D{&quot;Interrogate Cluster State&quot;}
+    D --&gt;|DEGRADED_ISOLATION_ACTIVE| E[&quot;Isolated Stack: Execute RUNBOOK-DECOUPLER-004&quot;]
+    D --&gt;|QUORUM_LOST_PARTITION| F[&quot;Step 2: Emergency Manual Force-Peering&quot;]
+    F --&gt; G[&quot;Scale Down Passive Followers: replicas=0&quot;]
+    G --&gt; H[&quot;Verify BoltDB Integrity: ls -la /var/lib/dcouplr/raft/&quot;]
+    H --&gt; I[&quot;Inject Static Recovery Override: peers.json&quot;]
+    I --&gt; J[&quot;Restart Primary Agent as Standalone Leader&quot;]
+    J --&gt; K[&quot;Restore Live Metrics Translation &amp; Sync Ring&quot;]
+</code></pre></div>
+<hr />
+<h2 id="2-phase-1-initial-triage-state-discovery-within-10-minutes-of-escalation">2. Phase 1: Initial Triage &amp; State Discovery (Within 10 Minutes of Escalation)</h2>
+<p>When multi-agent nodes experience extreme network degradation across availability zones, the cluster may drop below quorum limits, causing operations to halt.</p>
+<ol>
+<li>
+<p><strong>Access In-Perimeter Boundary:</strong>
+Log directly into a secure shell environment inside the affected customer perimeter or bastion host.</p>
+</li>
+<li>
+<p><strong>Interrogate Active Agent Runtime:</strong>
+Execute low-level diagnostics using the local binary:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">/app/dcouplr status --config=/etc/dcouplr/bootstrap.json
+</code></pre></div>
+</li>
+<li>
+<p><strong>Evaluate Output Values:</strong></p>
+<ul>
+<li><strong>If Cluster Member Status reads <code>QUORUM_LOST_PARTITION</code>:</strong><br />
+Proceed immediately to <strong>Phase 2 (Manual Quorum Recovery &amp; Force-Peering)</strong>.</li>
+<li><strong>If Circuit Breaker Status reads <code>DEGRADED_ISOLATION_ACTIVE</code>:</strong><br />
+The system has successfully isolated a failing downstream stack. Pivot to standard downstream remediation protocols (<a href="/docs/runbooks/RUNBOOK-DECOUPLER-004.html">RUNBOOK-DECOUPLER-004</a>).</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="3-phase-2-manual-quorum-recovery-force-peering-emergency-actions">3. Phase 2: Manual Quorum Recovery &amp; Force-Peering (Emergency Actions)</h2>
+<p>If nodes become permanently separated and split-vote loops prevent a clear Leader election, engineers must manually force a cluster configuration change to restore quorum.</p>
+<h3 id="step-1-drain-and-halt-passive-follower-instances">Step 1: Drain and Halt Passive Follower Instances</h3>
+<p>Safely take down the passive follower instances across affected nodes to stop corrupted or stale state logs from replicating:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">kubectl scale daemonset dcouplr-sync-agent -n kube-system --replicas=0
+</code></pre></div>
+<h3 id="step-2-inspect-persistent-boltdb-storage-integrity">Step 2: Inspect Persistent BoltDB Storage Integrity</h3>
+<p>Inspect the persistent on-premises storage directories to confirm that local state files are free from filesystem corruption:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Confirm that the local state files are free from filesystem corruption issues
+ls -la /var/lib/dcouplr/raft/
+</code></pre></div>
+<p>Verify that <code>raft.db</code> and the latest snapshot folder <code>snapshots/</code> are non-zero in size and have valid write permissions.</p>
+<h3 id="step-3-inject-emergency-static-recovery-configuration-peersjson">Step 3: Inject Emergency Static Recovery Configuration (<code>peers.json</code>)</h3>
+<p>Inject an emergency static recovery configuration (<code>peers.json</code>) into the remaining primary node's storage layer. This manually overrides the cluster configuration metadata, forcing the node to act as a standalone single-node leader:</p>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">[
+  {
+    &quot;id&quot;: &quot;agent-node-01&quot;,
+    &quot;address&quot;: &quot;127.0.0.1:8300&quot;,
+    &quot;non_voter&quot;: false
+  }
+]
+</code></pre></div>
+<p>To write this file directly inside the container or persistent volume mount:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">cat &lt;&lt; 'EOF' &gt; /var/lib/dcouplr/raft/peers.json
+[
+  {
+    &quot;id&quot;: &quot;agent-node-01&quot;,
+    &quot;address&quot;: &quot;127.0.0.1:8300&quot;,
+    &quot;non_voter&quot;: false
+  }
+]
+EOF
+</code></pre></div>
+<h3 id="step-4-restart-the-primary-agent-container">Step 4: Restart the Primary Agent Container</h3>
+<p>Restart the primary agent container. The node reads the tracking override file, clears old voting indexes, declares itself the cluster leader, and immediately recovers your live metrics translation and synchronization pipelines:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Verify leader status has recovered
+/app/dcouplr status --config=/etc/dcouplr/bootstrap.json
+</code></pre></div>
+<p>Confirm that:</p>
+<ul>
+<li><code>Leader</code>: <code>agent-node-01</code></li>
+<li><code>Raft State</code>: <code>LEADER</code></li>
+<li><code>Voters Total</code>: <code>1</code></li>
+<li><code>Uncommitted Entries</code>: <code>0</code></li>
+</ul>
+<p>Once leader state is restored and pipeline latencies settle under 20ms, gradually rejoin follower nodes using the gRPC join flow:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">/app/dcouplr cluster join --peer-addr=10.244.1.15:8301 --voter=true
+</code></pre></div>
+<hr />
+<h2 id="4-operational-mitigation-matrix">4. Operational Mitigation Matrix</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Step</th>
+<th style="text-align:left">Operation</th>
+<th style="text-align:left">Execution Command</th>
+<th style="text-align:left">Target Verification State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Triage</strong></td>
+<td style="text-align:left">Inspect runtime state</td>
+<td style="text-align:left"><code>/app/dcouplr status --config=...</code></td>
+<td style="text-align:left">Detect <code>QUORUM_LOST_PARTITION</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Isolate</strong></td>
+<td style="text-align:left">Halt follower replications</td>
+<td style="text-align:left"><code>kubectl scale daemonset ... --replicas=0</code></td>
+<td style="text-align:left">Terminate split-vote contention</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Audit</strong></td>
+<td style="text-align:left">Check storage integrity</td>
+<td style="text-align:left"><code>ls -la /var/lib/dcouplr/raft/</code></td>
+<td style="text-align:left">Validate uncorrupted <code>raft.db</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Override</strong></td>
+<td style="text-align:left">Inject <code>peers.json</code></td>
+<td style="text-align:left">Write static voter array to raft dir</td>
+<td style="text-align:left">Configure single-node leader seed</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Recover</strong></td>
+<td style="text-align:left">Reboot primary agent</td>
+<td style="text-align:left">Restart pod / service</td>
+<td style="text-align:left">Status transitions to <code>LEADER</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Verify</strong></td>
+<td style="text-align:left">Confirm pipeline latency</td>
+<td style="text-align:left">Query Prometheus scrape latency</td>
+<td style="text-align:left">Processing loop $&lt; 20\text{ms}$</td>
+</tr>
+</tbody>
+</table>
+</div>
+      <pre id="raw-view"><code># Tier-3 Platform Engineering Escalation Runbook: Distributed Raft Quorum Failure Mitigation
+
+**Runbook Identifier:** `RUNBOOK-DECOUPLER-P1-009`  
+**Escalation Trigger:** Complete Cluster Quorum Loss / Raft Split-Vote State Saturation  
+**Target Group:** Tier-3 Core Infrastructure Platform Engineers  
+**Target SLA Bound:** Strict 2-hour initial enterprise service mitigation SLA  
+**Applicability:** Production Multi-Zone Node Meshes, Raft Consensus Rings, and Localized Storage Engines  
+
+---
+
+## 1. Executive Summary &amp; Triage Overview
+
+When multi-agent nodes experience extreme packet drops, cross-availability-zone partitions, or cascading node terminations, the embedded HashiCorp Raft consensus ring can drop below quorum limits ($N/2 + 1$), causing live transactions, state mirroring, and configuration synchronizations to stall.
+
+```mermaid
+flowchart TD
+    A[&quot;P1 Escalation Trigger: Raft Quorum Loss / Split-Vote Saturation&quot;] --&gt; B[&quot;Step 1: In-Perimeter Triage (Within 10m)&quot;]
+    B --&gt; C[&quot;Execute: /app/dcouplr status --config=/etc/dcouplr/bootstrap.json&quot;]
+    C --&gt; D{&quot;Interrogate Cluster State&quot;}
+    D --&gt;|DEGRADED_ISOLATION_ACTIVE| E[&quot;Isolated Stack: Execute RUNBOOK-DECOUPLER-004&quot;]
+    D --&gt;|QUORUM_LOST_PARTITION| F[&quot;Step 2: Emergency Manual Force-Peering&quot;]
+    F --&gt; G[&quot;Scale Down Passive Followers: replicas=0&quot;]
+    G --&gt; H[&quot;Verify BoltDB Integrity: ls -la /var/lib/dcouplr/raft/&quot;]
+    H --&gt; I[&quot;Inject Static Recovery Override: peers.json&quot;]
+    I --&gt; J[&quot;Restart Primary Agent as Standalone Leader&quot;]
+    J --&gt; K[&quot;Restore Live Metrics Translation &amp; Sync Ring&quot;]
+```
+
+---
+
+## 2. Phase 1: Initial Triage &amp; State Discovery (Within 10 Minutes of Escalation)
+
+When multi-agent nodes experience extreme network degradation across availability zones, the cluster may drop below quorum limits, causing operations to halt.
+
+1. **Access In-Perimeter Boundary:**
+   Log directly into a secure shell environment inside the affected customer perimeter or bastion host.
+
+2. **Interrogate Active Agent Runtime:**
+   Execute low-level diagnostics using the local binary:
+   ```bash
+   /app/dcouplr status --config=/etc/dcouplr/bootstrap.json
+   ```
+
+3. **Evaluate Output Values:**
+   * **If Cluster Member Status reads `QUORUM_LOST_PARTITION`:**  
+     Proceed immediately to **Phase 2 (Manual Quorum Recovery &amp; Force-Peering)**.
+   * **If Circuit Breaker Status reads `DEGRADED_ISOLATION_ACTIVE`:**  
+     The system has successfully isolated a failing downstream stack. Pivot to standard downstream remediation protocols ([RUNBOOK-DECOUPLER-004](/docs/runbooks/RUNBOOK-DECOUPLER-004.html)).
+
+---
+
+## 3. Phase 2: Manual Quorum Recovery &amp; Force-Peering (Emergency Actions)
+
+If nodes become permanently separated and split-vote loops prevent a clear Leader election, engineers must manually force a cluster configuration change to restore quorum.
+
+### Step 1: Drain and Halt Passive Follower Instances
+Safely take down the passive follower instances across affected nodes to stop corrupted or stale state logs from replicating:
+
+```bash
+kubectl scale daemonset dcouplr-sync-agent -n kube-system --replicas=0
+```
+
+### Step 2: Inspect Persistent BoltDB Storage Integrity
+Inspect the persistent on-premises storage directories to confirm that local state files are free from filesystem corruption:
+
+```bash
+# Confirm that the local state files are free from filesystem corruption issues
+ls -la /var/lib/dcouplr/raft/
+```
+
+Verify that `raft.db` and the latest snapshot folder `snapshots/` are non-zero in size and have valid write permissions.
+
+### Step 3: Inject Emergency Static Recovery Configuration (`peers.json`)
+Inject an emergency static recovery configuration (`peers.json`) into the remaining primary node&#x27;s storage layer. This manually overrides the cluster configuration metadata, forcing the node to act as a standalone single-node leader:
+
+```json
+[
+  {
+    &quot;id&quot;: &quot;agent-node-01&quot;,
+    &quot;address&quot;: &quot;127.0.0.1:8300&quot;,
+    &quot;non_voter&quot;: false
+  }
+]
+```
+
+To write this file directly inside the container or persistent volume mount:
+```bash
+cat &lt;&lt; &#x27;EOF&#x27; &gt; /var/lib/dcouplr/raft/peers.json
+[
+  {
+    &quot;id&quot;: &quot;agent-node-01&quot;,
+    &quot;address&quot;: &quot;127.0.0.1:8300&quot;,
+    &quot;non_voter&quot;: false
+  }
+]
+EOF
+```
+
+### Step 4: Restart the Primary Agent Container
+Restart the primary agent container. The node reads the tracking override file, clears old voting indexes, declares itself the cluster leader, and immediately recovers your live metrics translation and synchronization pipelines:
+
+```bash
+# Verify leader status has recovered
+/app/dcouplr status --config=/etc/dcouplr/bootstrap.json
+```
+
+Confirm that:
+- `Leader`: `agent-node-01`
+- `Raft State`: `LEADER`
+- `Voters Total`: `1`
+- `Uncommitted Entries`: `0`
+
+Once leader state is restored and pipeline latencies settle under 20ms, gradually rejoin follower nodes using the gRPC join flow:
+```bash
+/app/dcouplr cluster join --peer-addr=10.244.1.15:8301 --voter=true
+```
+
+---
+
+## 4. Operational Mitigation Matrix
+
+| Step | Operation | Execution Command | Target Verification State |
+| :--- | :--- | :--- | :--- |
+| **Triage** | Inspect runtime state | `/app/dcouplr status --config=...` | Detect `QUORUM_LOST_PARTITION` |
+| **Isolate** | Halt follower replications | `kubectl scale daemonset ... --replicas=0` | Terminate split-vote contention |
+| **Audit** | Check storage integrity | `ls -la /var/lib/dcouplr/raft/` | Validate uncorrupted `raft.db` |
+| **Override** | Inject `peers.json` | Write static voter array to raft dir | Configure single-node leader seed |
+| **Recover** | Reboot primary agent | Restart pod / service | Status transitions to `LEADER` |
+| **Verify** | Confirm pipeline latency | Query Prometheus scrape latency | Processing loop $&lt; 20\text{ms}$ |
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># Tier-3 Platform Engineering Escalation Runbook: Distributed Raft Quorum Failure Mitigation
+
+**Runbook Identifier:** `RUNBOOK-DECOUPLER-P1-009`  
+**Escalation Trigger:** Complete Cluster Quorum Loss / Raft Split-Vote State Saturation  
+**Target Group:** Tier-3 Core Infrastructure Platform Engineers  
+**Target SLA Bound:** Strict 2-hour initial enterprise service mitigation SLA  
+**Applicability:** Production Multi-Zone Node Meshes, Raft Consensus Rings, and Localized Storage Engines  
+
+---
+
+## 1. Executive Summary &amp; Triage Overview
+
+When multi-agent nodes experience extreme packet drops, cross-availability-zone partitions, or cascading node terminations, the embedded HashiCorp Raft consensus ring can drop below quorum limits ($N/2 + 1$), causing live transactions, state mirroring, and configuration synchronizations to stall.
+
+```mermaid
+flowchart TD
+    A[&quot;P1 Escalation Trigger: Raft Quorum Loss / Split-Vote Saturation&quot;] --&gt; B[&quot;Step 1: In-Perimeter Triage (Within 10m)&quot;]
+    B --&gt; C[&quot;Execute: /app/dcouplr status --config=/etc/dcouplr/bootstrap.json&quot;]
+    C --&gt; D{&quot;Interrogate Cluster State&quot;}
+    D --&gt;|DEGRADED_ISOLATION_ACTIVE| E[&quot;Isolated Stack: Execute RUNBOOK-DECOUPLER-004&quot;]
+    D --&gt;|QUORUM_LOST_PARTITION| F[&quot;Step 2: Emergency Manual Force-Peering&quot;]
+    F --&gt; G[&quot;Scale Down Passive Followers: replicas=0&quot;]
+    G --&gt; H[&quot;Verify BoltDB Integrity: ls -la /var/lib/dcouplr/raft/&quot;]
+    H --&gt; I[&quot;Inject Static Recovery Override: peers.json&quot;]
+    I --&gt; J[&quot;Restart Primary Agent as Standalone Leader&quot;]
+    J --&gt; K[&quot;Restore Live Metrics Translation &amp; Sync Ring&quot;]
+```
+
+---
+
+## 2. Phase 1: Initial Triage &amp; State Discovery (Within 10 Minutes of Escalation)
+
+When multi-agent nodes experience extreme network degradation across availability zones, the cluster may drop below quorum limits, causing operations to halt.
+
+1. **Access In-Perimeter Boundary:**
+   Log directly into a secure shell environment inside the affected customer perimeter or bastion host.
+
+2. **Interrogate Active Agent Runtime:**
+   Execute low-level diagnostics using the local binary:
+   ```bash
+   /app/dcouplr status --config=/etc/dcouplr/bootstrap.json
+   ```
+
+3. **Evaluate Output Values:**
+   * **If Cluster Member Status reads `QUORUM_LOST_PARTITION`:**  
+     Proceed immediately to **Phase 2 (Manual Quorum Recovery &amp; Force-Peering)**.
+   * **If Circuit Breaker Status reads `DEGRADED_ISOLATION_ACTIVE`:**  
+     The system has successfully isolated a failing downstream stack. Pivot to standard downstream remediation protocols ([RUNBOOK-DECOUPLER-004](/docs/runbooks/RUNBOOK-DECOUPLER-004.html)).
+
+---
+
+## 3. Phase 2: Manual Quorum Recovery &amp; Force-Peering (Emergency Actions)
+
+If nodes become permanently separated and split-vote loops prevent a clear Leader election, engineers must manually force a cluster configuration change to restore quorum.
+
+### Step 1: Drain and Halt Passive Follower Instances
+Safely take down the passive follower instances across affected nodes to stop corrupted or stale state logs from replicating:
+
+```bash
+kubectl scale daemonset dcouplr-sync-agent -n kube-system --replicas=0
+```
+
+### Step 2: Inspect Persistent BoltDB Storage Integrity
+Inspect the persistent on-premises storage directories to confirm that local state files are free from filesystem corruption:
+
+```bash
+# Confirm that the local state files are free from filesystem corruption issues
+ls -la /var/lib/dcouplr/raft/
+```
+
+Verify that `raft.db` and the latest snapshot folder `snapshots/` are non-zero in size and have valid write permissions.
+
+### Step 3: Inject Emergency Static Recovery Configuration (`peers.json`)
+Inject an emergency static recovery configuration (`peers.json`) into the remaining primary node&#x27;s storage layer. This manually overrides the cluster configuration metadata, forcing the node to act as a standalone single-node leader:
+
+```json
+[
+  {
+    &quot;id&quot;: &quot;agent-node-01&quot;,
+    &quot;address&quot;: &quot;127.0.0.1:8300&quot;,
+    &quot;non_voter&quot;: false
+  }
+]
+```
+
+To write this file directly inside the container or persistent volume mount:
+```bash
+cat &lt;&lt; &#x27;EOF&#x27; &gt; /var/lib/dcouplr/raft/peers.json
+[
+  {
+    &quot;id&quot;: &quot;agent-node-01&quot;,
+    &quot;address&quot;: &quot;127.0.0.1:8300&quot;,
+    &quot;non_voter&quot;: false
+  }
+]
+EOF
+```
+
+### Step 4: Restart the Primary Agent Container
+Restart the primary agent container. The node reads the tracking override file, clears old voting indexes, declares itself the cluster leader, and immediately recovers your live metrics translation and synchronization pipelines:
+
+```bash
+# Verify leader status has recovered
+/app/dcouplr status --config=/etc/dcouplr/bootstrap.json
+```
+
+Confirm that:
+- `Leader`: `agent-node-01`
+- `Raft State`: `LEADER`
+- `Voters Total`: `1`
+- `Uncommitted Entries`: `0`
+
+Once leader state is restored and pipeline latencies settle under 20ms, gradually rejoin follower nodes using the gRPC join flow:
+```bash
+/app/dcouplr cluster join --peer-addr=10.244.1.15:8301 --voter=true
+```
+
+---
+
+## 4. Operational Mitigation Matrix
+
+| Step | Operation | Execution Command | Target Verification State |
+| :--- | :--- | :--- | :--- |
+| **Triage** | Inspect runtime state | `/app/dcouplr status --config=...` | Detect `QUORUM_LOST_PARTITION` |
+| **Isolate** | Halt follower replications | `kubectl scale daemonset ... --replicas=0` | Terminate split-vote contention |
+| **Audit** | Check storage integrity | `ls -la /var/lib/dcouplr/raft/` | Validate uncorrupted `raft.db` |
+| **Override** | Inject `peers.json` | Write static voter array to raft dir | Configure single-node leader seed |
+| **Recover** | Reboot primary agent | Restart pod / service | Status transitions to `LEADER` |
+| **Verify** | Confirm pipeline latency | Query Prometheus scrape latency | Processing loop $&lt; 20\text{ms}$ |
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

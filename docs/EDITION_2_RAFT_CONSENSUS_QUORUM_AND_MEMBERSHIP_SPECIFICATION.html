@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - EDITION_2_RAFT_CONSENSUS_QUORUM_AND_MEMBERSHIP_SPECIFICATION.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/EDITION_2_RAFT_CONSENSUS_QUORUM_AND_MEMBERSHIP_SPECIFICATION.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="EDITION_2_RAFT_CONSENSUS_QUORUM_AND_MEMBERSHIP_SPECIFICATION.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="full-stack-suite-specification-embedded-raft-consensus-quorum-decision-governance-dynamic-membership-architecture"><dcouplr/> Full-Stack Suite Specification: Embedded Raft Consensus, Quorum Decision Governance &amp; Dynamic Membership Architecture</h1>
+<p><strong>Document ID:</strong> <code>SPEC-FULLSTACK-RAFT-CONSENSUS-001</code><br />
+<strong>Classification:</strong> Core System Architecture &amp; Distributed Systems Specification<br />
+<strong>Product Generation:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Full-Stack Suite<br />
+<strong>Target Audience:</strong> Distributed Systems Architects, Cloud SREs, Security Engineering, Infrastructure Leads<br />
+<strong>Implementation References:</strong> <code>engine-go/engine/raft_config.go</code>, <code>engine-go/engine/raft_transport_wrapper.go</code>, <code>migration_tools/api/telemetry.py</code></p>
+<hr />
+<h2 id="1-executive-summary">1. Executive Summary</h2>
+<p>In the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Full-Stack Suite, the control plane is completely decentralized into an in-memory, zero-egress distributed state machine powered by an embedded <strong>HashiCorp Raft consensus cluster</strong>. The cluster guarantees strict linearizability, atomic log compaction, and deterministic multi-cloud routing without relying on external cloud databases (e.g., AWS DynamoDB, GCP Cloud Spanner, or etcd).</p>
+<p>A foundational operational question frequently asked by enterprise security and infrastructure teams is:</p>
+<blockquote>
+<p><em>&quot;Who decides who becomes part of the quorum in the 3-Node Quorum Active cluster?&quot;</em></p>
+</blockquote>
+<p>This specification provides the formal, end-to-end answer. Quorum decision governance is implemented across <strong>four defense-in-depth architectural layers</strong>:</p>
+<ol>
+<li><strong>Layer 1: Static Bootstrapping (Infrastructure SRE / IaC):</strong> SREs declare initial failure domains in seed manifests.</li>
+<li><strong>Layer 2: Autonomous Runtime Election (Raft Protocol State Machine):</strong> Nodes elect leaders dynamically without human intervention.</li>
+<li><strong>Layer 3: Dynamic Membership Promotion (Active Leader Log Commit):</strong> The elected Leader atomically admits new voters via two-phase configuration entries.</li>
+<li><strong>Layer 4: Cryptographic Gatekeeping (SPIFFE/SPIRE Zero-Trust mTLS):</strong> Mutual TLS attestation guarantees only verified in-VPC daemons can participate in votes.</li>
+</ol>
+<hr />
+<h2 id="2-quorum-mathematical-foundations">2. Quorum Mathematical Foundations</h2>
+<p>In Raft consensus, a <strong>Quorum</strong> is defined as the strict majority of voting members required to authorize state machine transitions, commit Write-Ahead Log (WAL) entries, and elect cluster leaders.</p>
+<h3 id="21-the-majority-formula">2.1 The Majority Formula</h3>
+<p>For an active cluster of $N$ voting nodes, the quorum size $Q$ is computed as:</p>
+<p>$$Q = \left\lfloor \frac{N}{2} \right\rfloor + 1$$</p>
+<p>The maximum number of simultaneous dead, partitioned, or Byzantine nodes $F$ that the cluster can tolerate while remaining 100% available is:</p>
+<p>$$F = \left\lfloor \frac{N - 1}{2} \right\rfloor$$</p>
+<h3 id="22-quorum-sizing-matrix">2.2 Quorum Sizing Matrix</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Voting Nodes ($N$)</th>
+<th style="text-align:center">Quorum Required ($Q$)</th>
+<th style="text-align:center">Tolerable Faults ($F$)</th>
+<th style="text-align:left">Primary Operational Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><strong>1</strong></td>
+<td style="text-align:center">1 (100%)</td>
+<td style="text-align:center">0</td>
+<td style="text-align:left">Local developer testing (non-HA, single laptop).</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>3</strong> <em>(Default)</em></td>
+<td style="text-align:center"><strong>2 (66.7%)</strong></td>
+<td style="text-align:center"><strong>1 Node Dead</strong></td>
+<td style="text-align:left"><strong>Standard <dcouplr/> Full-Stack Suite Production Mesh (AWS + GCP + On-Prem).</strong></td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>5</strong></td>
+<td style="text-align:center">3 (60.0%)</td>
+<td style="text-align:center">2 Nodes Dead</td>
+<td style="text-align:left">High-Resilience Global Banking / Multi-Region Hyperscaler Mesh.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>7</strong></td>
+<td style="text-align:center">4 (57.1%)</td>
+<td style="text-align:center">3 Nodes Dead</td>
+<td style="text-align:left">Extreme multi-cloud disaster recovery across 7 geo-regions.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>[!IMPORTANT]
+<strong>Why Odd Numbers?</strong> Even-numbered clusters (e.g., 4 nodes) require 3 nodes for quorum ($4/2 + 1 = 3$), yet still only tolerate 1 failure. Adding a 4th voting node increases network replication overhead without increasing fault tolerance. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Full-Stack Suite enforces odd-numbered voting clusters (3, 5, or 7).</p>
+</blockquote>
+<hr />
+<h2 id="3-four-layer-quorum-decision-governance">3. Four-Layer Quorum Decision Governance</h2>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">flowchart TD
+    subgraph L1[&quot;Layer 1: Static Seed Manifests (SRE / IaC)&quot;]
+        A[&quot;Terraform / Helm / peers.json&quot;] --&gt;|Seed Node List| B[&quot;dcouplr-agent-01 (AWS)&lt;br/&gt;dcouplr-agent-02 (AWS Stage)&lt;br/&gt;dcouplr-agent-03 (GCP)&quot;]
+    end
+
+    subgraph L4[&quot;Layer 4: Cryptographic Admission (SPIFFE mTLS)&quot;]
+        B --&gt; C{&quot;Valid SVID Cert?&lt;br/&gt;spiffe://dcouplr.internal/agent/*&quot;}
+        C --&gt;|No: Rejected| D[&quot;Dropped at TCP Layer&lt;br/&gt;(0 WAN Packets)&quot;]
+        C --&gt;|Yes: Approved| E[&quot;Raft Transport Session&quot;]
+    end
+
+    subgraph L2[&quot;Layer 2: Autonomous Protocol (Raft State Machine)&quot;]
+        E --&gt; F[&quot;AppendEntries Heartbeat (50ms)&quot;]
+        F --&gt; G{&quot;Leader Heartbeat Lost?&lt;br/&gt;(&gt;200ms Timeout)&quot;}
+        G --&gt;|Yes| H[&quot;Candidate Initiates Election&lt;br/&gt;Requests Vote from Peers&quot;]
+        H --&gt; I{&quot;Receives 2 of 3 Votes?&quot;}
+        I --&gt;|Yes| J[&quot;Elected LEADER&quot;]
+        I --&gt;|No| K[&quot;Remains Follower / Backoff&quot;]
+    end
+
+    subgraph L3[&quot;Layer 3: Dynamic Membership (Active Leader)&quot;]
+        J --&gt; L[&quot;New Agent Registers&lt;br/&gt;(e.g., dc-onprem-core-01)&quot;]
+        L --&gt; M[&quot;Initial State: Non-Voter / Learner&lt;br/&gt;Replicates WAL delta&quot;]
+        M --&gt; N{&quot;Lag &lt; 100 entries?&quot;}
+        N --&gt;|Yes| O[&quot;Leader Issues AddVoter()&lt;br/&gt;Raft Configuration Log Entry&quot;]
+        O --&gt; P[&quot;Promoted to Full Voter&lt;br/&gt;(Cluster expands to 5 nodes)&quot;]
+    end
+</code></pre></div>
+<hr />
+<h3 id="layer-1-bootstrapping-seed-configuration-the-human-iac-decision">Layer 1: Bootstrapping Seed Configuration (The Human / IaC Decision)</h3>
+<p>When the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Full-Stack Suite starts for the very first time in an enterprise perimeter, <strong>the cloud infrastructure engineer decides the seed quorum membership</strong>:</p>
+<ol>
+<li><strong>Seed Declaration:</strong> The initial 3 nodes are declared in <code>engine-go/engine/raft_bootstrap_test.go</code> or Helm values:<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">[
+  {&quot;id&quot;: &quot;dcouplr-agent-01&quot;, &quot;address&quot;: &quot;10.100.1.50:8300&quot;, &quot;non_voter&quot;: false},
+  {&quot;id&quot;: &quot;dcouplr-agent-02&quot;, &quot;address&quot;: &quot;10.101.1.20:8300&quot;, &quot;non_voter&quot;: false},
+  {&quot;id&quot;: &quot;dcouplr-agent-03&quot;, &quot;address&quot;: &quot;10.200.5.15:8300&quot;, &quot;non_voter&quot;: false}
+]
+</code></pre></div>
+</li>
+<li><strong>Failure Domain Isolation:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Full-Stack Suite guidelines mandate placing the 3 voters in distinct availability zones or cloud networks:
+<ul>
+<li><strong>Node 1 (<code>dcouplr-agent-01</code>):</strong> Primary VPC (<code>production_vpc</code>, AWS <code>us-east-1a</code>)</li>
+<li><strong>Node 2 (<code>dcouplr-agent-02</code>):</strong> Staging/Secondary VPC (<code>staging_vpc</code>, AWS <code>us-west-2a</code>)</li>
+<li><strong>Node 3 (<code>dcouplr-agent-03</code>):</strong> Analytics Cross-Cloud Mesh (<code>analytics_gcp_mesh</code>, GCP <code>us-central1</code>)</li>
+</ul>
+</li>
+<li><strong>Cluster Genesis:</strong> At boot, <code>raft.BootstrapCluster(configuration)</code> writes an initial configuration log entry at index <code>1</code>. These 3 nodes form the baseline quorum.</li>
+</ol>
+<hr />
+<h3 id="layer-2-autonomous-protocol-governance-the-nodes-decide">Layer 2: Autonomous Protocol Governance (The Nodes Decide)</h3>
+<p>Once the cluster is bootstrapped, <strong>no human operator or central server chooses the leader or controls votes</strong>. The nodes govern themselves via strict protocol timers defined in <code>engine-go/engine/raft_config.go</code>:</p>
+<ul>
+<li><strong>Heartbeat Periodicity (<code>HeartbeatTimeout: 50ms</code>):</strong> The Leader sends heartbeats to all followers 20 times per second.</li>
+<li><strong>Election Timeout Window (<code>ElectionTimeout: 200ms</code>):</strong> If a follower hears no heartbeat for $&gt;200$ms (due to network partition or host crash), it transitions to <strong>Candidate</strong>, increments the Raft <strong>Term</strong>, votes for itself, and transmits <code>RequestVote</code> RPCs.</li>
+<li><strong>Autonomous 2-of-3 Election:</strong>
+<ul>
+<li>If Node 1 crashes, Node 2 and Node 3 detect the absence.</li>
+<li>Node 2 requests votes from Node 3.</li>
+<li>Node 3 grants its vote because Node 2’s log is at least as up-to-date as its own.</li>
+<li>Node 2 attains 2 votes (itself + Node 3), achieving a majority of 3 ($2 \ge \lfloor 3/2 \rfloor + 1$).</li>
+<li>Node 2 immediately becomes the new <strong>LEADER</strong>.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="layer-3-dynamic-membership-changes-the-active-leader-decides">Layer 3: Dynamic Membership Changes (The Active Leader Decides)</h3>
+<p>When enterprise customers add a 4th network (e.g. <code>legacy_datacenter_chicago</code> or Azure), how does that node join the voting quorum?</p>
+<blockquote>
+<p>[!NOTE]
+Under Raft safety invariants, simply adding a 4th voter instantly without log synchronization can trigger a split-brain condition where two disjoint quorums form simultaneously. The <strong><dcouplr/> Full-Stack Suite</strong> enforces the <strong>Learner $\rightarrow$ Voter Promotion Protocol</strong>.</p>
+</blockquote>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">sequenceDiagram
+    autonumber
+    actor Admin as SRE / Platform API
+    participant Leader as dcouplr-agent-01 (Leader)
+    participant WAL as Raft In-Memory WAL
+    participant NewNode as dcouplr-agent-04 (New Node)
+
+    Admin-&gt;&gt;Leader: POST /v1/telemetry/topology/add-vpc (Register Node)
+    Leader-&gt;&gt;NewNode: Handshake &amp; mTLS Verification
+    Leader-&gt;&gt;WAL: Append Configuration Entry (NonVoter: dcouplr-agent-04)
+    Note over NewNode: Enters Learner State&lt;br/&gt;(Streams WAL &amp; Memory Snapshots)
+    loop Catch-Up Replication
+        Leader-&gt;&gt;NewNode: AppendEntries(WAL Chunks)
+        NewNode--&gt;&gt;Leader: Ack (Lag Decreasing)
+    end
+    Note over Leader: Evaluates Catch-Up Rule:&lt;br/&gt;Lag &lt; 100 entries &amp; RTT &lt; 20ms
+    Leader-&gt;&gt;WAL: Commit Configuration Entry (AddVoter: dcouplr-agent-04)
+    Leader-&gt;&gt;NewNode: Promote to Voting Member
+    Note over Leader,NewNode: Quorum Reconfigured:&lt;br/&gt;New Voting Set = 4 nodes (or 5 with tie-breaker)
+</code></pre></div>
+<ol>
+<li><strong>Non-Voter (Learner) Phase:</strong>
+<ul>
+<li>When <code>dc-onprem-core-01</code> is registered, it enters as a <strong>Non-Voter</strong>.</li>
+<li>It receives log streams and replicates transactions, but <strong>its vote is not counted</strong> in elections or commit thresholds.</li>
+<li>If the network link between on-premises and AWS is slow, it will never delay production commits.</li>
+</ul>
+</li>
+<li><strong>Catch-Up Verification:</strong>
+<ul>
+<li>The Leader checks <code>last_applied - peer.match_index</code>.</li>
+<li>Only when log lag drops below 100 entries does the Leader initiate promotion.</li>
+</ul>
+</li>
+<li><strong>Atomic <code>AddVoter</code> Commitment:</strong>
+<ul>
+<li>The Leader commits an atomic Raft configuration log entry.</li>
+<li>All nodes transition their internal quorum formula to the new cluster membership.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3 id="layer-4-cryptographic-gatekeeping-spiffespire-mtls">Layer 4: Cryptographic Gatekeeping (SPIFFE/SPIRE mTLS)</h3>
+<p>Raft quorum participation is protected against spoofing, rogue containers, and unauthorized network injection via mutual TLS backed by SPIFFE:</p>
+<ul>
+<li><strong>Identity Verification:</strong> Every agent presents an X.509 SVID with URI SAN:
+<code>spiffe://dcouplr.internal/ns/telemetry/sa/dcouplr-agent-node</code></li>
+<li><strong>Transport Wrapping:</strong> Built into <code>engine-go/engine/spiffe_raft_transport.go</code>.</li>
+<li><strong>Fail-Fast Defense:</strong> If an unauthenticated node attempts to send a <code>RequestVote</code> or <code>AppendEntries</code> frame, the connection is aborted at the TLS handshake in <strong>&lt; 1ms</strong>. The rogue node is never recorded in the peer table and cannot influence quorum.</li>
+</ul>
+<hr />
+<h2 id="4-operational-troubleshooting-runbook">4. Operational Troubleshooting &amp; Runbook</h2>
+<h3 id="41-inspecting-active-quorum-health">4.1 Inspecting Active Quorum Health</h3>
+<p>From any terminal or SRE bastion:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Query live Raft cluster quorum snapshot
+curl -s http://localhost:8000/v1/telemetry/metrics \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot; | jq '.raft'
+</code></pre></div>
+<p><strong>Expected Healthy Response:</strong></p>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;cluster_id&quot;: &quot;dc-cell-prod-east&quot;,
+  &quot;node_id&quot;: &quot;dcouplr-agent-01&quot;,
+  &quot;role&quot;: &quot;LEADER&quot;,
+  &quot;term&quot;: 4,
+  &quot;commit_index&quot;: 28923,
+  &quot;last_applied&quot;: 28923,
+  &quot;snapshot_index&quot;: 24495,
+  &quot;uncompacted_delta&quot;: 4428,
+  &quot;compaction_threshold&quot;: 8192,
+  &quot;compaction_pct&quot;: 53.9,
+  &quot;peers&quot;: [
+    {
+      &quot;id&quot;: &quot;dcouplr-agent-02&quot;,
+      &quot;vpc&quot;: &quot;vpc-staging-aws&quot;,
+      &quot;role&quot;: &quot;FOLLOWER&quot;,
+      &quot;status&quot;: &quot;HEALTHY&quot;,
+      &quot;rtt_ms&quot;: 14.2,
+      &quot;last_heartbeat_ms&quot;: 42
+    },
+    {
+      &quot;id&quot;: &quot;dcouplr-agent-03&quot;,
+      &quot;vpc&quot;: &quot;vpc-analytics-gcp&quot;,
+      &quot;role&quot;: &quot;FOLLOWER&quot;,
+      &quot;status&quot;: &quot;HEALTHY&quot;,
+      &quot;rtt_ms&quot;: 18.6,
+      &quot;last_heartbeat_ms&quot;: 48
+    }
+  ]
+}
+</code></pre></div>
+<h3 id="42-tripping-circuit-breaker-chaos-drill">4.2 Tripping Circuit Breaker Chaos Drill</h3>
+<p>To verify how the quorum behaves when a node partition occurs:</p>
+<ol>
+<li>On the dashboard, navigate to <strong>Embedded Raft Consensus &amp; WAL Compaction</strong>.</li>
+<li>Click <strong>⚡ Trip Breaker</strong>.</li>
+<li>The circuit breaker trips to <code>OPEN</code>. Downstream RPCs immediately fail-fast in $&lt;1$ms without blocking leader goroutines.</li>
+<li>After the 10s cooldown timer, the state machine probes the canary in <code>HALF-OPEN</code> and auto-recovers to <code>CLOSED</code>.</li>
+</ol>
+<hr />
+<h2 id="5-summary-decision-authority-table">5. Summary &amp; Decision Authority Table</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Quorum Lifecycle Stage</th>
+<th style="text-align:left">Who Decides?</th>
+<th style="text-align:left">Mechanism Used</th>
+<th style="text-align:left">Security / Safety Guardrail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Initial 3 Nodes</strong></td>
+<td style="text-align:left">Infrastructure SRE / DevOps Team</td>
+<td style="text-align:left">Deployment manifest / <code>peers.json</code></td>
+<td style="text-align:left">Placed in 3 separate failure domains / AZs</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Who is Leader?</strong></td>
+<td style="text-align:left">The 3 Nodes (Autonomously)</td>
+<td style="text-align:left">Raft <code>RequestVote</code> Election</td>
+<td style="text-align:left">2-of-3 Majority ($\lfloor 3/2 \rfloor + 1$)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Adding a 4th/5th Node</strong></td>
+<td style="text-align:left">The Active Leader</td>
+<td style="text-align:left"><code>AddVoter</code> configuration log entry</td>
+<td style="text-align:left">Joins as Learner first; log lag must be $&lt;100$</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Who is Allowed to Connect?</strong></td>
+<td style="text-align:left">Control Plane Network Boundary</td>
+<td style="text-align:left">SPIFFE/SPIRE Workload Attestation</td>
+<td style="text-align:left">Mutual TLS X.509 SVID validation</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Emergency Recovery</strong></td>
+<td style="text-align:left">Incident Commander (SRE)</td>
+<td style="text-align:left">Force cluster re-seed (<code>peers.json</code> manual override)</td>
+<td style="text-align:left">Cryptographically signed administrative token</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>This document constitutes an official architectural standard of the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Full-Stack Suite enterprise release.</em></p>
+</div>
+      <pre id="raw-view"><code># &lt;dcouplr/&gt; Full-Stack Suite Specification: Embedded Raft Consensus, Quorum Decision Governance &amp; Dynamic Membership Architecture
+
+**Document ID:** `SPEC-FULLSTACK-RAFT-CONSENSUS-001`  
+**Classification:** Core System Architecture &amp; Distributed Systems Specification  
+**Product Generation:** `&lt;dcouplr/&gt;` Full-Stack Suite  
+**Target Audience:** Distributed Systems Architects, Cloud SREs, Security Engineering, Infrastructure Leads  
+**Implementation References:** ``engine-go/engine/raft_config.go``, ``engine-go/engine/raft_transport_wrapper.go``, ``migration_tools/api/telemetry.py``
+
+---
+
+## 1. Executive Summary
+
+In the `&lt;dcouplr/&gt;` Full-Stack Suite, the control plane is completely decentralized into an in-memory, zero-egress distributed state machine powered by an embedded **HashiCorp Raft consensus cluster**. The cluster guarantees strict linearizability, atomic log compaction, and deterministic multi-cloud routing without relying on external cloud databases (e.g., AWS DynamoDB, GCP Cloud Spanner, or etcd).
+
+A foundational operational question frequently asked by enterprise security and infrastructure teams is:
+
+&gt; *&quot;Who decides who becomes part of the quorum in the 3-Node Quorum Active cluster?&quot;*
+
+This specification provides the formal, end-to-end answer. Quorum decision governance is implemented across **four defense-in-depth architectural layers**:
+
+1. **Layer 1: Static Bootstrapping (Infrastructure SRE / IaC):** SREs declare initial failure domains in seed manifests.
+2. **Layer 2: Autonomous Runtime Election (Raft Protocol State Machine):** Nodes elect leaders dynamically without human intervention.
+3. **Layer 3: Dynamic Membership Promotion (Active Leader Log Commit):** The elected Leader atomically admits new voters via two-phase configuration entries.
+4. **Layer 4: Cryptographic Gatekeeping (SPIFFE/SPIRE Zero-Trust mTLS):** Mutual TLS attestation guarantees only verified in-VPC daemons can participate in votes.
+
+---
+
+## 2. Quorum Mathematical Foundations
+
+In Raft consensus, a **Quorum** is defined as the strict majority of voting members required to authorize state machine transitions, commit Write-Ahead Log (WAL) entries, and elect cluster leaders.
+
+### 2.1 The Majority Formula
+
+For an active cluster of $N$ voting nodes, the quorum size $Q$ is computed as:
+
+$$Q = \left\lfloor \frac{N}{2} \right\rfloor + 1$$
+
+The maximum number of simultaneous dead, partitioned, or Byzantine nodes $F$ that the cluster can tolerate while remaining 100% available is:
+
+$$F = \left\lfloor \frac{N - 1}{2} \right\rfloor$$
+
+### 2.2 Quorum Sizing Matrix
+
+| Voting Nodes ($N$) | Quorum Required ($Q$) | Tolerable Faults ($F$) | Primary Operational Use Case |
+| :---: | :---: | :---: | :--- |
+| **1** | 1 (100%) | 0 | Local developer testing (non-HA, single laptop). |
+| **3** *(Default)* | **2 (66.7%)** | **1 Node Dead** | **Standard &lt;dcouplr/&gt; Full-Stack Suite Production Mesh (AWS + GCP + On-Prem).** |
+| **5** | 3 (60.0%) | 2 Nodes Dead | High-Resilience Global Banking / Multi-Region Hyperscaler Mesh. |
+| **7** | 4 (57.1%) | 3 Nodes Dead | Extreme multi-cloud disaster recovery across 7 geo-regions. |
+
+&gt; [!IMPORTANT]
+&gt; **Why Odd Numbers?** Even-numbered clusters (e.g., 4 nodes) require 3 nodes for quorum ($4/2 + 1 = 3$), yet still only tolerate 1 failure. Adding a 4th voting node increases network replication overhead without increasing fault tolerance. `&lt;dcouplr/&gt;` Full-Stack Suite enforces odd-numbered voting clusters (3, 5, or 7).
+
+---
+
+## 3. Four-Layer Quorum Decision Governance
+
+```mermaid
+flowchart TD
+    subgraph L1[&quot;Layer 1: Static Seed Manifests (SRE / IaC)&quot;]
+        A[&quot;Terraform / Helm / peers.json&quot;] --&gt;|Seed Node List| B[&quot;dcouplr-agent-01 (AWS)&lt;br/&gt;dcouplr-agent-02 (AWS Stage)&lt;br/&gt;dcouplr-agent-03 (GCP)&quot;]
+    end
+
+    subgraph L4[&quot;Layer 4: Cryptographic Admission (SPIFFE mTLS)&quot;]
+        B --&gt; C{&quot;Valid SVID Cert?&lt;br/&gt;spiffe://dcouplr.internal/agent/*&quot;}
+        C --&gt;|No: Rejected| D[&quot;Dropped at TCP Layer&lt;br/&gt;(0 WAN Packets)&quot;]
+        C --&gt;|Yes: Approved| E[&quot;Raft Transport Session&quot;]
+    end
+
+    subgraph L2[&quot;Layer 2: Autonomous Protocol (Raft State Machine)&quot;]
+        E --&gt; F[&quot;AppendEntries Heartbeat (50ms)&quot;]
+        F --&gt; G{&quot;Leader Heartbeat Lost?&lt;br/&gt;(&gt;200ms Timeout)&quot;}
+        G --&gt;|Yes| H[&quot;Candidate Initiates Election&lt;br/&gt;Requests Vote from Peers&quot;]
+        H --&gt; I{&quot;Receives 2 of 3 Votes?&quot;}
+        I --&gt;|Yes| J[&quot;Elected LEADER&quot;]
+        I --&gt;|No| K[&quot;Remains Follower / Backoff&quot;]
+    end
+
+    subgraph L3[&quot;Layer 3: Dynamic Membership (Active Leader)&quot;]
+        J --&gt; L[&quot;New Agent Registers&lt;br/&gt;(e.g., dc-onprem-core-01)&quot;]
+        L --&gt; M[&quot;Initial State: Non-Voter / Learner&lt;br/&gt;Replicates WAL delta&quot;]
+        M --&gt; N{&quot;Lag &lt; 100 entries?&quot;}
+        N --&gt;|Yes| O[&quot;Leader Issues AddVoter()&lt;br/&gt;Raft Configuration Log Entry&quot;]
+        O --&gt; P[&quot;Promoted to Full Voter&lt;br/&gt;(Cluster expands to 5 nodes)&quot;]
+    end
+```
+
+---
+
+### Layer 1: Bootstrapping Seed Configuration (The Human / IaC Decision)
+
+When the `&lt;dcouplr/&gt;` Full-Stack Suite starts for the very first time in an enterprise perimeter, **the cloud infrastructure engineer decides the seed quorum membership**:
+
+1. **Seed Declaration:** The initial 3 nodes are declared in ``engine-go/engine/raft_bootstrap_test.go`` or Helm values:
+   ```json
+   [
+     {&quot;id&quot;: &quot;dcouplr-agent-01&quot;, &quot;address&quot;: &quot;10.100.1.50:8300&quot;, &quot;non_voter&quot;: false},
+     {&quot;id&quot;: &quot;dcouplr-agent-02&quot;, &quot;address&quot;: &quot;10.101.1.20:8300&quot;, &quot;non_voter&quot;: false},
+     {&quot;id&quot;: &quot;dcouplr-agent-03&quot;, &quot;address&quot;: &quot;10.200.5.15:8300&quot;, &quot;non_voter&quot;: false}
+   ]
+   ```
+2. **Failure Domain Isolation:** `&lt;dcouplr/&gt;` Full-Stack Suite guidelines mandate placing the 3 voters in distinct availability zones or cloud networks:
+   * **Node 1 (`dcouplr-agent-01`):** Primary VPC (`production_vpc`, AWS `us-east-1a`)
+   * **Node 2 (`dcouplr-agent-02`):** Staging/Secondary VPC (`staging_vpc`, AWS `us-west-2a`)
+   * **Node 3 (`dcouplr-agent-03`):** Analytics Cross-Cloud Mesh (`analytics_gcp_mesh`, GCP `us-central1`)
+3. **Cluster Genesis:** At boot, `raft.BootstrapCluster(configuration)` writes an initial configuration log entry at index `1`. These 3 nodes form the baseline quorum.
+
+---
+
+### Layer 2: Autonomous Protocol Governance (The Nodes Decide)
+
+Once the cluster is bootstrapped, **no human operator or central server chooses the leader or controls votes**. The nodes govern themselves via strict protocol timers defined in ``engine-go/engine/raft_config.go``:
+
+* **Heartbeat Periodicity (`HeartbeatTimeout: 50ms`):** The Leader sends heartbeats to all followers 20 times per second.
+* **Election Timeout Window (`ElectionTimeout: 200ms`):** If a follower hears no heartbeat for $&gt;200$ms (due to network partition or host crash), it transitions to **Candidate**, increments the Raft **Term**, votes for itself, and transmits `RequestVote` RPCs.
+* **Autonomous 2-of-3 Election:**
+  * If Node 1 crashes, Node 2 and Node 3 detect the absence.
+  * Node 2 requests votes from Node 3.
+  * Node 3 grants its vote because Node 2’s log is at least as up-to-date as its own.
+  * Node 2 attains 2 votes (itself + Node 3), achieving a majority of 3 ($2 \ge \lfloor 3/2 \rfloor + 1$).
+  * Node 2 immediately becomes the new **LEADER**.
+
+---
+
+### Layer 3: Dynamic Membership Changes (The Active Leader Decides)
+
+When enterprise customers add a 4th network (e.g. `legacy_datacenter_chicago` or Azure), how does that node join the voting quorum?
+
+&gt; [!NOTE]
+&gt; Under Raft safety invariants, simply adding a 4th voter instantly without log synchronization can trigger a split-brain condition where two disjoint quorums form simultaneously. The **&lt;dcouplr/&gt; Full-Stack Suite** enforces the **Learner $\rightarrow$ Voter Promotion Protocol**.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Admin as SRE / Platform API
+    participant Leader as dcouplr-agent-01 (Leader)
+    participant WAL as Raft In-Memory WAL
+    participant NewNode as dcouplr-agent-04 (New Node)
+
+    Admin-&gt;&gt;Leader: POST /v1/telemetry/topology/add-vpc (Register Node)
+    Leader-&gt;&gt;NewNode: Handshake &amp; mTLS Verification
+    Leader-&gt;&gt;WAL: Append Configuration Entry (NonVoter: dcouplr-agent-04)
+    Note over NewNode: Enters Learner State&lt;br/&gt;(Streams WAL &amp; Memory Snapshots)
+    loop Catch-Up Replication
+        Leader-&gt;&gt;NewNode: AppendEntries(WAL Chunks)
+        NewNode--&gt;&gt;Leader: Ack (Lag Decreasing)
+    end
+    Note over Leader: Evaluates Catch-Up Rule:&lt;br/&gt;Lag &lt; 100 entries &amp; RTT &lt; 20ms
+    Leader-&gt;&gt;WAL: Commit Configuration Entry (AddVoter: dcouplr-agent-04)
+    Leader-&gt;&gt;NewNode: Promote to Voting Member
+    Note over Leader,NewNode: Quorum Reconfigured:&lt;br/&gt;New Voting Set = 4 nodes (or 5 with tie-breaker)
+```
+
+1. **Non-Voter (Learner) Phase:**
+   * When `dc-onprem-core-01` is registered, it enters as a **Non-Voter**.
+   * It receives log streams and replicates transactions, but **its vote is not counted** in elections or commit thresholds.
+   * If the network link between on-premises and AWS is slow, it will never delay production commits.
+2. **Catch-Up Verification:**
+   * The Leader checks `last_applied - peer.match_index`.
+   * Only when log lag drops below 100 entries does the Leader initiate promotion.
+3. **Atomic `AddVoter` Commitment:**
+   * The Leader commits an atomic Raft configuration log entry.
+   * All nodes transition their internal quorum formula to the new cluster membership.
+
+---
+
+### Layer 4: Cryptographic Gatekeeping (SPIFFE/SPIRE mTLS)
+
+Raft quorum participation is protected against spoofing, rogue containers, and unauthorized network injection via mutual TLS backed by SPIFFE:
+
+* **Identity Verification:** Every agent presents an X.509 SVID with URI SAN:
+  `spiffe://dcouplr.internal/ns/telemetry/sa/dcouplr-agent-node`
+* **Transport Wrapping:** Built into ``engine-go/engine/spiffe_raft_transport.go``.
+* **Fail-Fast Defense:** If an unauthenticated node attempts to send a `RequestVote` or `AppendEntries` frame, the connection is aborted at the TLS handshake in **&lt; 1ms**. The rogue node is never recorded in the peer table and cannot influence quorum.
+
+---
+
+## 4. Operational Troubleshooting &amp; Runbook
+
+### 4.1 Inspecting Active Quorum Health
+
+From any terminal or SRE bastion:
+
+```bash
+# Query live Raft cluster quorum snapshot
+curl -s http://localhost:8000/v1/telemetry/metrics \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot; | jq &#x27;.raft&#x27;
+```
+
+**Expected Healthy Response:**
+```json
+{
+  &quot;cluster_id&quot;: &quot;dc-cell-prod-east&quot;,
+  &quot;node_id&quot;: &quot;dcouplr-agent-01&quot;,
+  &quot;role&quot;: &quot;LEADER&quot;,
+  &quot;term&quot;: 4,
+  &quot;commit_index&quot;: 28923,
+  &quot;last_applied&quot;: 28923,
+  &quot;snapshot_index&quot;: 24495,
+  &quot;uncompacted_delta&quot;: 4428,
+  &quot;compaction_threshold&quot;: 8192,
+  &quot;compaction_pct&quot;: 53.9,
+  &quot;peers&quot;: [
+    {
+      &quot;id&quot;: &quot;dcouplr-agent-02&quot;,
+      &quot;vpc&quot;: &quot;vpc-staging-aws&quot;,
+      &quot;role&quot;: &quot;FOLLOWER&quot;,
+      &quot;status&quot;: &quot;HEALTHY&quot;,
+      &quot;rtt_ms&quot;: 14.2,
+      &quot;last_heartbeat_ms&quot;: 42
+    },
+    {
+      &quot;id&quot;: &quot;dcouplr-agent-03&quot;,
+      &quot;vpc&quot;: &quot;vpc-analytics-gcp&quot;,
+      &quot;role&quot;: &quot;FOLLOWER&quot;,
+      &quot;status&quot;: &quot;HEALTHY&quot;,
+      &quot;rtt_ms&quot;: 18.6,
+      &quot;last_heartbeat_ms&quot;: 48
+    }
+  ]
+}
+```
+
+### 4.2 Tripping Circuit Breaker Chaos Drill
+
+To verify how the quorum behaves when a node partition occurs:
+
+1. On the dashboard, navigate to **Embedded Raft Consensus &amp; WAL Compaction**.
+2. Click **⚡ Trip Breaker**.
+3. The circuit breaker trips to `OPEN`. Downstream RPCs immediately fail-fast in $&lt;1$ms without blocking leader goroutines.
+4. After the 10s cooldown timer, the state machine probes the canary in `HALF-OPEN` and auto-recovers to `CLOSED`.
+
+---
+
+## 5. Summary &amp; Decision Authority Table
+
+| Quorum Lifecycle Stage | Who Decides? | Mechanism Used | Security / Safety Guardrail |
+| :--- | :--- | :--- | :--- |
+| **Initial 3 Nodes** | Infrastructure SRE / DevOps Team | Deployment manifest / `peers.json` | Placed in 3 separate failure domains / AZs |
+| **Who is Leader?** | The 3 Nodes (Autonomously) | Raft `RequestVote` Election | 2-of-3 Majority ($\lfloor 3/2 \rfloor + 1$) |
+| **Adding a 4th/5th Node** | The Active Leader | `AddVoter` configuration log entry | Joins as Learner first; log lag must be $&lt;100$ |
+| **Who is Allowed to Connect?** | Control Plane Network Boundary | SPIFFE/SPIRE Workload Attestation | Mutual TLS X.509 SVID validation |
+| **Emergency Recovery** | Incident Commander (SRE) | Force cluster re-seed (`peers.json` manual override) | Cryptographically signed administrative token |
+
+---
+
+*This document constitutes an official architectural standard of the `&lt;dcouplr/&gt;` Full-Stack Suite enterprise release.*
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;dcouplr/&gt; Full-Stack Suite Specification: Embedded Raft Consensus, Quorum Decision Governance &amp; Dynamic Membership Architecture
+
+**Document ID:** `SPEC-FULLSTACK-RAFT-CONSENSUS-001`  
+**Classification:** Core System Architecture &amp; Distributed Systems Specification  
+**Product Generation:** `&lt;dcouplr/&gt;` Full-Stack Suite  
+**Target Audience:** Distributed Systems Architects, Cloud SREs, Security Engineering, Infrastructure Leads  
+**Implementation References:** ``engine-go/engine/raft_config.go``, ``engine-go/engine/raft_transport_wrapper.go``, ``migration_tools/api/telemetry.py``
+
+---
+
+## 1. Executive Summary
+
+In the `&lt;dcouplr/&gt;` Full-Stack Suite, the control plane is completely decentralized into an in-memory, zero-egress distributed state machine powered by an embedded **HashiCorp Raft consensus cluster**. The cluster guarantees strict linearizability, atomic log compaction, and deterministic multi-cloud routing without relying on external cloud databases (e.g., AWS DynamoDB, GCP Cloud Spanner, or etcd).
+
+A foundational operational question frequently asked by enterprise security and infrastructure teams is:
+
+&gt; *&quot;Who decides who becomes part of the quorum in the 3-Node Quorum Active cluster?&quot;*
+
+This specification provides the formal, end-to-end answer. Quorum decision governance is implemented across **four defense-in-depth architectural layers**:
+
+1. **Layer 1: Static Bootstrapping (Infrastructure SRE / IaC):** SREs declare initial failure domains in seed manifests.
+2. **Layer 2: Autonomous Runtime Election (Raft Protocol State Machine):** Nodes elect leaders dynamically without human intervention.
+3. **Layer 3: Dynamic Membership Promotion (Active Leader Log Commit):** The elected Leader atomically admits new voters via two-phase configuration entries.
+4. **Layer 4: Cryptographic Gatekeeping (SPIFFE/SPIRE Zero-Trust mTLS):** Mutual TLS attestation guarantees only verified in-VPC daemons can participate in votes.
+
+---
+
+## 2. Quorum Mathematical Foundations
+
+In Raft consensus, a **Quorum** is defined as the strict majority of voting members required to authorize state machine transitions, commit Write-Ahead Log (WAL) entries, and elect cluster leaders.
+
+### 2.1 The Majority Formula
+
+For an active cluster of $N$ voting nodes, the quorum size $Q$ is computed as:
+
+$$Q = \left\lfloor \frac{N}{2} \right\rfloor + 1$$
+
+The maximum number of simultaneous dead, partitioned, or Byzantine nodes $F$ that the cluster can tolerate while remaining 100% available is:
+
+$$F = \left\lfloor \frac{N - 1}{2} \right\rfloor$$
+
+### 2.2 Quorum Sizing Matrix
+
+| Voting Nodes ($N$) | Quorum Required ($Q$) | Tolerable Faults ($F$) | Primary Operational Use Case |
+| :---: | :---: | :---: | :--- |
+| **1** | 1 (100%) | 0 | Local developer testing (non-HA, single laptop). |
+| **3** *(Default)* | **2 (66.7%)** | **1 Node Dead** | **Standard &lt;dcouplr/&gt; Full-Stack Suite Production Mesh (AWS + GCP + On-Prem).** |
+| **5** | 3 (60.0%) | 2 Nodes Dead | High-Resilience Global Banking / Multi-Region Hyperscaler Mesh. |
+| **7** | 4 (57.1%) | 3 Nodes Dead | Extreme multi-cloud disaster recovery across 7 geo-regions. |
+
+&gt; [!IMPORTANT]
+&gt; **Why Odd Numbers?** Even-numbered clusters (e.g., 4 nodes) require 3 nodes for quorum ($4/2 + 1 = 3$), yet still only tolerate 1 failure. Adding a 4th voting node increases network replication overhead without increasing fault tolerance. `&lt;dcouplr/&gt;` Full-Stack Suite enforces odd-numbered voting clusters (3, 5, or 7).
+
+---
+
+## 3. Four-Layer Quorum Decision Governance
+
+```mermaid
+flowchart TD
+    subgraph L1[&quot;Layer 1: Static Seed Manifests (SRE / IaC)&quot;]
+        A[&quot;Terraform / Helm / peers.json&quot;] --&gt;|Seed Node List| B[&quot;dcouplr-agent-01 (AWS)&lt;br/&gt;dcouplr-agent-02 (AWS Stage)&lt;br/&gt;dcouplr-agent-03 (GCP)&quot;]
+    end
+
+    subgraph L4[&quot;Layer 4: Cryptographic Admission (SPIFFE mTLS)&quot;]
+        B --&gt; C{&quot;Valid SVID Cert?&lt;br/&gt;spiffe://dcouplr.internal/agent/*&quot;}
+        C --&gt;|No: Rejected| D[&quot;Dropped at TCP Layer&lt;br/&gt;(0 WAN Packets)&quot;]
+        C --&gt;|Yes: Approved| E[&quot;Raft Transport Session&quot;]
+    end
+
+    subgraph L2[&quot;Layer 2: Autonomous Protocol (Raft State Machine)&quot;]
+        E --&gt; F[&quot;AppendEntries Heartbeat (50ms)&quot;]
+        F --&gt; G{&quot;Leader Heartbeat Lost?&lt;br/&gt;(&gt;200ms Timeout)&quot;}
+        G --&gt;|Yes| H[&quot;Candidate Initiates Election&lt;br/&gt;Requests Vote from Peers&quot;]
+        H --&gt; I{&quot;Receives 2 of 3 Votes?&quot;}
+        I --&gt;|Yes| J[&quot;Elected LEADER&quot;]
+        I --&gt;|No| K[&quot;Remains Follower / Backoff&quot;]
+    end
+
+    subgraph L3[&quot;Layer 3: Dynamic Membership (Active Leader)&quot;]
+        J --&gt; L[&quot;New Agent Registers&lt;br/&gt;(e.g., dc-onprem-core-01)&quot;]
+        L --&gt; M[&quot;Initial State: Non-Voter / Learner&lt;br/&gt;Replicates WAL delta&quot;]
+        M --&gt; N{&quot;Lag &lt; 100 entries?&quot;}
+        N --&gt;|Yes| O[&quot;Leader Issues AddVoter()&lt;br/&gt;Raft Configuration Log Entry&quot;]
+        O --&gt; P[&quot;Promoted to Full Voter&lt;br/&gt;(Cluster expands to 5 nodes)&quot;]
+    end
+```
+
+---
+
+### Layer 1: Bootstrapping Seed Configuration (The Human / IaC Decision)
+
+When the `&lt;dcouplr/&gt;` Full-Stack Suite starts for the very first time in an enterprise perimeter, **the cloud infrastructure engineer decides the seed quorum membership**:
+
+1. **Seed Declaration:** The initial 3 nodes are declared in ``engine-go/engine/raft_bootstrap_test.go`` or Helm values:
+   ```json
+   [
+     {&quot;id&quot;: &quot;dcouplr-agent-01&quot;, &quot;address&quot;: &quot;10.100.1.50:8300&quot;, &quot;non_voter&quot;: false},
+     {&quot;id&quot;: &quot;dcouplr-agent-02&quot;, &quot;address&quot;: &quot;10.101.1.20:8300&quot;, &quot;non_voter&quot;: false},
+     {&quot;id&quot;: &quot;dcouplr-agent-03&quot;, &quot;address&quot;: &quot;10.200.5.15:8300&quot;, &quot;non_voter&quot;: false}
+   ]
+   ```
+2. **Failure Domain Isolation:** `&lt;dcouplr/&gt;` Full-Stack Suite guidelines mandate placing the 3 voters in distinct availability zones or cloud networks:
+   * **Node 1 (`dcouplr-agent-01`):** Primary VPC (`production_vpc`, AWS `us-east-1a`)
+   * **Node 2 (`dcouplr-agent-02`):** Staging/Secondary VPC (`staging_vpc`, AWS `us-west-2a`)
+   * **Node 3 (`dcouplr-agent-03`):** Analytics Cross-Cloud Mesh (`analytics_gcp_mesh`, GCP `us-central1`)
+3. **Cluster Genesis:** At boot, `raft.BootstrapCluster(configuration)` writes an initial configuration log entry at index `1`. These 3 nodes form the baseline quorum.
+
+---
+
+### Layer 2: Autonomous Protocol Governance (The Nodes Decide)
+
+Once the cluster is bootstrapped, **no human operator or central server chooses the leader or controls votes**. The nodes govern themselves via strict protocol timers defined in ``engine-go/engine/raft_config.go``:
+
+* **Heartbeat Periodicity (`HeartbeatTimeout: 50ms`):** The Leader sends heartbeats to all followers 20 times per second.
+* **Election Timeout Window (`ElectionTimeout: 200ms`):** If a follower hears no heartbeat for $&gt;200$ms (due to network partition or host crash), it transitions to **Candidate**, increments the Raft **Term**, votes for itself, and transmits `RequestVote` RPCs.
+* **Autonomous 2-of-3 Election:**
+  * If Node 1 crashes, Node 2 and Node 3 detect the absence.
+  * Node 2 requests votes from Node 3.
+  * Node 3 grants its vote because Node 2’s log is at least as up-to-date as its own.
+  * Node 2 attains 2 votes (itself + Node 3), achieving a majority of 3 ($2 \ge \lfloor 3/2 \rfloor + 1$).
+  * Node 2 immediately becomes the new **LEADER**.
+
+---
+
+### Layer 3: Dynamic Membership Changes (The Active Leader Decides)
+
+When enterprise customers add a 4th network (e.g. `legacy_datacenter_chicago` or Azure), how does that node join the voting quorum?
+
+&gt; [!NOTE]
+&gt; Under Raft safety invariants, simply adding a 4th voter instantly without log synchronization can trigger a split-brain condition where two disjoint quorums form simultaneously. The **&lt;dcouplr/&gt; Full-Stack Suite** enforces the **Learner $\rightarrow$ Voter Promotion Protocol**.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Admin as SRE / Platform API
+    participant Leader as dcouplr-agent-01 (Leader)
+    participant WAL as Raft In-Memory WAL
+    participant NewNode as dcouplr-agent-04 (New Node)
+
+    Admin-&gt;&gt;Leader: POST /v1/telemetry/topology/add-vpc (Register Node)
+    Leader-&gt;&gt;NewNode: Handshake &amp; mTLS Verification
+    Leader-&gt;&gt;WAL: Append Configuration Entry (NonVoter: dcouplr-agent-04)
+    Note over NewNode: Enters Learner State&lt;br/&gt;(Streams WAL &amp; Memory Snapshots)
+    loop Catch-Up Replication
+        Leader-&gt;&gt;NewNode: AppendEntries(WAL Chunks)
+        NewNode--&gt;&gt;Leader: Ack (Lag Decreasing)
+    end
+    Note over Leader: Evaluates Catch-Up Rule:&lt;br/&gt;Lag &lt; 100 entries &amp; RTT &lt; 20ms
+    Leader-&gt;&gt;WAL: Commit Configuration Entry (AddVoter: dcouplr-agent-04)
+    Leader-&gt;&gt;NewNode: Promote to Voting Member
+    Note over Leader,NewNode: Quorum Reconfigured:&lt;br/&gt;New Voting Set = 4 nodes (or 5 with tie-breaker)
+```
+
+1. **Non-Voter (Learner) Phase:**
+   * When `dc-onprem-core-01` is registered, it enters as a **Non-Voter**.
+   * It receives log streams and replicates transactions, but **its vote is not counted** in elections or commit thresholds.
+   * If the network link between on-premises and AWS is slow, it will never delay production commits.
+2. **Catch-Up Verification:**
+   * The Leader checks `last_applied - peer.match_index`.
+   * Only when log lag drops below 100 entries does the Leader initiate promotion.
+3. **Atomic `AddVoter` Commitment:**
+   * The Leader commits an atomic Raft configuration log entry.
+   * All nodes transition their internal quorum formula to the new cluster membership.
+
+---
+
+### Layer 4: Cryptographic Gatekeeping (SPIFFE/SPIRE mTLS)
+
+Raft quorum participation is protected against spoofing, rogue containers, and unauthorized network injection via mutual TLS backed by SPIFFE:
+
+* **Identity Verification:** Every agent presents an X.509 SVID with URI SAN:
+  `spiffe://dcouplr.internal/ns/telemetry/sa/dcouplr-agent-node`
+* **Transport Wrapping:** Built into ``engine-go/engine/spiffe_raft_transport.go``.
+* **Fail-Fast Defense:** If an unauthenticated node attempts to send a `RequestVote` or `AppendEntries` frame, the connection is aborted at the TLS handshake in **&lt; 1ms**. The rogue node is never recorded in the peer table and cannot influence quorum.
+
+---
+
+## 4. Operational Troubleshooting &amp; Runbook
+
+### 4.1 Inspecting Active Quorum Health
+
+From any terminal or SRE bastion:
+
+```bash
+# Query live Raft cluster quorum snapshot
+curl -s http://localhost:8000/v1/telemetry/metrics \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot; | jq &#x27;.raft&#x27;
+```
+
+**Expected Healthy Response:**
+```json
+{
+  &quot;cluster_id&quot;: &quot;dc-cell-prod-east&quot;,
+  &quot;node_id&quot;: &quot;dcouplr-agent-01&quot;,
+  &quot;role&quot;: &quot;LEADER&quot;,
+  &quot;term&quot;: 4,
+  &quot;commit_index&quot;: 28923,
+  &quot;last_applied&quot;: 28923,
+  &quot;snapshot_index&quot;: 24495,
+  &quot;uncompacted_delta&quot;: 4428,
+  &quot;compaction_threshold&quot;: 8192,
+  &quot;compaction_pct&quot;: 53.9,
+  &quot;peers&quot;: [
+    {
+      &quot;id&quot;: &quot;dcouplr-agent-02&quot;,
+      &quot;vpc&quot;: &quot;vpc-staging-aws&quot;,
+      &quot;role&quot;: &quot;FOLLOWER&quot;,
+      &quot;status&quot;: &quot;HEALTHY&quot;,
+      &quot;rtt_ms&quot;: 14.2,
+      &quot;last_heartbeat_ms&quot;: 42
+    },
+    {
+      &quot;id&quot;: &quot;dcouplr-agent-03&quot;,
+      &quot;vpc&quot;: &quot;vpc-analytics-gcp&quot;,
+      &quot;role&quot;: &quot;FOLLOWER&quot;,
+      &quot;status&quot;: &quot;HEALTHY&quot;,
+      &quot;rtt_ms&quot;: 18.6,
+      &quot;last_heartbeat_ms&quot;: 48
+    }
+  ]
+}
+```
+
+### 4.2 Tripping Circuit Breaker Chaos Drill
+
+To verify how the quorum behaves when a node partition occurs:
+
+1. On the dashboard, navigate to **Embedded Raft Consensus &amp; WAL Compaction**.
+2. Click **⚡ Trip Breaker**.
+3. The circuit breaker trips to `OPEN`. Downstream RPCs immediately fail-fast in $&lt;1$ms without blocking leader goroutines.
+4. After the 10s cooldown timer, the state machine probes the canary in `HALF-OPEN` and auto-recovers to `CLOSED`.
+
+---
+
+## 5. Summary &amp; Decision Authority Table
+
+| Quorum Lifecycle Stage | Who Decides? | Mechanism Used | Security / Safety Guardrail |
+| :--- | :--- | :--- | :--- |
+| **Initial 3 Nodes** | Infrastructure SRE / DevOps Team | Deployment manifest / `peers.json` | Placed in 3 separate failure domains / AZs |
+| **Who is Leader?** | The 3 Nodes (Autonomously) | Raft `RequestVote` Election | 2-of-3 Majority ($\lfloor 3/2 \rfloor + 1$) |
+| **Adding a 4th/5th Node** | The Active Leader | `AddVoter` configuration log entry | Joins as Learner first; log lag must be $&lt;100$ |
+| **Who is Allowed to Connect?** | Control Plane Network Boundary | SPIFFE/SPIRE Workload Attestation | Mutual TLS X.509 SVID validation |
+| **Emergency Recovery** | Incident Commander (SRE) | Force cluster re-seed (`peers.json` manual override) | Cryptographically signed administrative token |
+
+---
+
+*This document constitutes an official architectural standard of the `&lt;dcouplr/&gt;` Full-Stack Suite enterprise release.*
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

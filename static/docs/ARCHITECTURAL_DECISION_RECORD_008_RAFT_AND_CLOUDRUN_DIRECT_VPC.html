@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - ARCHITECTURAL_DECISION_RECORD_008_RAFT_AND_CLOUDRUN_DIRECT_VPC.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/ARCHITECTURAL_DECISION_RECORD_008_RAFT_AND_CLOUDRUN_DIRECT_VPC.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="ARCHITECTURAL_DECISION_RECORD_008_RAFT_AND_CLOUDRUN_DIRECT_VPC.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="architectural-decision-record-raft-transport-wrappers-gcp-cloud-run-direct-vpc-egress">🏛️ Architectural Decision Record: Raft Transport Wrappers &amp; GCP Cloud Run Direct VPC Egress</h1>
+<p><strong>Document ID:</strong> ADR-2026-OCT-008<br />
+<strong>Status:</strong> APPROVED &amp; IMPLEMENTED<br />
+<strong>Date:</strong> October 2026<br />
+<strong>Systems Involved:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> (<code>MigrationToolsAPI</code>) &amp; <code>cloaudit</code> (FinOps Audit Platform, port 3780)<br />
+<strong>Security &amp; Architecture Classification:</strong> Enterprise Core Invariant Baseline<br />
+<strong>Sign-off:</strong> Principal Systems Architect, Lead SRE, FinOps Review Board</p>
+<hr />
+<h2 id="1-executive-summary">1. Executive Summary</h2>
+<p>This Architectural Decision Record (ADR) formalizes two mission-critical engineering initiatives completed for the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> enterprise ecosystem:</p>
+<ol>
+<li><strong>Google Cloud Run Direct VPC Egress Migration Architecture:</strong>
+<ul>
+<li>Full gap analysis of Google Cloud Tech's reference architecture (<em>&quot;Cloud Run Direct VPC egress explained&quot;</em>).</li>
+<li>Strict architectural division of responsibility between <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> (IaC transpilation, zero-egress networking) and <code>cloaudit</code> (cloud spend auditing, waste detection).</li>
+<li>Delivery of Turnkey Recipe <code>RECIPE-GCP-CLOUDRUN-DIRECTVPC-008</code> eliminating legacy VPC Access Connector overhead ($0 fixed cost, &lt;1ms latency).</li>
+</ul>
+</li>
+<li><strong>HashiCorp Raft Transport Wrappers &amp; Go Channel Mesh:</strong>
+<ul>
+<li>Production-grade <code>raft.Transport</code> wrappers with 20ms asymmetric circuit breakers.</li>
+<li>Stateful per-peer fail-fast finite state machine (<code>Closed</code> $\rightarrow$ <code>Open</code> $\rightarrow$ <code>HalfOpen</code>) eliminating goroutine accumulation during partitions.</li>
+<li>Pure in-memory Go channel mesh (<code>ChannelRaftTransport</code>) and full-mesh cluster cell orchestrator (<code>ChannelMeshCoordinator</code>) for deterministic chaos testing.</li>
+<li>Native SPIFFE mTLS integration and Prometheus transport telemetry collectors.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="2-decision-1-google-cloud-run-direct-vpc-egress-architecture">2. Decision 1: Google Cloud Run Direct VPC Egress Architecture</h2>
+<h3 id="21-the-problem-video-gap-analysis">2.1 The Problem &amp; Video Gap Analysis</h3>
+<p>In analyzing Google Cloud Tech's architecture (<code>https://www.youtube.com/watch?v=wCRA7HnZf0g</code>), enterprise customers running container workloads on Cloud Run encounter substantial operational, financial, and security friction when connecting to internal VPC resources via legacy <strong>Serverless VPC Access Connectors</strong> (<code>google_vpc_access_connector</code>):</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">LEGACY PROXY CONNECTOR (High Cost, Multi-Hop Latency):
+[Cloud Run v1] ──(Annotations)──&gt; [Connector VMs (f1/e2-micro)] ──&gt; [VPC Subnet (10.8.0.0/28)] ──&gt; [Private DB]
+                                  └── $30–$70/mo fixed cost
+                                  └── 2–5ms proxy latency
+                                  └── No container network tags
+
+MODERN DIRECT VPC EGRESS (<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> RECIPE-008):
+[Cloud Run v2] ──(Native NIC)────[Network Tag: dcouplr-in-vpc]────&gt; [Private Subnet (10.10.10.0/24)] ──&gt; [Private DB]
+                                  └── $0 fixed connector cost
+                                  └── Sub-1ms native microVM latency
+                                  └── Granular VPC Firewall Rules &amp; 5-sec Flow Logs
+</code></pre></div>
+<ul>
+<li><strong>Financial Penalty:</strong> Each VPC Access Connector provisions a minimum of 2 to 10 underlying Compute Engine VMs (<code>f1-micro</code> or <code>e2-micro</code>), incurring <strong>$30.00 to $70.00/month</strong> per connector in unutilized idle spend.</li>
+<li><strong>Latency Bottleneck:</strong> Outbound container traffic passes through proxy connector instances, adding 2–5ms of network hop latency.</li>
+<li><strong>Firewall Limitations:</strong> VPC firewall rules can only target the connector's <code>/28</code> CIDR block, preventing container-level security segmentation.</li>
+</ul>
+<h3 id="22-architectural-invariant-division-of-responsibility">2.2 Architectural Invariant &amp; Division of Responsibility</h3>
+<p>To preserve <strong>Invariant 1 (<code>NO BILLING DATA IN DCOUPLR</code>)</strong>, the implementation is strictly bifurcated across the two applications:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌────────────────────────────────────────────────────────┐   ┌────────────────────────────────────────────────────────┐
+│               <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> (Port 8000)                   │   │                 cloaudit (Port 3780)                   │
+├────────────────────────────────────────────────────────┤   ├────────────────────────────────────────────────────────┤
+│ • AST Parsing &amp; OpenTofu / Terraform Transpilation     │   │ • GCP BigQuery Cloud Billing Export Ingestion          │
+│ • Turnkey Recipe: RECIPE-GCP-CLOUDRUN-DIRECTVPC-008    │   │ • Rule Engine: RULE-GCP-VPC-CONNECTOR-RETIREMENT       │
+│ • Network Tags &amp; In-VPC Firewall Enforcement           │   │ • Detects $30–$70/mo Idle Connector Line Items         │
+│ • Cryptographic SHA-256 Zero-Egress Attestation        │   │ • Recommends Decommissioning via <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Recipe     │
+│ • Subnet Flow Logs (INTERVAL_5_SEC, ALL_METADATA)      │   │ • Financial Waste &amp; ROI Dashboard Cards (/harness)     │
+└────────────────────────────────────────────────────────┘   └────────────────────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="23-what-was-implemented-in-dcouplr">2.3 What Was Implemented in <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code></h3>
+<p>Located in <code>recipes/cloud_run_direct_vpc_egress/</code>:</p>
+<ol>
+<li><strong>Turnkey Recipe Documentation (<code>README.md</code>):</strong> Complete migration guide, architecture diagrams, latency/cost matrix, and deployment instructions.</li>
+<li><strong>Legacy Input HCL (<code>input_legacy_connector.tf</code>):</strong> Realistic pre-migration Terraform defining <code>google_vpc_access_connector</code> and Cloud Run v1 service annotations.</li>
+<li><strong>Direct VPC Egress Output HCL (<code>output_direct_vpc_egress.tf</code>):</strong> Production-ready OpenTofu configuration featuring:
+<ul>
+<li><code>google_cloud_run_v2_service</code> with native <code>vpc_access.network_interfaces</code>.</li>
+<li>Explicit <code>egress = &quot;ALL_TRAFFIC&quot;</code> locking all container outbound requests inside the VPC.</li>
+<li>Network tags (<code>dcouplr-in-vpc</code>, <code>cloaudit-bridge</code>) allowing fine-grained firewall targeting.</li>
+<li><code>google_compute_firewall</code> allowing ingress only from tagged Cloud Run containers to internal databases.</li>
+<li>Dedicated <code>/24</code> subnet with VPC Flow Logs (<code>INTERVAL_5_SEC</code>, <code>INCLUDE_ALL_METADATA</code>).</li>
+</ul>
+</li>
+<li><strong>AST Transpiler Script (<code>migrate.py</code>):</strong> Standalone zero-egress transpiler replacing legacy connectors with native v2 Direct VPC configurations.</li>
+<li><strong>Automated Unit Tests (<code>tests/test_recipe_cloud_run_direct_vpc.py</code>):</strong> 100% green pytest verification confirming connector elimination and security invariants.</li>
+</ol>
+<hr />
+<h2 id="3-decision-2-hashicorp-raft-transport-wrappers-go-channel-mesh">3. Decision 2: HashiCorp Raft Transport Wrappers &amp; Go Channel Mesh</h2>
+<h3 id="31-the-problem-latency-bounds">3.1 The Problem &amp; Latency Bounds</h3>
+<p>In distributed on-premises and multi-cloud agent cells, asymmetric network link stalls (e.g., packet drops or 300ms delays to a single partitioned node) can stall the Raft consensus leader during write replication.</p>
+<ul>
+<li><strong>Strict SLA:</strong> Outbound Raft RPCs must never block beyond <strong>20ms</strong>.</li>
+<li><strong>Goroutine Leak Risk:</strong> A naive timeout wrapper that blocks on an unbuffered goroutine leaks Go runtime routines when peers stay down for extended durations.</li>
+</ul>
+<h3 id="32-implemented-architectural-components">3.2 Implemented Architectural Components</h3>
+<p>Located in <code>engine-go/engine/raft_transport_wrapper.go</code>:</p>
+<h4 id="1-circuitbreakerrafttransport">1. <code>CircuitBreakerRaftTransport</code></h4>
+<p>Wraps any underlying HashiCorp <code>raft.Transport</code> (e.g., SPIFFE mTLS) with non-blocking 20ms circuit breaker protection:</p>
+<ul>
+<li>Inbound consumer channel proxy with fast-path bypass for 0-entry AppendEntries heartbeats.</li>
+<li>Pipelined AppendEntries wrapper (<code>circuitBreakerAppendPipeline</code>) with bounded future queues.</li>
+</ul>
+<h4 id="2-stateful-per-peer-fail-fast-state-machine">2. Stateful Per-Peer Fail-Fast State Machine</h4>
+<p>Added <code>peerCircuitTracker</code> tracking downstream peer health:</p>
+<ul>
+<li><strong><code>CircuitClosed</code>:</strong> Normal operation; RPCs proceed with 20ms timeout protection.</li>
+<li><strong><code>CircuitOpen</code>:</strong> After 3 consecutive timeouts (<code>ConsecutiveFailures</code>), the peer's circuit trips to <code>OPEN</code>. Outbound RPCs immediately <strong>fail-fast in &lt;1ms</strong> with <code>ErrCircuitBreakerOpen</code>, preventing goroutine allocation and leader head-of-line blocking.</li>
+<li><strong><code>CircuitHalfOpen</code>:</strong> After a 500ms cooldown (<code>CooldownDuration</code>), allows a single canary probe RPC. If successful, transitions peer health back to <code>CLOSED</code>.</li>
+</ul>
+<h4 id="3-pure-in-memory-go-channel-mesh-channelrafttransport">3. Pure In-Memory Go Channel Mesh (<code>ChannelRaftTransport</code>)</h4>
+<p>Provides a 100% socket-free <code>raft.Transport</code> implementation using native Go buffered channels:</p>
+<ul>
+<li>Zero OS network stack dependency for sub-millisecond local integration testing and micro-cell execution.</li>
+<li>Full support for <code>AppendEntries</code>, <code>RequestVote</code>, <code>InstallSnapshot</code>, and streaming <code>AppendEntriesPipeline</code>.</li>
+</ul>
+<h4 id="4-full-mesh-cluster-cell-orchestrator-channelmeshcoordinator">4. Full-Mesh Cluster Cell Orchestrator (<code>ChannelMeshCoordinator</code>)</h4>
+<p>Orchestrates an $N$-node in-memory cluster cell:</p>
+<ul>
+<li>Automatically establishes bidirectional full-mesh channel topologies on <code>AddNode</code>.</li>
+<li>Provides deterministic chaos injection:
+<ul>
+<li><code>PartitionNode(id)</code>: Instantly severs all incoming and outgoing channel connections.</li>
+<li><code>HealNode(id)</code>: Restores all bidirectional channel routes.</li>
+</ul>
+</li>
+</ul>
+<h4 id="5-spiffe-integration-telemetry-export">5. SPIFFE Integration &amp; Telemetry Export</h4>
+<ul>
+<li>Added <code>BuildCircuitBreakerSpiffeTransport</code> to provide single-line instantiation combining SPIFFE mTLS with the 20ms circuit breaker.</li>
+<li>Added Prometheus collectors in <code>cluster_metrics.go</code>:
+<ul>
+<li><code>decoupler_raft_circuit_breaker_trips_total</code></li>
+<li><code>decoupler_raft_dropped_inbound_rpcs_total</code></li>
+<li><code>decoupler_raft_fast_heartbeats_total</code></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="4-verification-evidence-quality-gates">4. Verification Evidence &amp; Quality Gates</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Verification Target</th>
+<th style="text-align:left">Test Suite</th>
+<th style="text-align:left">Result</th>
+<th style="text-align:left">Key Metric Validated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Direct VPC Egress Transpiler</strong></td>
+<td style="text-align:left"><code>tests/test_recipe_cloud_run_direct_vpc.py</code></td>
+<td style="text-align:left"><strong>PASSED</strong> (2/2)</td>
+<td style="text-align:left">Legacy connector removed; tags &amp; flow logs asserted.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Go Raft Peer Communication</strong></td>
+<td style="text-align:left"><code>engine-go/engine/raft_transport_wrapper_test.go</code></td>
+<td style="text-align:left"><strong>PASSED</strong></td>
+<td style="text-align:left">Channel AppendEntries commits over memory channels.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>20ms Circuit Breaker Timeout</strong></td>
+<td style="text-align:left"><code>engine-go/engine/raft_transport_wrapper_test.go</code></td>
+<td style="text-align:left"><strong>PASSED</strong></td>
+<td style="text-align:left">Trip confirmed when peer delays &gt; 20ms.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Fail-Fast State Machine</strong></td>
+<td style="text-align:left"><code>engine-go/engine/raft_transport_wrapper_test.go</code></td>
+<td style="text-align:left"><strong>PASSED</strong></td>
+<td style="text-align:left">3 timeouts trip to <code>OPEN</code>; next call fails in &lt;2ms.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Mesh Chaos &amp; Partition</strong></td>
+<td style="text-align:left"><code>engine-go/engine/raft_transport_wrapper_test.go</code></td>
+<td style="text-align:left"><strong>PASSED</strong></td>
+<td style="text-align:left">3-node mesh partitioned and healed without deadlock.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Distributed Mesh Resilience</strong></td>
+<td style="text-align:left"><code>tests/test_vector3_distributed_mesh_resilience.py</code></td>
+<td style="text-align:left"><strong>PASSED</strong> (3/3)</td>
+<td style="text-align:left">150+ concurrent requests, &lt;50 MiB RSS, quorum preserved.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Full Smoke &amp; Regression</strong></td>
+<td style="text-align:left"><code>tests/test_smoke_and_regression.py</code></td>
+<td style="text-align:left"><strong>PASSED</strong> (48/48)</td>
+<td style="text-align:left">Complete API, RBAC, and telemetry bridge integrity.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-summary-of-artifacts-code-references">5. Summary of Artifacts &amp; Code References</h2>
+<ul>
+<li><strong>Google Cloud Direct VPC Egress:</strong>
+<ul>
+<li><a href="/docs/README.html">README.md</a></li>
+<li><code>input_legacy_connector.tf</code></li>
+<li><code>output_direct_vpc_egress.tf</code></li>
+<li><code>migrate.py</code></li>
+<li><code>test_recipe_cloud_run_direct_vpc.py</code></li>
+</ul>
+</li>
+<li><strong>HashiCorp Raft Transport &amp; Channels Logic:</strong>
+<ul>
+<li><code>raft_transport_wrapper.go</code></li>
+<li><code>raft_transport_wrapper_test.go</code></li>
+<li><code>spiffe_raft_transport.go</code></li>
+<li><code>cluster_metrics.go</code></li>
+<li><code>test_vector3_distributed_mesh_resilience.py</code></li>
+</ul>
+</li>
+</ul>
+</div>
+      <pre id="raw-view"><code># 🏛️ Architectural Decision Record: Raft Transport Wrappers &amp; GCP Cloud Run Direct VPC Egress
+
+**Document ID:** ADR-2026-OCT-008  
+**Status:** APPROVED &amp; IMPLEMENTED  
+**Date:** October 2026  
+**Systems Involved:** `&lt;dcouplr/&gt;` (`MigrationToolsAPI`) &amp; `cloaudit` (FinOps Audit Platform, port 3780)  
+**Security &amp; Architecture Classification:** Enterprise Core Invariant Baseline  
+**Sign-off:** Principal Systems Architect, Lead SRE, FinOps Review Board  
+
+---
+
+## 1. Executive Summary
+
+This Architectural Decision Record (ADR) formalizes two mission-critical engineering initiatives completed for the `&lt;dcouplr/&gt;` enterprise ecosystem:
+
+1. **Google Cloud Run Direct VPC Egress Migration Architecture:**
+   * Full gap analysis of Google Cloud Tech&#x27;s reference architecture (*&quot;Cloud Run Direct VPC egress explained&quot;*).
+   * Strict architectural division of responsibility between `&lt;dcouplr/&gt;` (IaC transpilation, zero-egress networking) and `cloaudit` (cloud spend auditing, waste detection).
+   * Delivery of Turnkey Recipe `RECIPE-GCP-CLOUDRUN-DIRECTVPC-008` eliminating legacy VPC Access Connector overhead ($0 fixed cost, &lt;1ms latency).
+2. **HashiCorp Raft Transport Wrappers &amp; Go Channel Mesh:**
+   * Production-grade `raft.Transport` wrappers with 20ms asymmetric circuit breakers.
+   * Stateful per-peer fail-fast finite state machine (`Closed` $\rightarrow$ `Open` $\rightarrow$ `HalfOpen`) eliminating goroutine accumulation during partitions.
+   * Pure in-memory Go channel mesh (`ChannelRaftTransport`) and full-mesh cluster cell orchestrator (`ChannelMeshCoordinator`) for deterministic chaos testing.
+   * Native SPIFFE mTLS integration and Prometheus transport telemetry collectors.
+
+---
+
+## 2. Decision 1: Google Cloud Run Direct VPC Egress Architecture
+
+### 2.1 The Problem &amp; Video Gap Analysis
+In analyzing Google Cloud Tech&#x27;s architecture (`https://www.youtube.com/watch?v=wCRA7HnZf0g`), enterprise customers running container workloads on Cloud Run encounter substantial operational, financial, and security friction when connecting to internal VPC resources via legacy **Serverless VPC Access Connectors** (`google_vpc_access_connector`):
+
+```
+LEGACY PROXY CONNECTOR (High Cost, Multi-Hop Latency):
+[Cloud Run v1] ──(Annotations)──&gt; [Connector VMs (f1/e2-micro)] ──&gt; [VPC Subnet (10.8.0.0/28)] ──&gt; [Private DB]
+                                  └── $30–$70/mo fixed cost
+                                  └── 2–5ms proxy latency
+                                  └── No container network tags
+
+MODERN DIRECT VPC EGRESS (&lt;dcouplr/&gt; RECIPE-008):
+[Cloud Run v2] ──(Native NIC)────[Network Tag: dcouplr-in-vpc]────&gt; [Private Subnet (10.10.10.0/24)] ──&gt; [Private DB]
+                                  └── $0 fixed connector cost
+                                  └── Sub-1ms native microVM latency
+                                  └── Granular VPC Firewall Rules &amp; 5-sec Flow Logs
+```
+
+* **Financial Penalty:** Each VPC Access Connector provisions a minimum of 2 to 10 underlying Compute Engine VMs (`f1-micro` or `e2-micro`), incurring **$30.00 to $70.00/month** per connector in unutilized idle spend.
+* **Latency Bottleneck:** Outbound container traffic passes through proxy connector instances, adding 2–5ms of network hop latency.
+* **Firewall Limitations:** VPC firewall rules can only target the connector&#x27;s `/28` CIDR block, preventing container-level security segmentation.
+
+### 2.2 Architectural Invariant &amp; Division of Responsibility
+To preserve **Invariant 1 (`NO BILLING DATA IN DCOUPLR`)**, the implementation is strictly bifurcated across the two applications:
+
+```
+┌────────────────────────────────────────────────────────┐   ┌────────────────────────────────────────────────────────┐
+│               &lt;dcouplr/&gt; (Port 8000)                   │   │                 cloaudit (Port 3780)                   │
+├────────────────────────────────────────────────────────┤   ├────────────────────────────────────────────────────────┤
+│ • AST Parsing &amp; OpenTofu / Terraform Transpilation     │   │ • GCP BigQuery Cloud Billing Export Ingestion          │
+│ • Turnkey Recipe: RECIPE-GCP-CLOUDRUN-DIRECTVPC-008    │   │ • Rule Engine: RULE-GCP-VPC-CONNECTOR-RETIREMENT       │
+│ • Network Tags &amp; In-VPC Firewall Enforcement           │   │ • Detects $30–$70/mo Idle Connector Line Items         │
+│ • Cryptographic SHA-256 Zero-Egress Attestation        │   │ • Recommends Decommissioning via &lt;dcouplr/&gt; Recipe     │
+│ • Subnet Flow Logs (INTERVAL_5_SEC, ALL_METADATA)      │   │ • Financial Waste &amp; ROI Dashboard Cards (/harness)     │
+└────────────────────────────────────────────────────────┘   └────────────────────────────────────────────────────────┘
+```
+
+### 2.3 What Was Implemented in `&lt;dcouplr/&gt;`
+
+Located in ``recipes/cloud_run_direct_vpc_egress/``:
+
+1. **Turnkey Recipe Documentation (`README.md`):** Complete migration guide, architecture diagrams, latency/cost matrix, and deployment instructions.
+2. **Legacy Input HCL (`input_legacy_connector.tf`):** Realistic pre-migration Terraform defining `google_vpc_access_connector` and Cloud Run v1 service annotations.
+3. **Direct VPC Egress Output HCL (`output_direct_vpc_egress.tf`):** Production-ready OpenTofu configuration featuring:
+   * `google_cloud_run_v2_service` with native `vpc_access.network_interfaces`.
+   * Explicit `egress = &quot;ALL_TRAFFIC&quot;` locking all container outbound requests inside the VPC.
+   * Network tags (`dcouplr-in-vpc`, `cloaudit-bridge`) allowing fine-grained firewall targeting.
+   * `google_compute_firewall` allowing ingress only from tagged Cloud Run containers to internal databases.
+   * Dedicated `/24` subnet with VPC Flow Logs (`INTERVAL_5_SEC`, `INCLUDE_ALL_METADATA`).
+4. **AST Transpiler Script (`migrate.py`):** Standalone zero-egress transpiler replacing legacy connectors with native v2 Direct VPC configurations.
+5. **Automated Unit Tests (`tests/test_recipe_cloud_run_direct_vpc.py`):** 100% green pytest verification confirming connector elimination and security invariants.
+
+---
+
+## 3. Decision 2: HashiCorp Raft Transport Wrappers &amp; Go Channel Mesh
+
+### 3.1 The Problem &amp; Latency Bounds
+In distributed on-premises and multi-cloud agent cells, asymmetric network link stalls (e.g., packet drops or 300ms delays to a single partitioned node) can stall the Raft consensus leader during write replication.
+* **Strict SLA:** Outbound Raft RPCs must never block beyond **20ms**.
+* **Goroutine Leak Risk:** A naive timeout wrapper that blocks on an unbuffered goroutine leaks Go runtime routines when peers stay down for extended durations.
+
+### 3.2 Implemented Architectural Components
+
+Located in ``engine-go/engine/raft_transport_wrapper.go``:
+
+#### 1. `CircuitBreakerRaftTransport`
+Wraps any underlying HashiCorp `raft.Transport` (e.g., SPIFFE mTLS) with non-blocking 20ms circuit breaker protection:
+* Inbound consumer channel proxy with fast-path bypass for 0-entry AppendEntries heartbeats.
+* Pipelined AppendEntries wrapper (`circuitBreakerAppendPipeline`) with bounded future queues.
+
+#### 2. Stateful Per-Peer Fail-Fast State Machine
+Added ``peerCircuitTracker`` tracking downstream peer health:
+* **`CircuitClosed`:** Normal operation; RPCs proceed with 20ms timeout protection.
+* **`CircuitOpen`:** After 3 consecutive timeouts (`ConsecutiveFailures`), the peer&#x27;s circuit trips to `OPEN`. Outbound RPCs immediately **fail-fast in &lt;1ms** with `ErrCircuitBreakerOpen`, preventing goroutine allocation and leader head-of-line blocking.
+* **`CircuitHalfOpen`:** After a 500ms cooldown (`CooldownDuration`), allows a single canary probe RPC. If successful, transitions peer health back to `CLOSED`.
+
+#### 3. Pure In-Memory Go Channel Mesh (`ChannelRaftTransport`)
+Provides a 100% socket-free `raft.Transport` implementation using native Go buffered channels:
+* Zero OS network stack dependency for sub-millisecond local integration testing and micro-cell execution.
+* Full support for `AppendEntries`, `RequestVote`, `InstallSnapshot`, and streaming `AppendEntriesPipeline`.
+
+#### 4. Full-Mesh Cluster Cell Orchestrator (`ChannelMeshCoordinator`)
+Orchestrates an $N$-node in-memory cluster cell:
+* Automatically establishes bidirectional full-mesh channel topologies on `AddNode`.
+* Provides deterministic chaos injection:
+  * `PartitionNode(id)`: Instantly severs all incoming and outgoing channel connections.
+  * `HealNode(id)`: Restores all bidirectional channel routes.
+
+#### 5. SPIFFE Integration &amp; Telemetry Export
+* Added ``BuildCircuitBreakerSpiffeTransport`` to provide single-line instantiation combining SPIFFE mTLS with the 20ms circuit breaker.
+* Added Prometheus collectors in ``cluster_metrics.go``:
+  * `decoupler_raft_circuit_breaker_trips_total`
+  * `decoupler_raft_dropped_inbound_rpcs_total`
+  * `decoupler_raft_fast_heartbeats_total`
+
+---
+
+## 4. Verification Evidence &amp; Quality Gates
+
+| Verification Target | Test Suite | Result | Key Metric Validated |
+| :--- | :--- | :--- | :--- |
+| **Direct VPC Egress Transpiler** | `tests/test_recipe_cloud_run_direct_vpc.py` | **PASSED** (2/2) | Legacy connector removed; tags &amp; flow logs asserted. |
+| **Go Raft Peer Communication** | `engine-go/engine/raft_transport_wrapper_test.go` | **PASSED** | Channel AppendEntries commits over memory channels. |
+| **20ms Circuit Breaker Timeout** | `engine-go/engine/raft_transport_wrapper_test.go` | **PASSED** | Trip confirmed when peer delays &gt; 20ms. |
+| **Fail-Fast State Machine** | `engine-go/engine/raft_transport_wrapper_test.go` | **PASSED** | 3 timeouts trip to `OPEN`; next call fails in &lt;2ms. |
+| **Mesh Chaos &amp; Partition** | `engine-go/engine/raft_transport_wrapper_test.go` | **PASSED** | 3-node mesh partitioned and healed without deadlock. |
+| **Distributed Mesh Resilience** | `tests/test_vector3_distributed_mesh_resilience.py` | **PASSED** (3/3) | 150+ concurrent requests, &lt;50 MiB RSS, quorum preserved. |
+| **Full Smoke &amp; Regression** | `tests/test_smoke_and_regression.py` | **PASSED** (48/48) | Complete API, RBAC, and telemetry bridge integrity. |
+
+---
+
+## 5. Summary of Artifacts &amp; Code References
+
+* **Google Cloud Direct VPC Egress:**
+  * [README.md](/docs/README.html)
+  * `input_legacy_connector.tf`
+  * `output_direct_vpc_egress.tf`
+  * `migrate.py`
+  * `test_recipe_cloud_run_direct_vpc.py`
+* **HashiCorp Raft Transport &amp; Channels Logic:**
+  * `raft_transport_wrapper.go`
+  * `raft_transport_wrapper_test.go`
+  * `spiffe_raft_transport.go`
+  * `cluster_metrics.go`
+  * `test_vector3_distributed_mesh_resilience.py`
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># 🏛️ Architectural Decision Record: Raft Transport Wrappers &amp; GCP Cloud Run Direct VPC Egress
+
+**Document ID:** ADR-2026-OCT-008  
+**Status:** APPROVED &amp; IMPLEMENTED  
+**Date:** October 2026  
+**Systems Involved:** `&lt;dcouplr/&gt;` (`MigrationToolsAPI`) &amp; `cloaudit` (FinOps Audit Platform, port 3780)  
+**Security &amp; Architecture Classification:** Enterprise Core Invariant Baseline  
+**Sign-off:** Principal Systems Architect, Lead SRE, FinOps Review Board  
+
+---
+
+## 1. Executive Summary
+
+This Architectural Decision Record (ADR) formalizes two mission-critical engineering initiatives completed for the `&lt;dcouplr/&gt;` enterprise ecosystem:
+
+1. **Google Cloud Run Direct VPC Egress Migration Architecture:**
+   * Full gap analysis of Google Cloud Tech&#x27;s reference architecture (*&quot;Cloud Run Direct VPC egress explained&quot;*).
+   * Strict architectural division of responsibility between `&lt;dcouplr/&gt;` (IaC transpilation, zero-egress networking) and `cloaudit` (cloud spend auditing, waste detection).
+   * Delivery of Turnkey Recipe `RECIPE-GCP-CLOUDRUN-DIRECTVPC-008` eliminating legacy VPC Access Connector overhead ($0 fixed cost, &lt;1ms latency).
+2. **HashiCorp Raft Transport Wrappers &amp; Go Channel Mesh:**
+   * Production-grade `raft.Transport` wrappers with 20ms asymmetric circuit breakers.
+   * Stateful per-peer fail-fast finite state machine (`Closed` $\rightarrow$ `Open` $\rightarrow$ `HalfOpen`) eliminating goroutine accumulation during partitions.
+   * Pure in-memory Go channel mesh (`ChannelRaftTransport`) and full-mesh cluster cell orchestrator (`ChannelMeshCoordinator`) for deterministic chaos testing.
+   * Native SPIFFE mTLS integration and Prometheus transport telemetry collectors.
+
+---
+
+## 2. Decision 1: Google Cloud Run Direct VPC Egress Architecture
+
+### 2.1 The Problem &amp; Video Gap Analysis
+In analyzing Google Cloud Tech&#x27;s architecture (`https://www.youtube.com/watch?v=wCRA7HnZf0g`), enterprise customers running container workloads on Cloud Run encounter substantial operational, financial, and security friction when connecting to internal VPC resources via legacy **Serverless VPC Access Connectors** (`google_vpc_access_connector`):
+
+```
+LEGACY PROXY CONNECTOR (High Cost, Multi-Hop Latency):
+[Cloud Run v1] ──(Annotations)──&gt; [Connector VMs (f1/e2-micro)] ──&gt; [VPC Subnet (10.8.0.0/28)] ──&gt; [Private DB]
+                                  └── $30–$70/mo fixed cost
+                                  └── 2–5ms proxy latency
+                                  └── No container network tags
+
+MODERN DIRECT VPC EGRESS (&lt;dcouplr/&gt; RECIPE-008):
+[Cloud Run v2] ──(Native NIC)────[Network Tag: dcouplr-in-vpc]────&gt; [Private Subnet (10.10.10.0/24)] ──&gt; [Private DB]
+                                  └── $0 fixed connector cost
+                                  └── Sub-1ms native microVM latency
+                                  └── Granular VPC Firewall Rules &amp; 5-sec Flow Logs
+```
+
+* **Financial Penalty:** Each VPC Access Connector provisions a minimum of 2 to 10 underlying Compute Engine VMs (`f1-micro` or `e2-micro`), incurring **$30.00 to $70.00/month** per connector in unutilized idle spend.
+* **Latency Bottleneck:** Outbound container traffic passes through proxy connector instances, adding 2–5ms of network hop latency.
+* **Firewall Limitations:** VPC firewall rules can only target the connector&#x27;s `/28` CIDR block, preventing container-level security segmentation.
+
+### 2.2 Architectural Invariant &amp; Division of Responsibility
+To preserve **Invariant 1 (`NO BILLING DATA IN DCOUPLR`)**, the implementation is strictly bifurcated across the two applications:
+
+```
+┌────────────────────────────────────────────────────────┐   ┌────────────────────────────────────────────────────────┐
+│               &lt;dcouplr/&gt; (Port 8000)                   │   │                 cloaudit (Port 3780)                   │
+├────────────────────────────────────────────────────────┤   ├────────────────────────────────────────────────────────┤
+│ • AST Parsing &amp; OpenTofu / Terraform Transpilation     │   │ • GCP BigQuery Cloud Billing Export Ingestion          │
+│ • Turnkey Recipe: RECIPE-GCP-CLOUDRUN-DIRECTVPC-008    │   │ • Rule Engine: RULE-GCP-VPC-CONNECTOR-RETIREMENT       │
+│ • Network Tags &amp; In-VPC Firewall Enforcement           │   │ • Detects $30–$70/mo Idle Connector Line Items         │
+│ • Cryptographic SHA-256 Zero-Egress Attestation        │   │ • Recommends Decommissioning via &lt;dcouplr/&gt; Recipe     │
+│ • Subnet Flow Logs (INTERVAL_5_SEC, ALL_METADATA)      │   │ • Financial Waste &amp; ROI Dashboard Cards (/harness)     │
+└────────────────────────────────────────────────────────┘   └────────────────────────────────────────────────────────┘
+```
+
+### 2.3 What Was Implemented in `&lt;dcouplr/&gt;`
+
+Located in ``recipes/cloud_run_direct_vpc_egress/``:
+
+1. **Turnkey Recipe Documentation (`README.md`):** Complete migration guide, architecture diagrams, latency/cost matrix, and deployment instructions.
+2. **Legacy Input HCL (`input_legacy_connector.tf`):** Realistic pre-migration Terraform defining `google_vpc_access_connector` and Cloud Run v1 service annotations.
+3. **Direct VPC Egress Output HCL (`output_direct_vpc_egress.tf`):** Production-ready OpenTofu configuration featuring:
+   * `google_cloud_run_v2_service` with native `vpc_access.network_interfaces`.
+   * Explicit `egress = &quot;ALL_TRAFFIC&quot;` locking all container outbound requests inside the VPC.
+   * Network tags (`dcouplr-in-vpc`, `cloaudit-bridge`) allowing fine-grained firewall targeting.
+   * `google_compute_firewall` allowing ingress only from tagged Cloud Run containers to internal databases.
+   * Dedicated `/24` subnet with VPC Flow Logs (`INTERVAL_5_SEC`, `INCLUDE_ALL_METADATA`).
+4. **AST Transpiler Script (`migrate.py`):** Standalone zero-egress transpiler replacing legacy connectors with native v2 Direct VPC configurations.
+5. **Automated Unit Tests (`tests/test_recipe_cloud_run_direct_vpc.py`):** 100% green pytest verification confirming connector elimination and security invariants.
+
+---
+
+## 3. Decision 2: HashiCorp Raft Transport Wrappers &amp; Go Channel Mesh
+
+### 3.1 The Problem &amp; Latency Bounds
+In distributed on-premises and multi-cloud agent cells, asymmetric network link stalls (e.g., packet drops or 300ms delays to a single partitioned node) can stall the Raft consensus leader during write replication.
+* **Strict SLA:** Outbound Raft RPCs must never block beyond **20ms**.
+* **Goroutine Leak Risk:** A naive timeout wrapper that blocks on an unbuffered goroutine leaks Go runtime routines when peers stay down for extended durations.
+
+### 3.2 Implemented Architectural Components
+
+Located in ``engine-go/engine/raft_transport_wrapper.go``:
+
+#### 1. `CircuitBreakerRaftTransport`
+Wraps any underlying HashiCorp `raft.Transport` (e.g., SPIFFE mTLS) with non-blocking 20ms circuit breaker protection:
+* Inbound consumer channel proxy with fast-path bypass for 0-entry AppendEntries heartbeats.
+* Pipelined AppendEntries wrapper (`circuitBreakerAppendPipeline`) with bounded future queues.
+
+#### 2. Stateful Per-Peer Fail-Fast State Machine
+Added ``peerCircuitTracker`` tracking downstream peer health:
+* **`CircuitClosed`:** Normal operation; RPCs proceed with 20ms timeout protection.
+* **`CircuitOpen`:** After 3 consecutive timeouts (`ConsecutiveFailures`), the peer&#x27;s circuit trips to `OPEN`. Outbound RPCs immediately **fail-fast in &lt;1ms** with `ErrCircuitBreakerOpen`, preventing goroutine allocation and leader head-of-line blocking.
+* **`CircuitHalfOpen`:** After a 500ms cooldown (`CooldownDuration`), allows a single canary probe RPC. If successful, transitions peer health back to `CLOSED`.
+
+#### 3. Pure In-Memory Go Channel Mesh (`ChannelRaftTransport`)
+Provides a 100% socket-free `raft.Transport` implementation using native Go buffered channels:
+* Zero OS network stack dependency for sub-millisecond local integration testing and micro-cell execution.
+* Full support for `AppendEntries`, `RequestVote`, `InstallSnapshot`, and streaming `AppendEntriesPipeline`.
+
+#### 4. Full-Mesh Cluster Cell Orchestrator (`ChannelMeshCoordinator`)
+Orchestrates an $N$-node in-memory cluster cell:
+* Automatically establishes bidirectional full-mesh channel topologies on `AddNode`.
+* Provides deterministic chaos injection:
+  * `PartitionNode(id)`: Instantly severs all incoming and outgoing channel connections.
+  * `HealNode(id)`: Restores all bidirectional channel routes.
+
+#### 5. SPIFFE Integration &amp; Telemetry Export
+* Added ``BuildCircuitBreakerSpiffeTransport`` to provide single-line instantiation combining SPIFFE mTLS with the 20ms circuit breaker.
+* Added Prometheus collectors in ``cluster_metrics.go``:
+  * `decoupler_raft_circuit_breaker_trips_total`
+  * `decoupler_raft_dropped_inbound_rpcs_total`
+  * `decoupler_raft_fast_heartbeats_total`
+
+---
+
+## 4. Verification Evidence &amp; Quality Gates
+
+| Verification Target | Test Suite | Result | Key Metric Validated |
+| :--- | :--- | :--- | :--- |
+| **Direct VPC Egress Transpiler** | `tests/test_recipe_cloud_run_direct_vpc.py` | **PASSED** (2/2) | Legacy connector removed; tags &amp; flow logs asserted. |
+| **Go Raft Peer Communication** | `engine-go/engine/raft_transport_wrapper_test.go` | **PASSED** | Channel AppendEntries commits over memory channels. |
+| **20ms Circuit Breaker Timeout** | `engine-go/engine/raft_transport_wrapper_test.go` | **PASSED** | Trip confirmed when peer delays &gt; 20ms. |
+| **Fail-Fast State Machine** | `engine-go/engine/raft_transport_wrapper_test.go` | **PASSED** | 3 timeouts trip to `OPEN`; next call fails in &lt;2ms. |
+| **Mesh Chaos &amp; Partition** | `engine-go/engine/raft_transport_wrapper_test.go` | **PASSED** | 3-node mesh partitioned and healed without deadlock. |
+| **Distributed Mesh Resilience** | `tests/test_vector3_distributed_mesh_resilience.py` | **PASSED** (3/3) | 150+ concurrent requests, &lt;50 MiB RSS, quorum preserved. |
+| **Full Smoke &amp; Regression** | `tests/test_smoke_and_regression.py` | **PASSED** (48/48) | Complete API, RBAC, and telemetry bridge integrity. |
+
+---
+
+## 5. Summary of Artifacts &amp; Code References
+
+* **Google Cloud Direct VPC Egress:**
+  * [README.md](/docs/README.html)
+  * `input_legacy_connector.tf`
+  * `output_direct_vpc_egress.tf`
+  * `migrate.py`
+  * `test_recipe_cloud_run_direct_vpc.py`
+* **HashiCorp Raft Transport &amp; Channels Logic:**
+  * `raft_transport_wrapper.go`
+  * `raft_transport_wrapper_test.go`
+  * `spiffe_raft_transport.go`
+  * `cluster_metrics.go`
+  * `test_vector3_distributed_mesh_resilience.py`
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - SOURCE_TO_TARGET_MONITORING_LIFT_AND_SHIFT_GUIDE.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/SOURCE_TO_TARGET_MONITORING_LIFT_AND_SHIFT_GUIDE.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="SOURCE_TO_TARGET_MONITORING_LIFT_AND_SHIFT_GUIDE.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="source-to-target-monitoring-lift-shift-guide"><dcouplr/> Source-to-Target Monitoring Lift &amp; Shift Guide</h1>
+<h2 id="cross-cloud-observability-transpilation-dynamic-threshold-recalibration-in-vpc-packaging">Cross-Cloud Observability Transpilation, Dynamic Threshold Recalibration &amp; In-VPC Packaging</h2>
+<p>This guide specifies how <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> migrates, translates, and packages existing observability configurations during a cloud lift-and-shift migration. Whether an enterprise is running an existing open-source <strong>Prometheus + Grafana</strong> stack at the source or commercial SaaS suites (<strong>Datadog</strong>, <strong>New Relic</strong>, <strong>Dynatrace</strong>, <strong>Splunk Cloud</strong>, <strong>AWS CloudWatch</strong>, or <strong>Azure Monitor</strong>), this document details the migration difficulty, failure modes, automated translation engines, and packaging mechanisms into an air-gapped, zero-egress in-VPC monitoring bundle.</p>
+<hr />
+<h2 id="1-executive-summary-the-lift-and-shift-dilemma">1. Executive Summary &amp; The Lift-and-Shift Dilemma</h2>
+<p>During an enterprise cloud lift-and-shift, compute workloads (VMs, containers, databases, networks) are migrated from on-premises datacenters or source cloud VPCs to target cloud VPCs (AWS, GCP, or Azure). However, <strong>observability is frequently treated as an afterthought</strong>, resulting in catastrophic operational blind spots:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+----------------------------------------------------------------------------------------------------+
+|                               THE MONITORING MIGRATION RISK SPECTRUM                                |
+|                                                                                                    |
+|   MANUAL RE-ENGINEERING (HIGH RISK)                 <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AUTOMATED TRANSPILATION (SAFE)       |
+|   - 2 to 4 weeks of manual SRE rewriting             - &lt; 30 seconds deterministic AST compilation   |
+|   - Broken scrape targets &amp; IP hardcoding           - Automated VPC CIDR &amp; DNS remapping           |
+|   - Alert false negatives from tag mismatch         - Universal UIT-IR AST normalization           |
+|   - Threshold distortion from VM resizing           - Dynamic Tier Scale Factor recalibration      |
+|   - Grafana datasource UID invalidation             - In-VPC datasource UID binding                |
+|   - Public WAN egress costs ($0.09/GB egress)        - 100% In-VPC Zero-Egress Guarantee ($0.00)   |
++----------------------------------------------------------------------------------------------------+
+</code></pre></div>
+<hr />
+<h2 id="2-what-happens-when-the-source-has-prometheus-grafana">2. What Happens When the Source Has Prometheus &amp; Grafana?</h2>
+<p>A common enterprise misconception is that if the source environment already runs <strong>Prometheus + Grafana</strong>, migrating to a target cloud is trivial (&quot;just copy the YAML files&quot;).</p>
+<p>In practice, a direct lift-and-shift of Prometheus and Grafana without transpilation <strong>fails in production</strong> due to five critical failure modes:</p>
+<h3 id="failure-mode-1-network-topology-scrape-target-invalidation">Failure Mode 1: Network Topology &amp; Scrape Target Invalidation</h3>
+<ul>
+<li><strong>The Symptom:</strong> All targets in target Prometheus show <code>DOWN</code> with <code>context deadline exceeded</code> or <code>connection refused</code>.</li>
+<li><strong>The Root Cause:</strong> Source <code>prometheus.yml</code> scrape configurations contain hardcoded source IPs (e.g. <code>targets: ['172.16.1.15:9100']</code>), on-premises DNS names (<code>node1.corp.internal</code>), or AWS EC2 service discovery (<code>ec2_sd_configs</code>). In the target VPC, the subnet CIDRs and instance IPs are completely different (e.g. <code>10.200.10.15:9100</code>).</li>
+<li><strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Remediation:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> parses the source scrape configuration, cross-references the lift-and-shift subnet and DNS remapping table (<code>target_subnets</code> and <code>dns_remapping</code>), and rewrites all scrape targets to target in-VPC private DNS records (<code>*.mesh.internal</code>).</li>
+</ul>
+<h3 id="failure-mode-2-label-context-drift-silent-alert-extinction">Failure Mode 2: Label Context Drift (Silent Alert Extinction)</h3>
+<ul>
+<li><strong>The Symptom:</strong> Applications crash in the target VPC, but zero alerts fire (100% false negatives).</li>
+<li><strong>The Root Cause:</strong> PromQL alert expressions rely on source metadata labels:<div class="code-box"><div class="code-box-header"><span>promql</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-promql"># Source rule:
+avg(rate(node_cpu_seconds_total{cloud=&quot;aws&quot;, region=&quot;us-east-1&quot;, vpc=&quot;vpc-01a2b3c&quot;}[5m])) &gt; 85
+</code></pre></div>
+In the target VPC (e.g. Google Cloud <code>us-central1</code> or target VPC <code>vpc-target-gcp</code>), these labels match zero series. The query returns an empty vector, so the alert condition never triggers.</li>
+<li><strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Remediation:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> strips legacy environment-specific label filters and replaces them with target VPC identifiers (<code>vpc=&quot;target-vpc&quot;</code>, <code>region=&quot;us-central1&quot;</code>), preserving monitoring coverage with zero silent dropouts.</li>
+</ul>
+<h3 id="failure-mode-3-the-vm-downscaling-threshold-distortion-trap">Failure Mode 3: The VM Downscaling Threshold Distortion Trap</h3>
+<ul>
+<li><strong>The Symptom:</strong> Constant false alarm paging storms OR total failure to alert on memory/IOPS exhaustion.</li>
+<li><strong>The Root Cause:</strong> Cloud migrations frequently involve right-sizing or downscaling over-provisioned source instances (e.g. downscaling an on-premises 32 GB RAM server to a cost-effective 8 GB <code>e2-standard-2</code> or <code>Standard_B2s</code> instance). An alert rule configured for the source:<div class="code-box"><div class="code-box-header"><span>promql</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-promql"># Source rule (calibrated for 32 GB RAM):
+node_memory_MemAvailable_bytes &lt; 8589934592  # Alert if free memory &lt; 8 GB
+</code></pre></div>
+On an 8 GB target instance, free memory is <strong>never</strong> above 8 GB! The alert triggers immediately upon deployment and stays permanently firing. Conversely, percentage alerts on downscaled CPUs leave inadequate headroom during traffic bursts.</li>
+<li><strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Remediation:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> executes <code>calculate_tier_scale_factor(orig_tier, target_tier)</code> and automatically recalibrates thresholds:
+<ul>
+<li>Absolute memory/disk/connection limits are scaled by the capacity factor (e.g., $8,\text{GB} \times 0.25 = 2048,\text{MB}$).</li>
+<li>Percentage headroom is tightened on downscaled compute instances (e.g., 85% threshold adjusted to 75% or 80%) to account for reduced burst absorption.</li>
+</ul>
+</li>
+</ul>
+<h3 id="failure-mode-4-grafana-datasource-uid-fragmentation">Failure Mode 4: Grafana Datasource UID Fragmentation</h3>
+<ul>
+<li><strong>The Symptom:</strong> Imported Grafana dashboards display empty panels with <code>Data source not found</code> errors.</li>
+<li><strong>The Root Cause:</strong> Grafana 8+ binds panels to datasources using internal unique identifiers (<code>datasource: { uid: &quot;prom-src-prod-01&quot; }</code>). In a newly provisioned Grafana instance in the target VPC, those source UIDs do not exist.</li>
+<li><strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Remediation:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>’s generator traverses the dashboard JSON AST, replaces orphaned datasource references with the target in-VPC VictoriaMetrics UID (<code>dcouplr-victoriametrics</code>), and rewrites template variable query filters.</li>
+</ul>
+<h3 id="failure-mode-5-zero-egress-webhook-alertmanager-breaches">Failure Mode 5: Zero-Egress Webhook &amp; Alertmanager Breaches</h3>
+<ul>
+<li><strong>The Symptom:</strong> Alertmanager fails to deliver notifications, or causes security compliance violations.</li>
+<li><strong>The Root Cause:</strong> Source Alertmanager configurations route alerts to public internet SaaS endpoints (PagerDuty, Slack, Opsgenie, public webhook URLs). In an enterprise air-gapped or zero-egress target VPC, outbound WAN connections are dropped by firewall rules.</li>
+<li><strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Remediation:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> redirects alert routing to in-VPC notification relays, local SRE wallboards (<code>/wallboard</code>), or secure private transit endpoints, enforcing strict zero-egress compliance ($0.00 cloud egress fees).</li>
+</ul>
+<hr />
+<h2 id="3-multi-vendor-translation-difficulty-feasibility-analysis">3. Multi-Vendor Translation Difficulty &amp; Feasibility Analysis</h2>
+<p>Below is an exhaustive comparison of the translation complexity across all seven major observability ecosystems:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Source Observability Platform</th>
+<th style="text-align:left">Query Language &amp; Format</th>
+<th style="text-align:left">Manual Translation Difficulty</th>
+<th style="text-align:left">Risk of Blind Spots</th>
+<th style="text-align:left"><dcouplr/> Transpilation Engine</th>
+<th style="text-align:left">Automated Migration Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Prometheus + Grafana</strong></td>
+<td style="text-align:left">PromQL, YAML, Grafana JSON</td>
+<td style="text-align:left"><strong>Moderate</strong> (3–5 days)</td>
+<td style="text-align:left">High (UIDs, CIDRs, static thresholds)</td>
+<td style="text-align:left"><code>PrometheusRuleParser</code> &amp; <code>GrafanaAlertGenerator</code></td>
+<td style="text-align:left"><strong>&lt; 30 seconds</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Datadog</strong></td>
+<td style="text-align:left">Datadog Query syntax, Monitor JSON</td>
+<td style="text-align:left"><strong>Extremely High</strong> (2–3 weeks)</td>
+<td style="text-align:left">Severe (multi-window alerts, notification syntax)</td>
+<td style="text-align:left"><code>DatadogMonitorParser</code> &amp; <code>alert_transpiler.py</code></td>
+<td style="text-align:left"><strong>&lt; 2 minutes</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>New Relic</strong></td>
+<td style="text-align:left">NRQL (SQL-like), NerdGraph</td>
+<td style="text-align:left"><strong>Extremely High</strong> (2–3 weeks)</td>
+<td style="text-align:left">Severe (SQL-to-Vector mismatch, facet logic)</td>
+<td style="text-align:left"><code>NewRelicNRQLParser</code></td>
+<td style="text-align:left"><strong>&lt; 2 minutes</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Dynatrace</strong></td>
+<td style="text-align:left">Davis AI profiles, Metric Events</td>
+<td style="text-align:left"><strong>Very High</strong> (3–4 weeks)</td>
+<td style="text-align:left">Severe (proprietary AI baseline translation)</td>
+<td style="text-align:left"><code>DynatraceParser</code> &amp; Holt-Winters Statistical Synthesis</td>
+<td style="text-align:left"><strong>&lt; 3 minutes</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Splunk Cloud</strong></td>
+<td style="text-align:left">SPL (Search Processing Language)</td>
+<td style="text-align:left"><strong>Very High</strong> (3–4 weeks)</td>
+<td style="text-align:left">Severe (SPL pipe parsing into metric vs log stream)</td>
+<td style="text-align:left"><code>SplunkAlertParser</code> &amp; LogQL/PromQL dual-path compiler</td>
+<td style="text-align:left"><strong>&lt; 3 minutes</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>AWS CloudWatch</strong></td>
+<td style="text-align:left">CloudWatch Metric Math, Namespaces</td>
+<td style="text-align:left"><strong>Moderate–High</strong> (1–2 weeks)</td>
+<td style="text-align:left">Moderate (metric math, AWS namespace remapping)</td>
+<td style="text-align:left"><code>CloudWatchAlarmParser</code></td>
+<td style="text-align:left"><strong>&lt; 1 minute</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Azure Monitor</strong></td>
+<td style="text-align:left">KQL (Kusto Query Language), ARM</td>
+<td style="text-align:left"><strong>Moderate–High</strong> (1–2 weeks)</td>
+<td style="text-align:left">Moderate (KQL summarize/bin syntax to PromQL)</td>
+<td style="text-align:left"><code>AzureMonitorParser</code></td>
+<td style="text-align:left"><strong>&lt; 1 minute</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-deep-technical-breakdown-how-translates-each-platform">4. Deep Technical Breakdown: How <dcouplr/> Translates Each Platform</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> achieves deterministic translation by decoupling vendor syntax from telemetry semantics through the <strong>Universal Infrastructure &amp; Telemetry Intermediate Representation (<code>UIT-IR</code>)</strong>.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">[ Vendor Source Format ]       [ UIT-IR Graph ]              [ Target In-VPC Artifacts ]
+  Prometheus YAML        --&gt;                                   --&gt; Prometheus Alertmanager YAML
+  Datadog JSON           --&gt;                                   --&gt; Grafana Unified Alerting YAML
+  New Relic NRQL         --&gt;   Normalized Metric Target AST    --&gt; Grafana Dashboards JSON
+  Dynatrace Events       --&gt;   (Metric, Tags, Math, Threshold) --&gt; In-VPC OTel Collector YAML
+  Splunk SPL             --&gt;                                   --&gt; OpenTofu / Bicep Monitoring IaC
+  AWS CloudWatch         --&gt;                                   --&gt; Dual-Run Shadow Sync Config
+  Azure Monitor KQL      --&gt; 
+</code></pre></div>
+<h3 id="41-prometheus-grafana-target-in-vpc">4.1. Prometheus + Grafana → Target In-VPC</h3>
+<ul>
+<li><strong>Source AST:</strong> Ingested via <code>PrometheusRuleParser</code>. Extracts alert expression, duration (<code>for</code>), labels, and annotations.</li>
+<li><strong>Transformation:</strong> Resolves CIDR boundaries and instance IPs to the target subnet topology. Applies <code>calculate_tier_scale_factor</code> to memory and disk thresholds.</li>
+<li><strong>Target Output:</strong> Re-calibrated <code>PrometheusRule</code> manifests and Grafana dashboard JSON with updated datasource UIDs.</li>
+</ul>
+<h3 id="42-datadog-target-in-vpc">4.2. Datadog → Target In-VPC</h3>
+<ul>
+<li><strong>Source AST:</strong> Ingested via <code>DatadogMonitorParser</code>. Parses Datadog grammar:<div class="code-box"><div class="code-box-header"><span>datadog</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-datadog">avg(last_5m):system.cpu.user{environment:prod} by {host} &gt; 85
+</code></pre></div>
+</li>
+<li><strong>Transformation:</strong> Maps <code>system.cpu.user</code> → <code>node_cpu_utilization_user</code>. Extracts <code>options.thresholds.critical</code> and <code>warning</code>. Resolves notification tags (<code>@slack-sre</code>, <code>@pagerduty</code>) into Alertmanager route trees.</li>
+<li><strong>Target Output:</strong><div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml">alert: HighCPUUsage_Host
+expr: avg(node_cpu_utilization_user{environment=&quot;production&quot;}) by (host) &gt; 85.0
+for: 5m
+labels:
+  severity: critical
+</code></pre></div>
+</li>
+</ul>
+<h3 id="43-new-relic-nrql-target-in-vpc">4.3. New Relic (NRQL) → Target In-VPC</h3>
+<ul>
+<li><strong>Source AST:</strong> Ingested via <code>NewRelicNRQLParser</code>. Regex/lexical parser extracts SQL-style clauses:<div class="code-box"><div class="code-box-header"><span>sql</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-sql">SELECT average(cpuUsedPercent) FROM SystemSample WHERE environment = 'production' FACET hostname
+</code></pre></div>
+</li>
+<li><strong>Transformation:</strong> Translates <code>SystemSample</code> to Prometheus node metrics, maps SQL aggregation (<code>average</code>) to PromQL <code>avg()</code>, maps <code>FACET</code> to PromQL <code>by (hostname)</code>, and converts duration terms to PromQL range vectors.</li>
+<li><strong>Target Output:</strong><div class="code-box"><div class="code-box-header"><span>promql</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-promql">avg by (hostname) (node_cpu_utilization_user{environment=&quot;production&quot;}) &gt; 85.0
+</code></pre></div>
+</li>
+</ul>
+<h3 id="44-dynatrace-target-in-vpc">4.4. Dynatrace → Target In-VPC</h3>
+<ul>
+<li><strong>Source AST:</strong> Ingested via <code>DynatraceParser</code>. Handles both static metric events (<code>builtin:host.cpu.usage</code>) and Davis AI Auto-Adaptive baselines.</li>
+<li><strong>Transformation:</strong> Static events translate directly to threshold rules. Auto-adaptive anomaly models are transpiled into PromQL dynamic statistical baseline approximations using standard deviation envelopes:<div class="code-box"><div class="code-box-header"><span>promql</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-promql">abs(avg by (host) (builtin_service_response_time) - avg_over_time(builtin_service_response_time[1d])) &gt; (2.5 * stddev_over_time(builtin_service_response_time[1d]))
+</code></pre></div>
+</li>
+<li><strong>Target Output:</strong> Mathematical parity with Dynatrace anomaly triggers without requiring proprietary SaaS runtimes.</li>
+</ul>
+<h3 id="45-splunk-cloud-target-in-vpc">4.5. Splunk Cloud → Target In-VPC</h3>
+<ul>
+<li><strong>Source AST:</strong> Ingested via <code>SplunkAlertParser</code>. Parses Splunk Search Processing Language (SPL) pipe syntax:<div class="code-box"><div class="code-box-header"><span>spl</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-spl">index=os sourcetype=cpu | stats avg(cpu) by host | where avg &gt; 85
+</code></pre></div>
+</li>
+<li><strong>Transformation:</strong> Dissects SPL pipes into metric aggregation stages. Metric queries are converted to PromQL; log-grep and pattern alerts (e.g. <code>index=web status&gt;=500</code>) are compiled to VictoriaLogs LogQL / regular expressions.</li>
+<li><strong>Target Output:</strong> Dual-path output: TSDB metric rules for Prometheus/VictoriaMetrics and LogQL stream filters for VictoriaLogs.</li>
+</ul>
+<h3 id="46-aws-cloudwatch-target-in-vpc">4.6. AWS CloudWatch → Target In-VPC</h3>
+<ul>
+<li><strong>Source AST:</strong> Ingested via <code>CloudWatchAlarmParser</code>. Handles standard alarms, namespace dimensions, and CloudWatch Metric Math:<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{&quot;Expression&quot;: &quot;m2 / m1 * 100&quot;, &quot;Label&quot;: &quot;ErrorRatio&quot;}
+</code></pre></div>
+</li>
+<li><strong>Transformation:</strong> Maps <code>AWS/EC2</code>, <code>AWS/RDS</code>, <code>AWS/ApplicationELB</code> namespaces to canonical Prometheus metric names (<code>node_exporter</code>, <code>blackbox_exporter</code>, OTel host metrics). Evaluates Metric Math formulas into PromQL arithmetic division.</li>
+<li><strong>Target Output:</strong> Native PromQL ratio alerts matching CloudWatch alarm semantics.</li>
+</ul>
+<h3 id="47-azure-monitor-target-in-vpc">4.7. Azure Monitor → Target In-VPC</h3>
+<ul>
+<li><strong>Source AST:</strong> Ingested via <code>AzureMonitorParser</code>. Supports both ARM metricAlerts and Log Analytics Scheduled Query Rules (Kusto Query Language / KQL):<div class="code-box"><div class="code-box-header"><span>kql</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-kql">requests | where resultCode &gt;= 500 | summarize count() by bin(timestamp, 5m)
+</code></pre></div>
+</li>
+<li><strong>Transformation:</strong> Maps KQL <code>summarize count()</code> to PromQL <code>sum(rate(http_requests_total{status=~&quot;5..&quot;}[5m]))</code>. Remaps Azure dimension filters (e.g. <code>VMName</code>) to target node labels.</li>
+<li><strong>Target Output:</strong> Native Grafana Unified Alerting and Alertmanager YAML.</li>
+</ul>
+<hr />
+<h2 id="5-the-in-vpc-monitoring-migration-pipeline-5-steps">5. The In-VPC Monitoring Migration Pipeline (5 Steps)</h2>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">[ Step 1: Ingest &amp; Inspect ]
+       |
+       v
+[ Step 2: AST Normalization (UIT-IR) ]
+       |
+       v
+[ Step 3: Dynamic Threshold Recalibration ]
+       |
+       v
+[ Step 4: Multi-Artifact Bundle Synthesis ]
+       |
+       v
+[ Step 5: Dual-Run Shadow Verification &amp; Cutover ]
+</code></pre></div>
+<ol>
+<li><strong>Ingest &amp; Inspect (Zero-Agent Ingestion):</strong>
+<ul>
+<li>Connect via read-only API or load exported JSON/YAML files.</li>
+<li>Run <code>dcouplr check</code> or <code>dcouplr inspect</code> to identify unmapped metrics or orphaned channels.</li>
+</ul>
+</li>
+<li><strong>AST Normalization into UIT-IR:</strong>
+<ul>
+<li>Raw vendor queries are parsed into structured AST nodes.</li>
+<li>Tags are sanitized and stripped of legacy CIDR/IP assumptions.</li>
+</ul>
+</li>
+<li><strong>Dynamic Threshold Recalibration:</strong>
+<ul>
+<li><code>calculate_tier_scale_factor</code> compares source VM hardware specs (vCPU, RAM, IOPS) to target VM specifications.</li>
+<li>Tightens safety buffers on downscaled tiers; rescales absolute memory and connection limits.</li>
+</ul>
+</li>
+<li><strong>Multi-Artifact Bundle Synthesis:</strong>
+<ul>
+<li>Synthesizes Alertmanager rules, Grafana alerting YAML, Grafana dashboards, OTel Collector pipelines, and OpenTofu IaC manifests.</li>
+</ul>
+</li>
+<li><strong>Dual-Run Shadow Verification &amp; Cutover:</strong>
+<ul>
+<li>Deploy <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> in-VPC monitoring sidecars inside the target private VPC.</li>
+<li><code>ShadowSyncEngine</code> runs both source and target alerting in parallel for 24–48 hours.</li>
+<li>Calculates parity score, average latency skew, and verifies zero missed events.</li>
+<li>Once parity $\ge 95%$, run <code>cutover_monitoring.sh</code> to decommission the legacy system.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="6-how-we-package-this-the-in-vpc-monitoring-migration-bundle">6. How We Package This: The In-VPC Monitoring Migration Bundle</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> packages all migrated monitoring assets into a self-contained, turnkey archive (<code>monitoring-bundle-&lt;vpc_id&gt;.tar.gz</code>).</p>
+<h3 id="61-archive-file-structure">6.1. Archive File Structure</h3>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">monitoring-bundle-&lt;vpc_id&gt;/
+├── manifest.json                       # Package metadata, scale factors, SHA-256 signatures
+├── rules/
+│   ├── prometheus_alertrules.yaml      # Transpiled Alertmanager alerting rules
+│   └── grafana_unified_alerts.yaml     # Grafana 10+ Unified Alerting YAML
+├── dashboards/
+│   ├── grafana_dashboards.json         # Re-targeted Grafana dashboard panels
+│   └── dcouplr_wallboard_preset.json   # Native <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> NOC Wallboard preset
+├── otel/
+│   └── otel_collector_config.yaml      # In-VPC OpenTelemetry Collector pipeline
+├── iac/
+│   ├── monitoring_stack.tf             # OpenTofu HCL for in-VPC VictoriaMetrics/Grafana
+│   └── monitoring_stack.bicep          # Azure Bicep alternative (if target is Azure)
+├── shadow/
+│   └── shadow_sync_config.json         # Dual-run correlation rules for shadow_engine.py
+└── cutover/
+    ├── verify_telemetry_parity.sh      # Pre-cutover automated equivalence verification
+    └── cutover_monitoring.sh           # Safe cutover &amp; legacy agent teardown script
+</code></pre></div>
+<h3 id="62-command-line-packaging-interface-cli">6.2. Command-Line Packaging Interface (CLI)</h3>
+<p>Generate and package an in-VPC monitoring bundle with a single command:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Example: Migrate Datadog monitors to a GCP target VPC with downscaled e2-standard-4 instances
+dcouplr migrate-monitoring \
+  --source datadog \
+  --target-vpc dc-onprem-core-01 \
+  --target-cloud GCP \
+  --target-tier e2-standard-4 \
+  --package
+</code></pre></div>
+<p>CLI Output:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">         In-VPC Monitoring Migration Bundle: dc-onprem-core-01          
++----------------------------------------------------------------------+
+| Property                | Value                                      |
+|-------------------------+--------------------------------------------|
+| Source Platform         | DATADOG                                    |
+| Target Cloud            | GCP                                        |
+| Target Compute Tier     | e2-standard-4                              |
+| Capacity Scale Factor   | 0.25x (Dynamic Threshold Recalibration)    |
+| Alert Rules Transpiled  | 5                                          |
+| Zero-Egress Enforcement | 100% In-VPC ($0.00 Egress)                 |
+| Bundle Directory        | monitoring-bundle-dc-onprem-core-01        |
+| Archive File            | monitoring-bundle-dc-onprem-core-01.tar.gz |
++----------------------------------------------------------------------+
+[OK] Monitoring migration bundle successfully packaged for dc-onprem-core-01!
+</code></pre></div>
+<h3 id="63-rest-api-interface">6.3. REST API Interface</h3>
+<p>Capture and download the bundle programmatically via HTTP:</p>
+<div class="code-box"><div class="code-box-header"><span>http</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-http">GET /v1/telemetry/vpcs/dc-onprem-core-01/monitoring-bundle
+X-API-Key: dcouplr-dev-2026
+</code></pre></div>
+<h3 id="64-web-ui-interface">6.4. Web UI Interface</h3>
+<p>Available in <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>’s interactive Cockpit:</p>
+<ul>
+<li><strong>Interactive Capabilities Checklist:</strong> <code>http://localhost:8000/setup</code></li>
+<li><strong>Compiler Studio:</strong> <code>http://localhost:8000/compiler</code></li>
+<li><strong>SRE Live Telemetry Dashboard:</strong> <code>http://localhost:8000/dashboard</code></li>
+<li><strong>24x7 NOC Wallboard:</strong> <code>http://localhost:8000/wallboard</code></li>
+</ul>
+<hr />
+<h2 id="7-mathematical-parity-verification-guarantee">7. Mathematical Parity &amp; Verification Guarantee</h2>
+<p>Before cutover, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> guarantees mathematical equivalence between source alerts and target alerts:</p>
+<p>$$\Phi(q_{\text{source}}, t) \equiv \Psi(q_{\text{target}}, t)$$</p>
+<p>Where:</p>
+<ul>
+<li>$\Phi$ is the legacy evaluation function (Datadog, New Relic, Dynatrace, CloudWatch, Azure Monitor, Splunk).</li>
+<li>$\Psi$ is the target PromQL / Alertmanager evaluation function.</li>
+<li>The <code>ShadowSyncEngine</code> continuously asserts:
+$$\text{Parity} = \frac{N_{\text{matched}}}{N_{\text{source}}} \ge 95.0%, \quad \Delta t_{\text{avg}} &lt; 120,\text{s}, \quad N_{\text{unmatched_source}} = 0$$</li>
+</ul>
+<p>If any alert disparity is detected during the parallel run, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> halts the cutover, identifies the offending dimension or threshold skew, and offers an automated recalibration patch.</p>
+<hr />
+<h2 id="8-summary">8. Summary</h2>
+<p>Migrating monitoring is no longer a multi-week roadblock or a source of post-migration outages. By pairing AST-level query compilation with dynamic threshold recalibration and turnkey in-VPC packaging, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> provides a complete, risk-free path to modernize enterprise observability while keeping 100% of telemetry data inside your private VPC with <strong>$0.00 billable cloud egress</strong>.</p>
+</div>
+      <pre id="raw-view"><code># &lt;dcouplr/&gt; Source-to-Target Monitoring Lift &amp; Shift Guide
+
+## Cross-Cloud Observability Transpilation, Dynamic Threshold Recalibration &amp; In-VPC Packaging
+
+This guide specifies how `&lt;dcouplr/&gt;` migrates, translates, and packages existing observability configurations during a cloud lift-and-shift migration. Whether an enterprise is running an existing open-source **Prometheus + Grafana** stack at the source or commercial SaaS suites (**Datadog**, **New Relic**, **Dynatrace**, **Splunk Cloud**, **AWS CloudWatch**, or **Azure Monitor**), this document details the migration difficulty, failure modes, automated translation engines, and packaging mechanisms into an air-gapped, zero-egress in-VPC monitoring bundle.
+
+---
+
+## 1. Executive Summary &amp; The Lift-and-Shift Dilemma
+
+During an enterprise cloud lift-and-shift, compute workloads (VMs, containers, databases, networks) are migrated from on-premises datacenters or source cloud VPCs to target cloud VPCs (AWS, GCP, or Azure). However, **observability is frequently treated as an afterthought**, resulting in catastrophic operational blind spots:
+
+```
++----------------------------------------------------------------------------------------------------+
+|                               THE MONITORING MIGRATION RISK SPECTRUM                                |
+|                                                                                                    |
+|   MANUAL RE-ENGINEERING (HIGH RISK)                 &lt;dcouplr/&gt; AUTOMATED TRANSPILATION (SAFE)       |
+|   - 2 to 4 weeks of manual SRE rewriting             - &lt; 30 seconds deterministic AST compilation   |
+|   - Broken scrape targets &amp; IP hardcoding           - Automated VPC CIDR &amp; DNS remapping           |
+|   - Alert false negatives from tag mismatch         - Universal UIT-IR AST normalization           |
+|   - Threshold distortion from VM resizing           - Dynamic Tier Scale Factor recalibration      |
+|   - Grafana datasource UID invalidation             - In-VPC datasource UID binding                |
+|   - Public WAN egress costs ($0.09/GB egress)        - 100% In-VPC Zero-Egress Guarantee ($0.00)   |
++----------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## 2. What Happens When the Source Has Prometheus &amp; Grafana?
+
+A common enterprise misconception is that if the source environment already runs **Prometheus + Grafana**, migrating to a target cloud is trivial (&quot;just copy the YAML files&quot;). 
+
+In practice, a direct lift-and-shift of Prometheus and Grafana without transpilation **fails in production** due to five critical failure modes:
+
+### Failure Mode 1: Network Topology &amp; Scrape Target Invalidation
+* **The Symptom:** All targets in target Prometheus show `DOWN` with `context deadline exceeded` or `connection refused`.
+* **The Root Cause:** Source `prometheus.yml` scrape configurations contain hardcoded source IPs (e.g. `targets: [&#x27;172.16.1.15:9100&#x27;]`), on-premises DNS names (`node1.corp.internal`), or AWS EC2 service discovery (`ec2_sd_configs`). In the target VPC, the subnet CIDRs and instance IPs are completely different (e.g. `10.200.10.15:9100`).
+* **`&lt;dcouplr/&gt;` Remediation:** `&lt;dcouplr/&gt;` parses the source scrape configuration, cross-references the lift-and-shift subnet and DNS remapping table (`target_subnets` and `dns_remapping`), and rewrites all scrape targets to target in-VPC private DNS records (`*.mesh.internal`).
+
+### Failure Mode 2: Label Context Drift (Silent Alert Extinction)
+* **The Symptom:** Applications crash in the target VPC, but zero alerts fire (100% false negatives).
+* **The Root Cause:** PromQL alert expressions rely on source metadata labels:
+  ```promql
+  # Source rule:
+  avg(rate(node_cpu_seconds_total{cloud=&quot;aws&quot;, region=&quot;us-east-1&quot;, vpc=&quot;vpc-01a2b3c&quot;}[5m])) &gt; 85
+  ```
+  In the target VPC (e.g. Google Cloud `us-central1` or target VPC `vpc-target-gcp`), these labels match zero series. The query returns an empty vector, so the alert condition never triggers.
+* **`&lt;dcouplr/&gt;` Remediation:** `&lt;dcouplr/&gt;` strips legacy environment-specific label filters and replaces them with target VPC identifiers (`vpc=&quot;target-vpc&quot;`, `region=&quot;us-central1&quot;`), preserving monitoring coverage with zero silent dropouts.
+
+### Failure Mode 3: The VM Downscaling Threshold Distortion Trap
+* **The Symptom:** Constant false alarm paging storms OR total failure to alert on memory/IOPS exhaustion.
+* **The Root Cause:** Cloud migrations frequently involve right-sizing or downscaling over-provisioned source instances (e.g. downscaling an on-premises 32 GB RAM server to a cost-effective 8 GB `e2-standard-2` or `Standard_B2s` instance). An alert rule configured for the source:
+  ```promql
+  # Source rule (calibrated for 32 GB RAM):
+  node_memory_MemAvailable_bytes &lt; 8589934592  # Alert if free memory &lt; 8 GB
+  ```
+  On an 8 GB target instance, free memory is **never** above 8 GB! The alert triggers immediately upon deployment and stays permanently firing. Conversely, percentage alerts on downscaled CPUs leave inadequate headroom during traffic bursts.
+* **`&lt;dcouplr/&gt;` Remediation:** `&lt;dcouplr/&gt;` executes `calculate_tier_scale_factor(orig_tier, target_tier)` and automatically recalibrates thresholds:
+  * Absolute memory/disk/connection limits are scaled by the capacity factor (e.g., $8\,\text{GB} \times 0.25 = 2048\,\text{MB}$).
+  * Percentage headroom is tightened on downscaled compute instances (e.g., 85% threshold adjusted to 75% or 80%) to account for reduced burst absorption.
+
+### Failure Mode 4: Grafana Datasource UID Fragmentation
+* **The Symptom:** Imported Grafana dashboards display empty panels with `Data source not found` errors.
+* **The Root Cause:** Grafana 8+ binds panels to datasources using internal unique identifiers (`datasource: { uid: &quot;prom-src-prod-01&quot; }`). In a newly provisioned Grafana instance in the target VPC, those source UIDs do not exist.
+* **`&lt;dcouplr/&gt;` Remediation:** `&lt;dcouplr/&gt;`’s generator traverses the dashboard JSON AST, replaces orphaned datasource references with the target in-VPC VictoriaMetrics UID (`dcouplr-victoriametrics`), and rewrites template variable query filters.
+
+### Failure Mode 5: Zero-Egress Webhook &amp; Alertmanager Breaches
+* **The Symptom:** Alertmanager fails to deliver notifications, or causes security compliance violations.
+* **The Root Cause:** Source Alertmanager configurations route alerts to public internet SaaS endpoints (PagerDuty, Slack, Opsgenie, public webhook URLs). In an enterprise air-gapped or zero-egress target VPC, outbound WAN connections are dropped by firewall rules.
+* **`&lt;dcouplr/&gt;` Remediation:** `&lt;dcouplr/&gt;` redirects alert routing to in-VPC notification relays, local SRE wallboards (`/wallboard`), or secure private transit endpoints, enforcing strict zero-egress compliance ($0.00 cloud egress fees).
+
+---
+
+## 3. Multi-Vendor Translation Difficulty &amp; Feasibility Analysis
+
+Below is an exhaustive comparison of the translation complexity across all seven major observability ecosystems:
+
+| Source Observability Platform | Query Language &amp; Format | Manual Translation Difficulty | Risk of Blind Spots | &lt;dcouplr/&gt; Transpilation Engine | Automated Migration Time |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Prometheus + Grafana** | PromQL, YAML, Grafana JSON | **Moderate** (3–5 days) | High (UIDs, CIDRs, static thresholds) | `PrometheusRuleParser` &amp; `GrafanaAlertGenerator` | **&lt; 30 seconds** |
+| **Datadog** | Datadog Query syntax, Monitor JSON | **Extremely High** (2–3 weeks) | Severe (multi-window alerts, notification syntax) | `DatadogMonitorParser` &amp; `alert_transpiler.py` | **&lt; 2 minutes** |
+| **New Relic** | NRQL (SQL-like), NerdGraph | **Extremely High** (2–3 weeks) | Severe (SQL-to-Vector mismatch, facet logic) | `NewRelicNRQLParser` | **&lt; 2 minutes** |
+| **Dynatrace** | Davis AI profiles, Metric Events | **Very High** (3–4 weeks) | Severe (proprietary AI baseline translation) | `DynatraceParser` &amp; Holt-Winters Statistical Synthesis | **&lt; 3 minutes** |
+| **Splunk Cloud** | SPL (Search Processing Language) | **Very High** (3–4 weeks) | Severe (SPL pipe parsing into metric vs log stream) | `SplunkAlertParser` &amp; LogQL/PromQL dual-path compiler | **&lt; 3 minutes** |
+| **AWS CloudWatch** | CloudWatch Metric Math, Namespaces | **Moderate–High** (1–2 weeks) | Moderate (metric math, AWS namespace remapping) | `CloudWatchAlarmParser` | **&lt; 1 minute** |
+| **Azure Monitor** | KQL (Kusto Query Language), ARM | **Moderate–High** (1–2 weeks) | Moderate (KQL summarize/bin syntax to PromQL) | `AzureMonitorParser` | **&lt; 1 minute** |
+
+---
+
+## 4. Deep Technical Breakdown: How &lt;dcouplr/&gt; Translates Each Platform
+
+`&lt;dcouplr/&gt;` achieves deterministic translation by decoupling vendor syntax from telemetry semantics through the **Universal Infrastructure &amp; Telemetry Intermediate Representation (`UIT-IR`)**.
+
+```
+[ Vendor Source Format ]       [ UIT-IR Graph ]              [ Target In-VPC Artifacts ]
+  Prometheus YAML        --&gt;                                   --&gt; Prometheus Alertmanager YAML
+  Datadog JSON           --&gt;                                   --&gt; Grafana Unified Alerting YAML
+  New Relic NRQL         --&gt;   Normalized Metric Target AST    --&gt; Grafana Dashboards JSON
+  Dynatrace Events       --&gt;   (Metric, Tags, Math, Threshold) --&gt; In-VPC OTel Collector YAML
+  Splunk SPL             --&gt;                                   --&gt; OpenTofu / Bicep Monitoring IaC
+  AWS CloudWatch         --&gt;                                   --&gt; Dual-Run Shadow Sync Config
+  Azure Monitor KQL      --&gt; 
+```
+
+### 4.1. Prometheus + Grafana &amp;rarr; Target In-VPC
+* **Source AST:** Ingested via `PrometheusRuleParser`. Extracts alert expression, duration (`for`), labels, and annotations.
+* **Transformation:** Resolves CIDR boundaries and instance IPs to the target subnet topology. Applies `calculate_tier_scale_factor` to memory and disk thresholds.
+* **Target Output:** Re-calibrated `PrometheusRule` manifests and Grafana dashboard JSON with updated datasource UIDs.
+
+### 4.2. Datadog &amp;rarr; Target In-VPC
+* **Source AST:** Ingested via `DatadogMonitorParser`. Parses Datadog grammar:
+  ```datadog
+  avg(last_5m):system.cpu.user{environment:prod} by {host} &gt; 85
+  ```
+* **Transformation:** Maps `system.cpu.user` &amp;rarr; `node_cpu_utilization_user`. Extracts `options.thresholds.critical` and `warning`. Resolves notification tags (`@slack-sre`, `@pagerduty`) into Alertmanager route trees.
+* **Target Output:**
+  ```yaml
+  alert: HighCPUUsage_Host
+  expr: avg(node_cpu_utilization_user{environment=&quot;production&quot;}) by (host) &gt; 85.0
+  for: 5m
+  labels:
+    severity: critical
+  ```
+
+### 4.3. New Relic (NRQL) &amp;rarr; Target In-VPC
+* **Source AST:** Ingested via `NewRelicNRQLParser`. Regex/lexical parser extracts SQL-style clauses:
+  ```sql
+  SELECT average(cpuUsedPercent) FROM SystemSample WHERE environment = &#x27;production&#x27; FACET hostname
+  ```
+* **Transformation:** Translates `SystemSample` to Prometheus node metrics, maps SQL aggregation (`average`) to PromQL `avg()`, maps `FACET` to PromQL `by (hostname)`, and converts duration terms to PromQL range vectors.
+* **Target Output:**
+  ```promql
+  avg by (hostname) (node_cpu_utilization_user{environment=&quot;production&quot;}) &gt; 85.0
+  ```
+
+### 4.4. Dynatrace &amp;rarr; Target In-VPC
+* **Source AST:** Ingested via `DynatraceParser`. Handles both static metric events (`builtin:host.cpu.usage`) and Davis AI Auto-Adaptive baselines.
+* **Transformation:** Static events translate directly to threshold rules. Auto-adaptive anomaly models are transpiled into PromQL dynamic statistical baseline approximations using standard deviation envelopes:
+  ```promql
+  abs(avg by (host) (builtin_service_response_time) - avg_over_time(builtin_service_response_time[1d])) &gt; (2.5 * stddev_over_time(builtin_service_response_time[1d]))
+  ```
+* **Target Output:** Mathematical parity with Dynatrace anomaly triggers without requiring proprietary SaaS runtimes.
+
+### 4.5. Splunk Cloud &amp;rarr; Target In-VPC
+* **Source AST:** Ingested via `SplunkAlertParser`. Parses Splunk Search Processing Language (SPL) pipe syntax:
+  ```spl
+  index=os sourcetype=cpu | stats avg(cpu) by host | where avg &gt; 85
+  ```
+* **Transformation:** Dissects SPL pipes into metric aggregation stages. Metric queries are converted to PromQL; log-grep and pattern alerts (e.g. `index=web status&gt;=500`) are compiled to VictoriaLogs LogQL / regular expressions.
+* **Target Output:** Dual-path output: TSDB metric rules for Prometheus/VictoriaMetrics and LogQL stream filters for VictoriaLogs.
+
+### 4.6. AWS CloudWatch &amp;rarr; Target In-VPC
+* **Source AST:** Ingested via `CloudWatchAlarmParser`. Handles standard alarms, namespace dimensions, and CloudWatch Metric Math:
+  ```json
+  {&quot;Expression&quot;: &quot;m2 / m1 * 100&quot;, &quot;Label&quot;: &quot;ErrorRatio&quot;}
+  ```
+* **Transformation:** Maps `AWS/EC2`, `AWS/RDS`, `AWS/ApplicationELB` namespaces to canonical Prometheus metric names (`node_exporter`, `blackbox_exporter`, OTel host metrics). Evaluates Metric Math formulas into PromQL arithmetic division.
+* **Target Output:** Native PromQL ratio alerts matching CloudWatch alarm semantics.
+
+### 4.7. Azure Monitor &amp;rarr; Target In-VPC
+* **Source AST:** Ingested via `AzureMonitorParser`. Supports both ARM metricAlerts and Log Analytics Scheduled Query Rules (Kusto Query Language / KQL):
+  ```kql
+  requests | where resultCode &gt;= 500 | summarize count() by bin(timestamp, 5m)
+  ```
+* **Transformation:** Maps KQL `summarize count()` to PromQL `sum(rate(http_requests_total{status=~&quot;5..&quot;}[5m]))`. Remaps Azure dimension filters (e.g. `VMName`) to target node labels.
+* **Target Output:** Native Grafana Unified Alerting and Alertmanager YAML.
+
+---
+
+## 5. The In-VPC Monitoring Migration Pipeline (5 Steps)
+
+```
+[ Step 1: Ingest &amp; Inspect ]
+       |
+       v
+[ Step 2: AST Normalization (UIT-IR) ]
+       |
+       v
+[ Step 3: Dynamic Threshold Recalibration ]
+       |
+       v
+[ Step 4: Multi-Artifact Bundle Synthesis ]
+       |
+       v
+[ Step 5: Dual-Run Shadow Verification &amp; Cutover ]
+```
+
+1. **Ingest &amp; Inspect (Zero-Agent Ingestion):**
+   * Connect via read-only API or load exported JSON/YAML files.
+   * Run `dcouplr check` or `dcouplr inspect` to identify unmapped metrics or orphaned channels.
+2. **AST Normalization into UIT-IR:**
+   * Raw vendor queries are parsed into structured AST nodes.
+   * Tags are sanitized and stripped of legacy CIDR/IP assumptions.
+3. **Dynamic Threshold Recalibration:**
+   * `calculate_tier_scale_factor` compares source VM hardware specs (vCPU, RAM, IOPS) to target VM specifications.
+   * Tightens safety buffers on downscaled tiers; rescales absolute memory and connection limits.
+4. **Multi-Artifact Bundle Synthesis:**
+   * Synthesizes Alertmanager rules, Grafana alerting YAML, Grafana dashboards, OTel Collector pipelines, and OpenTofu IaC manifests.
+5. **Dual-Run Shadow Verification &amp; Cutover:**
+   * Deploy `&lt;dcouplr/&gt;` in-VPC monitoring sidecars inside the target private VPC.
+   * `ShadowSyncEngine` runs both source and target alerting in parallel for 24–48 hours.
+   * Calculates parity score, average latency skew, and verifies zero missed events.
+   * Once parity $\ge 95\%$, run `cutover_monitoring.sh` to decommission the legacy system.
+
+---
+
+## 6. How We Package This: The In-VPC Monitoring Migration Bundle
+
+`&lt;dcouplr/&gt;` packages all migrated monitoring assets into a self-contained, turnkey archive (`monitoring-bundle-&lt;vpc_id&gt;.tar.gz`).
+
+### 6.1. Archive File Structure
+```text
+monitoring-bundle-&lt;vpc_id&gt;/
+├── manifest.json                       # Package metadata, scale factors, SHA-256 signatures
+├── rules/
+│   ├── prometheus_alertrules.yaml      # Transpiled Alertmanager alerting rules
+│   └── grafana_unified_alerts.yaml     # Grafana 10+ Unified Alerting YAML
+├── dashboards/
+│   ├── grafana_dashboards.json         # Re-targeted Grafana dashboard panels
+│   └── dcouplr_wallboard_preset.json   # Native &lt;dcouplr/&gt; NOC Wallboard preset
+├── otel/
+│   └── otel_collector_config.yaml      # In-VPC OpenTelemetry Collector pipeline
+├── iac/
+│   ├── monitoring_stack.tf             # OpenTofu HCL for in-VPC VictoriaMetrics/Grafana
+│   └── monitoring_stack.bicep          # Azure Bicep alternative (if target is Azure)
+├── shadow/
+│   └── shadow_sync_config.json         # Dual-run correlation rules for shadow_engine.py
+└── cutover/
+    ├── verify_telemetry_parity.sh      # Pre-cutover automated equivalence verification
+    └── cutover_monitoring.sh           # Safe cutover &amp; legacy agent teardown script
+```
+
+### 6.2. Command-Line Packaging Interface (CLI)
+
+Generate and package an in-VPC monitoring bundle with a single command:
+
+```bash
+# Example: Migrate Datadog monitors to a GCP target VPC with downscaled e2-standard-4 instances
+dcouplr migrate-monitoring \
+  --source datadog \
+  --target-vpc dc-onprem-core-01 \
+  --target-cloud GCP \
+  --target-tier e2-standard-4 \
+  --package
+```
+
+CLI Output:
+```text
+         In-VPC Monitoring Migration Bundle: dc-onprem-core-01          
++----------------------------------------------------------------------+
+| Property                | Value                                      |
+|-------------------------+--------------------------------------------|
+| Source Platform         | DATADOG                                    |
+| Target Cloud            | GCP                                        |
+| Target Compute Tier     | e2-standard-4                              |
+| Capacity Scale Factor   | 0.25x (Dynamic Threshold Recalibration)    |
+| Alert Rules Transpiled  | 5                                          |
+| Zero-Egress Enforcement | 100% In-VPC ($0.00 Egress)                 |
+| Bundle Directory        | monitoring-bundle-dc-onprem-core-01        |
+| Archive File            | monitoring-bundle-dc-onprem-core-01.tar.gz |
++----------------------------------------------------------------------+
+[OK] Monitoring migration bundle successfully packaged for dc-onprem-core-01!
+```
+
+### 6.3. REST API Interface
+
+Capture and download the bundle programmatically via HTTP:
+
+```http
+GET /v1/telemetry/vpcs/dc-onprem-core-01/monitoring-bundle
+X-API-Key: dcouplr-dev-2026
+```
+
+### 6.4. Web UI Interface
+Available in `&lt;dcouplr/&gt;`’s interactive Cockpit:
+* **Interactive Capabilities Checklist:** `http://localhost:8000/setup`
+* **Compiler Studio:** `http://localhost:8000/compiler`
+* **SRE Live Telemetry Dashboard:** `http://localhost:8000/dashboard`
+* **24x7 NOC Wallboard:** `http://localhost:8000/wallboard`
+
+---
+
+## 7. Mathematical Parity &amp; Verification Guarantee
+
+Before cutover, `&lt;dcouplr/&gt;` guarantees mathematical equivalence between source alerts and target alerts:
+
+$$\Phi(q_{\text{source}}, t) \equiv \Psi(q_{\text{target}}, t)$$
+
+Where:
+* $\Phi$ is the legacy evaluation function (Datadog, New Relic, Dynatrace, CloudWatch, Azure Monitor, Splunk).
+* $\Psi$ is the target PromQL / Alertmanager evaluation function.
+* The `ShadowSyncEngine` continuously asserts:
+  $$\text{Parity} = \frac{N_{\text{matched}}}{N_{\text{source}}} \ge 95.0\%, \quad \Delta t_{\text{avg}} &lt; 120\,\text{s}, \quad N_{\text{unmatched\_source}} = 0$$
+
+If any alert disparity is detected during the parallel run, `&lt;dcouplr/&gt;` halts the cutover, identifies the offending dimension or threshold skew, and offers an automated recalibration patch.
+
+---
+
+## 8. Summary
+
+Migrating monitoring is no longer a multi-week roadblock or a source of post-migration outages. By pairing AST-level query compilation with dynamic threshold recalibration and turnkey in-VPC packaging, `&lt;dcouplr/&gt;` provides a complete, risk-free path to modernize enterprise observability while keeping 100% of telemetry data inside your private VPC with **$0.00 billable cloud egress**.
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;dcouplr/&gt; Source-to-Target Monitoring Lift &amp; Shift Guide
+
+## Cross-Cloud Observability Transpilation, Dynamic Threshold Recalibration &amp; In-VPC Packaging
+
+This guide specifies how `&lt;dcouplr/&gt;` migrates, translates, and packages existing observability configurations during a cloud lift-and-shift migration. Whether an enterprise is running an existing open-source **Prometheus + Grafana** stack at the source or commercial SaaS suites (**Datadog**, **New Relic**, **Dynatrace**, **Splunk Cloud**, **AWS CloudWatch**, or **Azure Monitor**), this document details the migration difficulty, failure modes, automated translation engines, and packaging mechanisms into an air-gapped, zero-egress in-VPC monitoring bundle.
+
+---
+
+## 1. Executive Summary &amp; The Lift-and-Shift Dilemma
+
+During an enterprise cloud lift-and-shift, compute workloads (VMs, containers, databases, networks) are migrated from on-premises datacenters or source cloud VPCs to target cloud VPCs (AWS, GCP, or Azure). However, **observability is frequently treated as an afterthought**, resulting in catastrophic operational blind spots:
+
+```
++----------------------------------------------------------------------------------------------------+
+|                               THE MONITORING MIGRATION RISK SPECTRUM                                |
+|                                                                                                    |
+|   MANUAL RE-ENGINEERING (HIGH RISK)                 &lt;dcouplr/&gt; AUTOMATED TRANSPILATION (SAFE)       |
+|   - 2 to 4 weeks of manual SRE rewriting             - &lt; 30 seconds deterministic AST compilation   |
+|   - Broken scrape targets &amp; IP hardcoding           - Automated VPC CIDR &amp; DNS remapping           |
+|   - Alert false negatives from tag mismatch         - Universal UIT-IR AST normalization           |
+|   - Threshold distortion from VM resizing           - Dynamic Tier Scale Factor recalibration      |
+|   - Grafana datasource UID invalidation             - In-VPC datasource UID binding                |
+|   - Public WAN egress costs ($0.09/GB egress)        - 100% In-VPC Zero-Egress Guarantee ($0.00)   |
++----------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## 2. What Happens When the Source Has Prometheus &amp; Grafana?
+
+A common enterprise misconception is that if the source environment already runs **Prometheus + Grafana**, migrating to a target cloud is trivial (&quot;just copy the YAML files&quot;). 
+
+In practice, a direct lift-and-shift of Prometheus and Grafana without transpilation **fails in production** due to five critical failure modes:
+
+### Failure Mode 1: Network Topology &amp; Scrape Target Invalidation
+* **The Symptom:** All targets in target Prometheus show `DOWN` with `context deadline exceeded` or `connection refused`.
+* **The Root Cause:** Source `prometheus.yml` scrape configurations contain hardcoded source IPs (e.g. `targets: [&#x27;172.16.1.15:9100&#x27;]`), on-premises DNS names (`node1.corp.internal`), or AWS EC2 service discovery (`ec2_sd_configs`). In the target VPC, the subnet CIDRs and instance IPs are completely different (e.g. `10.200.10.15:9100`).
+* **`&lt;dcouplr/&gt;` Remediation:** `&lt;dcouplr/&gt;` parses the source scrape configuration, cross-references the lift-and-shift subnet and DNS remapping table (`target_subnets` and `dns_remapping`), and rewrites all scrape targets to target in-VPC private DNS records (`*.mesh.internal`).
+
+### Failure Mode 2: Label Context Drift (Silent Alert Extinction)
+* **The Symptom:** Applications crash in the target VPC, but zero alerts fire (100% false negatives).
+* **The Root Cause:** PromQL alert expressions rely on source metadata labels:
+  ```promql
+  # Source rule:
+  avg(rate(node_cpu_seconds_total{cloud=&quot;aws&quot;, region=&quot;us-east-1&quot;, vpc=&quot;vpc-01a2b3c&quot;}[5m])) &gt; 85
+  ```
+  In the target VPC (e.g. Google Cloud `us-central1` or target VPC `vpc-target-gcp`), these labels match zero series. The query returns an empty vector, so the alert condition never triggers.
+* **`&lt;dcouplr/&gt;` Remediation:** `&lt;dcouplr/&gt;` strips legacy environment-specific label filters and replaces them with target VPC identifiers (`vpc=&quot;target-vpc&quot;`, `region=&quot;us-central1&quot;`), preserving monitoring coverage with zero silent dropouts.
+
+### Failure Mode 3: The VM Downscaling Threshold Distortion Trap
+* **The Symptom:** Constant false alarm paging storms OR total failure to alert on memory/IOPS exhaustion.
+* **The Root Cause:** Cloud migrations frequently involve right-sizing or downscaling over-provisioned source instances (e.g. downscaling an on-premises 32 GB RAM server to a cost-effective 8 GB `e2-standard-2` or `Standard_B2s` instance). An alert rule configured for the source:
+  ```promql
+  # Source rule (calibrated for 32 GB RAM):
+  node_memory_MemAvailable_bytes &lt; 8589934592  # Alert if free memory &lt; 8 GB
+  ```
+  On an 8 GB target instance, free memory is **never** above 8 GB! The alert triggers immediately upon deployment and stays permanently firing. Conversely, percentage alerts on downscaled CPUs leave inadequate headroom during traffic bursts.
+* **`&lt;dcouplr/&gt;` Remediation:** `&lt;dcouplr/&gt;` executes `calculate_tier_scale_factor(orig_tier, target_tier)` and automatically recalibrates thresholds:
+  * Absolute memory/disk/connection limits are scaled by the capacity factor (e.g., $8\,\text{GB} \times 0.25 = 2048\,\text{MB}$).
+  * Percentage headroom is tightened on downscaled compute instances (e.g., 85% threshold adjusted to 75% or 80%) to account for reduced burst absorption.
+
+### Failure Mode 4: Grafana Datasource UID Fragmentation
+* **The Symptom:** Imported Grafana dashboards display empty panels with `Data source not found` errors.
+* **The Root Cause:** Grafana 8+ binds panels to datasources using internal unique identifiers (`datasource: { uid: &quot;prom-src-prod-01&quot; }`). In a newly provisioned Grafana instance in the target VPC, those source UIDs do not exist.
+* **`&lt;dcouplr/&gt;` Remediation:** `&lt;dcouplr/&gt;`’s generator traverses the dashboard JSON AST, replaces orphaned datasource references with the target in-VPC VictoriaMetrics UID (`dcouplr-victoriametrics`), and rewrites template variable query filters.
+
+### Failure Mode 5: Zero-Egress Webhook &amp; Alertmanager Breaches
+* **The Symptom:** Alertmanager fails to deliver notifications, or causes security compliance violations.
+* **The Root Cause:** Source Alertmanager configurations route alerts to public internet SaaS endpoints (PagerDuty, Slack, Opsgenie, public webhook URLs). In an enterprise air-gapped or zero-egress target VPC, outbound WAN connections are dropped by firewall rules.
+* **`&lt;dcouplr/&gt;` Remediation:** `&lt;dcouplr/&gt;` redirects alert routing to in-VPC notification relays, local SRE wallboards (`/wallboard`), or secure private transit endpoints, enforcing strict zero-egress compliance ($0.00 cloud egress fees).
+
+---
+
+## 3. Multi-Vendor Translation Difficulty &amp; Feasibility Analysis
+
+Below is an exhaustive comparison of the translation complexity across all seven major observability ecosystems:
+
+| Source Observability Platform | Query Language &amp; Format | Manual Translation Difficulty | Risk of Blind Spots | &lt;dcouplr/&gt; Transpilation Engine | Automated Migration Time |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Prometheus + Grafana** | PromQL, YAML, Grafana JSON | **Moderate** (3–5 days) | High (UIDs, CIDRs, static thresholds) | `PrometheusRuleParser` &amp; `GrafanaAlertGenerator` | **&lt; 30 seconds** |
+| **Datadog** | Datadog Query syntax, Monitor JSON | **Extremely High** (2–3 weeks) | Severe (multi-window alerts, notification syntax) | `DatadogMonitorParser` &amp; `alert_transpiler.py` | **&lt; 2 minutes** |
+| **New Relic** | NRQL (SQL-like), NerdGraph | **Extremely High** (2–3 weeks) | Severe (SQL-to-Vector mismatch, facet logic) | `NewRelicNRQLParser` | **&lt; 2 minutes** |
+| **Dynatrace** | Davis AI profiles, Metric Events | **Very High** (3–4 weeks) | Severe (proprietary AI baseline translation) | `DynatraceParser` &amp; Holt-Winters Statistical Synthesis | **&lt; 3 minutes** |
+| **Splunk Cloud** | SPL (Search Processing Language) | **Very High** (3–4 weeks) | Severe (SPL pipe parsing into metric vs log stream) | `SplunkAlertParser` &amp; LogQL/PromQL dual-path compiler | **&lt; 3 minutes** |
+| **AWS CloudWatch** | CloudWatch Metric Math, Namespaces | **Moderate–High** (1–2 weeks) | Moderate (metric math, AWS namespace remapping) | `CloudWatchAlarmParser` | **&lt; 1 minute** |
+| **Azure Monitor** | KQL (Kusto Query Language), ARM | **Moderate–High** (1–2 weeks) | Moderate (KQL summarize/bin syntax to PromQL) | `AzureMonitorParser` | **&lt; 1 minute** |
+
+---
+
+## 4. Deep Technical Breakdown: How &lt;dcouplr/&gt; Translates Each Platform
+
+`&lt;dcouplr/&gt;` achieves deterministic translation by decoupling vendor syntax from telemetry semantics through the **Universal Infrastructure &amp; Telemetry Intermediate Representation (`UIT-IR`)**.
+
+```
+[ Vendor Source Format ]       [ UIT-IR Graph ]              [ Target In-VPC Artifacts ]
+  Prometheus YAML        --&gt;                                   --&gt; Prometheus Alertmanager YAML
+  Datadog JSON           --&gt;                                   --&gt; Grafana Unified Alerting YAML
+  New Relic NRQL         --&gt;   Normalized Metric Target AST    --&gt; Grafana Dashboards JSON
+  Dynatrace Events       --&gt;   (Metric, Tags, Math, Threshold) --&gt; In-VPC OTel Collector YAML
+  Splunk SPL             --&gt;                                   --&gt; OpenTofu / Bicep Monitoring IaC
+  AWS CloudWatch         --&gt;                                   --&gt; Dual-Run Shadow Sync Config
+  Azure Monitor KQL      --&gt; 
+```
+
+### 4.1. Prometheus + Grafana &amp;rarr; Target In-VPC
+* **Source AST:** Ingested via `PrometheusRuleParser`. Extracts alert expression, duration (`for`), labels, and annotations.
+* **Transformation:** Resolves CIDR boundaries and instance IPs to the target subnet topology. Applies `calculate_tier_scale_factor` to memory and disk thresholds.
+* **Target Output:** Re-calibrated `PrometheusRule` manifests and Grafana dashboard JSON with updated datasource UIDs.
+
+### 4.2. Datadog &amp;rarr; Target In-VPC
+* **Source AST:** Ingested via `DatadogMonitorParser`. Parses Datadog grammar:
+  ```datadog
+  avg(last_5m):system.cpu.user{environment:prod} by {host} &gt; 85
+  ```
+* **Transformation:** Maps `system.cpu.user` &amp;rarr; `node_cpu_utilization_user`. Extracts `options.thresholds.critical` and `warning`. Resolves notification tags (`@slack-sre`, `@pagerduty`) into Alertmanager route trees.
+* **Target Output:**
+  ```yaml
+  alert: HighCPUUsage_Host
+  expr: avg(node_cpu_utilization_user{environment=&quot;production&quot;}) by (host) &gt; 85.0
+  for: 5m
+  labels:
+    severity: critical
+  ```
+
+### 4.3. New Relic (NRQL) &amp;rarr; Target In-VPC
+* **Source AST:** Ingested via `NewRelicNRQLParser`. Regex/lexical parser extracts SQL-style clauses:
+  ```sql
+  SELECT average(cpuUsedPercent) FROM SystemSample WHERE environment = &#x27;production&#x27; FACET hostname
+  ```
+* **Transformation:** Translates `SystemSample` to Prometheus node metrics, maps SQL aggregation (`average`) to PromQL `avg()`, maps `FACET` to PromQL `by (hostname)`, and converts duration terms to PromQL range vectors.
+* **Target Output:**
+  ```promql
+  avg by (hostname) (node_cpu_utilization_user{environment=&quot;production&quot;}) &gt; 85.0
+  ```
+
+### 4.4. Dynatrace &amp;rarr; Target In-VPC
+* **Source AST:** Ingested via `DynatraceParser`. Handles both static metric events (`builtin:host.cpu.usage`) and Davis AI Auto-Adaptive baselines.
+* **Transformation:** Static events translate directly to threshold rules. Auto-adaptive anomaly models are transpiled into PromQL dynamic statistical baseline approximations using standard deviation envelopes:
+  ```promql
+  abs(avg by (host) (builtin_service_response_time) - avg_over_time(builtin_service_response_time[1d])) &gt; (2.5 * stddev_over_time(builtin_service_response_time[1d]))
+  ```
+* **Target Output:** Mathematical parity with Dynatrace anomaly triggers without requiring proprietary SaaS runtimes.
+
+### 4.5. Splunk Cloud &amp;rarr; Target In-VPC
+* **Source AST:** Ingested via `SplunkAlertParser`. Parses Splunk Search Processing Language (SPL) pipe syntax:
+  ```spl
+  index=os sourcetype=cpu | stats avg(cpu) by host | where avg &gt; 85
+  ```
+* **Transformation:** Dissects SPL pipes into metric aggregation stages. Metric queries are converted to PromQL; log-grep and pattern alerts (e.g. `index=web status&gt;=500`) are compiled to VictoriaLogs LogQL / regular expressions.
+* **Target Output:** Dual-path output: TSDB metric rules for Prometheus/VictoriaMetrics and LogQL stream filters for VictoriaLogs.
+
+### 4.6. AWS CloudWatch &amp;rarr; Target In-VPC
+* **Source AST:** Ingested via `CloudWatchAlarmParser`. Handles standard alarms, namespace dimensions, and CloudWatch Metric Math:
+  ```json
+  {&quot;Expression&quot;: &quot;m2 / m1 * 100&quot;, &quot;Label&quot;: &quot;ErrorRatio&quot;}
+  ```
+* **Transformation:** Maps `AWS/EC2`, `AWS/RDS`, `AWS/ApplicationELB` namespaces to canonical Prometheus metric names (`node_exporter`, `blackbox_exporter`, OTel host metrics). Evaluates Metric Math formulas into PromQL arithmetic division.
+* **Target Output:** Native PromQL ratio alerts matching CloudWatch alarm semantics.
+
+### 4.7. Azure Monitor &amp;rarr; Target In-VPC
+* **Source AST:** Ingested via `AzureMonitorParser`. Supports both ARM metricAlerts and Log Analytics Scheduled Query Rules (Kusto Query Language / KQL):
+  ```kql
+  requests | where resultCode &gt;= 500 | summarize count() by bin(timestamp, 5m)
+  ```
+* **Transformation:** Maps KQL `summarize count()` to PromQL `sum(rate(http_requests_total{status=~&quot;5..&quot;}[5m]))`. Remaps Azure dimension filters (e.g. `VMName`) to target node labels.
+* **Target Output:** Native Grafana Unified Alerting and Alertmanager YAML.
+
+---
+
+## 5. The In-VPC Monitoring Migration Pipeline (5 Steps)
+
+```
+[ Step 1: Ingest &amp; Inspect ]
+       |
+       v
+[ Step 2: AST Normalization (UIT-IR) ]
+       |
+       v
+[ Step 3: Dynamic Threshold Recalibration ]
+       |
+       v
+[ Step 4: Multi-Artifact Bundle Synthesis ]
+       |
+       v
+[ Step 5: Dual-Run Shadow Verification &amp; Cutover ]
+```
+
+1. **Ingest &amp; Inspect (Zero-Agent Ingestion):**
+   * Connect via read-only API or load exported JSON/YAML files.
+   * Run `dcouplr check` or `dcouplr inspect` to identify unmapped metrics or orphaned channels.
+2. **AST Normalization into UIT-IR:**
+   * Raw vendor queries are parsed into structured AST nodes.
+   * Tags are sanitized and stripped of legacy CIDR/IP assumptions.
+3. **Dynamic Threshold Recalibration:**
+   * `calculate_tier_scale_factor` compares source VM hardware specs (vCPU, RAM, IOPS) to target VM specifications.
+   * Tightens safety buffers on downscaled tiers; rescales absolute memory and connection limits.
+4. **Multi-Artifact Bundle Synthesis:**
+   * Synthesizes Alertmanager rules, Grafana alerting YAML, Grafana dashboards, OTel Collector pipelines, and OpenTofu IaC manifests.
+5. **Dual-Run Shadow Verification &amp; Cutover:**
+   * Deploy `&lt;dcouplr/&gt;` in-VPC monitoring sidecars inside the target private VPC.
+   * `ShadowSyncEngine` runs both source and target alerting in parallel for 24–48 hours.
+   * Calculates parity score, average latency skew, and verifies zero missed events.
+   * Once parity $\ge 95\%$, run `cutover_monitoring.sh` to decommission the legacy system.
+
+---
+
+## 6. How We Package This: The In-VPC Monitoring Migration Bundle
+
+`&lt;dcouplr/&gt;` packages all migrated monitoring assets into a self-contained, turnkey archive (`monitoring-bundle-&lt;vpc_id&gt;.tar.gz`).
+
+### 6.1. Archive File Structure
+```text
+monitoring-bundle-&lt;vpc_id&gt;/
+├── manifest.json                       # Package metadata, scale factors, SHA-256 signatures
+├── rules/
+│   ├── prometheus_alertrules.yaml      # Transpiled Alertmanager alerting rules
+│   └── grafana_unified_alerts.yaml     # Grafana 10+ Unified Alerting YAML
+├── dashboards/
+│   ├── grafana_dashboards.json         # Re-targeted Grafana dashboard panels
+│   └── dcouplr_wallboard_preset.json   # Native &lt;dcouplr/&gt; NOC Wallboard preset
+├── otel/
+│   └── otel_collector_config.yaml      # In-VPC OpenTelemetry Collector pipeline
+├── iac/
+│   ├── monitoring_stack.tf             # OpenTofu HCL for in-VPC VictoriaMetrics/Grafana
+│   └── monitoring_stack.bicep          # Azure Bicep alternative (if target is Azure)
+├── shadow/
+│   └── shadow_sync_config.json         # Dual-run correlation rules for shadow_engine.py
+└── cutover/
+    ├── verify_telemetry_parity.sh      # Pre-cutover automated equivalence verification
+    └── cutover_monitoring.sh           # Safe cutover &amp; legacy agent teardown script
+```
+
+### 6.2. Command-Line Packaging Interface (CLI)
+
+Generate and package an in-VPC monitoring bundle with a single command:
+
+```bash
+# Example: Migrate Datadog monitors to a GCP target VPC with downscaled e2-standard-4 instances
+dcouplr migrate-monitoring \
+  --source datadog \
+  --target-vpc dc-onprem-core-01 \
+  --target-cloud GCP \
+  --target-tier e2-standard-4 \
+  --package
+```
+
+CLI Output:
+```text
+         In-VPC Monitoring Migration Bundle: dc-onprem-core-01          
++----------------------------------------------------------------------+
+| Property                | Value                                      |
+|-------------------------+--------------------------------------------|
+| Source Platform         | DATADOG                                    |
+| Target Cloud            | GCP                                        |
+| Target Compute Tier     | e2-standard-4                              |
+| Capacity Scale Factor   | 0.25x (Dynamic Threshold Recalibration)    |
+| Alert Rules Transpiled  | 5                                          |
+| Zero-Egress Enforcement | 100% In-VPC ($0.00 Egress)                 |
+| Bundle Directory        | monitoring-bundle-dc-onprem-core-01        |
+| Archive File            | monitoring-bundle-dc-onprem-core-01.tar.gz |
++----------------------------------------------------------------------+
+[OK] Monitoring migration bundle successfully packaged for dc-onprem-core-01!
+```
+
+### 6.3. REST API Interface
+
+Capture and download the bundle programmatically via HTTP:
+
+```http
+GET /v1/telemetry/vpcs/dc-onprem-core-01/monitoring-bundle
+X-API-Key: dcouplr-dev-2026
+```
+
+### 6.4. Web UI Interface
+Available in `&lt;dcouplr/&gt;`’s interactive Cockpit:
+* **Interactive Capabilities Checklist:** `http://localhost:8000/setup`
+* **Compiler Studio:** `http://localhost:8000/compiler`
+* **SRE Live Telemetry Dashboard:** `http://localhost:8000/dashboard`
+* **24x7 NOC Wallboard:** `http://localhost:8000/wallboard`
+
+---
+
+## 7. Mathematical Parity &amp; Verification Guarantee
+
+Before cutover, `&lt;dcouplr/&gt;` guarantees mathematical equivalence between source alerts and target alerts:
+
+$$\Phi(q_{\text{source}}, t) \equiv \Psi(q_{\text{target}}, t)$$
+
+Where:
+* $\Phi$ is the legacy evaluation function (Datadog, New Relic, Dynatrace, CloudWatch, Azure Monitor, Splunk).
+* $\Psi$ is the target PromQL / Alertmanager evaluation function.
+* The `ShadowSyncEngine` continuously asserts:
+  $$\text{Parity} = \frac{N_{\text{matched}}}{N_{\text{source}}} \ge 95.0\%, \quad \Delta t_{\text{avg}} &lt; 120\,\text{s}, \quad N_{\text{unmatched\_source}} = 0$$
+
+If any alert disparity is detected during the parallel run, `&lt;dcouplr/&gt;` halts the cutover, identifies the offending dimension or threshold skew, and offers an automated recalibration patch.
+
+---
+
+## 8. Summary
+
+Migrating monitoring is no longer a multi-week roadblock or a source of post-migration outages. By pairing AST-level query compilation with dynamic threshold recalibration and turnkey in-VPC packaging, `&lt;dcouplr/&gt;` provides a complete, risk-free path to modernize enterprise observability while keeping 100% of telemetry data inside your private VPC with **$0.00 billable cloud egress**.
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

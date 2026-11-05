@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - ENTERPRISE_ERP_CRM_SUITE_OBSERVABILITY_ARCHITECTURE.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/ENTERPRISE_ERP_CRM_SUITE_OBSERVABILITY_ARCHITECTURE.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="ENTERPRISE_ERP_CRM_SUITE_OBSERVABILITY_ARCHITECTURE.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="enterprise-erp-crm-suite-observability-architectural-placement-specification">Enterprise ERP &amp; CRM Suite Observability &amp; Architectural Placement Specification</h1>
+<p><strong>Document ID:</strong> <code>VA-SPEC-ERP-001</code><br />
+<strong>Classification:</strong> Enterprise SRE Standard / Production Architecture<br />
+<strong>Tier Association:</strong> Tier 5 (Middleware &amp; Databases) vs. Tier 6 (App Services &amp; APM)<br />
+<strong>Status:</strong> Approved &amp; Active in <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Core Telemetry Engine<br />
+<strong>Release:</strong> Universal Driver Edition (Version-Agnostic Engine Driver)</p>
+<hr />
+<h2 id="1-executive-summary-architectural-demarcation">1. Executive Summary &amp; Architectural Demarcation</h2>
+<p>Enterprise Resource Planning (ERP) and Customer Relationship Management (CRM) platforms run the critical core of global operations—including general ledger financial accounting, global supply chain fulfillment, warehouse inventory, payroll, order-to-cash pipelines, and enterprise case resolution.</p>
+<p>Historically, monitoring these monoliths and distributed SaaS backbones has been fractured, fragile, and prone to two catastrophic failure modes:</p>
+<ol>
+<li><strong>Tier Misplacement &amp; Conceptual Confusion:</strong> Conflating the database engine (e.g., SAP HANA column store, Oracle RAC, Microsoft SQL Server) with the application process plane (e.g., SAP S/4HANA &amp; ECC NetWeaver AS ABAP/Java work processes, Dispatcher, Central Services ASCS/ERS, RFC Gateway, Oracle EBS Concurrent Managers, Dynamics 365 AOS, Salesforce Event Bus).</li>
+<li><strong>Global Operational Alert Noise:</strong> Monolithic monitoring agents that blast alerts for SAP work process exhaustion, IDoc status 51 queues, or Oracle Concurrent Manager delays onto cloud-native, microservice-only environments that do not run monolithic ERP estates.</li>
+</ol>
+<h3 id="11-the-definitive-7-tier-demarcation">1.1 The Definitive 7-Tier Demarcation</h3>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> establishes a rigorous architectural boundary separating the in-memory/relational database storage plane from the enterprise application server and business process plane:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+---------------------------------------------------------------------------------------------------+
+| TIER 6: APP SERVICES &amp; APM (APPLICATION &amp; BUSINESS PROCESS PLANE)                                 |
+| 🔷 SAP S/4HANA &amp; ECC (NetWeaver AS ABAP/Java: DIA, UPD, BTC, ENQ, SPO, RFC Gateway, IDocs, Fiori) |
+| 🏛️ Oracle E-Business Suite (Concurrent Managers, Forms/OAF Sessions, Workflow Notification Mailer)|
+| 🏢 Microsoft Dynamics 365 F&amp;O (Application Object Server threads, DMF staging queues, Batch lag)  |
+| ☁️ Salesforce Enterprise CRM (Platform Event Bus, Apex CPU Governor limits, Bulk API v2, CDC lag)  |
+| 👔 Workday HCM &amp; Financials (Enterprise Interface Builder EIB, Report-as-a-Service RaaS, Studio)  |
+| 🎫 ServiceNow CSM &amp; ITOM (Table API, MID Server ECC Queue, Flow Designer IPC, Glide Quota)        |
++---------------------------------------------------------------------------------------------------+
+                                                ▲  wire queries / SQL / JDBC / TDS / JCo
+                                                ▼  saves / transactions / checkpoints
++---------------------------------------------------------------------------------------------------+
+| TIER 5: MIDDLEWARE &amp; DATABASES (PERSISTENCE &amp; STORAGE IN-MEMORY / RAC PLANE)                      |
+| 🔷 SAP HANA: Column Store Memory %, Disk Savepoint Flush Duration, Delta Merge Backlog            |
+| 🏛️ Oracle Database / RAC: Buffer Cache Hit %, Library Cache Lock, Redo Log Switch Contention     |
+| 🏢 Microsoft SQL Server: Buffer Cache Hit Ratio, Page Life Expectancy, Lock Waits, TempDB Contention|
+| 🐘 PostgreSQL, Redis, MySQL, Apache Cassandra, PingCAP TiDB                                       |
++---------------------------------------------------------------------------------------------------+
+</code></pre></div>
+<h3 id="12-optional-silenced-by-default-philosophy">1.2 &quot;Optional &amp; Silenced by Default&quot; Philosophy</h3>
+<p>To protect non-ERP organizations (such as Kubernetes-native startups, Go/Rust microservice platforms, or edge IoT networks) from cognitive overload and false alarms, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> enforces <strong>Strict Opt-In Isolation</strong>:</p>
+<ul>
+<li><strong>Default State:</strong> <code>active_erp_engines: []</code>, <code>enterprise_erp_crm.enabled: False</code>.</li>
+<li><strong>Alert Invariant Silencing:</strong> When no ERP engines are selected, Tier 6 metric collectors, threshold evaluators, and notification pipelines for ERP/CRM are silenced.</li>
+<li><strong>Node Census Cleanliness:</strong> Node cards display <code>⚪ INACTIVE (EXCLUDED FROM CUSTOMER FLEET / OPTIONAL ERP SUITE)</code> for unselected engines, ensuring zero phantom warnings.</li>
+<li><strong>Selective Fleet Configuration:</strong> Customers pick and choose only the specific ERP and CRM platforms they operate, whether a pure SAP S/4HANA estate, an Oracle EBS manufacturing hub, or a modern hybrid stack combining SAP ERP, Salesforce CRM, and ServiceNow CSM.</li>
+</ul>
+<hr />
+<h2 id="2-the-6-supported-enterprise-erp-crm-platforms">2. The 6 Supported Enterprise ERP &amp; CRM Platforms</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> provides version-agnostic engine drivers for the top 6 industry platforms:</p>
+<table>
+<thead>
+<tr>
+<th>Platform ID</th>
+<th>Full Engine Name</th>
+<th>Category</th>
+<th>Wire Protocol &amp; Port</th>
+<th>SRE Invariant Focus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sap_s4hana</code></td>
+<td>SAP S/4HANA &amp; ECC (NetWeaver AS ABAP/Java)</td>
+<td>Core Enterprise ERP</td>
+<td>SAP Control SOAP (50013) / RFC Gateway (3300) / Fiori HTTPS (8000)</td>
+<td>Dialog response time, DIA/UPD/BTC work processes, Enqueue lock table (SM12), RFC/IDoc status 51 queues</td>
+</tr>
+<tr>
+<td><code>oracle_ebs</code></td>
+<td>Oracle E-Business Suite (EBS R12 / Fusion)</td>
+<td>Enterprise Financials &amp; Supply Chain</td>
+<td>Oracle Forms / OAF / Concurrent Manager FND IPC / TNS (1521)</td>
+<td>Concurrent Manager queue lag, Inactive No Manager status, Forms runtime locks, Workflow Mailer backlog</td>
+</tr>
+<tr>
+<td><code>ms_dynamics_365</code></td>
+<td>Microsoft Dynamics 365 Finance &amp; Operations</td>
+<td>Cloud &amp; Hybrid ERP</td>
+<td>HTTPS OData v4 / Azure Service Bus / DMF Staging API (443)</td>
+<td>AOS worker thread saturation, DMF staging error backlog, batch execution delay, API throttling</td>
+</tr>
+<tr>
+<td><code>salesforce_crm</code></td>
+<td>Salesforce Enterprise CRM &amp; Platform Gateway</td>
+<td>Enterprise CRM &amp; Sales Cloud</td>
+<td>REST API / Pub/Sub gRPC / CometD Streaming (443)</td>
+<td>Apex CPU Governor limits, Daily API limit headroom, CDC event streaming lag, SOQL query row limits</td>
+</tr>
+<tr>
+<td><code>workday_hcm</code></td>
+<td>Workday Human Capital Management &amp; Financials</td>
+<td>Enterprise HCM &amp; Financials</td>
+<td>Workday Web Services (WWS) SOAP / RaaS REST API (443)</td>
+<td>Enterprise Interface Builder (EIB) delays, RaaS query latency, integration error rates, session limits</td>
+</tr>
+<tr>
+<td><code>servicenow_csm</code></td>
+<td>ServiceNow Customer Service Management &amp; ITOM</td>
+<td>Enterprise Customer Workflow &amp; CSM</td>
+<td>REST Table API / MID Server ECC Queue / Flow Designer IPC (443)</td>
+<td>MID Server ECC queue backlog, Glide transaction quota utilization, Flow Designer delay, P1 case SLA</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-the-4-observability-planes-of-enterprise-erp-crm">3. The 4 Observability Planes of Enterprise ERP &amp; CRM</h2>
+<p>Across all 6 platforms, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> organizes telemetry into 4 invariant observability planes:</p>
+<h3 id="31-plane-1-work-process-dispatcher-saturation-plane">3.1 Plane 1: Work Process &amp; Dispatcher Saturation Plane</h3>
+<p>In monolithic application servers (such as SAP ABAP Dispatcher or Oracle Concurrent Processing), requests are dispatched to a finite pool of pre-allocated operating system worker processes:</p>
+<ul>
+<li><strong>Dialog (DIA) Work Processes:</strong> Handle interactive user web/GUI transactions. When 100% of DIA processes are allocated, new user HTTP/GUI requests queue in the dispatcher request queue.</li>
+<li><strong>Update (UPD / UPD2) Work Processes:</strong> Process asynchronous database commit records (V1 high-priority accounting documents, V2 statistical updates). Saturation halts order posting.</li>
+<li><strong>Background (BTC) Work Processes:</strong> Execute batch processing jobs (SM37 / Concurrent Requests). Saturation leads to batch queue starvation.</li>
+<li><strong>Invariant Mathematical Formulation:</strong>
+$$\text{Utilization}_{\text{WP}} = \frac{\sum \text{Active Processors (DIA, UPD, BTC)}}{\sum \text{Configured Processors}} \times 100$$
+<ul>
+<li><strong>Warning Threshold:</strong> $&gt; 80.0%$</li>
+<li><strong>Critical Threshold:</strong> $&gt; 92.0%$</li>
+</ul>
+</li>
+</ul>
+<h3 id="32-plane-2-integration-messaging-rpc-queue-plane">3.2 Plane 2: Integration, Messaging &amp; RPC Queue Plane</h3>
+<p>Enterprise ERPs are integration nexus points exchanging millions of transactions with EDI partners, banks, warehouse scanners, and peripheral CRMs:</p>
+<ul>
+<li><strong>SAP RFC Gateway &amp; tRFC/qRFC Queues (SM58 / SMQ1 / SMQ2):</strong> Outbound and inbound transactional Remote Function Calls.</li>
+<li><strong>IDoc Processing Backlog (WE02 / WE05):</strong> Inbound electronic data interchange documents stuck in <strong>Status 51</strong> (<em>Application document not posted</em>) or <strong>Status 64</strong> (<em>IDoc ready to be passed to application</em>).</li>
+<li><strong>ServiceNow ECC Queue / Salesforce Event Bus:</strong> Outbound message queues buffer events between on-prem MID servers and cloud instances.</li>
+<li><strong>Invariant Mathematical Formulation:</strong>
+$$\text{Backlog}_{\text{Integration}} = \sum \text{Unprocessed Queue Entries} + \sum \text{Stuck Inbound Errors (Status 51, SysFail)}$$
+<ul>
+<li><strong>Warning Threshold:</strong> $\ge 25 \text{ records}$</li>
+<li><strong>Critical Threshold:</strong> $\ge 100 \text{ records}$</li>
+</ul>
+</li>
+</ul>
+<h3 id="33-plane-3-concurrency-locking-enqueue-plane">3.3 Plane 3: Concurrency, Locking &amp; Enqueue Plane</h3>
+<p>ERP systems maintain application-level logical locks independent of the database row-level lock manager to enforce multi-user business consistency across long-running financial transactions:</p>
+<ul>
+<li><strong>SAP Central Services Enqueue Server (ASCS / ERS):</strong> Maintains the global lock table in shared memory (<code>SM12</code>). If the lock table fills to 100%, new business transactions crash with <code>SYSTEM_NO_MORE_PAGING</code> or <code>ENQUE_TABLE_FULL</code>.</li>
+<li><strong>Enqueue Replication Server (ERS):</strong> Replicates locks across cluster nodes for high availability.</li>
+<li><strong>Oracle EBS FND User Locks &amp; Forms Concurrency:</strong> Deadlocks between simultaneous batch posting and user order booking.</li>
+<li><strong>Invariant Mathematical Formulation:</strong>
+$$\text{Contention}_{\text{LockTable}} = \frac{\text{Current Active Lock Entries}}{\text{Max Configured Lock Capacity}} \times 100$$
+<ul>
+<li><strong>Warning Threshold:</strong> $&gt; 70.0%$</li>
+<li><strong>Critical Threshold:</strong> $&gt; 85.0%$</li>
+</ul>
+</li>
+</ul>
+<h3 id="34-plane-4-end-to-end-user-experience-transaction-latency-plane">3.4 Plane 4: End-to-End User Experience &amp; Transaction Latency Plane</h3>
+<p>Measures the actual perceived duration of business actions (e.g., posting a sales order, generating an invoice, querying customer history, rendering a Fiori tile):</p>
+<ul>
+<li><strong>Components of Dialog Response Time ($T_{\text{resp}}$):</strong>
+$$T_{\text{resp}} = T_{\text{CPU}} + T_{\text{DB}} + T_{\text{Wait}} + T_{\text{RollIn}} + T_{\text{GUI}}$$
+<ul>
+<li><strong>$T_{\text{CPU}}$:</strong> Time spent executing ABAP/Java/C code in the application server.</li>
+<li><strong>$T_{\text{DB}}$:</strong> Database round-trip execution and retrieval time.</li>
+<li><strong>$T_{\text{Wait}}$:</strong> Time the request queued in the dispatcher waiting for a free DIA work process. High $T_{\text{Wait}}$ indicates work process starvation rather than slow database queries.</li>
+<li><strong>$T_{\text{RollIn}}$ / $T_{\text{RollOut}}$:</strong> Memory paging time for user session context.</li>
+</ul>
+</li>
+<li><strong>SRE Thresholds:</strong>
+<ul>
+<li><strong>Normal Operating Range:</strong> $150\text{ms} - 450\text{ms}$</li>
+<li><strong>Warning Threshold:</strong> $&gt; 1,000.0\text{ms}$</li>
+<li><strong>Critical Threshold:</strong> $&gt; 2,500.0\text{ms}$</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="4-telemetry-collection-wire-protocols-zero-wan-air-gap-mechanics">4. Telemetry Collection Wire Protocols &amp; Zero-WAN Air-Gap Mechanics</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> collects telemetry from enterprise ERP and CRM platforms without deploying intrusive proprietary agents or installing binary packages into SAP kernel directories:</p>
+<h3 id="41-in-perimeter-collection-architecture">4.1 In-Perimeter Collection Architecture</h3>
+<ol>
+<li><strong>SAP Control SOAP API (HTTP Port 50013 / HTTPS 50014):</strong>
+<ul>
+<li>Direct, authenticated, read-only SOAP calls to the local <code>sapstartsrv</code> daemon on each application instance.</li>
+<li>Operations: <code>GetProcessList</code>, <code>GetQueueStatistic</code>, <code>GetAlertTree</code>, <code>EnqGetStatistic</code>.</li>
+<li>Overhead: $&lt; 0.1%$ CPU, execution time $&lt; 5\text{ms}$.</li>
+</ul>
+</li>
+<li><strong>Read-Only RFC Diagnostic Function Modules:</strong>
+<ul>
+<li>Standard SAP BAPIs / Function Modules: <code>TH_WPINFO</code> (work process details), <code>ENQUEUE_READ</code> (lock statistics), <code>EDI_DOCUMENT_STATISTIC</code> (IDoc error counts).</li>
+<li>Executed via standard, secure in-perimeter sapnwrfc connectors.</li>
+</ul>
+</li>
+<li><strong>SaaS Cloud Gateways (Salesforce, Workday, ServiceNow):</strong>
+<ul>
+<li>Outbound REST / gRPC polling via in-perimeter secure proxies.</li>
+<li>Credentials stored in local hardware-backed keystores (AES-256-GCM); zero raw credentials or un-anonymized customer PII egress to external networks.</li>
+</ul>
+</li>
+</ol>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+----------------------------------------------------------------------------------------------------+
+| CUSTOMER ON-PREMISES / VPC AIR-GAPPED PERIMETER                                                    |
+|                                                                                                    |
+|  +--------------------+    SOAP 50013 (sapstartsrv)    +----------------------------------------+  |
+|  | SAP S/4HANA ASCS   | &lt;---------------------------- | <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> eBPF / Telemetry Collector  |  |
+|  | Enqueue / ERS Lock |                               | - Ring Buffer: 1,000,000 metrics/sec   |  |
+|  +--------------------+                               | - Local Evaluation Window: 5m sliding  |  |
+|                                                       | - Zero External SaaS Egress            |  |
+|  +--------------------+    RFC / JCo / Loopback       | - Alert Router &amp; Ticketing Bridge        |  |
+|  | SAP App Instance   | &lt;---------------------------- |                                        |  |
+|  | DIA / UPD / BTC    |                               +----------------------------------------+  |
+|  +--------------------+                                                    ▲                       |
+|                                                                            │                       |
+|  +--------------------+    Local IPC / Forms / TNS                         │                       |
+|  | Oracle EBS App     | &lt;--------------------------------------------------+                       |
+|  | Concurrent Manager |                                                                            |
+|  +--------------------+                                                                            |
++----------------------------------------------------------------------------------------------------+
+</code></pre></div>
+<hr />
+<h2 id="5-fleet-presets-sre-turnkey-configurations">5. Fleet Presets &amp; SRE Turnkey Configurations</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> provides 6 built-in presets designed for common enterprise topologies:</p>
+<ol>
+<li><strong><code>none</code> (Deactivate All / Default Silenced):</strong>
+<ul>
+<li>All ERP/CRM telemetry components disabled.</li>
+<li>Zero CPU/network overhead.</li>
+<li>Silenced invariants; zero false alarms for cloud-native/microservice environments.</li>
+</ul>
+</li>
+<li><strong><code>sap_centric</code> (SAP S/4HANA &amp; ECC Core):</strong>
+<ul>
+<li>Activates <code>sap_s4hana</code>.</li>
+<li>Focuses SRE invariants on ABAP work process saturation, Enqueue lock table contention, and RFC/IDoc Status 51 backlogs.</li>
+</ul>
+</li>
+<li><strong><code>oracle_centric</code> (Oracle E-Business Suite):</strong>
+<ul>
+<li>Activates <code>oracle_ebs</code>.</li>
+<li>Focuses on Concurrent Manager queue lag, Forms runtimes, and Workflow Notification Mailers.</li>
+</ul>
+</li>
+<li><strong><code>ms_dynamics</code> (Microsoft Dynamics 365 Finance &amp; Operations):</strong>
+<ul>
+<li>Activates <code>ms_dynamics_365</code>.</li>
+<li>Focuses on AOS thread saturation, DMF data staging queues, and batch execution delay.</li>
+</ul>
+</li>
+<li><strong><code>modern_hybrid</code> (SAP S/4HANA + Salesforce CRM + ServiceNow CSM):</strong>
+<ul>
+<li>Activates <code>sap_s4hana</code>, <code>salesforce_crm</code>, and <code>servicenow_csm</code>.</li>
+<li>Complete visibility across the modern enterprise triangle: ERP financial ledger (SAP), sales opportunities &amp; quotes (Salesforce), and customer support service workflows (ServiceNow).</li>
+</ul>
+</li>
+<li><strong><code>all_erp_crm</code> (Full Suite Activation):</strong>
+<ul>
+<li>Activates all 6 platforms across all nodes.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="6-sre-incident-remediation-runbooks">6. SRE Incident Remediation Runbooks</h2>
+<h3 id="runbook-erp-01-sap-work-process-exhaustion-dia-saturation-90">Runbook ERP-01: SAP Work Process Exhaustion (DIA Saturation $&gt; 90%$)</h3>
+<ul>
+<li><strong>P1 Escalation Condition:</strong> <code>work_process_util_pct &gt; 92%</code> for $\ge 3$ consecutive evaluation windows.</li>
+<li><strong>Immediate Action:</strong>
+<ol>
+<li>Open SAP Transaction <code>SM50</code> (Process Overview) or inspect <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> node telemetry for <code>node-dc1-hv-01</code>.</li>
+<li>Identify whether long-running dialog reports (e.g., unscheduled financial balance queries) are blocking DIA processes.</li>
+<li>Execute dynamic work process reassignment via <code>RZ04</code> or terminate rogue report with soft cancel (<code>Process -&gt; Cancel with Core</code>).</li>
+<li>Check dispatcher wait time ($T_{\text{wait}}$). If $T_{\text{wait}} &gt; 2,000\text{ms}$, enable temporary dynamic work processes via <code>rdisp/dynamic_wp_check</code>.</li>
+</ol>
+</li>
+</ul>
+<h3 id="runbook-erp-02-enqueue-lock-table-contention-sm12-fill-ratio-70">Runbook ERP-02: Enqueue Lock Table Contention (SM12 Fill Ratio $&gt; 70%$)</h3>
+<ul>
+<li><strong>P1 Escalation Condition:</strong> <code>lock_table_util_pct &gt; 85%</code>.</li>
+<li><strong>Immediate Action:</strong>
+<ol>
+<li>Open <code>SM12</code> (Lock Entries) or query <code>sapstartsrv</code> via SOAP <code>EnqGetStatistic</code>.</li>
+<li>Filter by Table Name and Lock Argument to identify single-user bulk locking (e.g., massive batch billing run locking entire customer account tables).</li>
+<li>Verify ERS replication status in high-availability cluster (<code>sapcontrol -nr 01 -function HAGetFailoverConfig</code>).</li>
+<li>If lock table exhaustion is imminent, contact the job owner before active user transactions abort with <code>ENQUE_TABLE_FULL</code>.</li>
+</ol>
+</li>
+</ul>
+<h3 id="runbook-erp-03-stuck-inbound-idoc-rfc-errors-status-51-backlog-25">Runbook ERP-03: Stuck Inbound IDoc &amp; RFC Errors (Status 51 Backlog $&gt; 25$)</h3>
+<ul>
+<li><strong>P2 Escalation Condition:</strong> <code>rfc_idoc_queue_backlog &gt; 25 records</code>.</li>
+<li><strong>Immediate Action:</strong>
+<ol>
+<li>Open <code>WE02</code> / <code>WE05</code> (IDoc List) or check transactional RFC queue in <code>SM58</code>.</li>
+<li>Identify root cause:
+<ul>
+<li>Error code <code>M8 082</code> (Account determination error): Escalate to SAP Finance Functional Team.</li>
+<li>Error code <code>VK 034</code> (Partner profile missing): Escalate to EDI Integration Team.</li>
+<li>Database deadlock / lock conflict: Re-queue IDocs using program <code>RBDMANI2</code> in background once locks clear.</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<hr />
+<h2 id="7-compliance-governance-audit-verification">7. Compliance, Governance &amp; Audit Verification</h2>
+<ul>
+<li><strong>GDPR / HIPAA / PCI-DSS Posture:</strong> All ERP metric collection operates exclusively on system-level performance indicators (queue depths, milliseconds, lock counts). <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> strictly prohibits capturing user payload data, invoice numbers, customer names, or financial balances in the telemetry stream.</li>
+<li><strong>Zero-WAN Integrity:</strong> All SAP Control and ERP monitoring operates via in-perimeter IPC/loopback. Zero customer ERP data is transmitted outside the sovereign corporate perimeter.</li>
+<li><strong>Audit Logging:</strong> Every activation, deactivation, or threshold modification in the Enterprise ERP &amp; CRM Suite is cryptographically signed and recorded in the tamper-evident audit log.</li>
+</ul>
+</div>
+      <pre id="raw-view"><code># Enterprise ERP &amp; CRM Suite Observability &amp; Architectural Placement Specification
+**Document ID:** `VA-SPEC-ERP-001`  
+**Classification:** Enterprise SRE Standard / Production Architecture  
+**Tier Association:** Tier 5 (Middleware &amp; Databases) vs. Tier 6 (App Services &amp; APM)  
+**Status:** Approved &amp; Active in `&lt;dcouplr/&gt;` Core Telemetry Engine  
+**Release:** Universal Driver Edition (Version-Agnostic Engine Driver)
+
+---
+
+## 1. Executive Summary &amp; Architectural Demarcation
+
+Enterprise Resource Planning (ERP) and Customer Relationship Management (CRM) platforms run the critical core of global operations—including general ledger financial accounting, global supply chain fulfillment, warehouse inventory, payroll, order-to-cash pipelines, and enterprise case resolution. 
+
+Historically, monitoring these monoliths and distributed SaaS backbones has been fractured, fragile, and prone to two catastrophic failure modes:
+1. **Tier Misplacement &amp; Conceptual Confusion:** Conflating the database engine (e.g., SAP HANA column store, Oracle RAC, Microsoft SQL Server) with the application process plane (e.g., SAP S/4HANA &amp; ECC NetWeaver AS ABAP/Java work processes, Dispatcher, Central Services ASCS/ERS, RFC Gateway, Oracle EBS Concurrent Managers, Dynamics 365 AOS, Salesforce Event Bus).
+2. **Global Operational Alert Noise:** Monolithic monitoring agents that blast alerts for SAP work process exhaustion, IDoc status 51 queues, or Oracle Concurrent Manager delays onto cloud-native, microservice-only environments that do not run monolithic ERP estates.
+
+### 1.1 The Definitive 7-Tier Demarcation
+
+`&lt;dcouplr/&gt;` establishes a rigorous architectural boundary separating the in-memory/relational database storage plane from the enterprise application server and business process plane:
+
+```
++---------------------------------------------------------------------------------------------------+
+| TIER 6: APP SERVICES &amp; APM (APPLICATION &amp; BUSINESS PROCESS PLANE)                                 |
+| 🔷 SAP S/4HANA &amp; ECC (NetWeaver AS ABAP/Java: DIA, UPD, BTC, ENQ, SPO, RFC Gateway, IDocs, Fiori) |
+| 🏛️ Oracle E-Business Suite (Concurrent Managers, Forms/OAF Sessions, Workflow Notification Mailer)|
+| 🏢 Microsoft Dynamics 365 F&amp;O (Application Object Server threads, DMF staging queues, Batch lag)  |
+| ☁️ Salesforce Enterprise CRM (Platform Event Bus, Apex CPU Governor limits, Bulk API v2, CDC lag)  |
+| 👔 Workday HCM &amp; Financials (Enterprise Interface Builder EIB, Report-as-a-Service RaaS, Studio)  |
+| 🎫 ServiceNow CSM &amp; ITOM (Table API, MID Server ECC Queue, Flow Designer IPC, Glide Quota)        |
++---------------------------------------------------------------------------------------------------+
+                                                ▲  wire queries / SQL / JDBC / TDS / JCo
+                                                ▼  saves / transactions / checkpoints
++---------------------------------------------------------------------------------------------------+
+| TIER 5: MIDDLEWARE &amp; DATABASES (PERSISTENCE &amp; STORAGE IN-MEMORY / RAC PLANE)                      |
+| 🔷 SAP HANA: Column Store Memory %, Disk Savepoint Flush Duration, Delta Merge Backlog            |
+| 🏛️ Oracle Database / RAC: Buffer Cache Hit %, Library Cache Lock, Redo Log Switch Contention     |
+| 🏢 Microsoft SQL Server: Buffer Cache Hit Ratio, Page Life Expectancy, Lock Waits, TempDB Contention|
+| 🐘 PostgreSQL, Redis, MySQL, Apache Cassandra, PingCAP TiDB                                       |
++---------------------------------------------------------------------------------------------------+
+```
+
+### 1.2 &quot;Optional &amp; Silenced by Default&quot; Philosophy
+
+To protect non-ERP organizations (such as Kubernetes-native startups, Go/Rust microservice platforms, or edge IoT networks) from cognitive overload and false alarms, `&lt;dcouplr/&gt;` enforces **Strict Opt-In Isolation**:
+- **Default State:** `active_erp_engines: []`, `enterprise_erp_crm.enabled: False`.
+- **Alert Invariant Silencing:** When no ERP engines are selected, Tier 6 metric collectors, threshold evaluators, and notification pipelines for ERP/CRM are silenced.
+- **Node Census Cleanliness:** Node cards display `⚪ INACTIVE (EXCLUDED FROM CUSTOMER FLEET / OPTIONAL ERP SUITE)` for unselected engines, ensuring zero phantom warnings.
+- **Selective Fleet Configuration:** Customers pick and choose only the specific ERP and CRM platforms they operate, whether a pure SAP S/4HANA estate, an Oracle EBS manufacturing hub, or a modern hybrid stack combining SAP ERP, Salesforce CRM, and ServiceNow CSM.
+
+---
+
+## 2. The 6 Supported Enterprise ERP &amp; CRM Platforms
+
+`&lt;dcouplr/&gt;` provides version-agnostic engine drivers for the top 6 industry platforms:
+
+| Platform ID | Full Engine Name | Category | Wire Protocol &amp; Port | SRE Invariant Focus |
+|---|---|---|---|---|
+| `sap_s4hana` | SAP S/4HANA &amp; ECC (NetWeaver AS ABAP/Java) | Core Enterprise ERP | SAP Control SOAP (50013) / RFC Gateway (3300) / Fiori HTTPS (8000) | Dialog response time, DIA/UPD/BTC work processes, Enqueue lock table (SM12), RFC/IDoc status 51 queues |
+| `oracle_ebs` | Oracle E-Business Suite (EBS R12 / Fusion) | Enterprise Financials &amp; Supply Chain | Oracle Forms / OAF / Concurrent Manager FND IPC / TNS (1521) | Concurrent Manager queue lag, Inactive No Manager status, Forms runtime locks, Workflow Mailer backlog |
+| `ms_dynamics_365` | Microsoft Dynamics 365 Finance &amp; Operations | Cloud &amp; Hybrid ERP | HTTPS OData v4 / Azure Service Bus / DMF Staging API (443) | AOS worker thread saturation, DMF staging error backlog, batch execution delay, API throttling |
+| `salesforce_crm` | Salesforce Enterprise CRM &amp; Platform Gateway | Enterprise CRM &amp; Sales Cloud | REST API / Pub/Sub gRPC / CometD Streaming (443) | Apex CPU Governor limits, Daily API limit headroom, CDC event streaming lag, SOQL query row limits |
+| `workday_hcm` | Workday Human Capital Management &amp; Financials | Enterprise HCM &amp; Financials | Workday Web Services (WWS) SOAP / RaaS REST API (443) | Enterprise Interface Builder (EIB) delays, RaaS query latency, integration error rates, session limits |
+| `servicenow_csm` | ServiceNow Customer Service Management &amp; ITOM | Enterprise Customer Workflow &amp; CSM | REST Table API / MID Server ECC Queue / Flow Designer IPC (443) | MID Server ECC queue backlog, Glide transaction quota utilization, Flow Designer delay, P1 case SLA |
+
+---
+
+## 3. The 4 Observability Planes of Enterprise ERP &amp; CRM
+
+Across all 6 platforms, `&lt;dcouplr/&gt;` organizes telemetry into 4 invariant observability planes:
+
+### 3.1 Plane 1: Work Process &amp; Dispatcher Saturation Plane
+In monolithic application servers (such as SAP ABAP Dispatcher or Oracle Concurrent Processing), requests are dispatched to a finite pool of pre-allocated operating system worker processes:
+- **Dialog (DIA) Work Processes:** Handle interactive user web/GUI transactions. When 100% of DIA processes are allocated, new user HTTP/GUI requests queue in the dispatcher request queue.
+- **Update (UPD / UPD2) Work Processes:** Process asynchronous database commit records (V1 high-priority accounting documents, V2 statistical updates). Saturation halts order posting.
+- **Background (BTC) Work Processes:** Execute batch processing jobs (SM37 / Concurrent Requests). Saturation leads to batch queue starvation.
+- **Invariant Mathematical Formulation:**
+  $$\text{Utilization}_{\text{WP}} = \frac{\sum \text{Active Processors (DIA, UPD, BTC)}}{\sum \text{Configured Processors}} \times 100$$
+  - **Warning Threshold:** $&gt; 80.0\%$
+  - **Critical Threshold:** $&gt; 92.0\%$
+
+### 3.2 Plane 2: Integration, Messaging &amp; RPC Queue Plane
+Enterprise ERPs are integration nexus points exchanging millions of transactions with EDI partners, banks, warehouse scanners, and peripheral CRMs:
+- **SAP RFC Gateway &amp; tRFC/qRFC Queues (SM58 / SMQ1 / SMQ2):** Outbound and inbound transactional Remote Function Calls.
+- **IDoc Processing Backlog (WE02 / WE05):** Inbound electronic data interchange documents stuck in **Status 51** (*Application document not posted*) or **Status 64** (*IDoc ready to be passed to application*).
+- **ServiceNow ECC Queue / Salesforce Event Bus:** Outbound message queues buffer events between on-prem MID servers and cloud instances.
+- **Invariant Mathematical Formulation:**
+  $$\text{Backlog}_{\text{Integration}} = \sum \text{Unprocessed Queue Entries} + \sum \text{Stuck Inbound Errors (Status 51, SysFail)}$$
+  - **Warning Threshold:** $\ge 25 \text{ records}$
+  - **Critical Threshold:** $\ge 100 \text{ records}$
+
+### 3.3 Plane 3: Concurrency, Locking &amp; Enqueue Plane
+ERP systems maintain application-level logical locks independent of the database row-level lock manager to enforce multi-user business consistency across long-running financial transactions:
+- **SAP Central Services Enqueue Server (ASCS / ERS):** Maintains the global lock table in shared memory (`SM12`). If the lock table fills to 100%, new business transactions crash with `SYSTEM_NO_MORE_PAGING` or `ENQUE_TABLE_FULL`.
+- **Enqueue Replication Server (ERS):** Replicates locks across cluster nodes for high availability.
+- **Oracle EBS FND User Locks &amp; Forms Concurrency:** Deadlocks between simultaneous batch posting and user order booking.
+- **Invariant Mathematical Formulation:**
+  $$\text{Contention}_{\text{LockTable}} = \frac{\text{Current Active Lock Entries}}{\text{Max Configured Lock Capacity}} \times 100$$
+  - **Warning Threshold:** $&gt; 70.0\%$
+  - **Critical Threshold:** $&gt; 85.0\%$
+
+### 3.4 Plane 4: End-to-End User Experience &amp; Transaction Latency Plane
+Measures the actual perceived duration of business actions (e.g., posting a sales order, generating an invoice, querying customer history, rendering a Fiori tile):
+- **Components of Dialog Response Time ($T_{\text{resp}}$):**
+  $$T_{\text{resp}} = T_{\text{CPU}} + T_{\text{DB}} + T_{\text{Wait}} + T_{\text{RollIn}} + T_{\text{GUI}}$$
+  - **$T_{\text{CPU}}$:** Time spent executing ABAP/Java/C code in the application server.
+  - **$T_{\text{DB}}$:** Database round-trip execution and retrieval time.
+  - **$T_{\text{Wait}}$:** Time the request queued in the dispatcher waiting for a free DIA work process. High $T_{\text{Wait}}$ indicates work process starvation rather than slow database queries.
+  - **$T_{\text{RollIn}}$ / $T_{\text{RollOut}}$:** Memory paging time for user session context.
+- **SRE Thresholds:**
+  - **Normal Operating Range:** $150\text{ms} - 450\text{ms}$
+  - **Warning Threshold:** $&gt; 1,000.0\text{ms}$
+  - **Critical Threshold:** $&gt; 2,500.0\text{ms}$
+
+---
+
+## 4. Telemetry Collection Wire Protocols &amp; Zero-WAN Air-Gap Mechanics
+
+`&lt;dcouplr/&gt;` collects telemetry from enterprise ERP and CRM platforms without deploying intrusive proprietary agents or installing binary packages into SAP kernel directories:
+
+### 4.1 In-Perimeter Collection Architecture
+1. **SAP Control SOAP API (HTTP Port 50013 / HTTPS 50014):**
+   - Direct, authenticated, read-only SOAP calls to the local `sapstartsrv` daemon on each application instance.
+   - Operations: `GetProcessList`, `GetQueueStatistic`, `GetAlertTree`, `EnqGetStatistic`.
+   - Overhead: $&lt; 0.1\%$ CPU, execution time $&lt; 5\text{ms}$.
+2. **Read-Only RFC Diagnostic Function Modules:**
+   - Standard SAP BAPIs / Function Modules: `TH_WPINFO` (work process details), `ENQUEUE_READ` (lock statistics), `EDI_DOCUMENT_STATISTIC` (IDoc error counts).
+   - Executed via standard, secure in-perimeter sapnwrfc connectors.
+3. **SaaS Cloud Gateways (Salesforce, Workday, ServiceNow):**
+   - Outbound REST / gRPC polling via in-perimeter secure proxies.
+   - Credentials stored in local hardware-backed keystores (AES-256-GCM); zero raw credentials or un-anonymized customer PII egress to external networks.
+
+```
++----------------------------------------------------------------------------------------------------+
+| CUSTOMER ON-PREMISES / VPC AIR-GAPPED PERIMETER                                                    |
+|                                                                                                    |
+|  +--------------------+    SOAP 50013 (sapstartsrv)    +----------------------------------------+  |
+|  | SAP S/4HANA ASCS   | &lt;---------------------------- | &lt;dcouplr/&gt; eBPF / Telemetry Collector  |  |
+|  | Enqueue / ERS Lock |                               | - Ring Buffer: 1,000,000 metrics/sec   |  |
+|  +--------------------+                               | - Local Evaluation Window: 5m sliding  |  |
+|                                                       | - Zero External SaaS Egress            |  |
+|  +--------------------+    RFC / JCo / Loopback       | - Alert Router &amp; Ticketing Bridge        |  |
+|  | SAP App Instance   | &lt;---------------------------- |                                        |  |
+|  | DIA / UPD / BTC    |                               +----------------------------------------+  |
+|  +--------------------+                                                    ▲                       |
+|                                                                            │                       |
+|  +--------------------+    Local IPC / Forms / TNS                         │                       |
+|  | Oracle EBS App     | &lt;--------------------------------------------------+                       |
+|  | Concurrent Manager |                                                                            |
+|  +--------------------+                                                                            |
++----------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## 5. Fleet Presets &amp; SRE Turnkey Configurations
+
+`&lt;dcouplr/&gt;` provides 6 built-in presets designed for common enterprise topologies:
+
+1. **`none` (Deactivate All / Default Silenced):**
+   - All ERP/CRM telemetry components disabled.
+   - Zero CPU/network overhead.
+   - Silenced invariants; zero false alarms for cloud-native/microservice environments.
+2. **`sap_centric` (SAP S/4HANA &amp; ECC Core):**
+   - Activates `sap_s4hana`.
+   - Focuses SRE invariants on ABAP work process saturation, Enqueue lock table contention, and RFC/IDoc Status 51 backlogs.
+3. **`oracle_centric` (Oracle E-Business Suite):**
+   - Activates `oracle_ebs`.
+   - Focuses on Concurrent Manager queue lag, Forms runtimes, and Workflow Notification Mailers.
+4. **`ms_dynamics` (Microsoft Dynamics 365 Finance &amp; Operations):**
+   - Activates `ms_dynamics_365`.
+   - Focuses on AOS thread saturation, DMF data staging queues, and batch execution delay.
+5. **`modern_hybrid` (SAP S/4HANA + Salesforce CRM + ServiceNow CSM):**
+   - Activates `sap_s4hana`, `salesforce_crm`, and `servicenow_csm`.
+   - Complete visibility across the modern enterprise triangle: ERP financial ledger (SAP), sales opportunities &amp; quotes (Salesforce), and customer support service workflows (ServiceNow).
+6. **`all_erp_crm` (Full Suite Activation):**
+   - Activates all 6 platforms across all nodes.
+
+---
+
+## 6. SRE Incident Remediation Runbooks
+
+### Runbook ERP-01: SAP Work Process Exhaustion (DIA Saturation $&gt; 90\%$)
+- **P1 Escalation Condition:** `work_process_util_pct &gt; 92%` for $\ge 3$ consecutive evaluation windows.
+- **Immediate Action:**
+  1. Open SAP Transaction `SM50` (Process Overview) or inspect `&lt;dcouplr/&gt;` node telemetry for `node-dc1-hv-01`.
+  2. Identify whether long-running dialog reports (e.g., unscheduled financial balance queries) are blocking DIA processes.
+  3. Execute dynamic work process reassignment via `RZ04` or terminate rogue report with soft cancel (`Process -&gt; Cancel with Core`).
+  4. Check dispatcher wait time ($T_{\text{wait}}$). If $T_{\text{wait}} &gt; 2,000\text{ms}$, enable temporary dynamic work processes via `rdisp/dynamic_wp_check`.
+
+### Runbook ERP-02: Enqueue Lock Table Contention (SM12 Fill Ratio $&gt; 70\%$)
+- **P1 Escalation Condition:** `lock_table_util_pct &gt; 85%`.
+- **Immediate Action:**
+  1. Open `SM12` (Lock Entries) or query `sapstartsrv` via SOAP `EnqGetStatistic`.
+  2. Filter by Table Name and Lock Argument to identify single-user bulk locking (e.g., massive batch billing run locking entire customer account tables).
+  3. Verify ERS replication status in high-availability cluster (`sapcontrol -nr 01 -function HAGetFailoverConfig`).
+  4. If lock table exhaustion is imminent, contact the job owner before active user transactions abort with `ENQUE_TABLE_FULL`.
+
+### Runbook ERP-03: Stuck Inbound IDoc &amp; RFC Errors (Status 51 Backlog $&gt; 25$)
+- **P2 Escalation Condition:** `rfc_idoc_queue_backlog &gt; 25 records`.
+- **Immediate Action:**
+  1. Open `WE02` / `WE05` (IDoc List) or check transactional RFC queue in `SM58`.
+  2. Identify root cause:
+     - Error code `M8 082` (Account determination error): Escalate to SAP Finance Functional Team.
+     - Error code `VK 034` (Partner profile missing): Escalate to EDI Integration Team.
+     - Database deadlock / lock conflict: Re-queue IDocs using program `RBDMANI2` in background once locks clear.
+
+---
+
+## 7. Compliance, Governance &amp; Audit Verification
+
+- **GDPR / HIPAA / PCI-DSS Posture:** All ERP metric collection operates exclusively on system-level performance indicators (queue depths, milliseconds, lock counts). `&lt;dcouplr/&gt;` strictly prohibits capturing user payload data, invoice numbers, customer names, or financial balances in the telemetry stream.
+- **Zero-WAN Integrity:** All SAP Control and ERP monitoring operates via in-perimeter IPC/loopback. Zero customer ERP data is transmitted outside the sovereign corporate perimeter.
+- **Audit Logging:** Every activation, deactivation, or threshold modification in the Enterprise ERP &amp; CRM Suite is cryptographically signed and recorded in the tamper-evident audit log.
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># Enterprise ERP &amp; CRM Suite Observability &amp; Architectural Placement Specification
+**Document ID:** `VA-SPEC-ERP-001`  
+**Classification:** Enterprise SRE Standard / Production Architecture  
+**Tier Association:** Tier 5 (Middleware &amp; Databases) vs. Tier 6 (App Services &amp; APM)  
+**Status:** Approved &amp; Active in `&lt;dcouplr/&gt;` Core Telemetry Engine  
+**Release:** Universal Driver Edition (Version-Agnostic Engine Driver)
+
+---
+
+## 1. Executive Summary &amp; Architectural Demarcation
+
+Enterprise Resource Planning (ERP) and Customer Relationship Management (CRM) platforms run the critical core of global operations—including general ledger financial accounting, global supply chain fulfillment, warehouse inventory, payroll, order-to-cash pipelines, and enterprise case resolution. 
+
+Historically, monitoring these monoliths and distributed SaaS backbones has been fractured, fragile, and prone to two catastrophic failure modes:
+1. **Tier Misplacement &amp; Conceptual Confusion:** Conflating the database engine (e.g., SAP HANA column store, Oracle RAC, Microsoft SQL Server) with the application process plane (e.g., SAP S/4HANA &amp; ECC NetWeaver AS ABAP/Java work processes, Dispatcher, Central Services ASCS/ERS, RFC Gateway, Oracle EBS Concurrent Managers, Dynamics 365 AOS, Salesforce Event Bus).
+2. **Global Operational Alert Noise:** Monolithic monitoring agents that blast alerts for SAP work process exhaustion, IDoc status 51 queues, or Oracle Concurrent Manager delays onto cloud-native, microservice-only environments that do not run monolithic ERP estates.
+
+### 1.1 The Definitive 7-Tier Demarcation
+
+`&lt;dcouplr/&gt;` establishes a rigorous architectural boundary separating the in-memory/relational database storage plane from the enterprise application server and business process plane:
+
+```
++---------------------------------------------------------------------------------------------------+
+| TIER 6: APP SERVICES &amp; APM (APPLICATION &amp; BUSINESS PROCESS PLANE)                                 |
+| 🔷 SAP S/4HANA &amp; ECC (NetWeaver AS ABAP/Java: DIA, UPD, BTC, ENQ, SPO, RFC Gateway, IDocs, Fiori) |
+| 🏛️ Oracle E-Business Suite (Concurrent Managers, Forms/OAF Sessions, Workflow Notification Mailer)|
+| 🏢 Microsoft Dynamics 365 F&amp;O (Application Object Server threads, DMF staging queues, Batch lag)  |
+| ☁️ Salesforce Enterprise CRM (Platform Event Bus, Apex CPU Governor limits, Bulk API v2, CDC lag)  |
+| 👔 Workday HCM &amp; Financials (Enterprise Interface Builder EIB, Report-as-a-Service RaaS, Studio)  |
+| 🎫 ServiceNow CSM &amp; ITOM (Table API, MID Server ECC Queue, Flow Designer IPC, Glide Quota)        |
++---------------------------------------------------------------------------------------------------+
+                                                ▲  wire queries / SQL / JDBC / TDS / JCo
+                                                ▼  saves / transactions / checkpoints
++---------------------------------------------------------------------------------------------------+
+| TIER 5: MIDDLEWARE &amp; DATABASES (PERSISTENCE &amp; STORAGE IN-MEMORY / RAC PLANE)                      |
+| 🔷 SAP HANA: Column Store Memory %, Disk Savepoint Flush Duration, Delta Merge Backlog            |
+| 🏛️ Oracle Database / RAC: Buffer Cache Hit %, Library Cache Lock, Redo Log Switch Contention     |
+| 🏢 Microsoft SQL Server: Buffer Cache Hit Ratio, Page Life Expectancy, Lock Waits, TempDB Contention|
+| 🐘 PostgreSQL, Redis, MySQL, Apache Cassandra, PingCAP TiDB                                       |
++---------------------------------------------------------------------------------------------------+
+```
+
+### 1.2 &quot;Optional &amp; Silenced by Default&quot; Philosophy
+
+To protect non-ERP organizations (such as Kubernetes-native startups, Go/Rust microservice platforms, or edge IoT networks) from cognitive overload and false alarms, `&lt;dcouplr/&gt;` enforces **Strict Opt-In Isolation**:
+- **Default State:** `active_erp_engines: []`, `enterprise_erp_crm.enabled: False`.
+- **Alert Invariant Silencing:** When no ERP engines are selected, Tier 6 metric collectors, threshold evaluators, and notification pipelines for ERP/CRM are silenced.
+- **Node Census Cleanliness:** Node cards display `⚪ INACTIVE (EXCLUDED FROM CUSTOMER FLEET / OPTIONAL ERP SUITE)` for unselected engines, ensuring zero phantom warnings.
+- **Selective Fleet Configuration:** Customers pick and choose only the specific ERP and CRM platforms they operate, whether a pure SAP S/4HANA estate, an Oracle EBS manufacturing hub, or a modern hybrid stack combining SAP ERP, Salesforce CRM, and ServiceNow CSM.
+
+---
+
+## 2. The 6 Supported Enterprise ERP &amp; CRM Platforms
+
+`&lt;dcouplr/&gt;` provides version-agnostic engine drivers for the top 6 industry platforms:
+
+| Platform ID | Full Engine Name | Category | Wire Protocol &amp; Port | SRE Invariant Focus |
+|---|---|---|---|---|
+| `sap_s4hana` | SAP S/4HANA &amp; ECC (NetWeaver AS ABAP/Java) | Core Enterprise ERP | SAP Control SOAP (50013) / RFC Gateway (3300) / Fiori HTTPS (8000) | Dialog response time, DIA/UPD/BTC work processes, Enqueue lock table (SM12), RFC/IDoc status 51 queues |
+| `oracle_ebs` | Oracle E-Business Suite (EBS R12 / Fusion) | Enterprise Financials &amp; Supply Chain | Oracle Forms / OAF / Concurrent Manager FND IPC / TNS (1521) | Concurrent Manager queue lag, Inactive No Manager status, Forms runtime locks, Workflow Mailer backlog |
+| `ms_dynamics_365` | Microsoft Dynamics 365 Finance &amp; Operations | Cloud &amp; Hybrid ERP | HTTPS OData v4 / Azure Service Bus / DMF Staging API (443) | AOS worker thread saturation, DMF staging error backlog, batch execution delay, API throttling |
+| `salesforce_crm` | Salesforce Enterprise CRM &amp; Platform Gateway | Enterprise CRM &amp; Sales Cloud | REST API / Pub/Sub gRPC / CometD Streaming (443) | Apex CPU Governor limits, Daily API limit headroom, CDC event streaming lag, SOQL query row limits |
+| `workday_hcm` | Workday Human Capital Management &amp; Financials | Enterprise HCM &amp; Financials | Workday Web Services (WWS) SOAP / RaaS REST API (443) | Enterprise Interface Builder (EIB) delays, RaaS query latency, integration error rates, session limits |
+| `servicenow_csm` | ServiceNow Customer Service Management &amp; ITOM | Enterprise Customer Workflow &amp; CSM | REST Table API / MID Server ECC Queue / Flow Designer IPC (443) | MID Server ECC queue backlog, Glide transaction quota utilization, Flow Designer delay, P1 case SLA |
+
+---
+
+## 3. The 4 Observability Planes of Enterprise ERP &amp; CRM
+
+Across all 6 platforms, `&lt;dcouplr/&gt;` organizes telemetry into 4 invariant observability planes:
+
+### 3.1 Plane 1: Work Process &amp; Dispatcher Saturation Plane
+In monolithic application servers (such as SAP ABAP Dispatcher or Oracle Concurrent Processing), requests are dispatched to a finite pool of pre-allocated operating system worker processes:
+- **Dialog (DIA) Work Processes:** Handle interactive user web/GUI transactions. When 100% of DIA processes are allocated, new user HTTP/GUI requests queue in the dispatcher request queue.
+- **Update (UPD / UPD2) Work Processes:** Process asynchronous database commit records (V1 high-priority accounting documents, V2 statistical updates). Saturation halts order posting.
+- **Background (BTC) Work Processes:** Execute batch processing jobs (SM37 / Concurrent Requests). Saturation leads to batch queue starvation.
+- **Invariant Mathematical Formulation:**
+  $$\text{Utilization}_{\text{WP}} = \frac{\sum \text{Active Processors (DIA, UPD, BTC)}}{\sum \text{Configured Processors}} \times 100$$
+  - **Warning Threshold:** $&gt; 80.0\%$
+  - **Critical Threshold:** $&gt; 92.0\%$
+
+### 3.2 Plane 2: Integration, Messaging &amp; RPC Queue Plane
+Enterprise ERPs are integration nexus points exchanging millions of transactions with EDI partners, banks, warehouse scanners, and peripheral CRMs:
+- **SAP RFC Gateway &amp; tRFC/qRFC Queues (SM58 / SMQ1 / SMQ2):** Outbound and inbound transactional Remote Function Calls.
+- **IDoc Processing Backlog (WE02 / WE05):** Inbound electronic data interchange documents stuck in **Status 51** (*Application document not posted*) or **Status 64** (*IDoc ready to be passed to application*).
+- **ServiceNow ECC Queue / Salesforce Event Bus:** Outbound message queues buffer events between on-prem MID servers and cloud instances.
+- **Invariant Mathematical Formulation:**
+  $$\text{Backlog}_{\text{Integration}} = \sum \text{Unprocessed Queue Entries} + \sum \text{Stuck Inbound Errors (Status 51, SysFail)}$$
+  - **Warning Threshold:** $\ge 25 \text{ records}$
+  - **Critical Threshold:** $\ge 100 \text{ records}$
+
+### 3.3 Plane 3: Concurrency, Locking &amp; Enqueue Plane
+ERP systems maintain application-level logical locks independent of the database row-level lock manager to enforce multi-user business consistency across long-running financial transactions:
+- **SAP Central Services Enqueue Server (ASCS / ERS):** Maintains the global lock table in shared memory (`SM12`). If the lock table fills to 100%, new business transactions crash with `SYSTEM_NO_MORE_PAGING` or `ENQUE_TABLE_FULL`.
+- **Enqueue Replication Server (ERS):** Replicates locks across cluster nodes for high availability.
+- **Oracle EBS FND User Locks &amp; Forms Concurrency:** Deadlocks between simultaneous batch posting and user order booking.
+- **Invariant Mathematical Formulation:**
+  $$\text{Contention}_{\text{LockTable}} = \frac{\text{Current Active Lock Entries}}{\text{Max Configured Lock Capacity}} \times 100$$
+  - **Warning Threshold:** $&gt; 70.0\%$
+  - **Critical Threshold:** $&gt; 85.0\%$
+
+### 3.4 Plane 4: End-to-End User Experience &amp; Transaction Latency Plane
+Measures the actual perceived duration of business actions (e.g., posting a sales order, generating an invoice, querying customer history, rendering a Fiori tile):
+- **Components of Dialog Response Time ($T_{\text{resp}}$):**
+  $$T_{\text{resp}} = T_{\text{CPU}} + T_{\text{DB}} + T_{\text{Wait}} + T_{\text{RollIn}} + T_{\text{GUI}}$$
+  - **$T_{\text{CPU}}$:** Time spent executing ABAP/Java/C code in the application server.
+  - **$T_{\text{DB}}$:** Database round-trip execution and retrieval time.
+  - **$T_{\text{Wait}}$:** Time the request queued in the dispatcher waiting for a free DIA work process. High $T_{\text{Wait}}$ indicates work process starvation rather than slow database queries.
+  - **$T_{\text{RollIn}}$ / $T_{\text{RollOut}}$:** Memory paging time for user session context.
+- **SRE Thresholds:**
+  - **Normal Operating Range:** $150\text{ms} - 450\text{ms}$
+  - **Warning Threshold:** $&gt; 1,000.0\text{ms}$
+  - **Critical Threshold:** $&gt; 2,500.0\text{ms}$
+
+---
+
+## 4. Telemetry Collection Wire Protocols &amp; Zero-WAN Air-Gap Mechanics
+
+`&lt;dcouplr/&gt;` collects telemetry from enterprise ERP and CRM platforms without deploying intrusive proprietary agents or installing binary packages into SAP kernel directories:
+
+### 4.1 In-Perimeter Collection Architecture
+1. **SAP Control SOAP API (HTTP Port 50013 / HTTPS 50014):**
+   - Direct, authenticated, read-only SOAP calls to the local `sapstartsrv` daemon on each application instance.
+   - Operations: `GetProcessList`, `GetQueueStatistic`, `GetAlertTree`, `EnqGetStatistic`.
+   - Overhead: $&lt; 0.1\%$ CPU, execution time $&lt; 5\text{ms}$.
+2. **Read-Only RFC Diagnostic Function Modules:**
+   - Standard SAP BAPIs / Function Modules: `TH_WPINFO` (work process details), `ENQUEUE_READ` (lock statistics), `EDI_DOCUMENT_STATISTIC` (IDoc error counts).
+   - Executed via standard, secure in-perimeter sapnwrfc connectors.
+3. **SaaS Cloud Gateways (Salesforce, Workday, ServiceNow):**
+   - Outbound REST / gRPC polling via in-perimeter secure proxies.
+   - Credentials stored in local hardware-backed keystores (AES-256-GCM); zero raw credentials or un-anonymized customer PII egress to external networks.
+
+```
++----------------------------------------------------------------------------------------------------+
+| CUSTOMER ON-PREMISES / VPC AIR-GAPPED PERIMETER                                                    |
+|                                                                                                    |
+|  +--------------------+    SOAP 50013 (sapstartsrv)    +----------------------------------------+  |
+|  | SAP S/4HANA ASCS   | &lt;---------------------------- | &lt;dcouplr/&gt; eBPF / Telemetry Collector  |  |
+|  | Enqueue / ERS Lock |                               | - Ring Buffer: 1,000,000 metrics/sec   |  |
+|  +--------------------+                               | - Local Evaluation Window: 5m sliding  |  |
+|                                                       | - Zero External SaaS Egress            |  |
+|  +--------------------+    RFC / JCo / Loopback       | - Alert Router &amp; Ticketing Bridge        |  |
+|  | SAP App Instance   | &lt;---------------------------- |                                        |  |
+|  | DIA / UPD / BTC    |                               +----------------------------------------+  |
+|  +--------------------+                                                    ▲                       |
+|                                                                            │                       |
+|  +--------------------+    Local IPC / Forms / TNS                         │                       |
+|  | Oracle EBS App     | &lt;--------------------------------------------------+                       |
+|  | Concurrent Manager |                                                                            |
+|  +--------------------+                                                                            |
++----------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## 5. Fleet Presets &amp; SRE Turnkey Configurations
+
+`&lt;dcouplr/&gt;` provides 6 built-in presets designed for common enterprise topologies:
+
+1. **`none` (Deactivate All / Default Silenced):**
+   - All ERP/CRM telemetry components disabled.
+   - Zero CPU/network overhead.
+   - Silenced invariants; zero false alarms for cloud-native/microservice environments.
+2. **`sap_centric` (SAP S/4HANA &amp; ECC Core):**
+   - Activates `sap_s4hana`.
+   - Focuses SRE invariants on ABAP work process saturation, Enqueue lock table contention, and RFC/IDoc Status 51 backlogs.
+3. **`oracle_centric` (Oracle E-Business Suite):**
+   - Activates `oracle_ebs`.
+   - Focuses on Concurrent Manager queue lag, Forms runtimes, and Workflow Notification Mailers.
+4. **`ms_dynamics` (Microsoft Dynamics 365 Finance &amp; Operations):**
+   - Activates `ms_dynamics_365`.
+   - Focuses on AOS thread saturation, DMF data staging queues, and batch execution delay.
+5. **`modern_hybrid` (SAP S/4HANA + Salesforce CRM + ServiceNow CSM):**
+   - Activates `sap_s4hana`, `salesforce_crm`, and `servicenow_csm`.
+   - Complete visibility across the modern enterprise triangle: ERP financial ledger (SAP), sales opportunities &amp; quotes (Salesforce), and customer support service workflows (ServiceNow).
+6. **`all_erp_crm` (Full Suite Activation):**
+   - Activates all 6 platforms across all nodes.
+
+---
+
+## 6. SRE Incident Remediation Runbooks
+
+### Runbook ERP-01: SAP Work Process Exhaustion (DIA Saturation $&gt; 90\%$)
+- **P1 Escalation Condition:** `work_process_util_pct &gt; 92%` for $\ge 3$ consecutive evaluation windows.
+- **Immediate Action:**
+  1. Open SAP Transaction `SM50` (Process Overview) or inspect `&lt;dcouplr/&gt;` node telemetry for `node-dc1-hv-01`.
+  2. Identify whether long-running dialog reports (e.g., unscheduled financial balance queries) are blocking DIA processes.
+  3. Execute dynamic work process reassignment via `RZ04` or terminate rogue report with soft cancel (`Process -&gt; Cancel with Core`).
+  4. Check dispatcher wait time ($T_{\text{wait}}$). If $T_{\text{wait}} &gt; 2,000\text{ms}$, enable temporary dynamic work processes via `rdisp/dynamic_wp_check`.
+
+### Runbook ERP-02: Enqueue Lock Table Contention (SM12 Fill Ratio $&gt; 70\%$)
+- **P1 Escalation Condition:** `lock_table_util_pct &gt; 85%`.
+- **Immediate Action:**
+  1. Open `SM12` (Lock Entries) or query `sapstartsrv` via SOAP `EnqGetStatistic`.
+  2. Filter by Table Name and Lock Argument to identify single-user bulk locking (e.g., massive batch billing run locking entire customer account tables).
+  3. Verify ERS replication status in high-availability cluster (`sapcontrol -nr 01 -function HAGetFailoverConfig`).
+  4. If lock table exhaustion is imminent, contact the job owner before active user transactions abort with `ENQUE_TABLE_FULL`.
+
+### Runbook ERP-03: Stuck Inbound IDoc &amp; RFC Errors (Status 51 Backlog $&gt; 25$)
+- **P2 Escalation Condition:** `rfc_idoc_queue_backlog &gt; 25 records`.
+- **Immediate Action:**
+  1. Open `WE02` / `WE05` (IDoc List) or check transactional RFC queue in `SM58`.
+  2. Identify root cause:
+     - Error code `M8 082` (Account determination error): Escalate to SAP Finance Functional Team.
+     - Error code `VK 034` (Partner profile missing): Escalate to EDI Integration Team.
+     - Database deadlock / lock conflict: Re-queue IDocs using program `RBDMANI2` in background once locks clear.
+
+---
+
+## 7. Compliance, Governance &amp; Audit Verification
+
+- **GDPR / HIPAA / PCI-DSS Posture:** All ERP metric collection operates exclusively on system-level performance indicators (queue depths, milliseconds, lock counts). `&lt;dcouplr/&gt;` strictly prohibits capturing user payload data, invoice numbers, customer names, or financial balances in the telemetry stream.
+- **Zero-WAN Integrity:** All SAP Control and ERP monitoring operates via in-perimeter IPC/loopback. Zero customer ERP data is transmitted outside the sovereign corporate perimeter.
+- **Audit Logging:** Every activation, deactivation, or threshold modification in the Enterprise ERP &amp; CRM Suite is cryptographically signed and recorded in the tamper-evident audit log.
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

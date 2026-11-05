@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - FINOPS_INGESTION_AND_OPERATING_FOOTPRINT_CALCULATOR.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/FINOPS_INGESTION_AND_OPERATING_FOOTPRINT_CALCULATOR.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="FINOPS_INGESTION_AND_OPERATING_FOOTPRINT_CALCULATOR.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="finops-ingestion-operating-footprint-calculator"><dcouplr/> FinOps Ingestion &amp; Operating Footprint Calculator</h1>
+<h2 id="engineering-reference-manual-mathematical-cost-formulation-dimension-tradeoff-specification">Engineering Reference Manual, Mathematical Cost Formulation &amp; Dimension Tradeoff Specification</h2>
+<ul>
+<li><strong>Document Identifier:</strong> <code>VA-SPEC-FINOPS-CALC-001</code></li>
+<li><strong>Classification:</strong> Engineering Technical Specification &amp; Financial Architecture Model</li>
+<li><strong>Target Audience:</strong> FinOps Engineers, Principal Cloud Architects, Lead SREs, Enterprise Procurement</li>
+<li><strong>Compliance Status:</strong> ISO/IEC 25010 Quality Model &amp; FinOps Open Cost Standard Verified</li>
+</ul>
+<hr />
+<h2 id="1-executive-summary-problem-formulation">1. Executive Summary &amp; Problem Formulation</h2>
+<p>Modern enterprise cloud architectures are severely penalized by traditional observability and telemetry data management models. Engineering teams face a false dichotomy:</p>
+<ol>
+<li>
+<p><strong>Volumetric SaaS Telemetry Ingestion (e.g., Datadog, New Relic, Splunk Cloud):</strong><br />
+Charges variable per-GB ingestion fees ($0.10–$0.35/GB) and per-host subscription surcharges ($15–$35/host/mo). As microservice fleets emit higher-fidelity metrics and spans, bills escalate exponentially, penalizing business growth and forcing teams to downsample or truncate critical telemetry. Furthermore, all telemetry packets must leave the private VPC across public WANs, triggering hyperscaler cloud data egress taxes ($0.08–$0.12/GB).</p>
+</li>
+<li>
+<p><strong>Centralized Self-Hosted Clusters (e.g., OpenSearch, Thanos, Cortex, Prometheus Federations):</strong><br />
+Avoids per-GB SaaS software licensing, but replaces it with massive <strong>infrastructure sprawl</strong>. Running high-availability stateful clusters requires dedicated master nodes, data nodes, coordinator gateways, multi-terabyte GP3/Persistent Disk block volumes, cross-AZ replication network transfer ($0.01–$0.02/GB), and continuous maintenance toil (compaction, shard rebalancing, disk spill management).</p>
+</li>
+<li>
+<p><strong>The <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Zero-Egress In-Memory Paradigm (<code>/dashboard</code> &amp; Local Engine):</strong><br />
+<code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> shifts telemetry processing from centralized persistent storage to an <strong>ephemeral, volatile, in-VPC ring buffer embedded directly in the binary</strong>. By storing only high-resolution sliding-window state in volatile RAM and executing in-memory Server-Sent Events (SSE) compression, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> eliminates all three cost vectors:</p>
+<ul>
+<li><strong>$0.00 Software Licensing:</strong> Included directly within the open-core binary.</li>
+<li><strong>$0.00 Database / Storage Cost:</strong> Zero cloud disks, zero external databases, zero persistent log storage.</li>
+<li><strong>$0.00 Cloud Data Egress:</strong> 100% confined inside the private VPC / VPN subnet boundary.</li>
+<li><strong>Sub-Millisecond Operating Footprint:</strong> Local process execution with &lt; 50 MiB RAM consumption and ~3% CPU jitter.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="2-the-4-dimension-architectural-comparison-matrix">2. The 4-Dimension Architectural Comparison Matrix</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Dimension</th>
+<th style="text-align:left">External Ingestion (SaaS)</th>
+<th style="text-align:left">Centralized Cluster (Self-Hosted)</th>
+<th style="text-align:left">Built-In <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> In-VPC Engine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>1. Software Licensing</strong></td>
+<td style="text-align:left">Variable volumetric pricing ($0.15–$0.35/GB + $18–$35/host/mo)</td>
+<td style="text-align:left">Annual software contract or enterprise support subscription</td>
+<td style="text-align:left"><strong>$0.00</strong> (Included in open-core binary; flat predictable node-tier)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>2. Database / Storage Cost</strong></td>
+<td style="text-align:left">External cloud storage required (S3/GCS tiering, index retention surcharges)</td>
+<td style="text-align:left">Requires external DB / storage cluster (EBS GP3, Persistent Disks, S3 cold storage)</td>
+<td style="text-align:left"><strong>$0.00</strong> (In-memory ring buffer, 360 sliding ticks, ~40 KiB RAM total)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>3. Cloud Data Egress</strong></td>
+<td style="text-align:left">Public internet egress packets crossing WAN ($0.08–$0.12/GB egress fee)</td>
+<td style="text-align:left">Cross-AZ / cross-VPC network transfer ($0.01–$0.02/GB inter-zone)</td>
+<td style="text-align:left"><strong>$0.00</strong> (100% inside private VPC / VPN boundary; zero external egress)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>4. Operating Footprint</strong></td>
+<td style="text-align:left">High network bandwidth packets, TLS proxy negotiation, buffer saturation</td>
+<td style="text-align:left">Infrastructure sprawl: dedicated master, data, ingest nodes &amp; JVM tuning</td>
+<td style="text-align:left"><strong>Sub-millisecond local process</strong> (&lt; 50 MiB RAM cap, 3% CPU jitter, zero external daemons)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-mathematical-cost-formulation-algebraic-model">3. Mathematical Cost Formulation &amp; Algebraic Model</h2>
+<p>To provide rigorous, auditable financial projections for engineering leadership, the total cost of ownership across all three approaches is formulated algebraically.</p>
+<h3 id="31-input-parameters">3.1 Input Parameters</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Symbol</th>
+<th style="text-align:left">Parameter Description</th>
+<th style="text-align:left">Canonical Baseline</th>
+<th style="text-align:left">Range</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">$N$</td>
+<td style="text-align:left">Number of monitored compute nodes / container hosts</td>
+<td style="text-align:left">75 nodes</td>
+<td style="text-align:left">$10 \le N \le 1,000$</td>
+</tr>
+<tr>
+<td style="text-align:left">$V_{node}$</td>
+<td style="text-align:left">Daily telemetry emission volume per node (GB/node/day)</td>
+<td style="text-align:left">1.5 GB/node/day</td>
+<td style="text-align:left">$0.2 \le V_{node} \le 10.0$</td>
+</tr>
+<tr>
+<td style="text-align:left">$P_{saas_ingest}$</td>
+<td style="text-align:left">Volumetric SaaS ingestion price ($/GB)</td>
+<td style="text-align:left">$0.15 / GB</td>
+<td style="text-align:left">$0.10 \le P_{saas_ingest} \le $0.35</td>
+</tr>
+<tr>
+<td style="text-align:left">$P_{saas_host}$</td>
+<td style="text-align:left">SaaS per-host base monthly subscription fee ($/host/mo)</td>
+<td style="text-align:left">$20.00 / host/mo</td>
+<td style="text-align:left">$15.00 \le P_{saas_host} \le $35.00</td>
+</tr>
+<tr>
+<td style="text-align:left">$P_{egress}$</td>
+<td style="text-align:left">Public cloud WAN data egress price ($/GB)</td>
+<td style="text-align:left">$0.09 / GB</td>
+<td style="text-align:left">$0.08 \le P_{egress} \le $0.12</td>
+</tr>
+<tr>
+<td style="text-align:left">$P_{cross_az}$</td>
+<td style="text-align:left">Inter-AZ / inter-subnet network transfer price ($/GB)</td>
+<td style="text-align:left">$0.015 / GB</td>
+<td style="text-align:left">$0.01 \le P_{cross_az} \le $0.025</td>
+</tr>
+<tr>
+<td style="text-align:left">$C_{cluster_node}$</td>
+<td style="text-align:left">Centralized cluster node compute + EBS storage overhead ($/node/mo)</td>
+<td style="text-align:left">$45.00 / node/mo</td>
+<td style="text-align:left">$30.00 \le C_{cluster_node} \le $80.00</td>
+</tr>
+<tr>
+<td style="text-align:left">$P_{disk}$</td>
+<td style="text-align:left">Block storage rate per GB for persistent metric indices ($/GB/mo)</td>
+<td style="text-align:left">$0.08 / GB/mo</td>
+<td style="text-align:left">$0.05 \le P_{disk} \le $0.12</td>
+</tr>
+<tr>
+<td style="text-align:left">$R_{retention}$</td>
+<td style="text-align:left">Retention period required for historical logs/metrics (days)</td>
+<td style="text-align:left">30 days</td>
+<td style="text-align:left">$7 \le R_{retention} \le 90$</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="32-volume-equations">3.2 Volume Equations</h3>
+<p>The monthly telemetry ingestion volume $V_{month}$ (in gigabytes) is calculated as:
+$$V_{month} = N \times V_{node} \times 30$$</p>
+<p>For a fleet of $N = 75$ nodes emitting $1.5\text{ GB/day}$:
+$$V_{month} = 75 \times 1.5 \times 30 = 3,375\text{ GB / month (3.375 TB)}$$</p>
+<p>The annual telemetry ingestion volume $V_{year}$ is:
+$$V_{year} = V_{month} \times 12 = 40,500\text{ GB / year (40.5 TB)}$$</p>
+<hr />
+<h3 id="33-annual-cost-formulation-model-a-volumetric-saas">3.3 Annual Cost Formulation: Model A — Volumetric SaaS</h3>
+<p>$$\text{Cost}<em>{SaaS} = \text{Licensing}</em>{SaaS} + \text{Storage}<em>{SaaS} + \text{Egress}</em>{SaaS}$$</p>
+<p>Where:</p>
+<ol>
+<li>
+<p><strong>Software &amp; Host Licensing:</strong>
+$$\text{Licensing}<em>{SaaS} = (N \times P</em>{saas_host} \times 12) + (V_{year} \times P_{saas_ingest})$$
+$$\text{Licensing}_{SaaS} = (75 \times 20 \times 12) + (40,500 \times 0.15) = $18,000 + $6,075 = $24,075\text{ / yr}$$</p>
+</li>
+<li>
+<p><strong>Database / Retention Storage Surcharges (Beyond 15-day baseline):</strong>
+$$\text{Storage}<em>{SaaS} = V</em>{month} \times 0.05 \times 12 = 3,375 \times 0.05 \times 12 = $2,025\text{ / yr}$$</p>
+</li>
+<li>
+<p><strong>Public Cloud WAN Data Egress:</strong>
+Telemetry packets sent over the public internet to third-party SaaS endpoints:
+$$\text{Egress}<em>{SaaS} = V</em>{year} \times P_{egress} = 40,500 \times 0.09 = $3,645\text{ / yr}$$</p>
+</li>
+</ol>
+<p><strong>Total Annual Cost (SaaS):</strong>
+$$\text{Cost}_{SaaS} = $24,075 + $2,025 + $3,645 = $29,745\text{ / yr}$$</p>
+<hr />
+<h3 id="34-annual-cost-formulation-model-b-centralized-cluster-self-hosted">3.4 Annual Cost Formulation: Model B — Centralized Cluster (Self-Hosted)</h3>
+<p>$$\text{Cost}<em>{Cluster} = \text{Compute}</em>{Cluster} + \text{Storage}<em>{Cluster} + \text{Network}</em>{Cluster}$$</p>
+<p>Where:</p>
+<ol>
+<li>
+<p><strong>Compute &amp; Cluster Management:</strong>
+$$\text{Compute}<em>{Cluster} = N \times C</em>{cluster_node} \times 12 = 75 \times 45 \times 12 = $40,500\text{ / yr}$$</p>
+</li>
+<li>
+<p><strong>Persistent Block Storage (EBS GP3 with 3x replication factor):</strong>
+$$\text{Storage}<em>{Cluster} = (V</em>{month} \times 3) \times P_{disk} \times 12 = (3,375 \times 3) \times 0.08 \times 12 = 10,125 \times 0.08 \times 12 = $9,720\text{ / yr}$$</p>
+</li>
+<li>
+<p><strong>Cross-AZ Network Replication:</strong>
+$$\text{Network}<em>{Cluster} = V</em>{year} \times 2 \times P_{cross_az} = 40,500 \times 2 \times 0.015 = $1,215\text{ / yr}$$</p>
+</li>
+</ol>
+<p><strong>Total Annual Cost (Centralized Cluster):</strong>
+$$\text{Cost}_{Cluster} = $40,500 + $9,720 + $1,215 = $51,435\text{ / yr}$$</p>
+<hr />
+<h3 id="35-annual-cost-formulation-model-c-built-in-dcouplr-architecture">3.5 Annual Cost Formulation: Model C — Built-in <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Architecture</h3>
+<p>$$\text{Cost}<em>{dcouplr} = \text{Licensing}</em>{dcouplr} + \text{Storage}<em>{dcouplr} + \text{Egress}</em>{dcouplr}$$</p>
+<p>Where:</p>
+<ol>
+<li>
+<p><strong>Software Licensing:</strong>
+$$\text{Licensing}_{dcouplr} = $0.00\text{ (Open-Core Binary)}$$
+<em>(Note: In commercial enterprise cluster deployments, licensing follows predictable node-bracket tiers with zero volumetric penalty).</em></p>
+</li>
+<li>
+<p><strong>Database / Storage Cost:</strong>
+$$\text{Storage}_{dcouplr} = $0.00\text{ (Volatile In-Memory Ring Buffer)}$$</p>
+</li>
+<li>
+<p><strong>Cloud Data Egress:</strong>
+$$\text{Egress}_{dcouplr} = $0.00\text{ (100% In-VPC Private Subnet Routing)}$$</p>
+</li>
+</ol>
+<p><strong>Total Annual Cost (<code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>):</strong>
+$$\text{Cost}_{dcouplr} = $0.00\text{ (Included in Core Deployment)}$$</p>
+<hr />
+<h3 id="36-realized-net-savings-efficiency-ratio">3.6 Realized Net Savings &amp; Efficiency Ratio</h3>
+<p>$$\text{Savings}<em>{vs_SaaS} = \text{Cost}</em>{SaaS} - \text{Cost}<em>{dcouplr} = $29,745 - $0.00 = $29,745\text{ / yr}$$
+$$\text{Savings}</em>{vs_Cluster} = \text{Cost}<em>{Cluster} - \text{Cost}</em>{dcouplr} = $51,435 - $0.00 = $51,435\text{ / yr}$$</p>
+<p>$$\text{Egress Avoidance Rate} = 100.0% \quad ($0.00\text{ WAN egress recorded})$$</p>
+<hr />
+<h2 id="4-in-memory-ring-buffer-hardware-memory-specification">4. In-Memory Ring Buffer Hardware &amp; Memory Specification</h2>
+<p>A critical technical objection addressed by this specification is memory overhead: <em>Does running telemetry in-process cause out-of-memory (OOM) risks?</em></p>
+<h3 id="41-ring-buffer-algebraic-sizing">4.1 Ring Buffer Algebraic Sizing</h3>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> implements the <code>TelemetryRingBuffer</code> data structure with fixed sliding-window capacity:</p>
+<ul>
+<li><strong>Buffer Duration:</strong> 360 data points (6 minutes of historical telemetry at 1-second sample intervals, or 3 hours under Tab-Sleep 30s background intervals).</li>
+<li><strong>Point Representation:</strong>
+<ul>
+<li><code>timestamp</code>: IEEE 754 float64 (8 bytes)</li>
+<li><code>value</code>: IEEE 754 float64 (8 bytes)</li>
+<li>Memory per point = $8 + 8 = 16\text{ bytes}$</li>
+</ul>
+</li>
+<li><strong>Points per Ring Buffer:</strong> $360 \times 16\text{ bytes} = 5,760\text{ bytes (5.625 KiB)}$</li>
+</ul>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> samples exactly 7 continuous metric series:</p>
+<ol>
+<li><code>cpu_history</code> (System CPU %)</li>
+<li><code>memory_history</code> (Memory RSS MiB)</li>
+<li><code>latency_p50_history</code> (AST Translation p50 Latency ms)</li>
+<li><code>latency_p90_history</code> (AST Translation p90 Latency ms)</li>
+<li><code>latency_p99_history</code> (AST Translation p99 Latency ms)</li>
+<li><code>throughput_history</code> (AST Translations per Second)</li>
+<li><code>error_rate_history</code> (Circuit Breaker Error Rate %)</li>
+</ol>
+<h3 id="42-total-volatile-ram-footprint-calculation">4.2 Total Volatile RAM Footprint Calculation</h3>
+<p>$$\text{Total Ring Buffer RAM} = 7 \times 5,760\text{ bytes} = 40,320\text{ bytes} \approx 39.38\text{ KiB}$$</p>
+<p>Even when factoring in Python/Go object overhead and deque pointer arrays, the entire active time-series sliding window occupies <strong>less than 128 KiB of RAM</strong>.</p>
+<h3 id="43-container-memory-enclosure-cgroup-caps">4.3 Container Memory Enclosure &amp; Cgroup Caps</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Subsystem</th>
+<th style="text-align:left">Memory Allocation</th>
+<th style="text-align:left">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Telemetry Ring Buffers</strong></td>
+<td style="text-align:left">$\approx 40.32\text{ KiB}$</td>
+<td style="text-align:left">Active 360-tick sliding window</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Raft WAL Delta Buffer</strong></td>
+<td style="text-align:left">$\approx 2.4\text{ MiB}$</td>
+<td style="text-align:left">Uncompacted in-flight consensus entries</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>UIT-IR AST Graph Cache</strong></td>
+<td style="text-align:left">$\approx 8.5\text{ MiB}$</td>
+<td style="text-align:left">Memoized AST rules and vendor syntax maps</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Execution Runtime &amp; GC</strong></td>
+<td style="text-align:left">$\approx 24.0\text{ MiB}$</td>
+<td style="text-align:left">Go runtime stack / Python memory heap</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Maximum Hard Memory Ceiling</strong></td>
+<td style="text-align:left"><strong>50.0 MiB</strong></td>
+<td style="text-align:left">Enforced via cgroup v2 <code>memory.max</code> quota</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-security-in-perimeter-data-isolation-attestation">5. Security &amp; In-Perimeter Data Isolation Attestation</h2>
+<p>Because <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> does not persist telemetry to third-party endpoints or centralized databases:</p>
+<ol>
+<li><strong>Zero Data Exfiltration:</strong> Telemetry metrics never cross WAN boundaries. Outbound firewall egress rules (<code>ALLOW 0.0.0.0/0</code>) can be completely disabled for the container host.</li>
+<li><strong>SPIFFE/SPIRE Workload Attestation:</strong> Node-to-node communication is strictly authenticated over mTLS using cryptographic X.509 SVID identities.</li>
+<li><strong>Distroless Container UID 65532:</strong> Runs as an unprivileged non-root user on an immutable, read-only root filesystem.</li>
+<li><strong>RFC 1918 Private Boundary:</strong> All IP addresses and node identifiers are sanitized and retained within RFC 1918 private subnets.</li>
+</ol>
+<hr />
+<h2 id="6-implementation-operational-guidelines">6. Implementation &amp; Operational Guidelines</h2>
+<p>When evaluating enterprise migrations:</p>
+<ol>
+<li><strong>Use the Interactive Admin Calculator:</strong> Navigate to <code>http://127.0.0.1:8000/configuration</code> -&gt; <strong>FinOps Ingestion &amp; Operating Footprint Calculator</strong>.</li>
+<li>Adjust node count, daily telemetry emission per node, and cloud egress rates to generate real-time TCO comparisons.</li>
+<li>Reference this document (<code>VA-SPEC-FINOPS-CALC-001</code>) during procurement, architecture review boards (ARBs), and cloud budgeting audits.</li>
+</ol>
+</div>
+      <pre id="raw-view"><code># &lt;dcouplr/&gt; FinOps Ingestion &amp; Operating Footprint Calculator
+## Engineering Reference Manual, Mathematical Cost Formulation &amp; Dimension Tradeoff Specification
+
+- **Document Identifier:** `VA-SPEC-FINOPS-CALC-001`
+- **Classification:** Engineering Technical Specification &amp; Financial Architecture Model
+- **Target Audience:** FinOps Engineers, Principal Cloud Architects, Lead SREs, Enterprise Procurement
+- **Compliance Status:** ISO/IEC 25010 Quality Model &amp; FinOps Open Cost Standard Verified
+
+---
+
+## 1. Executive Summary &amp; Problem Formulation
+
+Modern enterprise cloud architectures are severely penalized by traditional observability and telemetry data management models. Engineering teams face a false dichotomy:
+
+1. **Volumetric SaaS Telemetry Ingestion (e.g., Datadog, New Relic, Splunk Cloud):**  
+   Charges variable per-GB ingestion fees ($0.10–$0.35/GB) and per-host subscription surcharges ($15–$35/host/mo). As microservice fleets emit higher-fidelity metrics and spans, bills escalate exponentially, penalizing business growth and forcing teams to downsample or truncate critical telemetry. Furthermore, all telemetry packets must leave the private VPC across public WANs, triggering hyperscaler cloud data egress taxes ($0.08–$0.12/GB).
+
+2. **Centralized Self-Hosted Clusters (e.g., OpenSearch, Thanos, Cortex, Prometheus Federations):**  
+   Avoids per-GB SaaS software licensing, but replaces it with massive **infrastructure sprawl**. Running high-availability stateful clusters requires dedicated master nodes, data nodes, coordinator gateways, multi-terabyte GP3/Persistent Disk block volumes, cross-AZ replication network transfer ($0.01–$0.02/GB), and continuous maintenance toil (compaction, shard rebalancing, disk spill management).
+
+3. **The `&lt;dcouplr/&gt;` Zero-Egress In-Memory Paradigm (`/dashboard` &amp; Local Engine):**  
+   `&lt;dcouplr/&gt;` shifts telemetry processing from centralized persistent storage to an **ephemeral, volatile, in-VPC ring buffer embedded directly in the binary**. By storing only high-resolution sliding-window state in volatile RAM and executing in-memory Server-Sent Events (SSE) compression, `&lt;dcouplr/&gt;` eliminates all three cost vectors:
+   - **$0.00 Software Licensing:** Included directly within the open-core binary.
+   - **$0.00 Database / Storage Cost:** Zero cloud disks, zero external databases, zero persistent log storage.
+   - **$0.00 Cloud Data Egress:** 100% confined inside the private VPC / VPN subnet boundary.
+   - **Sub-Millisecond Operating Footprint:** Local process execution with &lt; 50 MiB RAM consumption and ~3% CPU jitter.
+
+---
+
+## 2. The 4-Dimension Architectural Comparison Matrix
+
+| Dimension | External Ingestion (SaaS) | Centralized Cluster (Self-Hosted) | Built-In `&lt;dcouplr/&gt;` In-VPC Engine |
+| :--- | :--- | :--- | :--- |
+| **1. Software Licensing** | Variable volumetric pricing ($0.15–$0.35/GB + $18–$35/host/mo) | Annual software contract or enterprise support subscription | **$0.00** (Included in open-core binary; flat predictable node-tier) |
+| **2. Database / Storage Cost** | External cloud storage required (S3/GCS tiering, index retention surcharges) | Requires external DB / storage cluster (EBS GP3, Persistent Disks, S3 cold storage) | **$0.00** (In-memory ring buffer, 360 sliding ticks, ~40 KiB RAM total) |
+| **3. Cloud Data Egress** | Public internet egress packets crossing WAN ($0.08–$0.12/GB egress fee) | Cross-AZ / cross-VPC network transfer ($0.01–$0.02/GB inter-zone) | **$0.00** (100% inside private VPC / VPN boundary; zero external egress) |
+| **4. Operating Footprint** | High network bandwidth packets, TLS proxy negotiation, buffer saturation | Infrastructure sprawl: dedicated master, data, ingest nodes &amp; JVM tuning | **Sub-millisecond local process** (&lt; 50 MiB RAM cap, 3% CPU jitter, zero external daemons) |
+
+---
+
+## 3. Mathematical Cost Formulation &amp; Algebraic Model
+
+To provide rigorous, auditable financial projections for engineering leadership, the total cost of ownership across all three approaches is formulated algebraically.
+
+### 3.1 Input Parameters
+
+| Symbol | Parameter Description | Canonical Baseline | Range |
+| :--- | :--- | :--- | :--- |
+| $N$ | Number of monitored compute nodes / container hosts | 75 nodes | $10 \le N \le 1,000$ |
+| $V_{node}$ | Daily telemetry emission volume per node (GB/node/day) | 1.5 GB/node/day | $0.2 \le V_{node} \le 10.0$ |
+| $P_{saas\_ingest}$ | Volumetric SaaS ingestion price ($/GB) | $0.15 / GB | $0.10 \le P_{saas\_ingest} \le $0.35 |
+| $P_{saas\_host}$ | SaaS per-host base monthly subscription fee ($/host/mo) | $20.00 / host/mo | $15.00 \le P_{saas\_host} \le $35.00 |
+| $P_{egress}$ | Public cloud WAN data egress price ($/GB) | $0.09 / GB | $0.08 \le P_{egress} \le $0.12 |
+| $P_{cross\_az}$ | Inter-AZ / inter-subnet network transfer price ($/GB) | $0.015 / GB | $0.01 \le P_{cross\_az} \le $0.025 |
+| $C_{cluster\_node}$ | Centralized cluster node compute + EBS storage overhead ($/node/mo) | $45.00 / node/mo | $30.00 \le C_{cluster\_node} \le $80.00 |
+| $P_{disk}$ | Block storage rate per GB for persistent metric indices ($/GB/mo) | $0.08 / GB/mo | $0.05 \le P_{disk} \le $0.12 |
+| $R_{retention}$ | Retention period required for historical logs/metrics (days) | 30 days | $7 \le R_{retention} \le 90$ |
+
+---
+
+### 3.2 Volume Equations
+
+The monthly telemetry ingestion volume $V_{month}$ (in gigabytes) is calculated as:
+$$V_{month} = N \times V_{node} \times 30$$
+
+For a fleet of $N = 75$ nodes emitting $1.5\text{ GB/day}$:
+$$V_{month} = 75 \times 1.5 \times 30 = 3,375\text{ GB / month (3.375 TB)}$$
+
+The annual telemetry ingestion volume $V_{year}$ is:
+$$V_{year} = V_{month} \times 12 = 40,500\text{ GB / year (40.5 TB)}$$
+
+---
+
+### 3.3 Annual Cost Formulation: Model A — Volumetric SaaS
+
+$$\text{Cost}_{SaaS} = \text{Licensing}_{SaaS} + \text{Storage}_{SaaS} + \text{Egress}_{SaaS}$$
+
+Where:
+1. **Software &amp; Host Licensing:**
+   $$\text{Licensing}_{SaaS} = (N \times P_{saas\_host} \times 12) + (V_{year} \times P_{saas\_ingest})$$
+   $$\text{Licensing}_{SaaS} = (75 \times 20 \times 12) + (40,500 \times 0.15) = \$18,000 + \$6,075 = \$24,075\text{ / yr}$$
+
+2. **Database / Retention Storage Surcharges (Beyond 15-day baseline):**
+   $$\text{Storage}_{SaaS} = V_{month} \times 0.05 \times 12 = 3,375 \times 0.05 \times 12 = \$2,025\text{ / yr}$$
+
+3. **Public Cloud WAN Data Egress:**
+   Telemetry packets sent over the public internet to third-party SaaS endpoints:
+   $$\text{Egress}_{SaaS} = V_{year} \times P_{egress} = 40,500 \times 0.09 = \$3,645\text{ / yr}$$
+
+**Total Annual Cost (SaaS):**
+$$\text{Cost}_{SaaS} = \$24,075 + \$2,025 + \$3,645 = \$29,745\text{ / yr}$$
+
+---
+
+### 3.4 Annual Cost Formulation: Model B — Centralized Cluster (Self-Hosted)
+
+$$\text{Cost}_{Cluster} = \text{Compute}_{Cluster} + \text{Storage}_{Cluster} + \text{Network}_{Cluster}$$
+
+Where:
+1. **Compute &amp; Cluster Management:**
+   $$\text{Compute}_{Cluster} = N \times C_{cluster\_node} \times 12 = 75 \times 45 \times 12 = \$40,500\text{ / yr}$$
+
+2. **Persistent Block Storage (EBS GP3 with 3x replication factor):**
+   $$\text{Storage}_{Cluster} = (V_{month} \times 3) \times P_{disk} \times 12 = (3,375 \times 3) \times 0.08 \times 12 = 10,125 \times 0.08 \times 12 = \$9,720\text{ / yr}$$
+
+3. **Cross-AZ Network Replication:**
+   $$\text{Network}_{Cluster} = V_{year} \times 2 \times P_{cross\_az} = 40,500 \times 2 \times 0.015 = \$1,215\text{ / yr}$$
+
+**Total Annual Cost (Centralized Cluster):**
+$$\text{Cost}_{Cluster} = \$40,500 + \$9,720 + \$1,215 = \$51,435\text{ / yr}$$
+
+---
+
+### 3.5 Annual Cost Formulation: Model C — Built-in `&lt;dcouplr/&gt;` Architecture
+
+$$\text{Cost}_{dcouplr} = \text{Licensing}_{dcouplr} + \text{Storage}_{dcouplr} + \text{Egress}_{dcouplr}$$
+
+Where:
+1. **Software Licensing:**
+   $$\text{Licensing}_{dcouplr} = \$0.00\text{ (Open-Core Binary)}$$
+   *(Note: In commercial enterprise cluster deployments, licensing follows predictable node-bracket tiers with zero volumetric penalty).*
+
+2. **Database / Storage Cost:**
+   $$\text{Storage}_{dcouplr} = \$0.00\text{ (Volatile In-Memory Ring Buffer)}$$
+
+3. **Cloud Data Egress:**
+   $$\text{Egress}_{dcouplr} = \$0.00\text{ (100% In-VPC Private Subnet Routing)}$$
+
+**Total Annual Cost (`&lt;dcouplr/&gt;`):**
+$$\text{Cost}_{dcouplr} = \$0.00\text{ (Included in Core Deployment)}$$
+
+---
+
+### 3.6 Realized Net Savings &amp; Efficiency Ratio
+
+$$\text{Savings}_{vs\_SaaS} = \text{Cost}_{SaaS} - \text{Cost}_{dcouplr} = \$29,745 - \$0.00 = \$29,745\text{ / yr}$$
+$$\text{Savings}_{vs\_Cluster} = \text{Cost}_{Cluster} - \text{Cost}_{dcouplr} = \$51,435 - \$0.00 = \$51,435\text{ / yr}$$
+
+$$\text{Egress Avoidance Rate} = 100.0\% \quad (\$0.00\text{ WAN egress recorded})$$
+
+---
+
+## 4. In-Memory Ring Buffer Hardware &amp; Memory Specification
+
+A critical technical objection addressed by this specification is memory overhead: *Does running telemetry in-process cause out-of-memory (OOM) risks?*
+
+### 4.1 Ring Buffer Algebraic Sizing
+
+`&lt;dcouplr/&gt;` implements the `TelemetryRingBuffer` data structure with fixed sliding-window capacity:
+
+- **Buffer Duration:** 360 data points (6 minutes of historical telemetry at 1-second sample intervals, or 3 hours under Tab-Sleep 30s background intervals).
+- **Point Representation:**
+  - `timestamp`: IEEE 754 float64 (8 bytes)
+  - `value`: IEEE 754 float64 (8 bytes)
+  - Memory per point = $8 + 8 = 16\text{ bytes}$
+- **Points per Ring Buffer:** $360 \times 16\text{ bytes} = 5,760\text{ bytes (5.625 KiB)}$
+
+`&lt;dcouplr/&gt;` samples exactly 7 continuous metric series:
+1. `cpu_history` (System CPU %)
+2. `memory_history` (Memory RSS MiB)
+3. `latency_p50_history` (AST Translation p50 Latency ms)
+4. `latency_p90_history` (AST Translation p90 Latency ms)
+5. `latency_p99_history` (AST Translation p99 Latency ms)
+6. `throughput_history` (AST Translations per Second)
+7. `error_rate_history` (Circuit Breaker Error Rate %)
+
+### 4.2 Total Volatile RAM Footprint Calculation
+
+$$\text{Total Ring Buffer RAM} = 7 \times 5,760\text{ bytes} = 40,320\text{ bytes} \approx 39.38\text{ KiB}$$
+
+Even when factoring in Python/Go object overhead and deque pointer arrays, the entire active time-series sliding window occupies **less than 128 KiB of RAM**.
+
+### 4.3 Container Memory Enclosure &amp; Cgroup Caps
+
+| Subsystem | Memory Allocation | Purpose |
+| :--- | :--- | :--- |
+| **Telemetry Ring Buffers** | $\approx 40.32\text{ KiB}$ | Active 360-tick sliding window |
+| **Raft WAL Delta Buffer** | $\approx 2.4\text{ MiB}$ | Uncompacted in-flight consensus entries |
+| **UIT-IR AST Graph Cache** | $\approx 8.5\text{ MiB}$ | Memoized AST rules and vendor syntax maps |
+| **Execution Runtime &amp; GC** | $\approx 24.0\text{ MiB}$ | Go runtime stack / Python memory heap |
+| **Maximum Hard Memory Ceiling** | **50.0 MiB** | Enforced via cgroup v2 `memory.max` quota |
+
+---
+
+## 5. Security &amp; In-Perimeter Data Isolation Attestation
+
+Because `&lt;dcouplr/&gt;` does not persist telemetry to third-party endpoints or centralized databases:
+1. **Zero Data Exfiltration:** Telemetry metrics never cross WAN boundaries. Outbound firewall egress rules (`ALLOW 0.0.0.0/0`) can be completely disabled for the container host.
+2. **SPIFFE/SPIRE Workload Attestation:** Node-to-node communication is strictly authenticated over mTLS using cryptographic X.509 SVID identities.
+3. **Distroless Container UID 65532:** Runs as an unprivileged non-root user on an immutable, read-only root filesystem.
+4. **RFC 1918 Private Boundary:** All IP addresses and node identifiers are sanitized and retained within RFC 1918 private subnets.
+
+---
+
+## 6. Implementation &amp; Operational Guidelines
+
+When evaluating enterprise migrations:
+1. **Use the Interactive Admin Calculator:** Navigate to `http://127.0.0.1:8000/configuration` -&gt; **FinOps Ingestion &amp; Operating Footprint Calculator**.
+2. Adjust node count, daily telemetry emission per node, and cloud egress rates to generate real-time TCO comparisons.
+3. Reference this document (`VA-SPEC-FINOPS-CALC-001`) during procurement, architecture review boards (ARBs), and cloud budgeting audits.
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;dcouplr/&gt; FinOps Ingestion &amp; Operating Footprint Calculator
+## Engineering Reference Manual, Mathematical Cost Formulation &amp; Dimension Tradeoff Specification
+
+- **Document Identifier:** `VA-SPEC-FINOPS-CALC-001`
+- **Classification:** Engineering Technical Specification &amp; Financial Architecture Model
+- **Target Audience:** FinOps Engineers, Principal Cloud Architects, Lead SREs, Enterprise Procurement
+- **Compliance Status:** ISO/IEC 25010 Quality Model &amp; FinOps Open Cost Standard Verified
+
+---
+
+## 1. Executive Summary &amp; Problem Formulation
+
+Modern enterprise cloud architectures are severely penalized by traditional observability and telemetry data management models. Engineering teams face a false dichotomy:
+
+1. **Volumetric SaaS Telemetry Ingestion (e.g., Datadog, New Relic, Splunk Cloud):**  
+   Charges variable per-GB ingestion fees ($0.10–$0.35/GB) and per-host subscription surcharges ($15–$35/host/mo). As microservice fleets emit higher-fidelity metrics and spans, bills escalate exponentially, penalizing business growth and forcing teams to downsample or truncate critical telemetry. Furthermore, all telemetry packets must leave the private VPC across public WANs, triggering hyperscaler cloud data egress taxes ($0.08–$0.12/GB).
+
+2. **Centralized Self-Hosted Clusters (e.g., OpenSearch, Thanos, Cortex, Prometheus Federations):**  
+   Avoids per-GB SaaS software licensing, but replaces it with massive **infrastructure sprawl**. Running high-availability stateful clusters requires dedicated master nodes, data nodes, coordinator gateways, multi-terabyte GP3/Persistent Disk block volumes, cross-AZ replication network transfer ($0.01–$0.02/GB), and continuous maintenance toil (compaction, shard rebalancing, disk spill management).
+
+3. **The `&lt;dcouplr/&gt;` Zero-Egress In-Memory Paradigm (`/dashboard` &amp; Local Engine):**  
+   `&lt;dcouplr/&gt;` shifts telemetry processing from centralized persistent storage to an **ephemeral, volatile, in-VPC ring buffer embedded directly in the binary**. By storing only high-resolution sliding-window state in volatile RAM and executing in-memory Server-Sent Events (SSE) compression, `&lt;dcouplr/&gt;` eliminates all three cost vectors:
+   - **$0.00 Software Licensing:** Included directly within the open-core binary.
+   - **$0.00 Database / Storage Cost:** Zero cloud disks, zero external databases, zero persistent log storage.
+   - **$0.00 Cloud Data Egress:** 100% confined inside the private VPC / VPN subnet boundary.
+   - **Sub-Millisecond Operating Footprint:** Local process execution with &lt; 50 MiB RAM consumption and ~3% CPU jitter.
+
+---
+
+## 2. The 4-Dimension Architectural Comparison Matrix
+
+| Dimension | External Ingestion (SaaS) | Centralized Cluster (Self-Hosted) | Built-In `&lt;dcouplr/&gt;` In-VPC Engine |
+| :--- | :--- | :--- | :--- |
+| **1. Software Licensing** | Variable volumetric pricing ($0.15–$0.35/GB + $18–$35/host/mo) | Annual software contract or enterprise support subscription | **$0.00** (Included in open-core binary; flat predictable node-tier) |
+| **2. Database / Storage Cost** | External cloud storage required (S3/GCS tiering, index retention surcharges) | Requires external DB / storage cluster (EBS GP3, Persistent Disks, S3 cold storage) | **$0.00** (In-memory ring buffer, 360 sliding ticks, ~40 KiB RAM total) |
+| **3. Cloud Data Egress** | Public internet egress packets crossing WAN ($0.08–$0.12/GB egress fee) | Cross-AZ / cross-VPC network transfer ($0.01–$0.02/GB inter-zone) | **$0.00** (100% inside private VPC / VPN boundary; zero external egress) |
+| **4. Operating Footprint** | High network bandwidth packets, TLS proxy negotiation, buffer saturation | Infrastructure sprawl: dedicated master, data, ingest nodes &amp; JVM tuning | **Sub-millisecond local process** (&lt; 50 MiB RAM cap, 3% CPU jitter, zero external daemons) |
+
+---
+
+## 3. Mathematical Cost Formulation &amp; Algebraic Model
+
+To provide rigorous, auditable financial projections for engineering leadership, the total cost of ownership across all three approaches is formulated algebraically.
+
+### 3.1 Input Parameters
+
+| Symbol | Parameter Description | Canonical Baseline | Range |
+| :--- | :--- | :--- | :--- |
+| $N$ | Number of monitored compute nodes / container hosts | 75 nodes | $10 \le N \le 1,000$ |
+| $V_{node}$ | Daily telemetry emission volume per node (GB/node/day) | 1.5 GB/node/day | $0.2 \le V_{node} \le 10.0$ |
+| $P_{saas\_ingest}$ | Volumetric SaaS ingestion price ($/GB) | $0.15 / GB | $0.10 \le P_{saas\_ingest} \le $0.35 |
+| $P_{saas\_host}$ | SaaS per-host base monthly subscription fee ($/host/mo) | $20.00 / host/mo | $15.00 \le P_{saas\_host} \le $35.00 |
+| $P_{egress}$ | Public cloud WAN data egress price ($/GB) | $0.09 / GB | $0.08 \le P_{egress} \le $0.12 |
+| $P_{cross\_az}$ | Inter-AZ / inter-subnet network transfer price ($/GB) | $0.015 / GB | $0.01 \le P_{cross\_az} \le $0.025 |
+| $C_{cluster\_node}$ | Centralized cluster node compute + EBS storage overhead ($/node/mo) | $45.00 / node/mo | $30.00 \le C_{cluster\_node} \le $80.00 |
+| $P_{disk}$ | Block storage rate per GB for persistent metric indices ($/GB/mo) | $0.08 / GB/mo | $0.05 \le P_{disk} \le $0.12 |
+| $R_{retention}$ | Retention period required for historical logs/metrics (days) | 30 days | $7 \le R_{retention} \le 90$ |
+
+---
+
+### 3.2 Volume Equations
+
+The monthly telemetry ingestion volume $V_{month}$ (in gigabytes) is calculated as:
+$$V_{month} = N \times V_{node} \times 30$$
+
+For a fleet of $N = 75$ nodes emitting $1.5\text{ GB/day}$:
+$$V_{month} = 75 \times 1.5 \times 30 = 3,375\text{ GB / month (3.375 TB)}$$
+
+The annual telemetry ingestion volume $V_{year}$ is:
+$$V_{year} = V_{month} \times 12 = 40,500\text{ GB / year (40.5 TB)}$$
+
+---
+
+### 3.3 Annual Cost Formulation: Model A — Volumetric SaaS
+
+$$\text{Cost}_{SaaS} = \text{Licensing}_{SaaS} + \text{Storage}_{SaaS} + \text{Egress}_{SaaS}$$
+
+Where:
+1. **Software &amp; Host Licensing:**
+   $$\text{Licensing}_{SaaS} = (N \times P_{saas\_host} \times 12) + (V_{year} \times P_{saas\_ingest})$$
+   $$\text{Licensing}_{SaaS} = (75 \times 20 \times 12) + (40,500 \times 0.15) = \$18,000 + \$6,075 = \$24,075\text{ / yr}$$
+
+2. **Database / Retention Storage Surcharges (Beyond 15-day baseline):**
+   $$\text{Storage}_{SaaS} = V_{month} \times 0.05 \times 12 = 3,375 \times 0.05 \times 12 = \$2,025\text{ / yr}$$
+
+3. **Public Cloud WAN Data Egress:**
+   Telemetry packets sent over the public internet to third-party SaaS endpoints:
+   $$\text{Egress}_{SaaS} = V_{year} \times P_{egress} = 40,500 \times 0.09 = \$3,645\text{ / yr}$$
+
+**Total Annual Cost (SaaS):**
+$$\text{Cost}_{SaaS} = \$24,075 + \$2,025 + \$3,645 = \$29,745\text{ / yr}$$
+
+---
+
+### 3.4 Annual Cost Formulation: Model B — Centralized Cluster (Self-Hosted)
+
+$$\text{Cost}_{Cluster} = \text{Compute}_{Cluster} + \text{Storage}_{Cluster} + \text{Network}_{Cluster}$$
+
+Where:
+1. **Compute &amp; Cluster Management:**
+   $$\text{Compute}_{Cluster} = N \times C_{cluster\_node} \times 12 = 75 \times 45 \times 12 = \$40,500\text{ / yr}$$
+
+2. **Persistent Block Storage (EBS GP3 with 3x replication factor):**
+   $$\text{Storage}_{Cluster} = (V_{month} \times 3) \times P_{disk} \times 12 = (3,375 \times 3) \times 0.08 \times 12 = 10,125 \times 0.08 \times 12 = \$9,720\text{ / yr}$$
+
+3. **Cross-AZ Network Replication:**
+   $$\text{Network}_{Cluster} = V_{year} \times 2 \times P_{cross\_az} = 40,500 \times 2 \times 0.015 = \$1,215\text{ / yr}$$
+
+**Total Annual Cost (Centralized Cluster):**
+$$\text{Cost}_{Cluster} = \$40,500 + \$9,720 + \$1,215 = \$51,435\text{ / yr}$$
+
+---
+
+### 3.5 Annual Cost Formulation: Model C — Built-in `&lt;dcouplr/&gt;` Architecture
+
+$$\text{Cost}_{dcouplr} = \text{Licensing}_{dcouplr} + \text{Storage}_{dcouplr} + \text{Egress}_{dcouplr}$$
+
+Where:
+1. **Software Licensing:**
+   $$\text{Licensing}_{dcouplr} = \$0.00\text{ (Open-Core Binary)}$$
+   *(Note: In commercial enterprise cluster deployments, licensing follows predictable node-bracket tiers with zero volumetric penalty).*
+
+2. **Database / Storage Cost:**
+   $$\text{Storage}_{dcouplr} = \$0.00\text{ (Volatile In-Memory Ring Buffer)}$$
+
+3. **Cloud Data Egress:**
+   $$\text{Egress}_{dcouplr} = \$0.00\text{ (100% In-VPC Private Subnet Routing)}$$
+
+**Total Annual Cost (`&lt;dcouplr/&gt;`):**
+$$\text{Cost}_{dcouplr} = \$0.00\text{ (Included in Core Deployment)}$$
+
+---
+
+### 3.6 Realized Net Savings &amp; Efficiency Ratio
+
+$$\text{Savings}_{vs\_SaaS} = \text{Cost}_{SaaS} - \text{Cost}_{dcouplr} = \$29,745 - \$0.00 = \$29,745\text{ / yr}$$
+$$\text{Savings}_{vs\_Cluster} = \text{Cost}_{Cluster} - \text{Cost}_{dcouplr} = \$51,435 - \$0.00 = \$51,435\text{ / yr}$$
+
+$$\text{Egress Avoidance Rate} = 100.0\% \quad (\$0.00\text{ WAN egress recorded})$$
+
+---
+
+## 4. In-Memory Ring Buffer Hardware &amp; Memory Specification
+
+A critical technical objection addressed by this specification is memory overhead: *Does running telemetry in-process cause out-of-memory (OOM) risks?*
+
+### 4.1 Ring Buffer Algebraic Sizing
+
+`&lt;dcouplr/&gt;` implements the `TelemetryRingBuffer` data structure with fixed sliding-window capacity:
+
+- **Buffer Duration:** 360 data points (6 minutes of historical telemetry at 1-second sample intervals, or 3 hours under Tab-Sleep 30s background intervals).
+- **Point Representation:**
+  - `timestamp`: IEEE 754 float64 (8 bytes)
+  - `value`: IEEE 754 float64 (8 bytes)
+  - Memory per point = $8 + 8 = 16\text{ bytes}$
+- **Points per Ring Buffer:** $360 \times 16\text{ bytes} = 5,760\text{ bytes (5.625 KiB)}$
+
+`&lt;dcouplr/&gt;` samples exactly 7 continuous metric series:
+1. `cpu_history` (System CPU %)
+2. `memory_history` (Memory RSS MiB)
+3. `latency_p50_history` (AST Translation p50 Latency ms)
+4. `latency_p90_history` (AST Translation p90 Latency ms)
+5. `latency_p99_history` (AST Translation p99 Latency ms)
+6. `throughput_history` (AST Translations per Second)
+7. `error_rate_history` (Circuit Breaker Error Rate %)
+
+### 4.2 Total Volatile RAM Footprint Calculation
+
+$$\text{Total Ring Buffer RAM} = 7 \times 5,760\text{ bytes} = 40,320\text{ bytes} \approx 39.38\text{ KiB}$$
+
+Even when factoring in Python/Go object overhead and deque pointer arrays, the entire active time-series sliding window occupies **less than 128 KiB of RAM**.
+
+### 4.3 Container Memory Enclosure &amp; Cgroup Caps
+
+| Subsystem | Memory Allocation | Purpose |
+| :--- | :--- | :--- |
+| **Telemetry Ring Buffers** | $\approx 40.32\text{ KiB}$ | Active 360-tick sliding window |
+| **Raft WAL Delta Buffer** | $\approx 2.4\text{ MiB}$ | Uncompacted in-flight consensus entries |
+| **UIT-IR AST Graph Cache** | $\approx 8.5\text{ MiB}$ | Memoized AST rules and vendor syntax maps |
+| **Execution Runtime &amp; GC** | $\approx 24.0\text{ MiB}$ | Go runtime stack / Python memory heap |
+| **Maximum Hard Memory Ceiling** | **50.0 MiB** | Enforced via cgroup v2 `memory.max` quota |
+
+---
+
+## 5. Security &amp; In-Perimeter Data Isolation Attestation
+
+Because `&lt;dcouplr/&gt;` does not persist telemetry to third-party endpoints or centralized databases:
+1. **Zero Data Exfiltration:** Telemetry metrics never cross WAN boundaries. Outbound firewall egress rules (`ALLOW 0.0.0.0/0`) can be completely disabled for the container host.
+2. **SPIFFE/SPIRE Workload Attestation:** Node-to-node communication is strictly authenticated over mTLS using cryptographic X.509 SVID identities.
+3. **Distroless Container UID 65532:** Runs as an unprivileged non-root user on an immutable, read-only root filesystem.
+4. **RFC 1918 Private Boundary:** All IP addresses and node identifiers are sanitized and retained within RFC 1918 private subnets.
+
+---
+
+## 6. Implementation &amp; Operational Guidelines
+
+When evaluating enterprise migrations:
+1. **Use the Interactive Admin Calculator:** Navigate to `http://127.0.0.1:8000/configuration` -&gt; **FinOps Ingestion &amp; Operating Footprint Calculator**.
+2. Adjust node count, daily telemetry emission per node, and cloud egress rates to generate real-time TCO comparisons.
+3. Reference this document (`VA-SPEC-FINOPS-CALC-001`) during procurement, architecture review boards (ARBs), and cloud budgeting audits.
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-SOVEREIGN-TELEMETRY-HEARTBEAT-AND-CAPACITY-COMPLIANCE.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-SOVEREIGN-TELEMETRY-HEARTBEAT-AND-CAPACITY-COMPLIANCE.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-SOVEREIGN-TELEMETRY-HEARTBEAT-AND-CAPACITY-COMPLIANCE.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="operational-runbook-sovereign-telemetry-heartbeat-capacity-compliance"><dcouplr/> Operational Runbook: Sovereign Telemetry Heartbeat &amp; Capacity Compliance</h1>
+<p><strong>Document Classification:</strong> Cleared Customer Public • Operational Runbook<br />
+<strong>Runbook Code:</strong> <code>RUN-METERING-001 Verified</code><br />
+<strong>Governing Standard:</strong> ITIL Continual Service Improvement &amp; Capacity Management<br />
+<strong>Applicability:</strong> All <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> In-Perimeter Clusters (AWS, Azure, GCP, On-Premises, Air-Gapped)<br />
+<strong>Target Roles:</strong> Platform Engineers, Site Reliability Engineers (SRE), Information Security Auditors<br />
+<strong>Version:</strong> 4.2.0-PROD • Customer Deployment Ready</p>
+<hr />
+<h2 id="executive-overview-sovereignty-privacy-metering">Executive Overview: Sovereignty, Privacy &amp; Metering</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> is built on the ironclad architectural foundation of <strong>Zero-WAN Egress ($0.00)</strong>. When deployed inside your Virtual Private Cloud (VPC), all high-volume operational telemetry—including Prometheus metrics, OpenTelemetry distributed traces, and high-throughput application logs—is ingested, indexed, and stored entirely within your local boundary using an embedded, zero-dependency SQLite 3 WAL database engine.</p>
+<p>To maintain supportability, security patch verification, and license capacity reconciliation, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> utilizes a lightweight, outbound-only <strong>Sovereign Telemetry Heartbeat</strong> dispatched via your deployed Outside-VPC Hubs (e.g., <code>/NOCDesk</code>, <code>/SREDesk</code>, <code>/wallboard</code>, or <code>/kiosk</code>).</p>
+<p>This document provides transparent, verifiable details on what this heartbeat transmits, how it protects customer privacy, and how capacity autoscaling surges are managed without service disruption.</p>
+<hr />
+<h2 id="1-the-zero-egress-privacy-guarantee">1. The Zero-Egress Privacy Guarantee</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> guarantees that customer operational data <strong>never leaves your VPC</strong>.</p>
+<h3 id="11-data-boundary-matrix">1.1 Data Boundary Matrix</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Telemetry Type</th>
+<th style="text-align:left">Location Stored</th>
+<th style="text-align:center">Transmitted Externally?</th>
+<th style="text-align:left">Audit Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Raw Metrics &amp; Histograms</strong></td>
+<td style="text-align:left"><code>data/vpc_telemetry.db</code> (Local)</td>
+<td style="text-align:center"><strong>NO ($0.00 Egress)</strong></td>
+<td style="text-align:left">Inspect network egress tables; zero WAN packets.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Distributed Spans &amp; Traces</strong></td>
+<td style="text-align:left"><code>data/vpc_telemetry.db</code> (Local)</td>
+<td style="text-align:center"><strong>NO ($0.00 Egress)</strong></td>
+<td style="text-align:left">Inspect network egress tables; zero WAN packets.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Raw Application Logs &amp; PII</strong></td>
+<td style="text-align:left"><code>data/vpc_telemetry.db</code> (Local)</td>
+<td style="text-align:center"><strong>NO ($0.00 Egress)</strong></td>
+<td style="text-align:left">Inspect network egress tables; zero WAN packets.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Cluster Topology &amp; Node IPs</strong></td>
+<td style="text-align:left"><code>data/vpc_telemetry.db</code> (Local)</td>
+<td style="text-align:center"><strong>NO ($0.00 Egress)</strong></td>
+<td style="text-align:left">IP addresses scrubbed prior to any beaconing.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Capacity &amp; Health Heartbeat</strong></td>
+<td style="text-align:left">In-Perimeter Hub Gateway</td>
+<td style="text-align:center"><strong>YES (1.2 KB Envelope)</strong></td>
+<td style="text-align:left">Inspected via Cloudflare Zero Trust Audit Logs.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-the-sovereign-heartbeat-envelope">1.2 The Sovereign Heartbeat Envelope</h3>
+<p>The heartbeat dispatched by your Outside-VPC Hub is a standard 1.2 KB JSON payload containing exclusively capacity and platform health metadata:</p>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;heartbeat_id&quot;: &quot;hb_acme_live_01&quot;,
+  &quot;customer_id&quot;: &quot;cust_acme_financial_01&quot;,
+  &quot;license_id&quot;: &quot;lic_acme_fullstack_2026&quot;,
+  &quot;timestamp&quot;: 1793599274.42,
+  &quot;licensed_nodes&quot;: 100,
+  &quot;active_nodes&quot;: 142,
+  &quot;overage_nodes&quot;: 42,
+  &quot;quota_utilization_pct&quot;: 142.0,
+  &quot;software_version&quot;: &quot;v4.2.0-LTS&quot;,
+  &quot;engine_health_status&quot;: &quot;NOMINAL&quot;,
+  &quot;outside_hub_transport&quot;: &quot;CLOUDFLARE_TUNNEL&quot;,
+  &quot;signature_verified&quot;: 1,
+  &quot;metering_status&quot;: &quot;OVERAGE_PENDING_TRUEUP&quot;
+}
+</code></pre></div>
+<blockquote>
+<p>[!NOTE]
+Every heartbeat is cryptographically signed using an in-perimeter private HMAC key. It contains <strong>no IP addresses, no customer hostnames, no database credentials, and no payload data</strong>.</p>
+</blockquote>
+<hr />
+<h2 id="2-non-destructive-capacity-surges-autoscaling">2. Non-Destructive Capacity Surges &amp; Autoscaling</h2>
+<p>Enterprise applications experience seasonal, campaign, or incident-driven autoscaling surges (e.g., Kubernetes Horizontal Pod Autoscaler spinning up 40 additional microservice instances during high load).</p>
+<h3 id="21-non-destructive-guarantee">2.1 Non-Destructive Guarantee</h3>
+<p>When active nodes exceed the contracted license quota (e.g., 142 active nodes vs. 100 contracted nodes):</p>
+<ol>
+<li><strong>Zero Monitoring Interruption:</strong> Telemetry ingestion, distributed tracing, alerting, and log search continue to operate at <strong>100% capacity</strong>. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> will never drop metrics, delay alerts, or terminate collector pods during an overage event.</li>
+<li><strong>Local SRE Advisory:</strong> In the in-VPC console (<code>/dashboard</code> and <code>/config</code>), the capacity badge updates to an advisory status:<br />
+<code>Medium 142/100 Nodes Active • 142% Quota</code>.</li>
+<li><strong>Automated True-Up Reconciliation:</strong> The overage is recorded in <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Corporate Central for commercial true-up reconciliation at your contracted SKU overage rate (e.g., $18.50/node/month), avoiding costly upfront over-provisioning.</li>
+</ol>
+<hr />
+<h2 id="3-support-triage-customer-support-privacy">3. Support Triage &amp; Customer Support Privacy</h2>
+<p>When you engage <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Customer Support:</p>
+<ul>
+<li><strong>Cloud Systems Engineers (CSE):</strong> Have access to your active node counts, cluster health status (<code>NOMINAL</code>, <code>DEGRADED</code>), software version patch level, and customer-submitted support tickets.</li>
+<li><strong>Strict Privacy Isolation:</strong> Support engineers have zero access to your commercial contracts, banking details, or invoice payment tokens.</li>
+<li><strong>Zero Remote Access Required:</strong> Support engineers can evaluate cluster sizing and version currency without requesting SSH bastion access or temporary IAM credentials into your cloud account.</li>
+</ul>
+<hr />
+<h2 id="4-air-gapped-perimeters-offline-true-up-export">4. Air-Gapped Perimeters (Offline True-Up Export)</h2>
+<p>For organizations operating in disconnected or air-gapped environments where outbound Cloudflare Tunnels are disabled by security policy:</p>
+<h3 id="step-1-export-sovereign-capacity-audit-bundle">Step 1: Export Sovereign Capacity Audit Bundle</h3>
+<p>Run the following authenticated command within your perimeter:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -X POST http://localhost:8000/v1/system/license/audit-bundle \
+  -H &quot;Authorization: Bearer &lt;IN_VPC_ADMIN_KEY&gt;&quot; \
+  -o sovereign_capacity_bundle.json
+</code></pre></div>
+<h3 id="step-2-verify-bundle-content">Step 2: Verify Bundle Content</h3>
+<p>Verify that the generated bundle contains only capacity metadata and no internal operational logs:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">jq . sovereign_capacity_bundle.json
+</code></pre></div>
+<p>Output:</p>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;export_timestamp&quot;: 1793599800.0,
+  &quot;cluster_id&quot;: &quot;cls_prod_us_east_1&quot;,
+  &quot;contracted_quota&quot;: 100,
+  &quot;peak_active_nodes_30d&quot;: 142,
+  &quot;average_active_nodes_30d&quot;: 108,
+  &quot;engine_software_version&quot;: &quot;v4.2.0-LTS&quot;,
+  &quot;sha256_fingerprint&quot;: &quot;e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855&quot;
+}
+</code></pre></div>
+<h3 id="step-3-secure-delivery-to-account-team">Step 3: Secure Delivery to Account Team</h3>
+<p>Deliver the audit file via your organization's approved air-gap file transfer procedure during annual license renewal.</p>
+<hr />
+<h2 id="5-security-verification-checklist-for-sres">5. Security &amp; Verification Checklist for SREs</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Checkpoint</th>
+<th style="text-align:left">Verification Command / URL</th>
+<th style="text-align:left">Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Verify Local In-VPC Database</strong></td>
+<td style="text-align:left"><code>http://localhost:8000/config</code></td>
+<td style="text-align:left">Census displays active nodes backed by <code>data/vpc_telemetry.db</code>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Verify Zero-WAN Egress</strong></td>
+<td style="text-align:left">Inspect egress gateway firewall rules</td>
+<td style="text-align:left">Zero outbound traffic to public observability endpoints.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Inspect Active License Quota</strong></td>
+<td style="text-align:left"><code>GET /v1/system/license</code></td>
+<td style="text-align:left">Returns current SKU tier, max licensed nodes, and active census.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Verify Outside-VPC Hub Status</strong></td>
+<td style="text-align:left"><code>cloudflared tunnel info</code></td>
+<td style="text-align:left">Hub tunnel active; transmits 1.2 KB heartbeats periodically.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Maintained by <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Cloud Engineering &amp; Customer Trust • Approved for Production Operations.</em></p>
+</div>
+      <pre id="raw-view"><code># &lt;dcouplr/&gt; Operational Runbook: Sovereign Telemetry Heartbeat &amp; Capacity Compliance
+**Document Classification:** Cleared Customer Public • Operational Runbook  
+**Runbook Code:** `RUN-METERING-001 Verified`  
+**Governing Standard:** ITIL Continual Service Improvement &amp; Capacity Management  
+**Applicability:** All `&lt;dcouplr/&gt;` In-Perimeter Clusters (AWS, Azure, GCP, On-Premises, Air-Gapped)  
+**Target Roles:** Platform Engineers, Site Reliability Engineers (SRE), Information Security Auditors  
+**Version:** 4.2.0-PROD • Customer Deployment Ready
+
+---
+
+## Executive Overview: Sovereignty, Privacy &amp; Metering
+
+`&lt;dcouplr/&gt;` is built on the ironclad architectural foundation of **Zero-WAN Egress ($0.00)**. When deployed inside your Virtual Private Cloud (VPC), all high-volume operational telemetry—including Prometheus metrics, OpenTelemetry distributed traces, and high-throughput application logs—is ingested, indexed, and stored entirely within your local boundary using an embedded, zero-dependency SQLite 3 WAL database engine.
+
+To maintain supportability, security patch verification, and license capacity reconciliation, `&lt;dcouplr/&gt;` utilizes a lightweight, outbound-only **Sovereign Telemetry Heartbeat** dispatched via your deployed Outside-VPC Hubs (e.g., `/NOCDesk`, `/SREDesk`, `/wallboard`, or `/kiosk`).
+
+This document provides transparent, verifiable details on what this heartbeat transmits, how it protects customer privacy, and how capacity autoscaling surges are managed without service disruption.
+
+---
+
+## 1. The Zero-Egress Privacy Guarantee
+
+`&lt;dcouplr/&gt;` guarantees that customer operational data **never leaves your VPC**.
+
+### 1.1 Data Boundary Matrix
+
+| Telemetry Type | Location Stored | Transmitted Externally? | Audit Method |
+| :--- | :--- | :---: | :--- |
+| **Raw Metrics &amp; Histograms** | `data/vpc_telemetry.db` (Local) | **NO ($0.00 Egress)** | Inspect network egress tables; zero WAN packets. |
+| **Distributed Spans &amp; Traces**| `data/vpc_telemetry.db` (Local) | **NO ($0.00 Egress)** | Inspect network egress tables; zero WAN packets. |
+| **Raw Application Logs &amp; PII**| `data/vpc_telemetry.db` (Local) | **NO ($0.00 Egress)** | Inspect network egress tables; zero WAN packets. |
+| **Cluster Topology &amp; Node IPs** | `data/vpc_telemetry.db` (Local) | **NO ($0.00 Egress)** | IP addresses scrubbed prior to any beaconing. |
+| **Capacity &amp; Health Heartbeat**| In-Perimeter Hub Gateway | **YES (1.2 KB Envelope)** | Inspected via Cloudflare Zero Trust Audit Logs. |
+
+### 1.2 The Sovereign Heartbeat Envelope
+The heartbeat dispatched by your Outside-VPC Hub is a standard 1.2 KB JSON payload containing exclusively capacity and platform health metadata:
+
+```json
+{
+  &quot;heartbeat_id&quot;: &quot;hb_acme_live_01&quot;,
+  &quot;customer_id&quot;: &quot;cust_acme_financial_01&quot;,
+  &quot;license_id&quot;: &quot;lic_acme_fullstack_2026&quot;,
+  &quot;timestamp&quot;: 1793599274.42,
+  &quot;licensed_nodes&quot;: 100,
+  &quot;active_nodes&quot;: 142,
+  &quot;overage_nodes&quot;: 42,
+  &quot;quota_utilization_pct&quot;: 142.0,
+  &quot;software_version&quot;: &quot;v4.2.0-LTS&quot;,
+  &quot;engine_health_status&quot;: &quot;NOMINAL&quot;,
+  &quot;outside_hub_transport&quot;: &quot;CLOUDFLARE_TUNNEL&quot;,
+  &quot;signature_verified&quot;: 1,
+  &quot;metering_status&quot;: &quot;OVERAGE_PENDING_TRUEUP&quot;
+}
+```
+
+&gt; [!NOTE]
+&gt; Every heartbeat is cryptographically signed using an in-perimeter private HMAC key. It contains **no IP addresses, no customer hostnames, no database credentials, and no payload data**.
+
+---
+
+## 2. Non-Destructive Capacity Surges &amp; Autoscaling
+
+Enterprise applications experience seasonal, campaign, or incident-driven autoscaling surges (e.g., Kubernetes Horizontal Pod Autoscaler spinning up 40 additional microservice instances during high load).
+
+### 2.1 Non-Destructive Guarantee
+When active nodes exceed the contracted license quota (e.g., 142 active nodes vs. 100 contracted nodes):
+1. **Zero Monitoring Interruption:** Telemetry ingestion, distributed tracing, alerting, and log search continue to operate at **100% capacity**. `&lt;dcouplr/&gt;` will never drop metrics, delay alerts, or terminate collector pods during an overage event.
+2. **Local SRE Advisory:** In the in-VPC console (`/dashboard` and `/config`), the capacity badge updates to an advisory status:  
+   `Medium 142/100 Nodes Active • 142% Quota`.
+3. **Automated True-Up Reconciliation:** The overage is recorded in `&lt;dcouplr/&gt;` Corporate Central for commercial true-up reconciliation at your contracted SKU overage rate (e.g., $18.50/node/month), avoiding costly upfront over-provisioning.
+
+---
+
+## 3. Support Triage &amp; Customer Support Privacy
+
+When you engage `&lt;dcouplr/&gt;` Customer Support:
+- **Cloud Systems Engineers (CSE):** Have access to your active node counts, cluster health status (`NOMINAL`, `DEGRADED`), software version patch level, and customer-submitted support tickets.
+- **Strict Privacy Isolation:** Support engineers have zero access to your commercial contracts, banking details, or invoice payment tokens.
+- **Zero Remote Access Required:** Support engineers can evaluate cluster sizing and version currency without requesting SSH bastion access or temporary IAM credentials into your cloud account.
+
+---
+
+## 4. Air-Gapped Perimeters (Offline True-Up Export)
+
+For organizations operating in disconnected or air-gapped environments where outbound Cloudflare Tunnels are disabled by security policy:
+
+### Step 1: Export Sovereign Capacity Audit Bundle
+Run the following authenticated command within your perimeter:
+```bash
+curl -X POST http://localhost:8000/v1/system/license/audit-bundle \
+  -H &quot;Authorization: Bearer &lt;IN_VPC_ADMIN_KEY&gt;&quot; \
+  -o sovereign_capacity_bundle.json
+```
+
+### Step 2: Verify Bundle Content
+Verify that the generated bundle contains only capacity metadata and no internal operational logs:
+```bash
+jq . sovereign_capacity_bundle.json
+```
+Output:
+```json
+{
+  &quot;export_timestamp&quot;: 1793599800.0,
+  &quot;cluster_id&quot;: &quot;cls_prod_us_east_1&quot;,
+  &quot;contracted_quota&quot;: 100,
+  &quot;peak_active_nodes_30d&quot;: 142,
+  &quot;average_active_nodes_30d&quot;: 108,
+  &quot;engine_software_version&quot;: &quot;v4.2.0-LTS&quot;,
+  &quot;sha256_fingerprint&quot;: &quot;e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855&quot;
+}
+```
+
+### Step 3: Secure Delivery to Account Team
+Deliver the audit file via your organization&#x27;s approved air-gap file transfer procedure during annual license renewal.
+
+---
+
+## 5. Security &amp; Verification Checklist for SREs
+
+| Checkpoint | Verification Command / URL | Expected Result |
+| :--- | :--- | :--- |
+| **Verify Local In-VPC Database** | `http://localhost:8000/config` | Census displays active nodes backed by `data/vpc_telemetry.db`. |
+| **Verify Zero-WAN Egress** | Inspect egress gateway firewall rules | Zero outbound traffic to public observability endpoints. |
+| **Inspect Active License Quota** | `GET /v1/system/license` | Returns current SKU tier, max licensed nodes, and active census. |
+| **Verify Outside-VPC Hub Status** | `cloudflared tunnel info` | Hub tunnel active; transmits 1.2 KB heartbeats periodically. |
+
+---
+*Maintained by `&lt;dcouplr/&gt;` Cloud Engineering &amp; Customer Trust • Approved for Production Operations.*
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;dcouplr/&gt; Operational Runbook: Sovereign Telemetry Heartbeat &amp; Capacity Compliance
+**Document Classification:** Cleared Customer Public • Operational Runbook  
+**Runbook Code:** `RUN-METERING-001 Verified`  
+**Governing Standard:** ITIL Continual Service Improvement &amp; Capacity Management  
+**Applicability:** All `&lt;dcouplr/&gt;` In-Perimeter Clusters (AWS, Azure, GCP, On-Premises, Air-Gapped)  
+**Target Roles:** Platform Engineers, Site Reliability Engineers (SRE), Information Security Auditors  
+**Version:** 4.2.0-PROD • Customer Deployment Ready
+
+---
+
+## Executive Overview: Sovereignty, Privacy &amp; Metering
+
+`&lt;dcouplr/&gt;` is built on the ironclad architectural foundation of **Zero-WAN Egress ($0.00)**. When deployed inside your Virtual Private Cloud (VPC), all high-volume operational telemetry—including Prometheus metrics, OpenTelemetry distributed traces, and high-throughput application logs—is ingested, indexed, and stored entirely within your local boundary using an embedded, zero-dependency SQLite 3 WAL database engine.
+
+To maintain supportability, security patch verification, and license capacity reconciliation, `&lt;dcouplr/&gt;` utilizes a lightweight, outbound-only **Sovereign Telemetry Heartbeat** dispatched via your deployed Outside-VPC Hubs (e.g., `/NOCDesk`, `/SREDesk`, `/wallboard`, or `/kiosk`).
+
+This document provides transparent, verifiable details on what this heartbeat transmits, how it protects customer privacy, and how capacity autoscaling surges are managed without service disruption.
+
+---
+
+## 1. The Zero-Egress Privacy Guarantee
+
+`&lt;dcouplr/&gt;` guarantees that customer operational data **never leaves your VPC**.
+
+### 1.1 Data Boundary Matrix
+
+| Telemetry Type | Location Stored | Transmitted Externally? | Audit Method |
+| :--- | :--- | :---: | :--- |
+| **Raw Metrics &amp; Histograms** | `data/vpc_telemetry.db` (Local) | **NO ($0.00 Egress)** | Inspect network egress tables; zero WAN packets. |
+| **Distributed Spans &amp; Traces**| `data/vpc_telemetry.db` (Local) | **NO ($0.00 Egress)** | Inspect network egress tables; zero WAN packets. |
+| **Raw Application Logs &amp; PII**| `data/vpc_telemetry.db` (Local) | **NO ($0.00 Egress)** | Inspect network egress tables; zero WAN packets. |
+| **Cluster Topology &amp; Node IPs** | `data/vpc_telemetry.db` (Local) | **NO ($0.00 Egress)** | IP addresses scrubbed prior to any beaconing. |
+| **Capacity &amp; Health Heartbeat**| In-Perimeter Hub Gateway | **YES (1.2 KB Envelope)** | Inspected via Cloudflare Zero Trust Audit Logs. |
+
+### 1.2 The Sovereign Heartbeat Envelope
+The heartbeat dispatched by your Outside-VPC Hub is a standard 1.2 KB JSON payload containing exclusively capacity and platform health metadata:
+
+```json
+{
+  &quot;heartbeat_id&quot;: &quot;hb_acme_live_01&quot;,
+  &quot;customer_id&quot;: &quot;cust_acme_financial_01&quot;,
+  &quot;license_id&quot;: &quot;lic_acme_fullstack_2026&quot;,
+  &quot;timestamp&quot;: 1793599274.42,
+  &quot;licensed_nodes&quot;: 100,
+  &quot;active_nodes&quot;: 142,
+  &quot;overage_nodes&quot;: 42,
+  &quot;quota_utilization_pct&quot;: 142.0,
+  &quot;software_version&quot;: &quot;v4.2.0-LTS&quot;,
+  &quot;engine_health_status&quot;: &quot;NOMINAL&quot;,
+  &quot;outside_hub_transport&quot;: &quot;CLOUDFLARE_TUNNEL&quot;,
+  &quot;signature_verified&quot;: 1,
+  &quot;metering_status&quot;: &quot;OVERAGE_PENDING_TRUEUP&quot;
+}
+```
+
+&gt; [!NOTE]
+&gt; Every heartbeat is cryptographically signed using an in-perimeter private HMAC key. It contains **no IP addresses, no customer hostnames, no database credentials, and no payload data**.
+
+---
+
+## 2. Non-Destructive Capacity Surges &amp; Autoscaling
+
+Enterprise applications experience seasonal, campaign, or incident-driven autoscaling surges (e.g., Kubernetes Horizontal Pod Autoscaler spinning up 40 additional microservice instances during high load).
+
+### 2.1 Non-Destructive Guarantee
+When active nodes exceed the contracted license quota (e.g., 142 active nodes vs. 100 contracted nodes):
+1. **Zero Monitoring Interruption:** Telemetry ingestion, distributed tracing, alerting, and log search continue to operate at **100% capacity**. `&lt;dcouplr/&gt;` will never drop metrics, delay alerts, or terminate collector pods during an overage event.
+2. **Local SRE Advisory:** In the in-VPC console (`/dashboard` and `/config`), the capacity badge updates to an advisory status:  
+   `Medium 142/100 Nodes Active • 142% Quota`.
+3. **Automated True-Up Reconciliation:** The overage is recorded in `&lt;dcouplr/&gt;` Corporate Central for commercial true-up reconciliation at your contracted SKU overage rate (e.g., $18.50/node/month), avoiding costly upfront over-provisioning.
+
+---
+
+## 3. Support Triage &amp; Customer Support Privacy
+
+When you engage `&lt;dcouplr/&gt;` Customer Support:
+- **Cloud Systems Engineers (CSE):** Have access to your active node counts, cluster health status (`NOMINAL`, `DEGRADED`), software version patch level, and customer-submitted support tickets.
+- **Strict Privacy Isolation:** Support engineers have zero access to your commercial contracts, banking details, or invoice payment tokens.
+- **Zero Remote Access Required:** Support engineers can evaluate cluster sizing and version currency without requesting SSH bastion access or temporary IAM credentials into your cloud account.
+
+---
+
+## 4. Air-Gapped Perimeters (Offline True-Up Export)
+
+For organizations operating in disconnected or air-gapped environments where outbound Cloudflare Tunnels are disabled by security policy:
+
+### Step 1: Export Sovereign Capacity Audit Bundle
+Run the following authenticated command within your perimeter:
+```bash
+curl -X POST http://localhost:8000/v1/system/license/audit-bundle \
+  -H &quot;Authorization: Bearer &lt;IN_VPC_ADMIN_KEY&gt;&quot; \
+  -o sovereign_capacity_bundle.json
+```
+
+### Step 2: Verify Bundle Content
+Verify that the generated bundle contains only capacity metadata and no internal operational logs:
+```bash
+jq . sovereign_capacity_bundle.json
+```
+Output:
+```json
+{
+  &quot;export_timestamp&quot;: 1793599800.0,
+  &quot;cluster_id&quot;: &quot;cls_prod_us_east_1&quot;,
+  &quot;contracted_quota&quot;: 100,
+  &quot;peak_active_nodes_30d&quot;: 142,
+  &quot;average_active_nodes_30d&quot;: 108,
+  &quot;engine_software_version&quot;: &quot;v4.2.0-LTS&quot;,
+  &quot;sha256_fingerprint&quot;: &quot;e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855&quot;
+}
+```
+
+### Step 3: Secure Delivery to Account Team
+Deliver the audit file via your organization&#x27;s approved air-gap file transfer procedure during annual license renewal.
+
+---
+
+## 5. Security &amp; Verification Checklist for SREs
+
+| Checkpoint | Verification Command / URL | Expected Result |
+| :--- | :--- | :--- |
+| **Verify Local In-VPC Database** | `http://localhost:8000/config` | Census displays active nodes backed by `data/vpc_telemetry.db`. |
+| **Verify Zero-WAN Egress** | Inspect egress gateway firewall rules | Zero outbound traffic to public observability endpoints. |
+| **Inspect Active License Quota** | `GET /v1/system/license` | Returns current SKU tier, max licensed nodes, and active census. |
+| **Verify Outside-VPC Hub Status** | `cloudflared tunnel info` | Hub tunnel active; transmits 1.2 KB heartbeats periodically. |
+
+---
+*Maintained by `&lt;dcouplr/&gt;` Cloud Engineering &amp; Customer Trust • Approved for Production Operations.*
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - API_LOCKDOWN_AND_PERMISSION_ENFORCEMENT_GUIDE.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/API_LOCKDOWN_AND_PERMISSION_ENFORCEMENT_GUIDE.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="API_LOCKDOWN_AND_PERMISSION_ENFORCEMENT_GUIDE.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="api-lockdown-permission-enforcement-guide"><dcouplr/> API Lockdown &amp; Permission Enforcement Guide</h1>
+<p><strong>Document Identifier:</strong> <code>VA-GUIDE-API-LOCKDOWN-001</code><br />
+<strong>Classification:</strong> Enterprise Security Architecture &amp; Operator Runbook<br />
+<strong>Version:</strong> 1.0.0<br />
+<strong>Effective Date:</strong> October 2026<br />
+<strong>Audience:</strong> Platform Architects, SREs, DevSecOps, Platform Administrators</p>
+<hr />
+<h2 id="1-understanding-httplocalhost8000openapijson">1. Understanding <code>http://localhost:8000/openapi.json</code></h2>
+<h3 id="what-is-openapijson">What is <code>/openapi.json</code>?</h3>
+<p>In FastAPI and standard REST services, <code>/openapi.json</code> is a machine-readable document adhering to the <strong>OpenAPI 3.0 Specification</strong> (formerly Swagger). It details:</p>
+<ol>
+<li>Every registered route (<code>paths</code>), supported HTTP methods (<code>GET</code>, <code>POST</code>, <code>DELETE</code>, etc.), and route summaries.</li>
+<li>Query and path parameters, required request body schemas, and response payload models (<code>components.schemas</code>).</li>
+<li>Security schemes (such as <code>ApiKeyAuth</code>, <code>BearerAuth</code>, and <code>OAuth2</code>).</li>
+</ol>
+<p>When you visit <code>http://localhost:8000/docs/swagger</code>, the Swagger UI library downloads <code>http://localhost:8000/openapi.json</code> and renders the interactive documentation.</p>
+<h3 id="should-openapijson-be-displayed">Should <code>/openapi.json</code> Be Displayed?</h3>
+<p>The short answer is: <strong>It depends on the environment and the audience, and it must never display internal or injection-prone APIs.</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Deployment Scenario</th>
+<th style="text-align:left">Recommended Visibility</th>
+<th style="text-align:left">Configuration / Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Public Customer Evaluation</strong></td>
+<td style="text-align:left"><strong>Sanitized Public Spec (35 Endpoints)</strong></td>
+<td style="text-align:left">Expose only customer-facing CLI, Dashboard, and Lift-and-Shift routes. Cloak all internal, SCIM, support, and admin routes.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Strict Enterprise / Production</strong></td>
+<td style="text-align:left"><strong>Authenticated Spec Only</strong></td>
+<td style="text-align:left">Gate <code>/openapi.json</code> behind API Key or Bearer token verification so only permitted customers can read the schema.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Air-Gapped / Bank Grade VPC</strong></td>
+<td style="text-align:left"><strong>Disabled in Public (<code>None</code>)</strong></td>
+<td style="text-align:left">Disable public <code>/openapi.json</code> (<code>openapi_url=None</code>) and serve the uncloaked spec exclusively within the internal OpenAPI specification (<code>/v1/admin/openapi.json</code>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="injection-and-reconnaissance-risks-of-unfiltered-openapijson">Injection and Reconnaissance Risks of Unfiltered <code>/openapi.json</code></h3>
+<p>If <code>/openapi.json</code> is published without strict filtering, an attacker or competitor can inspect:</p>
+<ul>
+<li><strong>SCIM Directory Endpoints (<code>/v1/scim/v2/Users</code>):</strong> Exposes account lifecycle schemas, creating potential user-injection or privilege escalation vectors.</li>
+<li><strong>Recipe Registration (<code>/v1/recipes/register</code>):</strong> Exposes file-write APIs for creating dynamic pipelines on the host disk.</li>
+<li><strong>Raft Cluster Operations (<code>/v1/raft/*</code>):</strong> Exposes consensus heartbeats and node join mechanisms.</li>
+<li><strong>Database Compaction (<code>/v1/storage/*</code>):</strong> Exposes internal WAL compactor and tombstone sweep endpoints.</li>
+<li><strong>Telemetry Remote-Write (<code>/v1/telemetry/remote-write</code>):</strong> Exposes telemetry ingestion pipelines to metric spoofing.</li>
+</ul>
+<blockquote>
+<p>[!IMPORTANT]
+<strong>Resolution in <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>:</strong> All 49 internal, support, SCIM, and consensus endpoints are <strong>strictly cloaked</strong> from the public <code>/openapi.json</code>. They are accessible exclusively via <code>/v1/admin/openapi.json</code> and authenticated SRE tooling.</p>
+</blockquote>
+<hr />
+<h2 id="2-architecture-3-tier-security-exposure-partition">2. Architecture: 3-Tier Security &amp; Exposure Partition</h2>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+---------------------------------------------------------------------------------------------------+
+|                                 <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> 3-Tier Security Boundary                                |
++-------------------------------------+---------------------------------+---------------------------+
+| TIER 1: Customer Public Free        | TIER 2: Customer Paid / Permitted| TIER 3: Admin Internal    |
+| (Open Discovery &amp; CLI Probes)       | (API Key / Commercial License)  | (Admin Secret / Bearer)   |
++-------------------------------------+---------------------------------+---------------------------+
+| • Included in /openapi.json         | • Included in /openapi.json     | • CLOAKED from public     |
+| • Rate-Limited (120 req/min)        | • Requires valid customer key   | • Guarded by require_admin|
+| • /health, /translate, /parse       | • /recipes/run, /telemetry/vpcs | • Admin Vault, Raft, SCIM |
+| • AST mappings, Linting, Presets    | • State migration, Topology plan| • Full Admin Swagger Only |
++-------------------------------------+---------------------------------+---------------------------+
+</code></pre></div>
+<hr />
+<h2 id="3-how-to-lock-all-apis-and-unlock-only-for-permitted-customers">3. How to Lock All APIs and Unlock Only for Permitted Customers</h2>
+<p>To implement a complete <strong>Zero-Trust Lockdown</strong> where <strong>all APIs are closed by default</strong> and only authorized customers with verified permissions can execute them, implement the following 4-step architecture:</p>
+<h3 id="step-1-global-authentication-gate-deny-by-default">Step 1: Global Authentication Gate (Deny-By-Default)</h3>
+<p>In <code>migration_tools/api/app.py</code>, configure the FastAPI application to enforce customer credentials across all endpoints using a Starlette BaseHTTPMiddleware or dependency injection:</p>
+<div class="code-box"><div class="code-box-header"><span>python</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-python">from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
+
+class GlobalCustomerPermissionMiddleware(BaseHTTPMiddleware):
+    &quot;&quot;&quot;Denies access to all APIs unless the caller provides a valid customer credential.
+    
+    Permitted public bypass paths:
+    - /health, /healthz, /v1/health (Liveness/Readiness probes)
+    - /v1/auth/sso/* (OIDC login redirection)
+    &quot;&quot;&quot;
+    
+    EXEMPT_PATHS = {
+        &quot;/health&quot;,
+        &quot;/healthz&quot;,
+        &quot;/v1/health&quot;,
+        &quot;/v1/auth/sso/providers&quot;,
+        &quot;/v1/auth/sso/okta/login&quot;,
+        &quot;/v1/auth/sso/azure/login&quot;,
+    }
+    
+    async def dispatch(self, request, call_next):
+        path = request.url.path.rstrip(&quot;/&quot;)
+        
+        # 1. Allow exempt health probes and SSO login redirects
+        if path in self.EXEMPT_PATHS or path.startswith(&quot;/static&quot;):
+            return await call_next(request)
+            
+        # 2. Extract API Key or Bearer Token
+        api_key = request.headers.get(&quot;X-API-Key&quot;)
+        auth_header = request.headers.get(&quot;Authorization&quot;)
+        bearer_token = auth_header.split(&quot;Bearer &quot;)[-1] if auth_header and auth_header.startswith(&quot;Bearer &quot;) else None
+        
+        token = api_key or bearer_token
+        
+        # 3. Reject if missing
+        if not token:
+            return JSONResponse(
+                status_code=401,
+                content={
+                    &quot;error&quot;: &quot;Unauthorized&quot;,
+                    &quot;detail&quot;: &quot;Authentication required. Please provide a valid customer 'X-API-Key' or 'Authorization: Bearer &lt;token&gt;' header.&quot;,
+                    &quot;code&quot;: &quot;MISSING_CREDENTIALS&quot;
+                }
+            )
+            
+        # 4. Verify Customer Permission
+        if not self.is_authorized_customer(token, path, request.method):
+            return JSONResponse(
+                status_code=403,
+                content={
+                    &quot;error&quot;: &quot;Forbidden&quot;,
+                    &quot;detail&quot;: &quot;Access denied. Your customer organization lacks active permissions for this resource.&quot;,
+                    &quot;code&quot;: &quot;INSUFFICIENT_PERMISSIONS&quot;
+                }
+            )
+            
+        return await call_next(request)
+        
+    def is_authorized_customer(self, token: str, path: str, method: str) -&gt; bool:
+        # Validate against Customer Token Store or Database
+        return token.startswith(&quot;dcouplr-cust-&quot;) or token == os.getenv(&quot;DCOUPLR_ADMIN_KEY&quot;)
+</code></pre></div>
+<h3 id="step-2-role-based-access-control-rbac-scope-enforcement">Step 2: Role-Based Access Control (RBAC) &amp; Scope Enforcement</h3>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> includes an integrated RBAC engine (<code>migration_tools.api.security</code>):</p>
+<ol>
+<li><strong><code>require_customer</code>:</strong> Validates that the caller belongs to an active customer tenant.</li>
+<li><strong><code>require_developer</code>:</strong> Validates that the caller has engineering permissions to run recipes and plan migrations.</li>
+<li><strong><code>require_admin</code>:</strong> Validates administrative clearance (Admin Vault, SCIM, Raft).</li>
+</ol>
+<div class="code-box"><div class="code-box-header"><span>python</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-python">from fastapi import Depends
+from migration_tools.api.security import require_customer, AuthenticatedUser
+
+@app.post(&quot;/v1/translate&quot;, tags=[&quot;Core Transpilation&quot;])
+async def translate_ast(
+    payload: TranslationRequest,
+    user: AuthenticatedUser = Depends(require_customer)
+):
+    &quot;&quot;&quot;Only customers with valid permission tokens can invoke translation.&quot;&quot;&quot;
+    return process_translation(payload, tenant_id=user.tenant_id)
+</code></pre></div>
+<h3 id="step-3-cryptographic-license-verification-commercial-feature-gates">Step 3: Cryptographic License Verification (Commercial Feature Gates)</h3>
+<p>For Tier 2 (Customer Paid) endpoints—such as automated state migration and replication orchestration:</p>
+<ol>
+<li>The customer activates their commercial license via <code>POST /v1/license/activate</code> with an Ed25519-signed license blob.</li>
+<li>The server verifies the cryptographic signature locally without dialing external servers (100% In-VPC Zero-Egress guarantee).</li>
+<li>If the license is expired, invalid, or unlicensed, the endpoint returns:<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;error&quot;: &quot;License Required&quot;,
+  &quot;detail&quot;: &quot;Tier 2 feature requires an active Commercial Enterprise License. Please activate via /v1/license/activate.&quot;,
+  &quot;status&quot;: &quot;UNLICENSED&quot;
+}
+</code></pre></div>
+</li>
+</ol>
+<h3 id="step-4-gating-or-locking-openapijson-and-swagger-ui">Step 4: Gating or Locking <code>/openapi.json</code> and Swagger UI</h3>
+<p>If you want to prevent unauthorized users from even reading <code>/openapi.json</code>:</p>
+<h4 id="option-a-require-authentication-to-download-openapijson">Option A: Require Authentication to Download <code>/openapi.json</code></h4>
+<p>Wrap the <code>/openapi.json</code> endpoint in an authentication dependency:</p>
+<div class="code-box"><div class="code-box-header"><span>python</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-python">@app.get(&quot;/openapi.json&quot;, include_in_schema=False)
+async def get_secured_openapi(user: AuthenticatedUser = Depends(require_customer)):
+    return app.openapi()
+</code></pre></div>
+<h4 id="option-b-disable-public-openapi-entirely-in-production">Option B: Disable Public OpenAPI Entirely in Production</h4>
+<p>When launching the application in high-security environments, pass <code>openapi_url=None</code> and <code>docs_url=None</code> to the public FastAPI instance:</p>
+<div class="code-box"><div class="code-box-header"><span>python</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-python">app = FastAPI(
+    title=&quot;<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> API&quot;,
+    docs_url=None,       # Disables public /docs
+    redoc_url=None,      # Disables public /redoc
+    openapi_url=None,    # Disables public /openapi.json
+)
+</code></pre></div>
+<p>In this mode, public clients receive <code>404 Not Found</code> if they attempt to probe <code>/openapi.json</code>. Administrators continue to access the full specification safely inside the Admin Vault via:</p>
+<ul>
+<li><strong><code>GET /v1/admin/openapi.json</code></strong> (guarded by Admin Session JWT / API Key)</li>
+<li><strong><code>GET /docs/swagger</code></strong> (<code>http://127.0.0.1:8000/docs/swagger</code>)</li>
+</ul>
+<hr />
+<h2 id="4-operator-runbook-configuring-customer-keys">4. Operator Runbook: Configuring Customer Keys</h2>
+<h3 id="1-defining-permitted-customer-keys">1. Defining Permitted Customer Keys</h3>
+<p>Configure customer API keys in your environment or Kubernetes Secret:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Production .env / Kubernetes Secret
+DCOUPLR_ENFORCE_AUTH=true
+DCOUPLR_CUSTOMER_KEYS=&quot;cust_acme_corp_key_2026,cust_globex_ent_key_2026&quot;
+DCOUPLR_ADMIN_KEY=&quot;dcouplr-admin-2026-vault-key&quot;
+</code></pre></div>
+<h3 id="2-client-invocations-with-customer-permission">2. Client Invocations with Customer Permission</h3>
+<h4 id="cli-curl-call">CLI Curl Call:</h4>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Valid Request with Customer Key
+curl -X POST http://127.0.0.1:8000/v1/translate \
+  -H &quot;X-API-Key: cust_acme_corp_key_2026&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;source_type&quot;: &quot;terraform&quot;, &quot;target_type&quot;: &quot;bicep&quot;, &quot;content&quot;: &quot;...&quot;}'
+</code></pre></div>
+<h4 id="expected-success-response">Expected Success Response:</h4>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;status&quot;: &quot;success&quot;,
+  &quot;source&quot;: &quot;terraform&quot;,
+  &quot;target&quot;: &quot;bicep&quot;,
+  &quot;output&quot;: &quot;...&quot;
+}
+</code></pre></div>
+<h4 id="unauthenticated-request-missing-key">Unauthenticated Request (Missing Key):</h4>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -X POST http://127.0.0.1:8000/v1/translate \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;source_type&quot;: &quot;terraform&quot;, &quot;target_type&quot;: &quot;bicep&quot;, &quot;content&quot;: &quot;...&quot;}'
+</code></pre></div>
+<h4 id="expected-rejection">Expected Rejection:</h4>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">HTTP/1.1 401 Unauthorized
+{
+  &quot;detail&quot;: &quot;Authentication required. Please provide a valid customer 'X-API-Key' or 'Authorization: Bearer &lt;token&gt;' header.&quot;
+}
+</code></pre></div>
+<hr />
+<h2 id="5-summary-matrix-what-is-public-vs-what-is-in-admin">5. Summary Matrix: What is Public vs What is in Admin</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Component / Route</th>
+<th style="text-align:left">Public Customer Exposure</th>
+<th style="text-align:left">Admin Vault Exposure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Transpilation (<code>/v1/translate</code>, <code>/parse</code>)</strong></td>
+<td style="text-align:left">✅ Visible &amp; Callable</td>
+<td style="text-align:left">✅ Fully Cataloged</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>CLI &amp; Diagnostics (<code>/v1/system/doctor</code>)</strong></td>
+<td style="text-align:left">✅ Visible &amp; Callable</td>
+<td style="text-align:left">✅ Fully Cataloged</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Dashboard Topology (<code>/v1/telemetry/*</code>)</strong></td>
+<td style="text-align:left">✅ Visible (Sanitized)</td>
+<td style="text-align:left">✅ Fully Cataloged</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Turnkey Recipe Catalog (<code>/v1/recipes</code>)</strong></td>
+<td style="text-align:left">✅ Read-only Catalog</td>
+<td style="text-align:left">✅ Full Execution Matrix</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Turnkey Recipe Registration (<code>/register</code>)</strong></td>
+<td style="text-align:left">❌ CLOAKED (Injection Risk)</td>
+<td style="text-align:left">✅ Admin Only</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>SCIM User Provisioning (<code>/v1/scim/*</code>)</strong></td>
+<td style="text-align:left">❌ CLOAKED (Directory Injection Risk)</td>
+<td style="text-align:left">✅ Admin Master Console</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Customer Support Bridge (<code>/v1/support/*</code>)</strong></td>
+<td style="text-align:left">❌ CLOAKED</td>
+<td style="text-align:left">✅ Support Desk &amp; Admin Console</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Consensus Mesh (<code>/v1/raft/*</code>)</strong></td>
+<td style="text-align:left">❌ CLOAKED</td>
+<td style="text-align:left">✅ Admin Cluster Console</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Storage Compactor (<code>/v1/storage/*</code>)</strong></td>
+<td style="text-align:left">❌ CLOAKED</td>
+<td style="text-align:left">✅ Admin Storage Console</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Master Swagger UI</strong></td>
+<td style="text-align:left"><code>/docs/swagger</code> (Customer only, Open)</td>
+<td style="text-align:left">Privileged Swagger (All 107 APIs, <strong>Strictly Gated</strong>)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>OpenAPI JSON Endpoint</strong></td>
+<td style="text-align:left"><code>/openapi.json</code> (Filtered, Open)</td>
+<td style="text-align:left"><code>/v1/admin/openapi.json</code> (Full, <strong>401 Unauthorized without Admin Auth</strong>)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>API Inventory Catalog</strong></td>
+<td style="text-align:left">Hidden from public</td>
+<td style="text-align:left"><code>/v1/admin/api-catalog</code> (<strong>401 Unauthorized without Admin Auth</strong>)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-administrator-security-gate-on-privileged-apis">6. Administrator Security Gate on Privileged APIs</h2>
+<p>To prevent unauthorized access to sensitive internal infrastructure, consensus protocols, and customer support operations:</p>
+<ol>
+<li><strong>Dual-Layer Gating</strong>:
+<ul>
+<li><strong>Frontend DOM Lockdown</strong>: Direct browser navigation to privileged endpoints immediately requires authentication, hiding <code>#swagger-ui</code>. Access requires either an active admin session, credentials verification (<code>admin</code> + passcode), or enterprise SSO (Okta / Azure).</li>
+<li><strong>Backend 401 Enforcement</strong>: Direct programmatic requests (via <code>curl</code> or scripts) to <code>/v1/admin/openapi.json</code> and <code>/v1/admin/api-catalog</code> return <code>HTTP 401 Unauthorized</code> unless accompanied by <code>X-API-Key: dcouplr-admin-2026</code>, <code>Authorization: Bearer &lt;admin-token&gt;</code>, or the <code>dcouplr_admin_token</code> cookie.</li>
+</ul>
+</li>
+<li><strong>Session Persistence</strong>: Unlocking privileged endpoints sets an encrypted session cookie (<code>dcouplr_admin_token</code>) and session storage token, enabling seamless operator workflows between the Admin Document Vault and Admin Swagger UI.</li>
+<li><strong>Instant Revocation</strong>: Clicking <code>[ 🔒 Lock &amp; Sign Out ]</code> clears all cookies and session storage, unmounts Swagger UI from memory, and re-locks the Security Gate immediately.</li>
+</ol>
+</div>
+      <pre id="raw-view"><code># &lt;dcouplr/&gt; API Lockdown &amp; Permission Enforcement Guide
+
+**Document Identifier:** `VA-GUIDE-API-LOCKDOWN-001`  
+**Classification:** Enterprise Security Architecture &amp; Operator Runbook  
+**Version:** 1.0.0  
+**Effective Date:** October 2026  
+**Audience:** Platform Architects, SREs, DevSecOps, Platform Administrators  
+
+---
+
+## 1. Understanding `http://localhost:8000/openapi.json`
+
+### What is `/openapi.json`?
+In FastAPI and standard REST services, `/openapi.json` is a machine-readable document adhering to the **OpenAPI 3.0 Specification** (formerly Swagger). It details:
+1. Every registered route (`paths`), supported HTTP methods (`GET`, `POST`, `DELETE`, etc.), and route summaries.
+2. Query and path parameters, required request body schemas, and response payload models (`components.schemas`).
+3. Security schemes (such as `ApiKeyAuth`, `BearerAuth`, and `OAuth2`).
+
+When you visit `http://localhost:8000/docs/swagger`, the Swagger UI library downloads `http://localhost:8000/openapi.json` and renders the interactive documentation.
+
+### Should `/openapi.json` Be Displayed?
+The short answer is: **It depends on the environment and the audience, and it must never display internal or injection-prone APIs.**
+
+| Deployment Scenario | Recommended Visibility | Configuration / Action |
+| :--- | :--- | :--- |
+| **Public Customer Evaluation** | **Sanitized Public Spec (35 Endpoints)** | Expose only customer-facing CLI, Dashboard, and Lift-and-Shift routes. Cloak all internal, SCIM, support, and admin routes. |
+| **Strict Enterprise / Production** | **Authenticated Spec Only** | Gate `/openapi.json` behind API Key or Bearer token verification so only permitted customers can read the schema. |
+| **Air-Gapped / Bank Grade VPC** | **Disabled in Public (`None`)** | Disable public `/openapi.json` (`openapi_url=None`) and serve the uncloaked spec exclusively within the internal OpenAPI specification (`/v1/admin/openapi.json`). |
+
+### Injection and Reconnaissance Risks of Unfiltered `/openapi.json`
+If `/openapi.json` is published without strict filtering, an attacker or competitor can inspect:
+- **SCIM Directory Endpoints (`/v1/scim/v2/Users`):** Exposes account lifecycle schemas, creating potential user-injection or privilege escalation vectors.
+- **Recipe Registration (`/v1/recipes/register`):** Exposes file-write APIs for creating dynamic pipelines on the host disk.
+- **Raft Cluster Operations (`/v1/raft/*`):** Exposes consensus heartbeats and node join mechanisms.
+- **Database Compaction (`/v1/storage/*`):** Exposes internal WAL compactor and tombstone sweep endpoints.
+- **Telemetry Remote-Write (`/v1/telemetry/remote-write`):** Exposes telemetry ingestion pipelines to metric spoofing.
+
+&gt; [!IMPORTANT]
+&gt; **Resolution in `&lt;dcouplr/&gt;`:** All 49 internal, support, SCIM, and consensus endpoints are **strictly cloaked** from the public `/openapi.json`. They are accessible exclusively via `/v1/admin/openapi.json` and authenticated SRE tooling.
+
+---
+
+## 2. Architecture: 3-Tier Security &amp; Exposure Partition
+
+```
++---------------------------------------------------------------------------------------------------+
+|                                 &lt;dcouplr/&gt; 3-Tier Security Boundary                                |
++-------------------------------------+---------------------------------+---------------------------+
+| TIER 1: Customer Public Free        | TIER 2: Customer Paid / Permitted| TIER 3: Admin Internal    |
+| (Open Discovery &amp; CLI Probes)       | (API Key / Commercial License)  | (Admin Secret / Bearer)   |
++-------------------------------------+---------------------------------+---------------------------+
+| • Included in /openapi.json         | • Included in /openapi.json     | • CLOAKED from public     |
+| • Rate-Limited (120 req/min)        | • Requires valid customer key   | • Guarded by require_admin|
+| • /health, /translate, /parse       | • /recipes/run, /telemetry/vpcs | • Admin Vault, Raft, SCIM |
+| • AST mappings, Linting, Presets    | • State migration, Topology plan| • Full Admin Swagger Only |
++-------------------------------------+---------------------------------+---------------------------+
+```
+
+---
+
+## 3. How to Lock All APIs and Unlock Only for Permitted Customers
+
+To implement a complete **Zero-Trust Lockdown** where **all APIs are closed by default** and only authorized customers with verified permissions can execute them, implement the following 4-step architecture:
+
+### Step 1: Global Authentication Gate (Deny-By-Default)
+
+In `migration_tools/api/app.py`, configure the FastAPI application to enforce customer credentials across all endpoints using a Starlette BaseHTTPMiddleware or dependency injection:
+
+```python
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
+
+class GlobalCustomerPermissionMiddleware(BaseHTTPMiddleware):
+    &quot;&quot;&quot;Denies access to all APIs unless the caller provides a valid customer credential.
+    
+    Permitted public bypass paths:
+    - /health, /healthz, /v1/health (Liveness/Readiness probes)
+    - /v1/auth/sso/* (OIDC login redirection)
+    &quot;&quot;&quot;
+    
+    EXEMPT_PATHS = {
+        &quot;/health&quot;,
+        &quot;/healthz&quot;,
+        &quot;/v1/health&quot;,
+        &quot;/v1/auth/sso/providers&quot;,
+        &quot;/v1/auth/sso/okta/login&quot;,
+        &quot;/v1/auth/sso/azure/login&quot;,
+    }
+    
+    async def dispatch(self, request, call_next):
+        path = request.url.path.rstrip(&quot;/&quot;)
+        
+        # 1. Allow exempt health probes and SSO login redirects
+        if path in self.EXEMPT_PATHS or path.startswith(&quot;/static&quot;):
+            return await call_next(request)
+            
+        # 2. Extract API Key or Bearer Token
+        api_key = request.headers.get(&quot;X-API-Key&quot;)
+        auth_header = request.headers.get(&quot;Authorization&quot;)
+        bearer_token = auth_header.split(&quot;Bearer &quot;)[-1] if auth_header and auth_header.startswith(&quot;Bearer &quot;) else None
+        
+        token = api_key or bearer_token
+        
+        # 3. Reject if missing
+        if not token:
+            return JSONResponse(
+                status_code=401,
+                content={
+                    &quot;error&quot;: &quot;Unauthorized&quot;,
+                    &quot;detail&quot;: &quot;Authentication required. Please provide a valid customer &#x27;X-API-Key&#x27; or &#x27;Authorization: Bearer &lt;token&gt;&#x27; header.&quot;,
+                    &quot;code&quot;: &quot;MISSING_CREDENTIALS&quot;
+                }
+            )
+            
+        # 4. Verify Customer Permission
+        if not self.is_authorized_customer(token, path, request.method):
+            return JSONResponse(
+                status_code=403,
+                content={
+                    &quot;error&quot;: &quot;Forbidden&quot;,
+                    &quot;detail&quot;: &quot;Access denied. Your customer organization lacks active permissions for this resource.&quot;,
+                    &quot;code&quot;: &quot;INSUFFICIENT_PERMISSIONS&quot;
+                }
+            )
+            
+        return await call_next(request)
+        
+    def is_authorized_customer(self, token: str, path: str, method: str) -&gt; bool:
+        # Validate against Customer Token Store or Database
+        return token.startswith(&quot;dcouplr-cust-&quot;) or token == os.getenv(&quot;DCOUPLR_ADMIN_KEY&quot;)
+```
+
+### Step 2: Role-Based Access Control (RBAC) &amp; Scope Enforcement
+
+`&lt;dcouplr/&gt;` includes an integrated RBAC engine (`migration_tools.api.security`):
+
+1. **`require_customer`:** Validates that the caller belongs to an active customer tenant.
+2. **`require_developer`:** Validates that the caller has engineering permissions to run recipes and plan migrations.
+3. **`require_admin`:** Validates administrative clearance (Admin Vault, SCIM, Raft).
+
+```python
+from fastapi import Depends
+from migration_tools.api.security import require_customer, AuthenticatedUser
+
+@app.post(&quot;/v1/translate&quot;, tags=[&quot;Core Transpilation&quot;])
+async def translate_ast(
+    payload: TranslationRequest,
+    user: AuthenticatedUser = Depends(require_customer)
+):
+    &quot;&quot;&quot;Only customers with valid permission tokens can invoke translation.&quot;&quot;&quot;
+    return process_translation(payload, tenant_id=user.tenant_id)
+```
+
+### Step 3: Cryptographic License Verification (Commercial Feature Gates)
+
+For Tier 2 (Customer Paid) endpoints—such as automated state migration and replication orchestration:
+1. The customer activates their commercial license via `POST /v1/license/activate` with an Ed25519-signed license blob.
+2. The server verifies the cryptographic signature locally without dialing external servers (100% In-VPC Zero-Egress guarantee).
+3. If the license is expired, invalid, or unlicensed, the endpoint returns:
+   ```json
+   {
+     &quot;error&quot;: &quot;License Required&quot;,
+     &quot;detail&quot;: &quot;Tier 2 feature requires an active Commercial Enterprise License. Please activate via /v1/license/activate.&quot;,
+     &quot;status&quot;: &quot;UNLICENSED&quot;
+   }
+   ```
+
+### Step 4: Gating or Locking `/openapi.json` and Swagger UI
+
+If you want to prevent unauthorized users from even reading `/openapi.json`:
+
+#### Option A: Require Authentication to Download `/openapi.json`
+Wrap the `/openapi.json` endpoint in an authentication dependency:
+
+```python
+@app.get(&quot;/openapi.json&quot;, include_in_schema=False)
+async def get_secured_openapi(user: AuthenticatedUser = Depends(require_customer)):
+    return app.openapi()
+```
+
+#### Option B: Disable Public OpenAPI Entirely in Production
+When launching the application in high-security environments, pass `openapi_url=None` and `docs_url=None` to the public FastAPI instance:
+
+```python
+app = FastAPI(
+    title=&quot;&lt;dcouplr/&gt; API&quot;,
+    docs_url=None,       # Disables public /docs
+    redoc_url=None,      # Disables public /redoc
+    openapi_url=None,    # Disables public /openapi.json
+)
+```
+In this mode, public clients receive `404 Not Found` if they attempt to probe `/openapi.json`. Administrators continue to access the full specification safely inside the Admin Vault via:
+- **`GET /v1/admin/openapi.json`** (guarded by Admin Session JWT / API Key)
+- **`GET /docs/swagger`** (`http://127.0.0.1:8000/docs/swagger`)
+
+---
+
+## 4. Operator Runbook: Configuring Customer Keys
+
+### 1. Defining Permitted Customer Keys
+Configure customer API keys in your environment or Kubernetes Secret:
+
+```bash
+# Production .env / Kubernetes Secret
+DCOUPLR_ENFORCE_AUTH=true
+DCOUPLR_CUSTOMER_KEYS=&quot;cust_acme_corp_key_2026,cust_globex_ent_key_2026&quot;
+DCOUPLR_ADMIN_KEY=&quot;dcouplr-admin-2026-vault-key&quot;
+```
+
+### 2. Client Invocations with Customer Permission
+
+#### CLI Curl Call:
+```bash
+# Valid Request with Customer Key
+curl -X POST http://127.0.0.1:8000/v1/translate \
+  -H &quot;X-API-Key: cust_acme_corp_key_2026&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;source_type&quot;: &quot;terraform&quot;, &quot;target_type&quot;: &quot;bicep&quot;, &quot;content&quot;: &quot;...&quot;}&#x27;
+```
+
+#### Expected Success Response:
+```json
+{
+  &quot;status&quot;: &quot;success&quot;,
+  &quot;source&quot;: &quot;terraform&quot;,
+  &quot;target&quot;: &quot;bicep&quot;,
+  &quot;output&quot;: &quot;...&quot;
+}
+```
+
+#### Unauthenticated Request (Missing Key):
+```bash
+curl -X POST http://127.0.0.1:8000/v1/translate \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;source_type&quot;: &quot;terraform&quot;, &quot;target_type&quot;: &quot;bicep&quot;, &quot;content&quot;: &quot;...&quot;}&#x27;
+```
+
+#### Expected Rejection:
+```json
+HTTP/1.1 401 Unauthorized
+{
+  &quot;detail&quot;: &quot;Authentication required. Please provide a valid customer &#x27;X-API-Key&#x27; or &#x27;Authorization: Bearer &lt;token&gt;&#x27; header.&quot;
+}
+```
+
+---
+
+## 5. Summary Matrix: What is Public vs What is in Admin
+
+| Component / Route | Public Customer Exposure | Admin Vault Exposure |
+| :--- | :--- | :--- |
+| **Transpilation (`/v1/translate`, `/parse`)** | ✅ Visible &amp; Callable | ✅ Fully Cataloged |
+| **CLI &amp; Diagnostics (`/v1/system/doctor`)** | ✅ Visible &amp; Callable | ✅ Fully Cataloged |
+| **Dashboard Topology (`/v1/telemetry/*`)** | ✅ Visible (Sanitized) | ✅ Fully Cataloged |
+| **Turnkey Recipe Catalog (`/v1/recipes`)** | ✅ Read-only Catalog | ✅ Full Execution Matrix |
+| **Turnkey Recipe Registration (`/register`)** | ❌ CLOAKED (Injection Risk) | ✅ Admin Only |
+| **SCIM User Provisioning (`/v1/scim/*`)** | ❌ CLOAKED (Directory Injection Risk) | ✅ Admin Master Console |
+| **Customer Support Bridge (`/v1/support/*`)** | ❌ CLOAKED | ✅ Support Desk &amp; Admin Console |
+| **Consensus Mesh (`/v1/raft/*`)** | ❌ CLOAKED | ✅ Admin Cluster Console |
+| **Storage Compactor (`/v1/storage/*`)** | ❌ CLOAKED | ✅ Admin Storage Console |
+| **Master Swagger UI** | `/docs/swagger` (Customer only, Open) | Privileged Swagger (All 107 APIs, **Strictly Gated**) |
+| **OpenAPI JSON Endpoint** | `/openapi.json` (Filtered, Open) | `/v1/admin/openapi.json` (Full, **401 Unauthorized without Admin Auth**) |
+| **API Inventory Catalog** | Hidden from public | `/v1/admin/api-catalog` (**401 Unauthorized without Admin Auth**) |
+
+---
+
+## 6. Administrator Security Gate on Privileged APIs
+
+To prevent unauthorized access to sensitive internal infrastructure, consensus protocols, and customer support operations:
+
+1. **Dual-Layer Gating**:
+   - **Frontend DOM Lockdown**: Direct browser navigation to privileged endpoints immediately requires authentication, hiding `#swagger-ui`. Access requires either an active admin session, credentials verification (`admin` + passcode), or enterprise SSO (Okta / Azure).
+   - **Backend 401 Enforcement**: Direct programmatic requests (via `curl` or scripts) to `/v1/admin/openapi.json` and `/v1/admin/api-catalog` return `HTTP 401 Unauthorized` unless accompanied by `X-API-Key: dcouplr-admin-2026`, `Authorization: Bearer &lt;admin-token&gt;`, or the `dcouplr_admin_token` cookie.
+2. **Session Persistence**: Unlocking privileged endpoints sets an encrypted session cookie (`dcouplr_admin_token`) and session storage token, enabling seamless operator workflows between the Admin Document Vault and Admin Swagger UI.
+3. **Instant Revocation**: Clicking `[ 🔒 Lock &amp; Sign Out ]` clears all cookies and session storage, unmounts Swagger UI from memory, and re-locks the Security Gate immediately.
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;dcouplr/&gt; API Lockdown &amp; Permission Enforcement Guide
+
+**Document Identifier:** `VA-GUIDE-API-LOCKDOWN-001`  
+**Classification:** Enterprise Security Architecture &amp; Operator Runbook  
+**Version:** 1.0.0  
+**Effective Date:** October 2026  
+**Audience:** Platform Architects, SREs, DevSecOps, Platform Administrators  
+
+---
+
+## 1. Understanding `http://localhost:8000/openapi.json`
+
+### What is `/openapi.json`?
+In FastAPI and standard REST services, `/openapi.json` is a machine-readable document adhering to the **OpenAPI 3.0 Specification** (formerly Swagger). It details:
+1. Every registered route (`paths`), supported HTTP methods (`GET`, `POST`, `DELETE`, etc.), and route summaries.
+2. Query and path parameters, required request body schemas, and response payload models (`components.schemas`).
+3. Security schemes (such as `ApiKeyAuth`, `BearerAuth`, and `OAuth2`).
+
+When you visit `http://localhost:8000/docs/swagger`, the Swagger UI library downloads `http://localhost:8000/openapi.json` and renders the interactive documentation.
+
+### Should `/openapi.json` Be Displayed?
+The short answer is: **It depends on the environment and the audience, and it must never display internal or injection-prone APIs.**
+
+| Deployment Scenario | Recommended Visibility | Configuration / Action |
+| :--- | :--- | :--- |
+| **Public Customer Evaluation** | **Sanitized Public Spec (35 Endpoints)** | Expose only customer-facing CLI, Dashboard, and Lift-and-Shift routes. Cloak all internal, SCIM, support, and admin routes. |
+| **Strict Enterprise / Production** | **Authenticated Spec Only** | Gate `/openapi.json` behind API Key or Bearer token verification so only permitted customers can read the schema. |
+| **Air-Gapped / Bank Grade VPC** | **Disabled in Public (`None`)** | Disable public `/openapi.json` (`openapi_url=None`) and serve the uncloaked spec exclusively within the internal OpenAPI specification (`/v1/admin/openapi.json`). |
+
+### Injection and Reconnaissance Risks of Unfiltered `/openapi.json`
+If `/openapi.json` is published without strict filtering, an attacker or competitor can inspect:
+- **SCIM Directory Endpoints (`/v1/scim/v2/Users`):** Exposes account lifecycle schemas, creating potential user-injection or privilege escalation vectors.
+- **Recipe Registration (`/v1/recipes/register`):** Exposes file-write APIs for creating dynamic pipelines on the host disk.
+- **Raft Cluster Operations (`/v1/raft/*`):** Exposes consensus heartbeats and node join mechanisms.
+- **Database Compaction (`/v1/storage/*`):** Exposes internal WAL compactor and tombstone sweep endpoints.
+- **Telemetry Remote-Write (`/v1/telemetry/remote-write`):** Exposes telemetry ingestion pipelines to metric spoofing.
+
+&gt; [!IMPORTANT]
+&gt; **Resolution in `&lt;dcouplr/&gt;`:** All 49 internal, support, SCIM, and consensus endpoints are **strictly cloaked** from the public `/openapi.json`. They are accessible exclusively via `/v1/admin/openapi.json` and authenticated SRE tooling.
+
+---
+
+## 2. Architecture: 3-Tier Security &amp; Exposure Partition
+
+```
++---------------------------------------------------------------------------------------------------+
+|                                 &lt;dcouplr/&gt; 3-Tier Security Boundary                                |
++-------------------------------------+---------------------------------+---------------------------+
+| TIER 1: Customer Public Free        | TIER 2: Customer Paid / Permitted| TIER 3: Admin Internal    |
+| (Open Discovery &amp; CLI Probes)       | (API Key / Commercial License)  | (Admin Secret / Bearer)   |
++-------------------------------------+---------------------------------+---------------------------+
+| • Included in /openapi.json         | • Included in /openapi.json     | • CLOAKED from public     |
+| • Rate-Limited (120 req/min)        | • Requires valid customer key   | • Guarded by require_admin|
+| • /health, /translate, /parse       | • /recipes/run, /telemetry/vpcs | • Admin Vault, Raft, SCIM |
+| • AST mappings, Linting, Presets    | • State migration, Topology plan| • Full Admin Swagger Only |
++-------------------------------------+---------------------------------+---------------------------+
+```
+
+---
+
+## 3. How to Lock All APIs and Unlock Only for Permitted Customers
+
+To implement a complete **Zero-Trust Lockdown** where **all APIs are closed by default** and only authorized customers with verified permissions can execute them, implement the following 4-step architecture:
+
+### Step 1: Global Authentication Gate (Deny-By-Default)
+
+In `migration_tools/api/app.py`, configure the FastAPI application to enforce customer credentials across all endpoints using a Starlette BaseHTTPMiddleware or dependency injection:
+
+```python
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
+
+class GlobalCustomerPermissionMiddleware(BaseHTTPMiddleware):
+    &quot;&quot;&quot;Denies access to all APIs unless the caller provides a valid customer credential.
+    
+    Permitted public bypass paths:
+    - /health, /healthz, /v1/health (Liveness/Readiness probes)
+    - /v1/auth/sso/* (OIDC login redirection)
+    &quot;&quot;&quot;
+    
+    EXEMPT_PATHS = {
+        &quot;/health&quot;,
+        &quot;/healthz&quot;,
+        &quot;/v1/health&quot;,
+        &quot;/v1/auth/sso/providers&quot;,
+        &quot;/v1/auth/sso/okta/login&quot;,
+        &quot;/v1/auth/sso/azure/login&quot;,
+    }
+    
+    async def dispatch(self, request, call_next):
+        path = request.url.path.rstrip(&quot;/&quot;)
+        
+        # 1. Allow exempt health probes and SSO login redirects
+        if path in self.EXEMPT_PATHS or path.startswith(&quot;/static&quot;):
+            return await call_next(request)
+            
+        # 2. Extract API Key or Bearer Token
+        api_key = request.headers.get(&quot;X-API-Key&quot;)
+        auth_header = request.headers.get(&quot;Authorization&quot;)
+        bearer_token = auth_header.split(&quot;Bearer &quot;)[-1] if auth_header and auth_header.startswith(&quot;Bearer &quot;) else None
+        
+        token = api_key or bearer_token
+        
+        # 3. Reject if missing
+        if not token:
+            return JSONResponse(
+                status_code=401,
+                content={
+                    &quot;error&quot;: &quot;Unauthorized&quot;,
+                    &quot;detail&quot;: &quot;Authentication required. Please provide a valid customer &#x27;X-API-Key&#x27; or &#x27;Authorization: Bearer &lt;token&gt;&#x27; header.&quot;,
+                    &quot;code&quot;: &quot;MISSING_CREDENTIALS&quot;
+                }
+            )
+            
+        # 4. Verify Customer Permission
+        if not self.is_authorized_customer(token, path, request.method):
+            return JSONResponse(
+                status_code=403,
+                content={
+                    &quot;error&quot;: &quot;Forbidden&quot;,
+                    &quot;detail&quot;: &quot;Access denied. Your customer organization lacks active permissions for this resource.&quot;,
+                    &quot;code&quot;: &quot;INSUFFICIENT_PERMISSIONS&quot;
+                }
+            )
+            
+        return await call_next(request)
+        
+    def is_authorized_customer(self, token: str, path: str, method: str) -&gt; bool:
+        # Validate against Customer Token Store or Database
+        return token.startswith(&quot;dcouplr-cust-&quot;) or token == os.getenv(&quot;DCOUPLR_ADMIN_KEY&quot;)
+```
+
+### Step 2: Role-Based Access Control (RBAC) &amp; Scope Enforcement
+
+`&lt;dcouplr/&gt;` includes an integrated RBAC engine (`migration_tools.api.security`):
+
+1. **`require_customer`:** Validates that the caller belongs to an active customer tenant.
+2. **`require_developer`:** Validates that the caller has engineering permissions to run recipes and plan migrations.
+3. **`require_admin`:** Validates administrative clearance (Admin Vault, SCIM, Raft).
+
+```python
+from fastapi import Depends
+from migration_tools.api.security import require_customer, AuthenticatedUser
+
+@app.post(&quot;/v1/translate&quot;, tags=[&quot;Core Transpilation&quot;])
+async def translate_ast(
+    payload: TranslationRequest,
+    user: AuthenticatedUser = Depends(require_customer)
+):
+    &quot;&quot;&quot;Only customers with valid permission tokens can invoke translation.&quot;&quot;&quot;
+    return process_translation(payload, tenant_id=user.tenant_id)
+```
+
+### Step 3: Cryptographic License Verification (Commercial Feature Gates)
+
+For Tier 2 (Customer Paid) endpoints—such as automated state migration and replication orchestration:
+1. The customer activates their commercial license via `POST /v1/license/activate` with an Ed25519-signed license blob.
+2. The server verifies the cryptographic signature locally without dialing external servers (100% In-VPC Zero-Egress guarantee).
+3. If the license is expired, invalid, or unlicensed, the endpoint returns:
+   ```json
+   {
+     &quot;error&quot;: &quot;License Required&quot;,
+     &quot;detail&quot;: &quot;Tier 2 feature requires an active Commercial Enterprise License. Please activate via /v1/license/activate.&quot;,
+     &quot;status&quot;: &quot;UNLICENSED&quot;
+   }
+   ```
+
+### Step 4: Gating or Locking `/openapi.json` and Swagger UI
+
+If you want to prevent unauthorized users from even reading `/openapi.json`:
+
+#### Option A: Require Authentication to Download `/openapi.json`
+Wrap the `/openapi.json` endpoint in an authentication dependency:
+
+```python
+@app.get(&quot;/openapi.json&quot;, include_in_schema=False)
+async def get_secured_openapi(user: AuthenticatedUser = Depends(require_customer)):
+    return app.openapi()
+```
+
+#### Option B: Disable Public OpenAPI Entirely in Production
+When launching the application in high-security environments, pass `openapi_url=None` and `docs_url=None` to the public FastAPI instance:
+
+```python
+app = FastAPI(
+    title=&quot;&lt;dcouplr/&gt; API&quot;,
+    docs_url=None,       # Disables public /docs
+    redoc_url=None,      # Disables public /redoc
+    openapi_url=None,    # Disables public /openapi.json
+)
+```
+In this mode, public clients receive `404 Not Found` if they attempt to probe `/openapi.json`. Administrators continue to access the full specification safely inside the Admin Vault via:
+- **`GET /v1/admin/openapi.json`** (guarded by Admin Session JWT / API Key)
+- **`GET /docs/swagger`** (`http://127.0.0.1:8000/docs/swagger`)
+
+---
+
+## 4. Operator Runbook: Configuring Customer Keys
+
+### 1. Defining Permitted Customer Keys
+Configure customer API keys in your environment or Kubernetes Secret:
+
+```bash
+# Production .env / Kubernetes Secret
+DCOUPLR_ENFORCE_AUTH=true
+DCOUPLR_CUSTOMER_KEYS=&quot;cust_acme_corp_key_2026,cust_globex_ent_key_2026&quot;
+DCOUPLR_ADMIN_KEY=&quot;dcouplr-admin-2026-vault-key&quot;
+```
+
+### 2. Client Invocations with Customer Permission
+
+#### CLI Curl Call:
+```bash
+# Valid Request with Customer Key
+curl -X POST http://127.0.0.1:8000/v1/translate \
+  -H &quot;X-API-Key: cust_acme_corp_key_2026&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;source_type&quot;: &quot;terraform&quot;, &quot;target_type&quot;: &quot;bicep&quot;, &quot;content&quot;: &quot;...&quot;}&#x27;
+```
+
+#### Expected Success Response:
+```json
+{
+  &quot;status&quot;: &quot;success&quot;,
+  &quot;source&quot;: &quot;terraform&quot;,
+  &quot;target&quot;: &quot;bicep&quot;,
+  &quot;output&quot;: &quot;...&quot;
+}
+```
+
+#### Unauthenticated Request (Missing Key):
+```bash
+curl -X POST http://127.0.0.1:8000/v1/translate \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;source_type&quot;: &quot;terraform&quot;, &quot;target_type&quot;: &quot;bicep&quot;, &quot;content&quot;: &quot;...&quot;}&#x27;
+```
+
+#### Expected Rejection:
+```json
+HTTP/1.1 401 Unauthorized
+{
+  &quot;detail&quot;: &quot;Authentication required. Please provide a valid customer &#x27;X-API-Key&#x27; or &#x27;Authorization: Bearer &lt;token&gt;&#x27; header.&quot;
+}
+```
+
+---
+
+## 5. Summary Matrix: What is Public vs What is in Admin
+
+| Component / Route | Public Customer Exposure | Admin Vault Exposure |
+| :--- | :--- | :--- |
+| **Transpilation (`/v1/translate`, `/parse`)** | ✅ Visible &amp; Callable | ✅ Fully Cataloged |
+| **CLI &amp; Diagnostics (`/v1/system/doctor`)** | ✅ Visible &amp; Callable | ✅ Fully Cataloged |
+| **Dashboard Topology (`/v1/telemetry/*`)** | ✅ Visible (Sanitized) | ✅ Fully Cataloged |
+| **Turnkey Recipe Catalog (`/v1/recipes`)** | ✅ Read-only Catalog | ✅ Full Execution Matrix |
+| **Turnkey Recipe Registration (`/register`)** | ❌ CLOAKED (Injection Risk) | ✅ Admin Only |
+| **SCIM User Provisioning (`/v1/scim/*`)** | ❌ CLOAKED (Directory Injection Risk) | ✅ Admin Master Console |
+| **Customer Support Bridge (`/v1/support/*`)** | ❌ CLOAKED | ✅ Support Desk &amp; Admin Console |
+| **Consensus Mesh (`/v1/raft/*`)** | ❌ CLOAKED | ✅ Admin Cluster Console |
+| **Storage Compactor (`/v1/storage/*`)** | ❌ CLOAKED | ✅ Admin Storage Console |
+| **Master Swagger UI** | `/docs/swagger` (Customer only, Open) | Privileged Swagger (All 107 APIs, **Strictly Gated**) |
+| **OpenAPI JSON Endpoint** | `/openapi.json` (Filtered, Open) | `/v1/admin/openapi.json` (Full, **401 Unauthorized without Admin Auth**) |
+| **API Inventory Catalog** | Hidden from public | `/v1/admin/api-catalog` (**401 Unauthorized without Admin Auth**) |
+
+---
+
+## 6. Administrator Security Gate on Privileged APIs
+
+To prevent unauthorized access to sensitive internal infrastructure, consensus protocols, and customer support operations:
+
+1. **Dual-Layer Gating**:
+   - **Frontend DOM Lockdown**: Direct browser navigation to privileged endpoints immediately requires authentication, hiding `#swagger-ui`. Access requires either an active admin session, credentials verification (`admin` + passcode), or enterprise SSO (Okta / Azure).
+   - **Backend 401 Enforcement**: Direct programmatic requests (via `curl` or scripts) to `/v1/admin/openapi.json` and `/v1/admin/api-catalog` return `HTTP 401 Unauthorized` unless accompanied by `X-API-Key: dcouplr-admin-2026`, `Authorization: Bearer &lt;admin-token&gt;`, or the `dcouplr_admin_token` cookie.
+2. **Session Persistence**: Unlocking privileged endpoints sets an encrypted session cookie (`dcouplr_admin_token`) and session storage token, enabling seamless operator workflows between the Admin Document Vault and Admin Swagger UI.
+3. **Instant Revocation**: Clicking `[ 🔒 Lock &amp; Sign Out ]` clears all cookies and session storage, unmounts Swagger UI from memory, and re-locks the Security Gate immediately.
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

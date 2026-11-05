@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - SPIFFE_SPIRE_ZERO_TRUST_WORKLOAD_ATTESTATION.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/SPIFFE_SPIRE_ZERO_TRUST_WORKLOAD_ATTESTATION.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="SPIFFE_SPIRE_ZERO_TRUST_WORKLOAD_ATTESTATION.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="spiffespire-zero-secret-host-attestation-architecture-deep-dive">🛡️ SPIFFE/SPIRE Zero-Secret Host Attestation Architecture &amp; Deep-Dive</h1>
+<p><strong>Wordmark &amp; Product Identity:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code><br />
+<strong>Security Model:</strong> Cryptographic Mutual TLS Workload Attestation<br />
+<strong>Trust Domain:</strong> <code>spiffe://decoupler.internal</code><br />
+<strong>Standard Specification:</strong> SPIFFE X.509 SVID (RFC-compliant)<br />
+<strong>Execution Runtime:</strong> Distroless Non-Root (<code>UID 65532</code>, <code>gcr.io/distroless/static-debian12</code>)</p>
+<hr />
+<h2 id="1-architectural-overview-zero-static-root-secrets">1. Architectural Overview: Zero Static Root Secrets</h2>
+<p>Traditional distributed systems rely on long-lived API tokens, shared root keys, or static certificates written to persistent disks or environment variables. If an adversary gains read access to the node or container filesystem, secrets are exfiltrated.</p>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> eliminates static root secrets entirely:</p>
+<ol>
+<li><strong>Dynamic Ephemeral SVIDs:</strong> All node-to-node communication (gRPC telemetry ingestion and HashiCorp Raft consensus replication on port 8300) authenticates strictly using short-lived X.509 SPIFFE Verifiable Identity Documents (SVIDs).</li>
+<li><strong>In-Memory Negotiation:</strong> SVID certificates and private keys are negotiated dynamically over a local Unix domain socket (<code>/run/spire/sockets/agent.sock</code>) and cached exclusively in volatile RAM.</li>
+<li><strong>Automatic Micro-Rotation:</strong> Certificates rotate automatically every 60 minutes with zero disruption to active Raft consensus streams or telemetry parsing pipelines.</li>
+</ol>
+<hr />
+<h2 id="2-spire-agent-daemonset-integration-registration-socket">2. SPIRE Agent DaemonSet Integration &amp; Registration Socket</h2>
+<p>The SPIRE Agent runs as a Kubernetes <code>DaemonSet</code> on every worker node, exposing the Workload API socket to local pods:</p>
+<h3 id="daemonset-volume-configuration-deployspirespire-agentconf">DaemonSet Volume Configuration (<code>deploy/spire/spire-agent.conf</code>)</h3>
+<div class="code-box"><div class="code-box-header"><span>hcl</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-hcl">agent {
+    data_dir = &quot;/run/spire&quot;
+    log_level = &quot;INFO&quot;
+    server_address = &quot;spire-server.kube-system.svc.cluster.local&quot;
+    server_port = &quot;8081&quot;
+    socket_path = &quot;/run/spire/sockets/agent.sock&quot;
+    trust_domain = &quot;decoupler.internal&quot;
+}
+</code></pre></div>
+<h3 id="pod-volume-mount-specification">Pod Volume Mount Specification</h3>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> agent pods mount the Unix domain socket via a hostPath or shared emptyDir volume:</p>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml">volumeMounts:
+  - name: spire-agent-socket
+    mountPath: /run/spire/sockets
+    readOnly: true
+volumes:
+  - name: spire-agent-socket
+    hostPath:
+      path: /run/spire/sockets
+      type: DirectoryOrCreate
+</code></pre></div>
+<hr />
+<h2 id="3-kubernetes-admission-webhook-pod-injection-spireentry-crd">3. Kubernetes Admission Webhook Pod Injection &amp; <code>SpireEntry</code> CRD</h2>
+<p>Automatic workload identity registration is driven declaratively via the Kubernetes Mutating Admission Webhook (<code>deploy/spire-registrar-webhook.yaml</code>) and the <code>SpireEntry</code> Custom Resource Definition (<code>deploy/spireentry-crd.yaml</code>):</p>
+<h3 id="admission-webhook-architecture">Admission Webhook Architecture</h3>
+<ol>
+<li>When a new <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> worker or parser pod is scheduled, the admission webhook intercepts the <code>Pod/CREATE</code> event.</li>
+<li>The webhook mutates the pod specification to inject:
+<ul>
+<li>The <code>/run/spire/sockets/agent.sock</code> volume mount.</li>
+<li>Non-root security context (<code>UID 65532</code>, <code>GID 65532</code>).</li>
+<li>The SPIFFE workload selector labels.</li>
+</ul>
+</li>
+<li>The registrar creates a corresponding <code>SpireEntry</code> CRD record in Kubernetes:</li>
+</ol>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml">apiVersion: spire.spiffe.io/v1alpha1
+kind: SpireEntry
+metadata:
+  name: decoupler-cell-us-east-01
+  namespace: decoupler-system
+spec:
+  spiffeId: &quot;spiffe://decoupler.internal/cluster/dc-cell-us-east-01/agent&quot;
+  parentId: &quot;spiffe://decoupler.internal/ns/spire/sa/spire-agent&quot;
+  ttl: 3600
+  selectors:
+    - type: &quot;k8s&quot;
+      value: &quot;ns:decoupler-system&quot;
+    - type: &quot;k8s&quot;
+      value: &quot;sa:decoupler-node-sa&quot;
+    - type: &quot;k8s&quot;
+      value: &quot;pod-label:app.kubernetes.io/name:decoupler-core&quot;
+status:
+  status: &quot;READY&quot;
+  entryID: &quot;entry-8849201&quot;
+</code></pre></div>
+<hr />
+<h2 id="4-in-memory-mtls-handshake-sub-20ms-sla">4. In-Memory mTLS Handshake &amp; Sub-20ms SLA</h2>
+<p>During node discovery and peer connection establishment:</p>
+<ol>
+<li>The custom Raft transport dialer (<code>engine/spiffe_raft_transport.go</code>) queries the local SPIRE Workload API over <code>/run/spire/sockets/agent.sock</code>.</li>
+<li>The SPIRE agent returns an X.509 SVID and the federated trust bundle.</li>
+<li>Node TLS certificates are cached in memory using a non-blocking <code>sync.Map</code> with cache TTL validation.</li>
+<li><strong>Latency Verification:</strong> Initial mTLS handshakes complete in <code>&lt; 4 ms</code>, with subsequent warm connections executing under <code>&lt; 0.05 ms</code>, meeting the enterprise sub-20ms latency budget.</li>
+</ol>
+<hr />
+<h2 id="5-chaos-partition-recovery-verification-scriptschaosetcdlosssh">5. Chaos Partition Recovery Verification (<code>scripts/chaos_etcd_loss.sh</code>)</h2>
+<p>To prove decoupling from the centralized Kubernetes control plane:</p>
+<ol>
+<li><code>scripts/chaos_etcd_loss.sh</code> drops all outbound network packets to port 6443 (<code>iptables -A OUTPUT -p tcp --dport 6443 -j DROP</code>), simulating catastrophic <code>etcd</code> loss.</li>
+<li>The embedded 3-node HashiCorp Raft consensus ring continues replicating telemetry transactions via local mTLS SVIDs cached in RAM.</li>
+<li><code>decoupler status</code> executes over local Unix sockets without stalling or panicking, confirming continuous operational survivability.</li>
+</ol>
+</div>
+      <pre id="raw-view"><code># 🛡️ SPIFFE/SPIRE Zero-Secret Host Attestation Architecture &amp; Deep-Dive
+
+**Wordmark &amp; Product Identity:** `&lt;dcouplr/&gt;`  
+**Security Model:** Cryptographic Mutual TLS Workload Attestation  
+**Trust Domain:** `spiffe://decoupler.internal`  
+**Standard Specification:** SPIFFE X.509 SVID (RFC-compliant)  
+**Execution Runtime:** Distroless Non-Root (`UID 65532`, `gcr.io/distroless/static-debian12`)  
+
+---
+
+## 1. Architectural Overview: Zero Static Root Secrets
+
+Traditional distributed systems rely on long-lived API tokens, shared root keys, or static certificates written to persistent disks or environment variables. If an adversary gains read access to the node or container filesystem, secrets are exfiltrated.
+
+`&lt;dcouplr/&gt;` eliminates static root secrets entirely:
+1. **Dynamic Ephemeral SVIDs:** All node-to-node communication (gRPC telemetry ingestion and HashiCorp Raft consensus replication on port 8300) authenticates strictly using short-lived X.509 SPIFFE Verifiable Identity Documents (SVIDs).
+2. **In-Memory Negotiation:** SVID certificates and private keys are negotiated dynamically over a local Unix domain socket (`/run/spire/sockets/agent.sock`) and cached exclusively in volatile RAM.
+3. **Automatic Micro-Rotation:** Certificates rotate automatically every 60 minutes with zero disruption to active Raft consensus streams or telemetry parsing pipelines.
+
+---
+
+## 2. SPIRE Agent DaemonSet Integration &amp; Registration Socket
+
+The SPIRE Agent runs as a Kubernetes `DaemonSet` on every worker node, exposing the Workload API socket to local pods:
+
+### DaemonSet Volume Configuration (`deploy/spire/spire-agent.conf`)
+```hcl
+agent {
+    data_dir = &quot;/run/spire&quot;
+    log_level = &quot;INFO&quot;
+    server_address = &quot;spire-server.kube-system.svc.cluster.local&quot;
+    server_port = &quot;8081&quot;
+    socket_path = &quot;/run/spire/sockets/agent.sock&quot;
+    trust_domain = &quot;decoupler.internal&quot;
+}
+```
+
+### Pod Volume Mount Specification
+`&lt;dcouplr/&gt;` agent pods mount the Unix domain socket via a hostPath or shared emptyDir volume:
+```yaml
+volumeMounts:
+  - name: spire-agent-socket
+    mountPath: /run/spire/sockets
+    readOnly: true
+volumes:
+  - name: spire-agent-socket
+    hostPath:
+      path: /run/spire/sockets
+      type: DirectoryOrCreate
+```
+
+---
+
+## 3. Kubernetes Admission Webhook Pod Injection &amp; `SpireEntry` CRD
+
+Automatic workload identity registration is driven declaratively via the Kubernetes Mutating Admission Webhook (`deploy/spire-registrar-webhook.yaml`) and the `SpireEntry` Custom Resource Definition (`deploy/spireentry-crd.yaml`):
+
+### Admission Webhook Architecture
+1. When a new `&lt;dcouplr/&gt;` worker or parser pod is scheduled, the admission webhook intercepts the `Pod/CREATE` event.
+2. The webhook mutates the pod specification to inject:
+   - The `/run/spire/sockets/agent.sock` volume mount.
+   - Non-root security context (`UID 65532`, `GID 65532`).
+   - The SPIFFE workload selector labels.
+3. The registrar creates a corresponding `SpireEntry` CRD record in Kubernetes:
+
+```yaml
+apiVersion: spire.spiffe.io/v1alpha1
+kind: SpireEntry
+metadata:
+  name: decoupler-cell-us-east-01
+  namespace: decoupler-system
+spec:
+  spiffeId: &quot;spiffe://decoupler.internal/cluster/dc-cell-us-east-01/agent&quot;
+  parentId: &quot;spiffe://decoupler.internal/ns/spire/sa/spire-agent&quot;
+  ttl: 3600
+  selectors:
+    - type: &quot;k8s&quot;
+      value: &quot;ns:decoupler-system&quot;
+    - type: &quot;k8s&quot;
+      value: &quot;sa:decoupler-node-sa&quot;
+    - type: &quot;k8s&quot;
+      value: &quot;pod-label:app.kubernetes.io/name:decoupler-core&quot;
+status:
+  status: &quot;READY&quot;
+  entryID: &quot;entry-8849201&quot;
+```
+
+---
+
+## 4. In-Memory mTLS Handshake &amp; Sub-20ms SLA
+
+During node discovery and peer connection establishment:
+1. The custom Raft transport dialer (`engine/spiffe_raft_transport.go`) queries the local SPIRE Workload API over `/run/spire/sockets/agent.sock`.
+2. The SPIRE agent returns an X.509 SVID and the federated trust bundle.
+3. Node TLS certificates are cached in memory using a non-blocking `sync.Map` with cache TTL validation.
+4. **Latency Verification:** Initial mTLS handshakes complete in `&lt; 4 ms`, with subsequent warm connections executing under `&lt; 0.05 ms`, meeting the enterprise sub-20ms latency budget.
+
+---
+
+## 5. Chaos Partition Recovery Verification (`scripts/chaos_etcd_loss.sh`)
+
+To prove decoupling from the centralized Kubernetes control plane:
+1. `scripts/chaos_etcd_loss.sh` drops all outbound network packets to port 6443 (`iptables -A OUTPUT -p tcp --dport 6443 -j DROP`), simulating catastrophic `etcd` loss.
+2. The embedded 3-node HashiCorp Raft consensus ring continues replicating telemetry transactions via local mTLS SVIDs cached in RAM.
+3. `decoupler status` executes over local Unix sockets without stalling or panicking, confirming continuous operational survivability.
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># 🛡️ SPIFFE/SPIRE Zero-Secret Host Attestation Architecture &amp; Deep-Dive
+
+**Wordmark &amp; Product Identity:** `&lt;dcouplr/&gt;`  
+**Security Model:** Cryptographic Mutual TLS Workload Attestation  
+**Trust Domain:** `spiffe://decoupler.internal`  
+**Standard Specification:** SPIFFE X.509 SVID (RFC-compliant)  
+**Execution Runtime:** Distroless Non-Root (`UID 65532`, `gcr.io/distroless/static-debian12`)  
+
+---
+
+## 1. Architectural Overview: Zero Static Root Secrets
+
+Traditional distributed systems rely on long-lived API tokens, shared root keys, or static certificates written to persistent disks or environment variables. If an adversary gains read access to the node or container filesystem, secrets are exfiltrated.
+
+`&lt;dcouplr/&gt;` eliminates static root secrets entirely:
+1. **Dynamic Ephemeral SVIDs:** All node-to-node communication (gRPC telemetry ingestion and HashiCorp Raft consensus replication on port 8300) authenticates strictly using short-lived X.509 SPIFFE Verifiable Identity Documents (SVIDs).
+2. **In-Memory Negotiation:** SVID certificates and private keys are negotiated dynamically over a local Unix domain socket (`/run/spire/sockets/agent.sock`) and cached exclusively in volatile RAM.
+3. **Automatic Micro-Rotation:** Certificates rotate automatically every 60 minutes with zero disruption to active Raft consensus streams or telemetry parsing pipelines.
+
+---
+
+## 2. SPIRE Agent DaemonSet Integration &amp; Registration Socket
+
+The SPIRE Agent runs as a Kubernetes `DaemonSet` on every worker node, exposing the Workload API socket to local pods:
+
+### DaemonSet Volume Configuration (`deploy/spire/spire-agent.conf`)
+```hcl
+agent {
+    data_dir = &quot;/run/spire&quot;
+    log_level = &quot;INFO&quot;
+    server_address = &quot;spire-server.kube-system.svc.cluster.local&quot;
+    server_port = &quot;8081&quot;
+    socket_path = &quot;/run/spire/sockets/agent.sock&quot;
+    trust_domain = &quot;decoupler.internal&quot;
+}
+```
+
+### Pod Volume Mount Specification
+`&lt;dcouplr/&gt;` agent pods mount the Unix domain socket via a hostPath or shared emptyDir volume:
+```yaml
+volumeMounts:
+  - name: spire-agent-socket
+    mountPath: /run/spire/sockets
+    readOnly: true
+volumes:
+  - name: spire-agent-socket
+    hostPath:
+      path: /run/spire/sockets
+      type: DirectoryOrCreate
+```
+
+---
+
+## 3. Kubernetes Admission Webhook Pod Injection &amp; `SpireEntry` CRD
+
+Automatic workload identity registration is driven declaratively via the Kubernetes Mutating Admission Webhook (`deploy/spire-registrar-webhook.yaml`) and the `SpireEntry` Custom Resource Definition (`deploy/spireentry-crd.yaml`):
+
+### Admission Webhook Architecture
+1. When a new `&lt;dcouplr/&gt;` worker or parser pod is scheduled, the admission webhook intercepts the `Pod/CREATE` event.
+2. The webhook mutates the pod specification to inject:
+   - The `/run/spire/sockets/agent.sock` volume mount.
+   - Non-root security context (`UID 65532`, `GID 65532`).
+   - The SPIFFE workload selector labels.
+3. The registrar creates a corresponding `SpireEntry` CRD record in Kubernetes:
+
+```yaml
+apiVersion: spire.spiffe.io/v1alpha1
+kind: SpireEntry
+metadata:
+  name: decoupler-cell-us-east-01
+  namespace: decoupler-system
+spec:
+  spiffeId: &quot;spiffe://decoupler.internal/cluster/dc-cell-us-east-01/agent&quot;
+  parentId: &quot;spiffe://decoupler.internal/ns/spire/sa/spire-agent&quot;
+  ttl: 3600
+  selectors:
+    - type: &quot;k8s&quot;
+      value: &quot;ns:decoupler-system&quot;
+    - type: &quot;k8s&quot;
+      value: &quot;sa:decoupler-node-sa&quot;
+    - type: &quot;k8s&quot;
+      value: &quot;pod-label:app.kubernetes.io/name:decoupler-core&quot;
+status:
+  status: &quot;READY&quot;
+  entryID: &quot;entry-8849201&quot;
+```
+
+---
+
+## 4. In-Memory mTLS Handshake &amp; Sub-20ms SLA
+
+During node discovery and peer connection establishment:
+1. The custom Raft transport dialer (`engine/spiffe_raft_transport.go`) queries the local SPIRE Workload API over `/run/spire/sockets/agent.sock`.
+2. The SPIRE agent returns an X.509 SVID and the federated trust bundle.
+3. Node TLS certificates are cached in memory using a non-blocking `sync.Map` with cache TTL validation.
+4. **Latency Verification:** Initial mTLS handshakes complete in `&lt; 4 ms`, with subsequent warm connections executing under `&lt; 0.05 ms`, meeting the enterprise sub-20ms latency budget.
+
+---
+
+## 5. Chaos Partition Recovery Verification (`scripts/chaos_etcd_loss.sh`)
+
+To prove decoupling from the centralized Kubernetes control plane:
+1. `scripts/chaos_etcd_loss.sh` drops all outbound network packets to port 6443 (`iptables -A OUTPUT -p tcp --dport 6443 -j DROP`), simulating catastrophic `etcd` loss.
+2. The embedded 3-node HashiCorp Raft consensus ring continues replicating telemetry transactions via local mTLS SVIDs cached in RAM.
+3. `decoupler status` executes over local Unix sockets without stalling or panicking, confirming continuous operational survivability.
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DBA Desk • Inspection Studio & Safe Query Console (Expanded Modal) • dcouplr</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/notifications.css">
+  <style>
+    :root {
+      --bg-primary: #0a0f1d;
+      --bg-secondary: #0f172a;
+      --bg-card: rgba(15, 23, 42, 0.88);
+      --bg-hover: rgba(255, 255, 255, 0.05);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --border-purple: rgba(168, 85, 247, 0.4);
+      --purple-accent: #a855f7;
+      --purple-light: #c084fc;
+      --blue-accent: #38bdf8;
+      --green-accent: #34d399;
+      --amber-accent: #fbbf24;
+      --red-accent: #f87171;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    .top-header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .dcouplr-logo {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: #ffffff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      letter-spacing: -0.5px;
+    }
+    .dcouplr-bracket { color: var(--purple-accent); }
+    .dcouplr-text { color: #f8fafc; margin: 0 1px; }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .nav-hub-btn {
+      font-family: var(--font-sans);
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      padding: 5px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .nav-hub-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .brand-badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
+    }
+    .badge-purple { background: rgba(168, 85, 247, 0.18); color: var(--purple-light); border: 1px solid rgba(168, 85, 247, 0.4); }
+    .badge-blue { background: rgba(56, 189, 248, 0.15); color: var(--blue-accent); border: 1px solid rgba(56, 189, 248, 0.35); }
+    .badge-green { background: rgba(52, 211, 153, 0.15); color: var(--green-accent); border: 1px solid rgba(52, 211, 153, 0.35); }
+
+    .main-content {
+      flex: 1;
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 1920px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Dual Database Target Selector Bar */
+    .target-bar {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--border-purple);
+      border-radius: 8px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-db-target {
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-db-target:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+    .btn-db-target.active.central {
+      background: rgba(168, 85, 247, 0.25);
+      border-color: #c084fc;
+      color: #f3e8ff;
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
+    }
+    .btn-db-target.active.telemetry {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: #38bdf8;
+      color: #e0f2fe;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .banner-bar {
+      background: linear-gradient(90deg, rgba(168, 85, 247, 0.15) 0%, rgba(56, 189, 248, 0.12) 100%);
+      border: 1px solid var(--border-purple);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .health-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.85rem;
+      margin-top: 0.85rem;
+    }
+
+    .health-card {
+      background: rgba(11, 17, 32, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+    .health-card-label {
+      font-size: 0.68rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .health-card-val {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .health-card-sub {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      margin-top: 3px;
+    }
+
+    .studio-workspace {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 1.25rem;
+      flex: 1;
+      min-height: 560px;
+    }
+
+    .panel-tables {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-height: 780px;
+      overflow-y: auto;
+    }
+
+    .panel-query-studio {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .search-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 0.78rem;
+      color: #ffffff;
+      outline: none;
+      width: 100%;
+    }
+    .search-box:focus { border-color: var(--purple-accent); }
+
+    .tables-scroll-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .table-list-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .table-list-item:hover {
+      background: rgba(168, 85, 247, 0.12);
+      border-color: rgba(168, 85, 247, 0.35);
+    }
+    .table-list-item.selected {
+      background: rgba(168, 85, 247, 0.22);
+      border-color: var(--purple-accent);
+    }
+    .table-item-name {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+    .table-item-sub {
+      font-size: 0.68rem;
+      color: var(--text-secondary);
+    }
+
+    .sql-editor-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .shortcuts-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .shortcut-btn {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: #cbd5e1;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .shortcut-btn:hover {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: var(--purple-accent);
+      color: #ffffff;
+    }
+    .shortcut-btn.danger {
+      border-color: rgba(239, 68, 68, 0.4);
+      color: var(--red-accent);
+    }
+    .shortcut-btn.danger:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    .sql-textarea {
+      width: 100%;
+      min-height: 120px;
+      background: #030712;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: #f3e8ff;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 10px;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+    }
+    .sql-textarea:focus { border-color: var(--purple-accent); }
+
+    .execution-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-run {
+      background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+      color: #ffffff;
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 7px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.35);
+      transition: all 0.2s;
+    }
+    .btn-run:hover {
+      box-shadow: 0 4px 18px rgba(168, 85, 247, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .results-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      flex: 1;
+      min-height: 300px;
+    }
+
+    .table-container {
+      overflow: auto;
+      max-height: 440px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      background: #030712;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      text-align: left;
+    }
+    table.data-table th {
+      background: #0b1120;
+      color: #cbd5e1;
+      padding: 8px 12px;
+      position: sticky;
+      top: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-weight: 700;
+    }
+    table.data-table td {
+      padding: 6px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #e2e8f0;
+      white-space: nowrap;
+    }
+    table.data-table tr:hover td {
+      background: rgba(168, 85, 247, 0.08);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="top-header">
+    <div class="brand-group">
+      <a href="/admin" class="dcouplr-logo">
+        <span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span>
+      </a>
+      <span style="font-size: 0.88rem; font-weight: 800; color: #c084fc; letter-spacing: 0.5px;">
+        🗄️ DBA Desk &bull; Inspection Studio &amp; Safe Query Console (Expanded Modal)
+      </span>
+
+      <div class="nav-actions">
+        <a href="/admin" class="nav-hub-btn">⚙️ Admin Portal</a>
+        <a href="/DBADesk?mode=outside_vpc&hub_host=dba_dcouplr.yourcompany.com" class="nav-hub-btn" style="border-color: #38bdf8; color: #38bdf8;">
+          🔒 Customer DBA Desk (vpc_telemetry_db only) ↗
+        </a>
+      </div>
+    </div>
+
+    <div class="brand-badges">
+      <span class="badge badge-purple">ROLE: PLATFORM OWNER / SYSADMIN</span>
+      <span class="badge badge-purple" id="header-target-badge">TARGET: dcouplr_central_db.db</span>
+      <span class="badge badge-green">🛡️ GUARDRAIL: UNLOCKED (SYSADMIN PRIVILEGED)</span>
+      <span class="badge badge-blue">⚡ FULL SYSADMIN PERMISSIONS (BOTH DBS)</span>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- Dual Database Target Selector Bar (dcouplr_central_db & vpc_telemetry_db) -->
+    <div class="target-bar" id="target-bar">
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <span style="font-size: 0.78rem; font-weight: 800; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+          <span style="font-size: 1.1rem;">🗄️</span> ACTIVE TARGET DATABASE:
+        </span>
+        <button type="button" class="btn-db-target active central" id="btn-target-central" data-target="dcouplr_central_db" title="Switch to Central Enterprise Multi-Tenant Vendor DB (Full Sysadmin Rights • No Guardrails)">
+          🏢 dcouplr_central_db (Vendor DB &bull; Full Sysadmin Rights)
+        </button>
+        <button type="button" class="btn-db-target telemetry" id="btn-target-telemetry" data-target="vpc_telemetry_db" title="Switch to Customer In-VPC Sovereign Telemetry DB (Full Sysadmin Rights • Unlocked Guardrail)">
+          🔒 vpc_telemetry_db (Customer In-VPC DB &bull; Unlocked Guardrail)
+        </button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <span class="badge badge-purple" id="badge-sysadmin-rights">⚡ ALL SYSADMIN PERMISSIONS ACTIVE</span>
+        <span class="badge badge-green" id="badge-guardrail-unlocked">🛡️ GUARDRAIL: AUTOMATICALLY UNLOCKED</span>
+      </div>
+    </div>
+
+    <!-- Section 1: Storage Health Banner -->
+    <section class="banner-bar">
+      <div style="flex: 1;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+          <span style="font-size: 1.6rem;" id="banner-icon">🏢</span>
+          <div>
+            <h2 style="font-size: 1.15rem; font-weight: 800; color: #ffffff;" id="banner-title">
+              Enterprise Central Vendor Database Administrator Studio
+            </h2>
+            <p style="font-size: 0.76rem; color: #cbd5e1;" id="banner-desc">
+              Central Multi-Tenant Control Plane SSOT &bull; <code id="banner-db-code" style="color: #c084fc;">dcouplr_central_db.db</code> &bull; All Sysadmin Permissions &bull; Automatic Guardrail Unlocked
+            </p>
+          </div>
+        </div>
+
+        <div class="health-grid">
+          <div class="health-card">
+            <div class="health-card-label">Database Target</div>
+            <div class="health-card-val" id="health-target-name" style="color: #c084fc; font-size: 0.92rem;">dcouplr_central_db.db</div>
+            <div class="health-card-sub" id="health-target-sub" style="color: #34d399;">Multi-Tenant Vendor SSOT</div>
+          </div>
+          <div class="health-card">
+            <div class="health-card-label">PRAGMA Integrity</div>
+            <div class="health-card-val" id="health-integrity" style="color: #34d399;">INTEGRITY_OK</div>
+            <div class="health-card-sub">0 Corrupt Pages</div>
+          </div>
+          <div class="health-card">
+            <div class="health-card-label">Journal &amp; Size</div>
+            <div class="health-card-val" id="health-size" style="color: #facc15;">WAL &bull; -- MB</div>
+            <div class="health-card-sub">WAL Mode Active</div>
+          </div>
+          <div class="health-card">
+            <div class="health-card-label">Encryption Engine</div>
+            <div class="health-card-val" style="color: #34d399; font-size: 0.95rem;">SQLCipher 4.x</div>
+            <div class="health-card-sub">AES-256-CBC Transparent</div>
+          </div>
+          <div class="health-card">
+            <div class="health-card-label" id="health-tables-label">Tables Count</div>
+            <div class="health-card-val" id="health-tables" style="color: #38bdf8;">-- Tables</div>
+            <div class="health-card-sub">All Schemas Verified</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <button type="button" class="btn-run" id="btn-deep-scan" style="background: rgba(168, 85, 247, 0.25); border: 1px solid #c084fc; font-size: 0.74rem;">
+          🔄 Run PRAGMA Integrity Check
+        </button>
+        <button type="button" class="nav-hub-btn" id="btn-reset-db" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); color: #f87171; font-weight: 700;">
+          🧹 Reset Database to Day-0 Slate
+        </button>
+      </div>
+    </section>
+
+    <!-- Section 2: Studio Workspace -->
+    <div class="studio-workspace">
+
+      <!-- Left Column: Tables Browser -->
+      <aside class="panel-tables">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <strong style="font-size: 0.82rem; color: #cbd5e1; display: flex; align-items: center; gap: 6px;">
+            <span id="tables-panel-title">📚 Central DB Tables</span>
+            <span id="tables-count-badge" class="badge badge-purple">--</span>
+          </strong>
+          <button type="button" id="btn-refresh-tables" class="nav-hub-btn" style="padding: 2px 6px; font-size: 0.68rem;">🔄</button>
+        </div>
+
+        <input type="text" id="tables-filter-input" class="search-box" placeholder="🔍 Filter tables...">
+
+        <div id="tables-list-container" class="tables-scroll-list">
+          <div style="color: #64748b; font-size: 0.75rem; text-align: center; padding: 2rem;">Loading tables...</div>
+        </div>
+      </aside>
+
+      <!-- Right Column: Query Studio -->
+      <section class="panel-query-studio">
+
+        <!-- Status Strip -->
+        <div id="studio-status-strip" style="background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 8px; padding: 10px 14px; font-size: 0.78rem; color: #f3e8ff; display: flex; align-items: center; justify-content: space-between;">
+          <div id="status-strip-text">
+            <strong>🏢 Central Database Mode (No Guardrails):</strong> Full System DBA Administrative Rights active for <code>dcouplr_central_db.db</code>. DDL &amp; DML operations execute without guardrail restrictions.
+          </div>
+          <span class="badge badge-purple" id="status-strip-badge">DDL/DML UNRESTRICTED</span>
+        </div>
+
+        <!-- SQL Editor Card -->
+        <div class="sql-editor-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 0.82rem; font-weight: 700; color: #c084fc;" id="sql-editor-heading">
+              ⚡ SQL Editor &bull; Full Sysadmin Console
+            </span>
+          </div>
+
+          <!-- Dynamic Shortcuts Bar based on Active Database Target -->
+          <div class="shortcuts-bar" id="shortcuts-bar-container"></div>
+
+          <textarea id="sql-query-input" class="sql-textarea" rows="4">SELECT * FROM customers LIMIT 25;</textarea>
+
+          <div class="execution-controls">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.74rem; color: #94a3b8;">
+              <span>Row Limit:</span>
+              <select id="select-row-limit" style="background:#030712; color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:4px; padding:3px 6px;">
+                <option value="25" selected>25 rows</option>
+                <option value="50">50 rows</option>
+                <option value="100">100 rows</option>
+                <option value="500">500 rows</option>
+              </select>
+              <span>(Press Ctrl+Enter to execute)</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" id="btn-clear-sql" class="nav-hub-btn">🧹 Clear</button>
+              <button type="button" id="btn-execute-query" class="btn-run">▶️ Execute Query</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Query Results Card -->
+        <div class="results-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <strong style="font-size: 0.85rem; color: #fff;">📊 Execution Results</strong>
+              <span id="results-stats" style="font-size: 0.72rem; color: #94a3b8; font-family: var(--font-mono);">Ready</span>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button type="button" id="btn-copy-json" class="nav-hub-btn" style="padding: 3px 8px; font-size: 0.72rem;">📋 Copy JSON</button>
+              <button type="button" id="btn-export-csv" class="nav-hub-btn" style="padding: 3px 8px; font-size: 0.72rem;">📊 Export CSV</button>
+            </div>
+          </div>
+
+          <div id="results-table-container" class="table-container">
+            <div style="color: #64748b; font-size: 0.8rem; text-align: center; padding: 3rem;">
+              Click any table in the Tables Browser or press <strong>▶️ Execute Query</strong> to inspect live records.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <script src="/static/notifications.js"></script>
+  <script>
+    let currentTarget = 'dcouplr_central_db';
+    let cachedTables = [];
+    let lastQueryData = null;
+    let selectedTableName = null;
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function switchTarget(target) {
+      currentTarget = target;
+      const btnC = document.getElementById('btn-target-central');
+      const btnT = document.getElementById('btn-target-telemetry');
+      const headerBadge = document.getElementById('header-target-badge');
+      const bannerIcon = document.getElementById('banner-icon');
+      const bannerTitle = document.getElementById('banner-title');
+      const bannerDesc = document.getElementById('banner-desc');
+      const healthTargetName = document.getElementById('health-target-name');
+      const healthTargetSub = document.getElementById('health-target-sub');
+      const tablesPanelTitle = document.getElementById('tables-panel-title');
+      const statusText = document.getElementById('status-strip-text');
+      const statusBadge = document.getElementById('status-strip-badge');
+      const shortcutsContainer = document.getElementById('shortcuts-bar-container');
+      const sqlInput = document.getElementById('sql-query-input');
+
+      if (target === 'dcouplr_central_db') {
+        btnC.classList.add('active', 'central');
+        btnT.classList.remove('active', 'telemetry');
+        headerBadge.textContent = 'TARGET: dcouplr_central_db.db';
+        headerBadge.className = 'badge badge-purple';
+        bannerIcon.textContent = '🏢';
+        bannerTitle.textContent = 'Enterprise Central Vendor Database Administrator Studio';
+        bannerDesc.innerHTML = 'Central Multi-Tenant Control Plane SSOT &bull; <code style="color: #c084fc;">dcouplr_central_db.db</code> &bull; All Sysadmin Permissions &bull; Automatic Guardrail Unlocked';
+        healthTargetName.textContent = 'dcouplr_central_db.db';
+        healthTargetName.style.color = '#c084fc';
+        healthTargetSub.textContent = 'Multi-Tenant Vendor SSOT';
+        tablesPanelTitle.textContent = '📚 Central DB Tables';
+        statusText.innerHTML = '<strong>🏢 Central Database Mode (No Guardrails):</strong> Full System DBA Administrative Rights active for <code>dcouplr_central_db.db</code>. DDL &amp; DML operations execute without guardrail restrictions.';
+        statusBadge.textContent = 'DDL/DML UNRESTRICTED';
+        statusBadge.className = 'badge badge-purple';
+
+        shortcutsContainer.innerHTML = `
+          <button type="button" class="shortcut-btn" data-query="SELECT * FROM customers LIMIT 25;">Customers</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT * FROM product_skus;">Product SKUs</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT * FROM contracts LIMIT 25;">Contracts</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT * FROM customer_licenses LIMIT 25;">Licenses</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT seat_id, customer_id, vpc_identifier, cloud_environment, seat_status, last_heartbeat_at FROM customer_installation_seats LIMIT 25;">Seats</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT invoice_id, customer_id, invoice_number, amount_usd, payment_provider, invoice_status FROM commercial_invoices LIMIT 25;">Invoices</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT proration_id, customer_id, calculated_at, base_amount_usd, overage_charge_usd, total_due_usd, payment_status FROM billing_prorations LIMIT 25;">Prorations</button>
+          <button type="button" class="shortcut-btn" data-query="CREATE TABLE IF NOT EXISTS custom_partner_tenants (&#10;  tenant_id TEXT PRIMARY KEY,&#10;  tenant_name TEXT NOT NULL,&#10;  tier TEXT NOT NULL DEFAULT 'ENTERPRISE',&#10;  max_nodes INTEGER NOT NULL DEFAULT 100,&#10;  created_at REAL NOT NULL&#10;);" style="border-color:#a855f7; color:#c084fc; font-weight:700;">➕ CREATE TABLE</button>
+          <button type="button" class="shortcut-btn" data-query="ALTER TABLE custom_partner_tenants ADD COLUMN notes TEXT DEFAULT 'Approved';" style="border-color:#38bdf8; color:#38bdf8; font-weight:700;">✏️ ALTER TABLE</button>
+          <button type="button" class="shortcut-btn danger" data-query="DROP TABLE IF EXISTS custom_partner_tenants;" style="border-color:#ef4444; color:#f87171; font-weight:700;">🗑️ DROP TABLE</button>
+          <button type="button" class="shortcut-btn" data-query="INSERT INTO customers (customer_id, company_name, contact_email, contact_name, security_domain, account_tier, status, created_at, updated_at) VALUES ('cust_' || lower(hex(randomblob(4))), 'Acme Global Labs', 'dba@acmeglobal.com', 'Alex Vance', 'acmeglobal.com', 'ENTERPRISE_UNLIMITED', 'ACTIVE', strftime('%s','now'), strftime('%s','now'));" style="border-color:#34d399; color:#34d399; font-weight:700;">➕ INSERT Customer</button>
+          <button type="button" class="shortcut-btn" data-query="PRAGMA integrity_check;">PRAGMA Check</button>
+        `;
+        sqlInput.value = 'SELECT * FROM customers LIMIT 25;';
+      } else {
+        btnT.classList.add('active', 'telemetry');
+        btnC.classList.remove('active', 'central');
+        headerBadge.textContent = 'TARGET: vpc_telemetry_db.db';
+        headerBadge.className = 'badge badge-blue';
+        bannerIcon.textContent = '🔒';
+        bannerTitle.textContent = 'Customer In-VPC Database Administrator Console (Admin Sysadmin Mode)';
+        bannerDesc.innerHTML = 'Customer Sovereign In-VPC Telemetry SSOT &bull; <code style="color: #38bdf8;">vpc_telemetry_db.db</code> &bull; All Sysadmin Permissions &bull; Automatic Guardrail Unlocked';
+        healthTargetName.textContent = 'vpc_telemetry_db.db';
+        healthTargetName.style.color = '#38bdf8';
+        healthTargetSub.textContent = 'Customer Sovereign SSOT';
+        tablesPanelTitle.textContent = '📚 In-VPC DB Tables';
+        statusText.innerHTML = '<strong>🔒 Customer In-VPC Database (Sysadmin Unlocked):</strong> Operating with elevated Admin permissions over <code>vpc_telemetry_db.db</code>. DDL &amp; DML mutations permitted.';
+        statusBadge.textContent = 'SYSADMIN UNLOCKED';
+        statusBadge.className = 'badge badge-blue';
+
+        shortcutsContainer.innerHTML = `
+          <button type="button" class="shortcut-btn" data-query="SELECT license_id, customer_id, suite_edition, tier, licensed_nodes, active_monitored_nodes, cryptographic_status, expires_at FROM customer_license_state;">License State</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT node_id, hostname, toggle_count, max_toggles, is_toggle_locked, current_monitoring_state, last_toggled_iso FROM node_license_toggle_ledger ORDER BY last_toggled_at DESC LIMIT 25;">Toggle Ledger</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT update_id, timestamp, iso_time, previous_licensed_nodes, updated_licensed_nodes, tier, update_type, status FROM license_update_history ORDER BY timestamp DESC LIMIT 25;">License History</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT id AS node_id, vpc_id, hostname, ip, role, environment, status, agent_status FROM nodes LIMIT 25;">Nodes</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT id AS vpc_id, name, display_name, cloud, region, cidr_block, total_nodes, status FROM vpcs LIMIT 25;">VPCs</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT config_key, category, config_value, value_type, is_mutable FROM system_configuration_ssot LIMIT 25;">System Config</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT log_id, timestamp, actor_username, actor_role, action, target_resource, status FROM rbac_audit_logs ORDER BY timestamp DESC LIMIT 25;">Audit Logs</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT component_id, component_name, category, retention_days, max_storage_gb, auto_prune_enabled FROM system_retention_policies;">Retention Policies</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT backup_id, backup_name, target_type, file_size_bytes, backup_type, status, created_at FROM system_backup_records ORDER BY created_at DESC LIMIT 25;">Backups</button>
+          <button type="button" class="shortcut-btn" data-query="CREATE TABLE IF NOT EXISTS vpc_custom_routes (&#10;  route_id TEXT PRIMARY KEY,&#10;  vpc_id TEXT NOT NULL,&#10;  destination_cidr TEXT NOT NULL,&#10;  next_hop TEXT NOT NULL&#10;);" style="border-color:#a855f7; color:#c084fc; font-weight:700;">➕ CREATE TABLE</button>
+          <button type="button" class="shortcut-btn" data-query="ALTER TABLE vpc_custom_routes ADD COLUMN priority INTEGER DEFAULT 100;" style="border-color:#38bdf8; color:#38bdf8; font-weight:700;">✏️ ALTER TABLE</button>
+          <button type="button" class="shortcut-btn danger" data-query="DROP TABLE IF EXISTS vpc_custom_routes;" style="border-color:#ef4444; color:#f87171; font-weight:700;">🗑️ DROP TABLE</button>
+          <button type="button" class="shortcut-btn" data-query="PRAGMA integrity_check;">PRAGMA Check</button>
+        `;
+        sqlInput.value = 'SELECT license_id, customer_id, suite_edition, tier, licensed_nodes, active_monitored_nodes, cryptographic_status, expires_at FROM customer_license_state;';
+      }
+
+      bindShortcuts();
+      loadHealth();
+      loadTables();
+    }
+
+    async function loadHealth() {
+      try {
+        const res = await fetch(`/v1/dba/health?database_target=${encodeURIComponent(currentTarget)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        document.getElementById('health-integrity').textContent = data.integrity_check || 'OK';
+        document.getElementById('health-size').textContent = `WAL • ${data.file_size_mb || 0} MB`;
+        document.getElementById('health-tables').textContent = `${data.total_tables || 0} Tables`;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadTables() {
+      const container = document.getElementById('tables-list-container');
+      const badge = document.getElementById('tables-count-badge');
+      try {
+        const res = await fetch(`/v1/dba/tables?database_target=${encodeURIComponent(currentTarget)}`);
+        if (!res.ok) throw new Error('Failed to retrieve tables');
+        const data = await res.json();
+        cachedTables = data.tables || [];
+        if (badge) badge.textContent = `${cachedTables.length} tables`;
+        renderTablesList(cachedTables);
+      } catch (err) {
+        container.innerHTML = `<div style="color: #f87171; font-size: 0.75rem; padding: 1rem; text-align: center;">Error: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function renderTablesList(tables) {
+      const container = document.getElementById('tables-list-container');
+      const filter = (document.getElementById('tables-filter-input').value || '').toLowerCase().trim();
+      const filtered = filter ? tables.filter(t => t.table_name.toLowerCase().includes(filter)) : tables;
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="color: #64748b; font-size: 0.75rem; text-align: center; padding: 1.5rem;">No tables match filter.</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(t => `
+        <div class="table-list-item ${t.table_name === selectedTableName ? 'selected' : ''}" data-table="${escapeHtml(t.table_name)}">
+          <div>
+            <div class="table-item-name">${escapeHtml(t.table_name)}</div>
+            <div class="table-item-sub">${t.columns_count} columns</div>
+          </div>
+          <span class="badge ${currentTarget === 'dcouplr_central_db' ? 'badge-purple' : 'badge-blue'}">${t.row_count} rows</span>
+        </div>
+      `).join('');
+
+      container.querySelectorAll('.table-list-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const tname = item.getAttribute('data-table');
+          selectedTableName = tname;
+          document.querySelectorAll('.table-list-item').forEach(i => i.classList.remove('selected'));
+          item.classList.add('selected');
+          const q = `SELECT * FROM ${tname} LIMIT 25;`;
+          document.getElementById('sql-query-input').value = q;
+          executeQuery(q);
+        });
+      });
+    }
+
+    async function executeQuery(queryText) {
+      const query = queryText || document.getElementById('sql-query-input').value.trim();
+      if (!query) return;
+
+      const limit = parseInt(document.getElementById('select-row-limit').value, 10) || 25;
+      const stats = document.getElementById('results-stats');
+      const container = document.getElementById('results-table-container');
+
+      stats.textContent = `Executing query on ${currentTarget}...`;
+      stats.style.color = currentTarget === 'dcouplr_central_db' ? '#c084fc' : '#38bdf8';
+
+      try {
+        const res = await fetch('/v1/dba/query', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-API-Key': sessionStorage.getItem('dcouplr_dba_token') || 'session_dba_token_2026'
+          },
+          body: JSON.stringify({
+            query: query,
+            limit: limit,
+            database_target: currentTarget,
+            admin_sysadmin_unlocked: true
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          stats.textContent = `Error: HTTP ${res.status}`;
+          stats.style.color = '#ef4444';
+          container.innerHTML = `<div style="padding: 1.5rem; color: #f87171; font-family: var(--font-mono); font-size: 0.8rem;">${escapeHtml(data.detail || 'Execution error')}</div>`;
+          return;
+        }
+
+        lastQueryData = data;
+        stats.textContent = `Returned ${data.row_count || 0} rows in ${data.execution_time_ms || 0}ms (${data.query_type || 'QUERY'})`;
+        stats.style.color = '#34d399';
+
+        if (data.is_mutation) {
+          container.innerHTML = `
+            <div style="padding: 2rem; text-align: center; color: #34d399; font-family: var(--font-mono);">
+              <div style="font-size: 1.8rem; margin-bottom: 8px;">✅</div>
+              <div style="font-weight: 700; font-size: 0.95rem;">DDL / DML Mutation Executed Successfully</div>
+              <div style="color: #94a3b8; font-size: 0.78rem; margin-top: 4px;">Rows affected: ${data.rows_affected ?? 0} &bull; Target: ${currentTarget}</div>
+            </div>
+          `;
+          loadHealth();
+          loadTables();
+          return;
+        }
+
+        renderResultsTable(data.columns || [], data.rows || []);
+      } catch (err) {
+        stats.textContent = `Network Error: ${err.message}`;
+        stats.style.color = '#ef4444';
+      }
+    }
+
+    function renderResultsTable(columns, rows) {
+      const container = document.getElementById('results-table-container');
+      if (columns.length === 0) {
+        container.innerHTML = '<div style="color: #64748b; font-size: 0.8rem; text-align: center; padding: 2.5rem;">Query executed successfully with 0 columns returned.</div>';
+        return;
+      }
+
+      if (rows.length === 0) {
+        container.innerHTML = `
+          <table class="data-table">
+            <thead>
+              <tr>${columns.map(c => `<th>${escapeHtml(c)}</th>`).join('')}</tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="${columns.length}" style="text-align: center; color: #64748b; padding: 2rem;">No matching rows found in ${currentTarget}.</td></tr>
+            </tbody>
+          </table>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <table class="data-table">
+          <thead>
+            <tr>${columns.map(c => `<th>${escapeHtml(c)}</th>`).join('')}</tr>
+          </thead>
+          <tbody>
+            ${rows.map(row => `
+              <tr>${columns.map(c => `<td>${escapeHtml(row[c] !== null && row[c] !== undefined ? row[c] : 'NULL')}</td>`).join('')}</tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function bindShortcuts() {
+      document.querySelectorAll('.shortcut-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const q = btn.getAttribute('data-query');
+          if (q) {
+            document.getElementById('sql-query-input').value = q;
+            executeQuery(q);
+          }
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check query param for initial db
+      const params = new URLSearchParams(window.location.search);
+      const dbParam = params.get('db') || params.get('database') || params.get('database_target');
+      if (dbParam && (dbParam.includes('telemetry') || dbParam === 'vpc_telemetry_db')) {
+        switchTarget('vpc_telemetry_db');
+      } else {
+        switchTarget('dcouplr_central_db');
+      }
+
+      document.getElementById('btn-target-central').addEventListener('click', () => switchTarget('dcouplr_central_db'));
+      document.getElementById('btn-target-telemetry').addEventListener('click', () => switchTarget('vpc_telemetry_db'));
+
+      document.getElementById('btn-execute-query').addEventListener('click', () => executeQuery());
+      document.getElementById('btn-clear-sql').addEventListener('click', () => {
+        document.getElementById('sql-query-input').value = '';
+        document.getElementById('sql-query-input').focus();
+      });
+
+      document.getElementById('btn-refresh-tables').addEventListener('click', () => loadTables());
+      document.getElementById('tables-filter-input').addEventListener('input', () => renderTablesList(cachedTables));
+
+      document.getElementById('btn-deep-scan').addEventListener('click', () => {
+        const q = 'PRAGMA integrity_check;';
+        document.getElementById('sql-query-input').value = q;
+        executeQuery(q);
+      });
+
+      document.getElementById('btn-reset-db').addEventListener('click', async () => {
+        if (!confirm(`Purge ${currentTarget} test records back to Day-0 clean slate?\n\nLookup reference rows will be preserved.`)) return;
+        try {
+          const res = await fetch('/v1/database/production/reset', { method: 'POST' });
+          if (res.ok) {
+            if (typeof dcouplrNotify !== 'undefined') dcouplrNotify.success(`${currentTarget} reset to Day-0 clean slate.`, 'Database Reset');
+            loadHealth();
+            loadTables();
+            executeQuery();
+          }
+        } catch (err) {
+          alert('Reset failed: ' + err.message);
+        }
+      });
+
+      document.getElementById('btn-copy-json').addEventListener('click', () => {
+        if (!lastQueryData || !lastQueryData.rows) return;
+        navigator.clipboard.writeText(JSON.stringify(lastQueryData.rows, null, 2)).then(() => {
+          if (typeof dcouplrNotify !== 'undefined') dcouplrNotify.success('JSON copied to clipboard', 'Copied');
+        });
+      });
+
+      document.getElementById('btn-export-csv').addEventListener('click', () => {
+        if (!lastQueryData || !lastQueryData.rows || lastQueryData.rows.length === 0) return;
+        const cols = lastQueryData.columns;
+        const csvLines = [cols.join(',')];
+        for (const row of lastQueryData.rows) {
+          csvLines.push(cols.map(c => `"${String(row[c] ?? '').replace(/"/g, '""')}"`).join(','));
+        }
+        const blob = new Blob([csvLines.join('\n')], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `dcouplr_${currentTarget}_export_${Date.now()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      document.getElementById('sql-query-input').addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          executeQuery();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

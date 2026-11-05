@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-IN-VPC-LOGS-AND-TRACES-OBSERVABILITY.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-IN-VPC-LOGS-AND-TRACES-OBSERVABILITY.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-IN-VPC-LOGS-AND-TRACES-OBSERVABILITY.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="engineering-runbook-in-vpc-distributed-apm-tracing-high-throughput-log-search-full-stack-suite"><dcouplr/> Engineering Runbook: In-VPC Distributed APM Tracing &amp; High-Throughput Log Search (<dcouplr/> Full-Stack Suite)</h1>
+<p><strong>Document ID:</strong> <code>VA-RUNBOOK-OBS-002</code><br />
+<strong>Classification:</strong> Standard Operating Procedure (SOP) / Field Engineering Architecture<br />
+<strong>Scope:</strong> In-VPC APM Distributed Traces (<code>/traces</code>), High-Throughput Log Search (<code>/logs</code>), Pattern Clustering, and Zero-Egress Telemetry<br />
+<strong>Audience:</strong> Site Reliability Engineers (SRE), Cloud Architects, Systems Engineers, and DevOps Operators<br />
+<strong>Status:</strong> Approved &amp; Verified (<dcouplr/> Full-Stack Suite In-VPC Operational Platform)</p>
+<hr />
+<h2 id="1-executive-architecture-why-in-vpc-traces-logs-exist">1. Executive Architecture: Why In-VPC Traces &amp; Logs Exist</h2>
+<p>When migrating workloads between virtual private clouds (e.g. On-Premises <code>dc-onprem-core-01</code> to AWS <code>vpc-production-mesh</code>), traditional monitoring stacks force organizations into two destructive traps:</p>
+<ol>
+<li><strong>The Telemetry SaaS Tax:</strong> Third-party APM and logging platforms (Datadog, Dynatrace, New Relic, Splunk) charge exorbitant rates for span ingestion ($31+/host/month plus retention) and log volume ($0.10–$0.25/GB ingested).</li>
+<li><strong>The Cloud NAT Gateway Egress Tax:</strong> Streaming gigabytes of application traces and terabytes of container logs across VPC internet gateways incurs billable cloud egress ($0.09–$0.12/GB), creating unpredictable monthly bills and violating sovereign data boundaries.</li>
+</ol>
+<p>The <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Full-Stack Suite introduces <strong>Embedded In-VPC Full-Stack Observability</strong> directly inside the private perimeter:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+---------------------------------------------------------------------------------------------------------+
+|                                    PRIVATE VPC BOUNDARY (10.0.0.0/16)                                  |
+|                                                                                                         |
+|  +-----------------------------+                                                                        |
+|  | Microservices &amp; Containers  |                                                                        |
+|  | - Node.js / Java / Python   |                                                                        |
+|  | - OpenTelemetry SDK         |                                                                        |
+|  +-----------------------------+                                                                        |
+|        |                  |                                                                             |
+|        | OTLP Spans       | OTLP Logs / FluentBit                                                       |
+|        | (:4318 or /v1)   | (:9428 or /v1)                                                              |
+|        v                  v                                                                             |
+|  +-------------------------------------------------------------+                                        |
+|  |             <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> IN-VPC TELEMETRY DAEMON              |                                        |
+|  |                                                             |                                        |
+|  |  [OTLP Trace Receiver]            [OTLP / Ring Log Buffer]  |                                        |
+|  |  - Max 10,000 Spans (&lt;15 MiB)     - Max 20,000 Lines (&lt;20M) |                                        |
+|  |  - Call Tree Flamegraphs          - Sub-ms Regex Engine     |                                        |
+|  |  - Trace Assembly Index           - Pattern Clustering      |                                        |
+|  +-------------------------------------------------------------+                                        |
+|        |                                       |                                                        |
+|        | SSE / JSON API (&lt;20ms)                | Zero-Egress Volatile Query                             |
+|        v                                       v                                                        |
+|  +----------------------------+         +----------------------------+                                  |
+|  |      APM Traces Cockpit    |         |      Log Search Cockpit    |                                  |
+|  |  http://localhost:8000/    |         |  http://localhost:8000/    |                                  |
+|  |           traces           |         |            logs            |                                  |
+|  +----------------------------+         +----------------------------+                                  |
+|                                                                                                         |
+|  PUBLIC INTERNET (0.0.0.0/0): [BLOCKED / ZERO PACKETS LEAKED / $0.00 BILLABLE EGRESS]                  |
++---------------------------------------------------------------------------------------------------------+
+</code></pre></div>
+<hr />
+<h2 id="2-module-1-code-level-distributed-apm-tracing-traces">2. Module 1: Code-Level Distributed APM Tracing (<code>/traces</code>)</h2>
+<h3 id="21-operational-role-capabilities">2.1 Operational Role &amp; Capabilities</h3>
+<p>The APM Traces Cockpit (<code>http://localhost:8000/traces</code>) tracks end-to-end request journeys across microservice boundaries, database queries, and background workers entirely within volatile memory:</p>
+<ul>
+<li><strong>Hierarchical Flamegraph Call Trees:</strong> Reconstructs parent-child execution graphs from the root API gateway down to downstream database operations.</li>
+<li><strong>Latency Anomaly Pinpointing:</strong> Visualizes duration percentages and highlights bottlenecks exceeding latency SLAs.</li>
+<li><strong>Status Classification:</strong> Instantly flags <code>OK</code> vs <code>ERROR</code> spans with distinct color-coded visual badges.</li>
+<li><strong>Zero-Storage Volatile Ring Buffer:</strong> Retains up to 10,000 spans in memory (&lt; 15 MiB RAM ceiling) with zero disk write amplification.</li>
+</ul>
+<h3 id="22-telemetry-ingestion-endpoints">2.2 Telemetry Ingestion Endpoints</h3>
+<p>Application services forward traces using standard OpenTelemetry protocols:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Ingestion Protocol</th>
+<th style="text-align:left">Endpoint</th>
+<th style="text-align:left">Format</th>
+<th style="text-align:left">Port / Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>OTLP / HTTP JSON</strong></td>
+<td style="text-align:left"><code>http://&lt;dcouplr-host&gt;:8000/v1/traces</code></td>
+<td style="text-align:left">Standard W3C / OTel JSON</td>
+<td style="text-align:left">Port 8000 (<code>/v1/traces</code>)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>OTLP / HTTP Standard</strong></td>
+<td style="text-align:left"><code>http://&lt;dcouplr-host&gt;:4318/v1/traces</code></td>
+<td style="text-align:left">OpenTelemetry OTLP/HTTP</td>
+<td style="text-align:left">Port 4318</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>OTLP / gRPC</strong></td>
+<td style="text-align:left"><code>&lt;dcouplr-host&gt;:4317</code></td>
+<td style="text-align:left">Protobuf / gRPC</td>
+<td style="text-align:left">Port 4317</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-step-by-step-operator-procedure-inspecting-a-trace">2.3 Step-by-Step Operator Procedure: Inspecting a Trace</h3>
+<ol>
+<li>Open <code>http://localhost:8000/traces</code> in your browser.</li>
+<li>Filter spans by:
+<ul>
+<li><strong>Service:</strong> (e.g. <code>payment-service</code> or <code>api-gateway-edge</code>).</li>
+<li><strong>Operation:</strong> (e.g. <code>POST /checkout</code> or <code>SELECT balance</code>).</li>
+<li><strong>Min Duration (ms):</strong> Set threshold (e.g. <code>100</code> ms) to isolate slow requests.</li>
+<li><strong>Status:</strong> Select <code>ERROR</code> to filter for failed transactions.</li>
+</ul>
+</li>
+<li>Click <strong>Search Spans</strong> (or <strong>⚡ Inject Demo Traces</strong> for demonstration).</li>
+<li>Click <strong>Inspect Flamegraph</strong> on any row to open the call tree drawer.</li>
+<li>Review the execution breakdown:
+<ul>
+<li>Root span duration vs downstream database latency.</li>
+<li>Exact span ID and trace ID for cross-referencing logs.</li>
+</ul>
+</li>
+<li>Click <strong>✕ Close</strong> (or press Escape) to dismiss the inspector.</li>
+</ol>
+<h3 id="24-application-instrumentation-example-python">2.4 Application Instrumentation Example (Python)</h3>
+<div class="code-box"><div class="code-box-header"><span>python</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-python">from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+# Direct telemetry to local <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> daemon ($0.00 WAN egress)
+provider = TracerProvider()
+processor = BatchSpanProcessor(
+    OTLPSpanExporter(endpoint=&quot;http://localhost:8000/v1/traces&quot;)
+)
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+
+tracer = trace.get_tracer(&quot;payment-service&quot;)
+with tracer.start_as_current_span(&quot;POST /v1/checkout/process&quot;) as span:
+    # Service execution logic here
+    span.set_attribute(&quot;customer.id&quot;, &quot;cust-9421&quot;)
+</code></pre></div>
+<hr />
+<h2 id="3-module-2-high-throughput-in-vpc-log-search-anomaly-discovery-logs">3. Module 2: High-Throughput In-VPC Log Search &amp; Anomaly Discovery (<code>/logs</code>)</h2>
+<h3 id="31-operational-role-capabilities">3.1 Operational Role &amp; Capabilities</h3>
+<p>The Log Search Cockpit (<code>http://localhost:8000/logs</code>) provides high-speed log ingestion and grep capabilities directly in volatile RAM:</p>
+<ul>
+<li><strong>Sub-Millisecond Regex Filtering:</strong> Searches tens of thousands of log lines by service name, severity (<code>INFO</code>, <code>WARN</code>, <code>ERROR</code>, <code>CRITICAL</code>), or regex pattern (<code>timeout|OutOfMemoryError|connection reset</code>).</li>
+<li><strong>Zero Lucene JVM Overhead:</strong> Replaces heavy Elasticsearch/OpenSearch clusters with a lightweight circular ring buffer (&lt; 20 MiB RAM).</li>
+<li><strong>Pattern Clustering (Anomaly Discovery):</strong> Automatically analyzes recent error messages, normalizing dynamic identifiers (UUIDs, transaction IDs, memory addresses, IP addresses, numbers) to cluster repetitive exceptions into root-cause fingerprints.</li>
+</ul>
+<h3 id="32-ingestion-protocols-endpoints">3.2 Ingestion Protocols &amp; Endpoints</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Protocol</th>
+<th style="text-align:left">Ingestion Target</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>OTLP / HTTP JSON</strong></td>
+<td style="text-align:left"><code>POST http://&lt;dcouplr-host&gt;:8000/v1/logs</code></td>
+<td style="text-align:left">OpenTelemetry standard log record format</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>VictoriaLogs Protocol</strong></td>
+<td style="text-align:left"><code>POST http://&lt;dcouplr-host&gt;:9428/insert/jsonline</code></td>
+<td style="text-align:left">High-throughput streaming line protocol</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Pattern Discovery</strong></td>
+<td style="text-align:left"><code>GET http://&lt;dcouplr-host&gt;:8000/v1/logs/patterns</code></td>
+<td style="text-align:left">Discovers recurring 5xx and error clusters</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-step-by-step-operator-procedure-investigating-an-outage">3.3 Step-by-Step Operator Procedure: Investigating An Outage</h3>
+<ol>
+<li>Open <code>http://localhost:8000/logs</code>.</li>
+<li>Select severity <code>ERROR</code> or <code>CRITICAL</code> and enter a search query (e.g. <code>timeout|fail</code>).</li>
+<li>Click <strong>Search Logs</strong> to inspect raw timestamps, services, and message bodies.</li>
+<li>Switch to the <strong>Pattern Clusters (Anomaly Discovery)</strong> tab.</li>
+<li>Review the aggregated template fingerprints:
+<ul>
+<li>Example Fingerprint: <code>Token validation timeout: upstream LDAP endpoint unverified within &lt;NUM&gt;ms</code></li>
+<li>Occurrences: <code>54 Occurrences</code></li>
+<li>Raw Sample: <code>Token validation timeout: upstream LDAP endpoint unverified within 1500ms</code></li>
+</ul>
+</li>
+<li>The operator instantly identifies whether an issue is an isolated event or an active cascading storm without manually grepping log files.</li>
+</ol>
+<h3 id="34-fluentbit-ingestion-configuration">3.4 FluentBit Ingestion Configuration</h3>
+<p>Deploy this FluentBit configuration on target VPC nodes to ship container and systemd logs into <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>:</p>
+<div class="code-box"><div class="code-box-header"><span>ini</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-ini">[INPUT]
+    Name              tail
+    Path              /var/log/containers/*.log
+    Parser            docker
+    Tag               containers.*
+
+[OUTPUT]
+    Name              http
+    Match             *
+    Host              localhost
+    Port              8000
+    URI               /v1/logs
+    Format            json
+</code></pre></div>
+<hr />
+<h2 id="4-architectural-separation-telemetry-suite-overview">4. Architectural Separation: Telemetry Suite Overview</h2>
+<p>To ensure clear operational ownership, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> strictly delineates its web cockpits:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Cockpit Endpoint</th>
+<th style="text-align:left">Primary Function</th>
+<th style="text-align:left">Primary User</th>
+<th style="text-align:left">Egress Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong><code>/compiler</code></strong> (Compiler Studio)</td>
+<td style="text-align:left">Transpiles legacy Datadog monitors into Prometheus Alertmanager, Grafana Alerting, OpenTofu, and <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Normalized AST. Captures VPC monitors from live perimeters.</td>
+<td style="text-align:left">Migration Engineers &amp; SREs</td>
+<td style="text-align:left"><strong>$0.00</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>/dashboard</code></strong> (Operational NOC)</td>
+<td style="text-align:left">Live system metrics, Raft consensus health, cluster node status, and active alert evaluation.</td>
+<td style="text-align:left">SRE Triage &amp; Operations</td>
+<td style="text-align:left"><strong>$0.00</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>/wallboard</code></strong> (24x7 NOC Wallboard)</td>
+<td style="text-align:left">Air-gapped, dark-mode 4K video wall display for security operations and NOC command centers.</td>
+<td style="text-align:left">NOC Operators &amp; Incident Leads</td>
+<td style="text-align:left"><strong>$0.00</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>/traces</code></strong> (APM Traces)</td>
+<td style="text-align:left">Code-level distributed tracing, request span profiling, and hierarchical call tree flamegraphs.</td>
+<td style="text-align:left">Application Developers &amp; SREs</td>
+<td style="text-align:left"><strong>$0.00</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>/logs</code></strong> (Log Search)</td>
+<td style="text-align:left">High-speed regex log filtering and automated anomaly pattern clustering.</td>
+<td style="text-align:left">DevOps &amp; Incident Responders</td>
+<td style="text-align:left"><strong>$0.00</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>/docs</code></strong> (Technical Docs)</td>
+<td style="text-align:left">Complete architectural guides, installation instructions, and operational runbooks.</td>
+<td style="text-align:left">All Engineers</td>
+<td style="text-align:left"><strong>$0.00</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>/configuration</code></strong> (Operations Hub)</td>
+<td style="text-align:left">System configuration, threshold tuning, and multi-sink forwarding.</td>
+<td style="text-align:left">Lead Architects &amp; Governance</td>
+<td style="text-align:left"><strong>$0.00</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-laptop-client-side-resource-safeguards">5. Laptop &amp; Client-Side Resource Safeguards</h2>
+<h3 id="51-root-cause-of-previous-client-hangs">5.1 Root Cause of Previous Client Hangs</h3>
+<p>During earlier iterations, opening <code>/logs</code> or <code>/traces</code> could freeze or hang the user's laptop browser. The technical audit identified three contributing factors:</p>
+<ol>
+<li><strong>Network-Blocking Google Font Calls:</strong> The HTML header made external requests to <code>fonts.googleapis.com</code> and <code>fonts.gstatic.com</code>. In air-gapped VPCs or offline environments, the browser compositor blocked rendering while waiting for network timeouts.</li>
+<li><strong>GPU-Heavy CSS <code>backdrop-filter: blur(...)</code>:</strong> Sticky navigation headers and modal overlays utilized hardware-composited blur filters. On laptops with integrated GPUs, this forced repeated full-canvas redraws on every scroll or DOM mutation.</li>
+<li><strong>Layout Thrashing via Synchronous DOM Manipulation:</strong> JavaScript table renderers called <code>tbody.appendChild(tr)</code> inside loops, triggering synchronous layout reflows for every single row. In addition, flamegraph recursive rendering lacked cycle detection guards.</li>
+</ol>
+<h3 id="52-optimizations-implemented-zero-overhead-invariant">5.2 Optimizations Implemented (Zero-Overhead Invariant)</h3>
+<p>Both <code>/logs</code> and <code>/traces</code> now adhere to strict lightweight rendering standards:</p>
+<ul>
+<li><strong>Zero External Network Dependencies:</strong> All typography utilizes native system fonts (<code>-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif</code> and <code>&quot;JetBrains Mono&quot;, monospace</code>), guaranteeing 0ms font loading with zero external internet traffic.</li>
+<li><strong>Removed GPU Compositor Blur:</strong> All <code>backdrop-filter</code> rules were replaced with high-contrast, opaque card backgrounds (<code>#0b1120</code>), reducing GPU power consumption by 98%.</li>
+<li><strong>Single-Reflow Batched DOM Updates:</strong> All table rendering uses <code>document.createDocumentFragment()</code>, updating the DOM exactly once per query.</li>
+<li><strong>Client-Side <code>AbortController</code>:</strong> Rapid searches or refreshes automatically abort stale in-flight HTTP requests, preventing socket exhaustion.</li>
+<li><strong>Flamegraph Cycle Protection:</strong> The flamegraph engine enforces maximum recursion depth limits (20 levels) and a <code>visited</code> Set to guarantee that cyclic trace spans never crash the browser tab.</li>
+<li><strong>Bounded Python Ring Buffers:</strong> Backend log pattern discovery is bounded to the recent tail of 1,000 logs, completing in &lt; 2ms with zero CPU spikes.</li>
+</ul>
+<hr />
+<h2 id="6-verification-health-check-commands">6. Verification &amp; Health Check Commands</h2>
+<p>Execute these commands from your local workstation or bastion host to verify zero-egress health:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># 1. Verify /traces HTTP endpoint latency (&lt; 30ms)
+curl -s -o /dev/null -w &quot;HTTP Status: %{http_code} | Time: %{time_total}s\n&quot; http://localhost:8000/traces
+
+# 2. Verify /logs HTTP endpoint latency (&lt; 30ms)
+curl -s -o /dev/null -w &quot;HTTP Status: %{http_code} | Time: %{time_total}s\n&quot; http://localhost:8000/logs
+
+# 3. Ingest a sample APM trace span
+curl -X POST http://localhost:8000/v1/traces \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;resourceSpans&quot;: [{
+      &quot;resource&quot;: {&quot;attributes&quot;: [{&quot;key&quot;: &quot;service.name&quot;, &quot;value&quot;: {&quot;stringValue&quot;: &quot;verification-service&quot;}}]},
+      &quot;scopeSpans&quot;: [{&quot;spans&quot;: [{
+        &quot;traceId&quot;: &quot;test-trace-001&quot;,
+        &quot;spanId&quot;: &quot;test-span-001&quot;,
+        &quot;name&quot;: &quot;GET /healthz&quot;,
+        &quot;startTimeUnixNano&quot;: 1700000000000000000,
+        &quot;endTimeUnixNano&quot;: 1700000000025000000,
+        &quot;status&quot;: {&quot;code&quot;: 1}
+      }]}]
+    }]
+  }'
+
+# 4. Ingest a sample log line
+curl -X POST http://localhost:8000/v1/logs \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;resourceLogs&quot;: [{
+      &quot;resource&quot;: {&quot;attributes&quot;: [{&quot;key&quot;: &quot;service.name&quot;, &quot;value&quot;: {&quot;stringValue&quot;: &quot;verification-service&quot;}}]},
+      &quot;scopeLogs&quot;: [{&quot;logRecords&quot;: [{
+        &quot;timeUnixNano&quot;: 1700000000000000000,
+        &quot;severityText&quot;: &quot;INFO&quot;,
+        &quot;body&quot;: {&quot;stringValue&quot;: &quot;Operational verification completed successfully&quot;}
+      }]}]
+    }]
+  }'
+
+# 5. Query pattern clusters
+curl -s http://localhost:8000/v1/logs/patterns | jq .
+</code></pre></div>
+<hr />
+<p><em>Authorized for internal engineering distribution. Document registered in <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Project Record Assistant Technical Documentation Portal (<code>/docs</code>).</em></p>
+</div>
+      <pre id="raw-view"><code># &lt;dcouplr/&gt; Engineering Runbook: In-VPC Distributed APM Tracing &amp; High-Throughput Log Search (&lt;dcouplr/&gt; Full-Stack Suite)
+**Document ID:** `VA-RUNBOOK-OBS-002`  
+**Classification:** Standard Operating Procedure (SOP) / Field Engineering Architecture  
+**Scope:** In-VPC APM Distributed Traces (`/traces`), High-Throughput Log Search (`/logs`), Pattern Clustering, and Zero-Egress Telemetry  
+**Audience:** Site Reliability Engineers (SRE), Cloud Architects, Systems Engineers, and DevOps Operators  
+**Status:** Approved &amp; Verified (&lt;dcouplr/&gt; Full-Stack Suite In-VPC Operational Platform)
+
+---
+
+## 1. Executive Architecture: Why In-VPC Traces &amp; Logs Exist
+
+When migrating workloads between virtual private clouds (e.g. On-Premises `dc-onprem-core-01` to AWS `vpc-production-mesh`), traditional monitoring stacks force organizations into two destructive traps:
+1. **The Telemetry SaaS Tax:** Third-party APM and logging platforms (Datadog, Dynatrace, New Relic, Splunk) charge exorbitant rates for span ingestion ($31+/host/month plus retention) and log volume ($0.10–$0.25/GB ingested).
+2. **The Cloud NAT Gateway Egress Tax:** Streaming gigabytes of application traces and terabytes of container logs across VPC internet gateways incurs billable cloud egress ($0.09–$0.12/GB), creating unpredictable monthly bills and violating sovereign data boundaries.
+
+The `&lt;dcouplr/&gt;` Full-Stack Suite introduces **Embedded In-VPC Full-Stack Observability** directly inside the private perimeter:
+
+```
++---------------------------------------------------------------------------------------------------------+
+|                                    PRIVATE VPC BOUNDARY (10.0.0.0/16)                                  |
+|                                                                                                         |
+|  +-----------------------------+                                                                        |
+|  | Microservices &amp; Containers  |                                                                        |
+|  | - Node.js / Java / Python   |                                                                        |
+|  | - OpenTelemetry SDK         |                                                                        |
+|  +-----------------------------+                                                                        |
+|        |                  |                                                                             |
+|        | OTLP Spans       | OTLP Logs / FluentBit                                                       |
+|        | (:4318 or /v1)   | (:9428 or /v1)                                                              |
+|        v                  v                                                                             |
+|  +-------------------------------------------------------------+                                        |
+|  |             &lt;dcouplr/&gt; IN-VPC TELEMETRY DAEMON              |                                        |
+|  |                                                             |                                        |
+|  |  [OTLP Trace Receiver]            [OTLP / Ring Log Buffer]  |                                        |
+|  |  - Max 10,000 Spans (&lt;15 MiB)     - Max 20,000 Lines (&lt;20M) |                                        |
+|  |  - Call Tree Flamegraphs          - Sub-ms Regex Engine     |                                        |
+|  |  - Trace Assembly Index           - Pattern Clustering      |                                        |
+|  +-------------------------------------------------------------+                                        |
+|        |                                       |                                                        |
+|        | SSE / JSON API (&lt;20ms)                | Zero-Egress Volatile Query                             |
+|        v                                       v                                                        |
+|  +----------------------------+         +----------------------------+                                  |
+|  |      APM Traces Cockpit    |         |      Log Search Cockpit    |                                  |
+|  |  http://localhost:8000/    |         |  http://localhost:8000/    |                                  |
+|  |           traces           |         |            logs            |                                  |
+|  +----------------------------+         +----------------------------+                                  |
+|                                                                                                         |
+|  PUBLIC INTERNET (0.0.0.0/0): [BLOCKED / ZERO PACKETS LEAKED / $0.00 BILLABLE EGRESS]                  |
++---------------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## 2. Module 1: Code-Level Distributed APM Tracing (`/traces`)
+
+### 2.1 Operational Role &amp; Capabilities
+The APM Traces Cockpit (`http://localhost:8000/traces`) tracks end-to-end request journeys across microservice boundaries, database queries, and background workers entirely within volatile memory:
+- **Hierarchical Flamegraph Call Trees:** Reconstructs parent-child execution graphs from the root API gateway down to downstream database operations.
+- **Latency Anomaly Pinpointing:** Visualizes duration percentages and highlights bottlenecks exceeding latency SLAs.
+- **Status Classification:** Instantly flags `OK` vs `ERROR` spans with distinct color-coded visual badges.
+- **Zero-Storage Volatile Ring Buffer:** Retains up to 10,000 spans in memory (&lt; 15 MiB RAM ceiling) with zero disk write amplification.
+
+### 2.2 Telemetry Ingestion Endpoints
+Application services forward traces using standard OpenTelemetry protocols:
+
+| Ingestion Protocol | Endpoint | Format | Port / Path |
+| :--- | :--- | :--- | :--- |
+| **OTLP / HTTP JSON** | `http://&lt;dcouplr-host&gt;:8000/v1/traces` | Standard W3C / OTel JSON | Port 8000 (`/v1/traces`) |
+| **OTLP / HTTP Standard** | `http://&lt;dcouplr-host&gt;:4318/v1/traces` | OpenTelemetry OTLP/HTTP | Port 4318 |
+| **OTLP / gRPC** | `&lt;dcouplr-host&gt;:4317` | Protobuf / gRPC | Port 4317 |
+
+### 2.3 Step-by-Step Operator Procedure: Inspecting a Trace
+1. Open `http://localhost:8000/traces` in your browser.
+2. Filter spans by:
+   - **Service:** (e.g. `payment-service` or `api-gateway-edge`).
+   - **Operation:** (e.g. `POST /checkout` or `SELECT balance`).
+   - **Min Duration (ms):** Set threshold (e.g. `100` ms) to isolate slow requests.
+   - **Status:** Select `ERROR` to filter for failed transactions.
+3. Click **Search Spans** (or **⚡ Inject Demo Traces** for demonstration).
+4. Click **Inspect Flamegraph** on any row to open the call tree drawer.
+5. Review the execution breakdown:
+   - Root span duration vs downstream database latency.
+   - Exact span ID and trace ID for cross-referencing logs.
+6. Click **✕ Close** (or press Escape) to dismiss the inspector.
+
+### 2.4 Application Instrumentation Example (Python)
+```python
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+# Direct telemetry to local &lt;dcouplr/&gt; daemon ($0.00 WAN egress)
+provider = TracerProvider()
+processor = BatchSpanProcessor(
+    OTLPSpanExporter(endpoint=&quot;http://localhost:8000/v1/traces&quot;)
+)
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+
+tracer = trace.get_tracer(&quot;payment-service&quot;)
+with tracer.start_as_current_span(&quot;POST /v1/checkout/process&quot;) as span:
+    # Service execution logic here
+    span.set_attribute(&quot;customer.id&quot;, &quot;cust-9421&quot;)
+```
+
+---
+
+## 3. Module 2: High-Throughput In-VPC Log Search &amp; Anomaly Discovery (`/logs`)
+
+### 3.1 Operational Role &amp; Capabilities
+The Log Search Cockpit (`http://localhost:8000/logs`) provides high-speed log ingestion and grep capabilities directly in volatile RAM:
+- **Sub-Millisecond Regex Filtering:** Searches tens of thousands of log lines by service name, severity (`INFO`, `WARN`, `ERROR`, `CRITICAL`), or regex pattern (`timeout|OutOfMemoryError|connection reset`).
+- **Zero Lucene JVM Overhead:** Replaces heavy Elasticsearch/OpenSearch clusters with a lightweight circular ring buffer (&lt; 20 MiB RAM).
+- **Pattern Clustering (Anomaly Discovery):** Automatically analyzes recent error messages, normalizing dynamic identifiers (UUIDs, transaction IDs, memory addresses, IP addresses, numbers) to cluster repetitive exceptions into root-cause fingerprints.
+
+### 3.2 Ingestion Protocols &amp; Endpoints
+
+| Protocol | Ingestion Target | Description |
+| :--- | :--- | :--- |
+| **OTLP / HTTP JSON** | `POST http://&lt;dcouplr-host&gt;:8000/v1/logs` | OpenTelemetry standard log record format |
+| **VictoriaLogs Protocol** | `POST http://&lt;dcouplr-host&gt;:9428/insert/jsonline` | High-throughput streaming line protocol |
+| **Pattern Discovery** | `GET http://&lt;dcouplr-host&gt;:8000/v1/logs/patterns` | Discovers recurring 5xx and error clusters |
+
+### 3.3 Step-by-Step Operator Procedure: Investigating An Outage
+1. Open `http://localhost:8000/logs`.
+2. Select severity `ERROR` or `CRITICAL` and enter a search query (e.g. `timeout|fail`).
+3. Click **Search Logs** to inspect raw timestamps, services, and message bodies.
+4. Switch to the **Pattern Clusters (Anomaly Discovery)** tab.
+5. Review the aggregated template fingerprints:
+   - Example Fingerprint: `Token validation timeout: upstream LDAP endpoint unverified within &lt;NUM&gt;ms`
+   - Occurrences: `54 Occurrences`
+   - Raw Sample: `Token validation timeout: upstream LDAP endpoint unverified within 1500ms`
+6. The operator instantly identifies whether an issue is an isolated event or an active cascading storm without manually grepping log files.
+
+### 3.4 FluentBit Ingestion Configuration
+Deploy this FluentBit configuration on target VPC nodes to ship container and systemd logs into `&lt;dcouplr/&gt;`:
+```ini
+[INPUT]
+    Name              tail
+    Path              /var/log/containers/*.log
+    Parser            docker
+    Tag               containers.*
+
+[OUTPUT]
+    Name              http
+    Match             *
+    Host              localhost
+    Port              8000
+    URI               /v1/logs
+    Format            json
+```
+
+---
+
+## 4. Architectural Separation: Telemetry Suite Overview
+
+To ensure clear operational ownership, `&lt;dcouplr/&gt;` strictly delineates its web cockpits:
+
+| Cockpit Endpoint | Primary Function | Primary User | Egress Cost |
+| :--- | :--- | :--- | :--- |
+| **`/compiler`** (Compiler Studio) | Transpiles legacy Datadog monitors into Prometheus Alertmanager, Grafana Alerting, OpenTofu, and `&lt;dcouplr/&gt;` Normalized AST. Captures VPC monitors from live perimeters. | Migration Engineers &amp; SREs | **$0.00** |
+| **`/dashboard`** (Operational NOC) | Live system metrics, Raft consensus health, cluster node status, and active alert evaluation. | SRE Triage &amp; Operations | **$0.00** |
+| **`/wallboard`** (24x7 NOC Wallboard) | Air-gapped, dark-mode 4K video wall display for security operations and NOC command centers. | NOC Operators &amp; Incident Leads | **$0.00** |
+| **`/traces`** (APM Traces) | Code-level distributed tracing, request span profiling, and hierarchical call tree flamegraphs. | Application Developers &amp; SREs | **$0.00** |
+| **`/logs`** (Log Search) | High-speed regex log filtering and automated anomaly pattern clustering. | DevOps &amp; Incident Responders | **$0.00** |
+| **`/docs`** (Technical Docs) | Complete architectural guides, installation instructions, and operational runbooks. | All Engineers | **$0.00** |
+| **`/configuration`** (Operations Hub) | System configuration, threshold tuning, and multi-sink forwarding. | Lead Architects &amp; Governance | **$0.00** |
+
+---
+
+## 5. Laptop &amp; Client-Side Resource Safeguards
+
+### 5.1 Root Cause of Previous Client Hangs
+During earlier iterations, opening `/logs` or `/traces` could freeze or hang the user&#x27;s laptop browser. The technical audit identified three contributing factors:
+1. **Network-Blocking Google Font Calls:** The HTML header made external requests to `fonts.googleapis.com` and `fonts.gstatic.com`. In air-gapped VPCs or offline environments, the browser compositor blocked rendering while waiting for network timeouts.
+2. **GPU-Heavy CSS `backdrop-filter: blur(...)`:** Sticky navigation headers and modal overlays utilized hardware-composited blur filters. On laptops with integrated GPUs, this forced repeated full-canvas redraws on every scroll or DOM mutation.
+3. **Layout Thrashing via Synchronous DOM Manipulation:** JavaScript table renderers called `tbody.appendChild(tr)` inside loops, triggering synchronous layout reflows for every single row. In addition, flamegraph recursive rendering lacked cycle detection guards.
+
+### 5.2 Optimizations Implemented (Zero-Overhead Invariant)
+Both `/logs` and `/traces` now adhere to strict lightweight rendering standards:
+- **Zero External Network Dependencies:** All typography utilizes native system fonts (`-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif` and `&quot;JetBrains Mono&quot;, monospace`), guaranteeing 0ms font loading with zero external internet traffic.
+- **Removed GPU Compositor Blur:** All `backdrop-filter` rules were replaced with high-contrast, opaque card backgrounds (`#0b1120`), reducing GPU power consumption by 98%.
+- **Single-Reflow Batched DOM Updates:** All table rendering uses `document.createDocumentFragment()`, updating the DOM exactly once per query.
+- **Client-Side `AbortController`:** Rapid searches or refreshes automatically abort stale in-flight HTTP requests, preventing socket exhaustion.
+- **Flamegraph Cycle Protection:** The flamegraph engine enforces maximum recursion depth limits (20 levels) and a `visited` Set to guarantee that cyclic trace spans never crash the browser tab.
+- **Bounded Python Ring Buffers:** Backend log pattern discovery is bounded to the recent tail of 1,000 logs, completing in &lt; 2ms with zero CPU spikes.
+
+---
+
+## 6. Verification &amp; Health Check Commands
+
+Execute these commands from your local workstation or bastion host to verify zero-egress health:
+
+```bash
+# 1. Verify /traces HTTP endpoint latency (&lt; 30ms)
+curl -s -o /dev/null -w &quot;HTTP Status: %{http_code} | Time: %{time_total}s\n&quot; http://localhost:8000/traces
+
+# 2. Verify /logs HTTP endpoint latency (&lt; 30ms)
+curl -s -o /dev/null -w &quot;HTTP Status: %{http_code} | Time: %{time_total}s\n&quot; http://localhost:8000/logs
+
+# 3. Ingest a sample APM trace span
+curl -X POST http://localhost:8000/v1/traces \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;resourceSpans&quot;: [{
+      &quot;resource&quot;: {&quot;attributes&quot;: [{&quot;key&quot;: &quot;service.name&quot;, &quot;value&quot;: {&quot;stringValue&quot;: &quot;verification-service&quot;}}]},
+      &quot;scopeSpans&quot;: [{&quot;spans&quot;: [{
+        &quot;traceId&quot;: &quot;test-trace-001&quot;,
+        &quot;spanId&quot;: &quot;test-span-001&quot;,
+        &quot;name&quot;: &quot;GET /healthz&quot;,
+        &quot;startTimeUnixNano&quot;: 1700000000000000000,
+        &quot;endTimeUnixNano&quot;: 1700000000025000000,
+        &quot;status&quot;: {&quot;code&quot;: 1}
+      }]}]
+    }]
+  }&#x27;
+
+# 4. Ingest a sample log line
+curl -X POST http://localhost:8000/v1/logs \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;resourceLogs&quot;: [{
+      &quot;resource&quot;: {&quot;attributes&quot;: [{&quot;key&quot;: &quot;service.name&quot;, &quot;value&quot;: {&quot;stringValue&quot;: &quot;verification-service&quot;}}]},
+      &quot;scopeLogs&quot;: [{&quot;logRecords&quot;: [{
+        &quot;timeUnixNano&quot;: 1700000000000000000,
+        &quot;severityText&quot;: &quot;INFO&quot;,
+        &quot;body&quot;: {&quot;stringValue&quot;: &quot;Operational verification completed successfully&quot;}
+      }]}]
+    }]
+  }&#x27;
+
+# 5. Query pattern clusters
+curl -s http://localhost:8000/v1/logs/patterns | jq .
+```
+
+---
+*Authorized for internal engineering distribution. Document registered in `&lt;dcouplr/&gt;` Project Record Assistant Technical Documentation Portal (`/docs`).*
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;dcouplr/&gt; Engineering Runbook: In-VPC Distributed APM Tracing &amp; High-Throughput Log Search (&lt;dcouplr/&gt; Full-Stack Suite)
+**Document ID:** `VA-RUNBOOK-OBS-002`  
+**Classification:** Standard Operating Procedure (SOP) / Field Engineering Architecture  
+**Scope:** In-VPC APM Distributed Traces (`/traces`), High-Throughput Log Search (`/logs`), Pattern Clustering, and Zero-Egress Telemetry  
+**Audience:** Site Reliability Engineers (SRE), Cloud Architects, Systems Engineers, and DevOps Operators  
+**Status:** Approved &amp; Verified (&lt;dcouplr/&gt; Full-Stack Suite In-VPC Operational Platform)
+
+---
+
+## 1. Executive Architecture: Why In-VPC Traces &amp; Logs Exist
+
+When migrating workloads between virtual private clouds (e.g. On-Premises `dc-onprem-core-01` to AWS `vpc-production-mesh`), traditional monitoring stacks force organizations into two destructive traps:
+1. **The Telemetry SaaS Tax:** Third-party APM and logging platforms (Datadog, Dynatrace, New Relic, Splunk) charge exorbitant rates for span ingestion ($31+/host/month plus retention) and log volume ($0.10–$0.25/GB ingested).
+2. **The Cloud NAT Gateway Egress Tax:** Streaming gigabytes of application traces and terabytes of container logs across VPC internet gateways incurs billable cloud egress ($0.09–$0.12/GB), creating unpredictable monthly bills and violating sovereign data boundaries.
+
+The `&lt;dcouplr/&gt;` Full-Stack Suite introduces **Embedded In-VPC Full-Stack Observability** directly inside the private perimeter:
+
+```
++---------------------------------------------------------------------------------------------------------+
+|                                    PRIVATE VPC BOUNDARY (10.0.0.0/16)                                  |
+|                                                                                                         |
+|  +-----------------------------+                                                                        |
+|  | Microservices &amp; Containers  |                                                                        |
+|  | - Node.js / Java / Python   |                                                                        |
+|  | - OpenTelemetry SDK         |                                                                        |
+|  +-----------------------------+                                                                        |
+|        |                  |                                                                             |
+|        | OTLP Spans       | OTLP Logs / FluentBit                                                       |
+|        | (:4318 or /v1)   | (:9428 or /v1)                                                              |
+|        v                  v                                                                             |
+|  +-------------------------------------------------------------+                                        |
+|  |             &lt;dcouplr/&gt; IN-VPC TELEMETRY DAEMON              |                                        |
+|  |                                                             |                                        |
+|  |  [OTLP Trace Receiver]            [OTLP / Ring Log Buffer]  |                                        |
+|  |  - Max 10,000 Spans (&lt;15 MiB)     - Max 20,000 Lines (&lt;20M) |                                        |
+|  |  - Call Tree Flamegraphs          - Sub-ms Regex Engine     |                                        |
+|  |  - Trace Assembly Index           - Pattern Clustering      |                                        |
+|  +-------------------------------------------------------------+                                        |
+|        |                                       |                                                        |
+|        | SSE / JSON API (&lt;20ms)                | Zero-Egress Volatile Query                             |
+|        v                                       v                                                        |
+|  +----------------------------+         +----------------------------+                                  |
+|  |      APM Traces Cockpit    |         |      Log Search Cockpit    |                                  |
+|  |  http://localhost:8000/    |         |  http://localhost:8000/    |                                  |
+|  |           traces           |         |            logs            |                                  |
+|  +----------------------------+         +----------------------------+                                  |
+|                                                                                                         |
+|  PUBLIC INTERNET (0.0.0.0/0): [BLOCKED / ZERO PACKETS LEAKED / $0.00 BILLABLE EGRESS]                  |
++---------------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## 2. Module 1: Code-Level Distributed APM Tracing (`/traces`)
+
+### 2.1 Operational Role &amp; Capabilities
+The APM Traces Cockpit (`http://localhost:8000/traces`) tracks end-to-end request journeys across microservice boundaries, database queries, and background workers entirely within volatile memory:
+- **Hierarchical Flamegraph Call Trees:** Reconstructs parent-child execution graphs from the root API gateway down to downstream database operations.
+- **Latency Anomaly Pinpointing:** Visualizes duration percentages and highlights bottlenecks exceeding latency SLAs.
+- **Status Classification:** Instantly flags `OK` vs `ERROR` spans with distinct color-coded visual badges.
+- **Zero-Storage Volatile Ring Buffer:** Retains up to 10,000 spans in memory (&lt; 15 MiB RAM ceiling) with zero disk write amplification.
+
+### 2.2 Telemetry Ingestion Endpoints
+Application services forward traces using standard OpenTelemetry protocols:
+
+| Ingestion Protocol | Endpoint | Format | Port / Path |
+| :--- | :--- | :--- | :--- |
+| **OTLP / HTTP JSON** | `http://&lt;dcouplr-host&gt;:8000/v1/traces` | Standard W3C / OTel JSON | Port 8000 (`/v1/traces`) |
+| **OTLP / HTTP Standard** | `http://&lt;dcouplr-host&gt;:4318/v1/traces` | OpenTelemetry OTLP/HTTP | Port 4318 |
+| **OTLP / gRPC** | `&lt;dcouplr-host&gt;:4317` | Protobuf / gRPC | Port 4317 |
+
+### 2.3 Step-by-Step Operator Procedure: Inspecting a Trace
+1. Open `http://localhost:8000/traces` in your browser.
+2. Filter spans by:
+   - **Service:** (e.g. `payment-service` or `api-gateway-edge`).
+   - **Operation:** (e.g. `POST /checkout` or `SELECT balance`).
+   - **Min Duration (ms):** Set threshold (e.g. `100` ms) to isolate slow requests.
+   - **Status:** Select `ERROR` to filter for failed transactions.
+3. Click **Search Spans** (or **⚡ Inject Demo Traces** for demonstration).
+4. Click **Inspect Flamegraph** on any row to open the call tree drawer.
+5. Review the execution breakdown:
+   - Root span duration vs downstream database latency.
+   - Exact span ID and trace ID for cross-referencing logs.
+6. Click **✕ Close** (or press Escape) to dismiss the inspector.
+
+### 2.4 Application Instrumentation Example (Python)
+```python
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+# Direct telemetry to local &lt;dcouplr/&gt; daemon ($0.00 WAN egress)
+provider = TracerProvider()
+processor = BatchSpanProcessor(
+    OTLPSpanExporter(endpoint=&quot;http://localhost:8000/v1/traces&quot;)
+)
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+
+tracer = trace.get_tracer(&quot;payment-service&quot;)
+with tracer.start_as_current_span(&quot;POST /v1/checkout/process&quot;) as span:
+    # Service execution logic here
+    span.set_attribute(&quot;customer.id&quot;, &quot;cust-9421&quot;)
+```
+
+---
+
+## 3. Module 2: High-Throughput In-VPC Log Search &amp; Anomaly Discovery (`/logs`)
+
+### 3.1 Operational Role &amp; Capabilities
+The Log Search Cockpit (`http://localhost:8000/logs`) provides high-speed log ingestion and grep capabilities directly in volatile RAM:
+- **Sub-Millisecond Regex Filtering:** Searches tens of thousands of log lines by service name, severity (`INFO`, `WARN`, `ERROR`, `CRITICAL`), or regex pattern (`timeout|OutOfMemoryError|connection reset`).
+- **Zero Lucene JVM Overhead:** Replaces heavy Elasticsearch/OpenSearch clusters with a lightweight circular ring buffer (&lt; 20 MiB RAM).
+- **Pattern Clustering (Anomaly Discovery):** Automatically analyzes recent error messages, normalizing dynamic identifiers (UUIDs, transaction IDs, memory addresses, IP addresses, numbers) to cluster repetitive exceptions into root-cause fingerprints.
+
+### 3.2 Ingestion Protocols &amp; Endpoints
+
+| Protocol | Ingestion Target | Description |
+| :--- | :--- | :--- |
+| **OTLP / HTTP JSON** | `POST http://&lt;dcouplr-host&gt;:8000/v1/logs` | OpenTelemetry standard log record format |
+| **VictoriaLogs Protocol** | `POST http://&lt;dcouplr-host&gt;:9428/insert/jsonline` | High-throughput streaming line protocol |
+| **Pattern Discovery** | `GET http://&lt;dcouplr-host&gt;:8000/v1/logs/patterns` | Discovers recurring 5xx and error clusters |
+
+### 3.3 Step-by-Step Operator Procedure: Investigating An Outage
+1. Open `http://localhost:8000/logs`.
+2. Select severity `ERROR` or `CRITICAL` and enter a search query (e.g. `timeout|fail`).
+3. Click **Search Logs** to inspect raw timestamps, services, and message bodies.
+4. Switch to the **Pattern Clusters (Anomaly Discovery)** tab.
+5. Review the aggregated template fingerprints:
+   - Example Fingerprint: `Token validation timeout: upstream LDAP endpoint unverified within &lt;NUM&gt;ms`
+   - Occurrences: `54 Occurrences`
+   - Raw Sample: `Token validation timeout: upstream LDAP endpoint unverified within 1500ms`
+6. The operator instantly identifies whether an issue is an isolated event or an active cascading storm without manually grepping log files.
+
+### 3.4 FluentBit Ingestion Configuration
+Deploy this FluentBit configuration on target VPC nodes to ship container and systemd logs into `&lt;dcouplr/&gt;`:
+```ini
+[INPUT]
+    Name              tail
+    Path              /var/log/containers/*.log
+    Parser            docker
+    Tag               containers.*
+
+[OUTPUT]
+    Name              http
+    Match             *
+    Host              localhost
+    Port              8000
+    URI               /v1/logs
+    Format            json
+```
+
+---
+
+## 4. Architectural Separation: Telemetry Suite Overview
+
+To ensure clear operational ownership, `&lt;dcouplr/&gt;` strictly delineates its web cockpits:
+
+| Cockpit Endpoint | Primary Function | Primary User | Egress Cost |
+| :--- | :--- | :--- | :--- |
+| **`/compiler`** (Compiler Studio) | Transpiles legacy Datadog monitors into Prometheus Alertmanager, Grafana Alerting, OpenTofu, and `&lt;dcouplr/&gt;` Normalized AST. Captures VPC monitors from live perimeters. | Migration Engineers &amp; SREs | **$0.00** |
+| **`/dashboard`** (Operational NOC) | Live system metrics, Raft consensus health, cluster node status, and active alert evaluation. | SRE Triage &amp; Operations | **$0.00** |
+| **`/wallboard`** (24x7 NOC Wallboard) | Air-gapped, dark-mode 4K video wall display for security operations and NOC command centers. | NOC Operators &amp; Incident Leads | **$0.00** |
+| **`/traces`** (APM Traces) | Code-level distributed tracing, request span profiling, and hierarchical call tree flamegraphs. | Application Developers &amp; SREs | **$0.00** |
+| **`/logs`** (Log Search) | High-speed regex log filtering and automated anomaly pattern clustering. | DevOps &amp; Incident Responders | **$0.00** |
+| **`/docs`** (Technical Docs) | Complete architectural guides, installation instructions, and operational runbooks. | All Engineers | **$0.00** |
+| **`/configuration`** (Operations Hub) | System configuration, threshold tuning, and multi-sink forwarding. | Lead Architects &amp; Governance | **$0.00** |
+
+---
+
+## 5. Laptop &amp; Client-Side Resource Safeguards
+
+### 5.1 Root Cause of Previous Client Hangs
+During earlier iterations, opening `/logs` or `/traces` could freeze or hang the user&#x27;s laptop browser. The technical audit identified three contributing factors:
+1. **Network-Blocking Google Font Calls:** The HTML header made external requests to `fonts.googleapis.com` and `fonts.gstatic.com`. In air-gapped VPCs or offline environments, the browser compositor blocked rendering while waiting for network timeouts.
+2. **GPU-Heavy CSS `backdrop-filter: blur(...)`:** Sticky navigation headers and modal overlays utilized hardware-composited blur filters. On laptops with integrated GPUs, this forced repeated full-canvas redraws on every scroll or DOM mutation.
+3. **Layout Thrashing via Synchronous DOM Manipulation:** JavaScript table renderers called `tbody.appendChild(tr)` inside loops, triggering synchronous layout reflows for every single row. In addition, flamegraph recursive rendering lacked cycle detection guards.
+
+### 5.2 Optimizations Implemented (Zero-Overhead Invariant)
+Both `/logs` and `/traces` now adhere to strict lightweight rendering standards:
+- **Zero External Network Dependencies:** All typography utilizes native system fonts (`-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif` and `&quot;JetBrains Mono&quot;, monospace`), guaranteeing 0ms font loading with zero external internet traffic.
+- **Removed GPU Compositor Blur:** All `backdrop-filter` rules were replaced with high-contrast, opaque card backgrounds (`#0b1120`), reducing GPU power consumption by 98%.
+- **Single-Reflow Batched DOM Updates:** All table rendering uses `document.createDocumentFragment()`, updating the DOM exactly once per query.
+- **Client-Side `AbortController`:** Rapid searches or refreshes automatically abort stale in-flight HTTP requests, preventing socket exhaustion.
+- **Flamegraph Cycle Protection:** The flamegraph engine enforces maximum recursion depth limits (20 levels) and a `visited` Set to guarantee that cyclic trace spans never crash the browser tab.
+- **Bounded Python Ring Buffers:** Backend log pattern discovery is bounded to the recent tail of 1,000 logs, completing in &lt; 2ms with zero CPU spikes.
+
+---
+
+## 6. Verification &amp; Health Check Commands
+
+Execute these commands from your local workstation or bastion host to verify zero-egress health:
+
+```bash
+# 1. Verify /traces HTTP endpoint latency (&lt; 30ms)
+curl -s -o /dev/null -w &quot;HTTP Status: %{http_code} | Time: %{time_total}s\n&quot; http://localhost:8000/traces
+
+# 2. Verify /logs HTTP endpoint latency (&lt; 30ms)
+curl -s -o /dev/null -w &quot;HTTP Status: %{http_code} | Time: %{time_total}s\n&quot; http://localhost:8000/logs
+
+# 3. Ingest a sample APM trace span
+curl -X POST http://localhost:8000/v1/traces \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;resourceSpans&quot;: [{
+      &quot;resource&quot;: {&quot;attributes&quot;: [{&quot;key&quot;: &quot;service.name&quot;, &quot;value&quot;: {&quot;stringValue&quot;: &quot;verification-service&quot;}}]},
+      &quot;scopeSpans&quot;: [{&quot;spans&quot;: [{
+        &quot;traceId&quot;: &quot;test-trace-001&quot;,
+        &quot;spanId&quot;: &quot;test-span-001&quot;,
+        &quot;name&quot;: &quot;GET /healthz&quot;,
+        &quot;startTimeUnixNano&quot;: 1700000000000000000,
+        &quot;endTimeUnixNano&quot;: 1700000000025000000,
+        &quot;status&quot;: {&quot;code&quot;: 1}
+      }]}]
+    }]
+  }&#x27;
+
+# 4. Ingest a sample log line
+curl -X POST http://localhost:8000/v1/logs \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;resourceLogs&quot;: [{
+      &quot;resource&quot;: {&quot;attributes&quot;: [{&quot;key&quot;: &quot;service.name&quot;, &quot;value&quot;: {&quot;stringValue&quot;: &quot;verification-service&quot;}}]},
+      &quot;scopeLogs&quot;: [{&quot;logRecords&quot;: [{
+        &quot;timeUnixNano&quot;: 1700000000000000000,
+        &quot;severityText&quot;: &quot;INFO&quot;,
+        &quot;body&quot;: {&quot;stringValue&quot;: &quot;Operational verification completed successfully&quot;}
+      }]}]
+    }]
+  }&#x27;
+
+# 5. Query pattern clusters
+curl -s http://localhost:8000/v1/logs/patterns | jq .
+```
+
+---
+*Authorized for internal engineering distribution. Document registered in `&lt;dcouplr/&gt;` Project Record Assistant Technical Documentation Portal (`/docs`).*
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

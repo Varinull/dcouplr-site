@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - SUPPORT_TIERS_SLAS_AND_KPIS.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/SUPPORT_TIERS_SLAS_AND_KPIS.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="SUPPORT_TIERS_SLAS_AND_KPIS.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="support-tiers-incident-slas-specification"><dcouplr/> Support Tiers &amp; Incident SLAs Specification</h1>
+<p><strong>Document ID:</strong> VA-SPEC-SUPPORT-SLA-001<br />
+<strong>Version:</strong> 1.0.0 (GA Enterprise Specification)<br />
+<strong>Date:</strong> 2026-10-27<br />
+<strong>Classification:</strong> Public Specification &amp; Enterprise Master Service Agreement (MSA) Appendix<br />
+<strong>Target Audience:</strong> SREs, Platform Engineers, DevOps Leads, Procurement &amp; Legal Teams<br />
+<strong>Published Reference:</strong> <a href="https://dcouplr.com/docs#support-slas">https://dcouplr.com/docs#support-slas</a></p>
+<hr />
+<h2 id="1-executive-summary-the-zero-egress-support-paradigm">1. Executive Summary &amp; The Zero-Egress Support Paradigm</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> is an open-core, in-perimeter observability and infrastructure-as-code transpilation engine designed to operate 100% inside private VPCs, Kubernetes clusters, and air-gapped on-premises datacenters. Because <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> enforces a mathematical zero-egress guarantee ($Egress_{WAN} \equiv 0.00\text{ KB}$), our support and incident management model is deliberately architected for <strong>zero-trust security</strong>:</p>
+<ol>
+<li><strong>No External Credentials or Data Ingestion:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> support engineers never request, store, or receive customer production credentials, private keys, database connection strings, or unredacted metric feeds.</li>
+<li><strong>In-Perimeter Diagnostic Pairing:</strong> Technical troubleshooting takes place inside the customer's perimeter via live in-VPC screen sharing or private, ephemeral WebRTC video war-rooms.</li>
+<li><strong>Deterministic AST Linters:</strong> Diagnostic data shared during support engagements is processed through local HMAC-SHA256 anonymization filters (<code>LocalTokenAnonymizer</code>), ensuring zero IP or hostname disclosure.</li>
+<li><strong>Radical Transparency:</strong> Every tier's entitlements, guaranteed response times, resolution targets, and contractual financial remedies are codified publicly and objectively measured.</li>
+</ol>
+<hr />
+<h2 id="2-tier-by-tier-support-entitlements-matrix">2. Tier-by-Tier Support Entitlements Matrix</h2>
+<p>The table below outlines the service boundaries, coverage windows, support channels, and engineering allocation across all six commercial licensing tiers:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Attribute</th>
+<th style="text-align:left">Tier 0: Community Core</th>
+<th style="text-align:left">Tier 1: Developer Pro</th>
+<th style="text-align:left">Tier 2: Cluster Small</th>
+<th style="text-align:left">Tier 3: Cluster Medium</th>
+<th style="text-align:left">Tier 4: Cluster Large</th>
+<th style="text-align:left">Tier 5: Custom Enterprise</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Pricing Model</strong></td>
+<td style="text-align:left"><strong>$0 / month</strong> (Free)</td>
+<td style="text-align:left"><strong>$300 / month</strong></td>
+<td style="text-align:left"><strong>$1,500 / month</strong></td>
+<td style="text-align:left"><strong>$3,500 / month</strong></td>
+<td style="text-align:left"><strong>$45 / node / month</strong></td>
+<td style="text-align:left"><strong>Custom Annual Contract</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Monitored Capacity</strong></td>
+<td style="text-align:left">1 Local CLI / 10 Nodes</td>
+<td style="text-align:left">25 Monitored Nodes</td>
+<td style="text-align:left">50 Monitored Nodes</td>
+<td style="text-align:left">150 Monitored Nodes</td>
+<td style="text-align:left">91 to 500+ Nodes</td>
+<td style="text-align:left">Unlimited Enterprise Nodes</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>License Type</strong></td>
+<td style="text-align:left">Apache 2.0 Open-Core</td>
+<td style="text-align:left">Commercial In-VPC</td>
+<td style="text-align:left">Commercial In-VPC</td>
+<td style="text-align:left">Commercial Multi-VPC</td>
+<td style="text-align:left">Commercial Fleet Mesh</td>
+<td style="text-align:left">Air-Gapped Perpetual</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Coverage Hours</strong></td>
+<td style="text-align:left">Asynchronous (Volunteer)</td>
+<td style="text-align:left">9×5 Local Business</td>
+<td style="text-align:left">12×5 Extended (UTC)</td>
+<td style="text-align:left">24×7×365 for P1 / 12×5 for P2–P4</td>
+<td style="text-align:left">24×7×365 Continuous Priority</td>
+<td style="text-align:left">24×7×365 Follow-the-Sun</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>P1 First Response SLA</strong></td>
+<td style="text-align:left"><strong>Best Effort</strong></td>
+<td style="text-align:left"><strong>24 Hours</strong> (Bus. Days)</td>
+<td style="text-align:left"><strong>4 Hours</strong></td>
+<td style="text-align:left"><strong>2 Hours</strong> (24/7 Guaranteed)</td>
+<td style="text-align:left"><strong>1 Hour</strong> (24/7 Guaranteed)</td>
+<td style="text-align:left"><strong>15 Minutes</strong> (Ultra-Priority)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Support Intake Channels</strong></td>
+<td style="text-align:left">GitHub Discussions &amp; Issues</td>
+<td style="text-align:left">Priority Email Desk (<code>support@dcouplr.com</code>)</td>
+<td style="text-align:left">CLI Ticket Dispatch &amp; Priority Desk</td>
+<td style="text-align:left">Shared Slack / Teams Channel + Priority Email</td>
+<td style="text-align:left">Direct PagerDuty / Opsgenie + Slack Connect</td>
+<td style="text-align:left">24/7 Emergency Hotline + Private Slack Grid</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Incident War-Room Bridge</strong></td>
+<td style="text-align:left">—</td>
+<td style="text-align:left">—</td>
+<td style="text-align:left">Ad-hoc Screen-Share (1/qtr)</td>
+<td style="text-align:left">Dedicated On-Demand Bridge (&lt; 30m)</td>
+<td style="text-align:left">Live Video War-Room (&lt; 15m) + PagerDuty</td>
+<td style="text-align:left">Instant War-Room Cell (&lt; 5m) + Dedicated On-Call</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Account Management</strong></td>
+<td style="text-align:left">Community Forums</td>
+<td style="text-align:left">Shared Support Queue</td>
+<td style="text-align:left">Pooled Technical Support</td>
+<td style="text-align:left">Designated Associate TAM</td>
+<td style="text-align:left">Dedicated Named Senior TAM</td>
+<td style="text-align:left">Dedicated Principal TAM &amp; Solutions Architect</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Custom Parser SLAs</strong></td>
+<td style="text-align:left">Community PRs</td>
+<td style="text-align:left">Roadmap Requests</td>
+<td style="text-align:left">Roadmap Priority</td>
+<td style="text-align:left">30-Day Parser Commit</td>
+<td style="text-align:left">14-Day Bespoke Grammar Delivery</td>
+<td style="text-align:left">5-Day Bespoke Parser Sprint</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Financial SLA Remedy</strong></td>
+<td style="text-align:left">—</td>
+<td style="text-align:left">—</td>
+<td style="text-align:left">—</td>
+<td style="text-align:left">Included (5%–15% Credits)</td>
+<td style="text-align:left">Included (10%–30% Credits)</td>
+<td style="text-align:left">Custom MSA Penalties</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-incident-severity-classification-response-sla-matrix">3. Incident Severity Classification &amp; Response SLA Matrix</h2>
+<p>Incoming incident tickets are categorized by operational severity. Response times represent the maximum guaranteed duration between ticket submission and active hands-on triage by a certified <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Site Reliability Engineer:</p>
+<h3 id="31-severity-classifications">3.1 Severity Classifications</h3>
+<ul>
+<li>
+<p><strong>Severity 0 (P0) — Catastrophic Disaster / Cluster Failure (Tier 5 Exclusive):</strong></p>
+<ul>
+<li><em>Criteria:</em> Total collapse of observability or migration orchestrator across production cluster; unrecoverable split-brain in Raft consensus; catastrophic data corruption risk.</li>
+<li><em>Mitigation Target:</em> <strong>&lt; 4 Hours</strong></li>
+<li><em>Status Update Cadence:</em> Every 30 minutes on active War-Room bridge.</li>
+</ul>
+</li>
+<li>
+<p><strong>Severity 1 (P1) — Critical Outage / System Inoperable:</strong></p>
+<ul>
+<li><em>Criteria:</em> Primary <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> in-VPC daemon halted; telemetry or alerting pipeline completely stalled; production migration wave blocked during cutover window.</li>
+<li><em>Mitigation Target:</em> <strong>&lt; 8 Hours</strong> (Tiers 3–5)</li>
+<li><em>Status Update Cadence:</em> Every 60 minutes via ticket/channel until mitigation.</li>
+</ul>
+</li>
+<li>
+<p><strong>Severity 2 (P2) — Major Degradation / Impaired Core Feature:</strong></p>
+<ul>
+<li><em>Criteria:</em> High AST transpilation error rates on specific monitor formats; replication lag exceeding 15 minutes; partial dashboard failure with CLI intact. Workaround available.</li>
+<li><em>Mitigation Target:</em> <strong>&lt; 24 Hours</strong></li>
+<li><em>Status Update Cadence:</em> Every 4 hours during business hours.</li>
+</ul>
+</li>
+<li>
+<p><strong>Severity 3 (P3) — Minor Defect / Non-Blocking Bug:</strong></p>
+<ul>
+<li><em>Criteria:</em> Cosmetic anomalies in UI canvas, non-blocking fallback comment warnings, non-critical telemetry stream latency.</li>
+<li><em>Mitigation Target:</em> Next scheduled patch release / sprint cycle.</li>
+<li><em>Status Update Cadence:</em> Upon status change or release deployment.</li>
+</ul>
+</li>
+<li>
+<p><strong>Severity 4 (P4) — General Inquiry / Guidance / Feature Request:</strong></p>
+<ul>
+<li><em>Criteria:</em> AST rule configuration consultation, syntax questions, capacity planning, feature suggestions.</li>
+<li><em>Mitigation Target:</em> Informational resolution.</li>
+<li><em>Status Update Cadence:</em> Asynchronous follow-up.</li>
+</ul>
+</li>
+</ul>
+<h3 id="32-response-sla-commitments-by-tier">3.2 Response SLA Commitments by Tier</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Severity Level</th>
+<th style="text-align:left">Tier 5 (Enterprise)</th>
+<th style="text-align:left">Tier 4 (Cluster Large)</th>
+<th style="text-align:left">Tier 3 (Cluster Medium)</th>
+<th style="text-align:left">Tier 2 (Cluster Small)</th>
+<th style="text-align:left">Tier 1 (Developer Pro)</th>
+<th style="text-align:left">Tier 0 (Community)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>P0 Disaster</strong></td>
+<td style="text-align:left"><strong>15 Minutes</strong> (24/7)</td>
+<td style="text-align:left">—</td>
+<td style="text-align:left">—</td>
+<td style="text-align:left">—</td>
+<td style="text-align:left">—</td>
+<td style="text-align:left">—</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>P1 Critical</strong></td>
+<td style="text-align:left"><strong>15 Minutes</strong> (24/7)</td>
+<td style="text-align:left"><strong>1 Hour</strong> (24/7)</td>
+<td style="text-align:left"><strong>2 Hours</strong> (24/7)</td>
+<td style="text-align:left"><strong>4 Hours</strong> (12/5)</td>
+<td style="text-align:left">24 Hours (Bus. Days)</td>
+<td style="text-align:left">Best Effort</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>P2 Major</strong></td>
+<td style="text-align:left"><strong>1 Hour</strong></td>
+<td style="text-align:left"><strong>2 Hours</strong></td>
+<td style="text-align:left"><strong>4 Hours</strong></td>
+<td style="text-align:left"><strong>8 Hours</strong></td>
+<td style="text-align:left">48 Hours</td>
+<td style="text-align:left">Best Effort</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>P3 Normal</strong></td>
+<td style="text-align:left"><strong>4 Hours</strong></td>
+<td style="text-align:left"><strong>8 Hours</strong></td>
+<td style="text-align:left"><strong>12 Hours</strong></td>
+<td style="text-align:left"><strong>24 Hours</strong></td>
+<td style="text-align:left">72 Hours</td>
+<td style="text-align:left">Community Triage</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>P4 Inquiry</strong></td>
+<td style="text-align:left"><strong>8 Hours</strong></td>
+<td style="text-align:left"><strong>16 Hours</strong></td>
+<td style="text-align:left"><strong>24 Hours</strong></td>
+<td style="text-align:left"><strong>48 Hours</strong></td>
+<td style="text-align:left">5 Business Days</td>
+<td style="text-align:left">Discussions</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="33-strict-governance-demarcation-commercial-vendor-support-sla-vs-in-perimeter-metric-threshold-policies">3.3 Strict Governance Demarcation: Commercial Vendor Support SLA vs. In-Perimeter Metric Threshold Policies</h3>
+<blockquote>
+<p>[!IMPORTANT]
+<strong>CRITICAL ARCHITECTURAL NOTE FOR CUSTOMER OPERATING ENGINEERS:</strong>
+Operating engineers must <strong>never conflate</strong> how they configure their internal in-perimeter <strong>Severity Policies (P1–P4)</strong> and <strong>Sampling Evaluation Windows (1m–30m)</strong> with their contractual <strong>Varinull <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Commercial Vendor Support SLA</strong>.</p>
+<p>These are two completely distinct operational domains:</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Architectural Dimension</th>
+<th style="text-align:left">Plane 1: In-Perimeter Metric Telemetry &amp; Alert Policy</th>
+<th style="text-align:left">Plane 2: <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Commercial Vendor Support SLA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Governing Entity</strong></td>
+<td style="text-align:left">Customer Internal SRE &amp; Infrastructure Operations Team</td>
+<td style="text-align:left">Varinull Commercial Technical Support &amp; Engineering Board</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Purpose</strong></td>
+<td style="text-align:left">Monitors customer-owned VPCs, servers, databases, and apps</td>
+<td style="text-align:left">Guarantees vendor response time for <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> software issues</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Configuration Interface</strong></td>
+<td style="text-align:left"><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Configuration Console (<code>http://localhost:8000/configuration</code>)</td>
+<td style="text-align:left">Commercial Master Services Agreement (MSA) &amp; Licensing Contract</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Severity Meaning</strong></td>
+<td style="text-align:left">Internal operational impact (e.g. CPU &gt; 90%, DB locks &gt; 100)</td>
+<td style="text-align:left">Contractual software defect severity (e.g. Raft split-brain, engine halt)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Sampling Evaluation Window</strong></td>
+<td style="text-align:left">Rolling circular ring buffer duration ($\Delta t \in {1\text{m}, 3\text{m}, 5\text{m}, 10\text{m}, 15\text{m}, 30\text{m}}$) for transient spike rejection</td>
+<td style="text-align:left">Not Applicable; vendor SLA is measured in elapsed minutes from ticket intake</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Notification Routing</strong></td>
+<td style="text-align:left">Dispatched internally to customer ticketing queues (<code>sre-tier1</code>, <code>dba-team</code>), GSM pagers, Slack, ServiceNow</td>
+<td style="text-align:left">Ticket intake via priority email desk, shared Slack grid, or 24/7 emergency hotline</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Vendor Paging Effect</strong></td>
+<td style="text-align:left"><strong>Zero vendor involvement.</strong> Telemetry remains 100% in-perimeter (Zero WAN Egress).</td>
+<td style="text-align:left">Paging engages certified Varinull Tier 3/4 on-call engineers onto a video war-room</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Target SLA (MTTA)</strong></td>
+<td style="text-align:left">Internal SRE target acknowledgment (e.g., MTTA $\le 5$m for P1, $\le 15$m for P2)</td>
+<td style="text-align:left">Contractual vendor first response SLA (15m for Tier 5, 1h for Tier 4, 2h for Tier 3)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="common-misconceptions-clarified">Common Misconceptions Clarified:</h4>
+<ol>
+<li><strong>&quot;Does setting an internal metric alert to P1 with a 1-minute window page <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Support?&quot;</strong><br />
+<strong>No.</strong> Setting an internal database or host metric to P1 only pages <em>your own internal engineering on-call rotation</em>. It does not submit an incident ticket to Varinull or breach zero-egress isolation.</li>
+<li><strong>&quot;Does our <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Commercial Vendor Support SLA determine how long our sliding sampling window should be?&quot;</strong><br />
+<strong>No.</strong> Sampling windows are mathematical damping parameters designed to reject transient noise. A customer on a Tier 5 (15-minute response SLA) can configure a 1-minute or 30-minute metric evaluation window based purely on workload characteristics.</li>
+<li><strong>&quot;When is the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Commercial Vendor Support SLA invoked?&quot;</strong><br />
+The commercial vendor SLA is invoked when the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> engine software itself experiences a fault (e.g. unhandled AST translation exception, Raft consensus partition, memory leak) and the customer submits an issue through their designated commercial support channel.</li>
+</ol>
+<hr />
+<p><em>Copyright © 2026 Varinull Corporation. All rights reserved.</em><br />
+<em>For questions regarding commercial support contracts or bespoke enterprise SLAs, contact <a href="mailto:procurement@dcouplr.com">procurement@dcouplr.com</a>.</em></p>
+</div>
+      <pre id="raw-view"><code># &lt;dcouplr/&gt; Support Tiers &amp; Incident SLAs Specification
+
+**Document ID:** VA-SPEC-SUPPORT-SLA-001  
+**Version:** 1.0.0 (GA Enterprise Specification)  
+**Date:** 2026-10-27  
+**Classification:** Public Specification &amp; Enterprise Master Service Agreement (MSA) Appendix  
+**Target Audience:** SREs, Platform Engineers, DevOps Leads, Procurement &amp; Legal Teams  
+**Published Reference:** [https://dcouplr.com/docs#support-slas](https://dcouplr.com/docs#support-slas)  
+
+---
+
+## 1. Executive Summary &amp; The Zero-Egress Support Paradigm
+
+`&lt;dcouplr/&gt;` is an open-core, in-perimeter observability and infrastructure-as-code transpilation engine designed to operate 100% inside private VPCs, Kubernetes clusters, and air-gapped on-premises datacenters. Because `&lt;dcouplr/&gt;` enforces a mathematical zero-egress guarantee ($Egress_{WAN} \equiv 0.00\text{ KB}$), our support and incident management model is deliberately architected for **zero-trust security**:
+
+1. **No External Credentials or Data Ingestion:** `&lt;dcouplr/&gt;` support engineers never request, store, or receive customer production credentials, private keys, database connection strings, or unredacted metric feeds.
+2. **In-Perimeter Diagnostic Pairing:** Technical troubleshooting takes place inside the customer&#x27;s perimeter via live in-VPC screen sharing or private, ephemeral WebRTC video war-rooms.
+3. **Deterministic AST Linters:** Diagnostic data shared during support engagements is processed through local HMAC-SHA256 anonymization filters (`LocalTokenAnonymizer`), ensuring zero IP or hostname disclosure.
+4. **Radical Transparency:** Every tier&#x27;s entitlements, guaranteed response times, resolution targets, and contractual financial remedies are codified publicly and objectively measured.
+
+---
+
+## 2. Tier-by-Tier Support Entitlements Matrix
+
+The table below outlines the service boundaries, coverage windows, support channels, and engineering allocation across all six commercial licensing tiers:
+
+| Attribute | Tier 0: Community Core | Tier 1: Developer Pro | Tier 2: Cluster Small | Tier 3: Cluster Medium | Tier 4: Cluster Large | Tier 5: Custom Enterprise |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Pricing Model** | **$0 / month** (Free) | **$300 / month** | **$1,500 / month** | **$3,500 / month** | **$45 / node / month** | **Custom Annual Contract** |
+| **Monitored Capacity** | 1 Local CLI / 10 Nodes | 25 Monitored Nodes | 50 Monitored Nodes | 150 Monitored Nodes | 91 to 500+ Nodes | Unlimited Enterprise Nodes |
+| **License Type** | Apache 2.0 Open-Core | Commercial In-VPC | Commercial In-VPC | Commercial Multi-VPC | Commercial Fleet Mesh | Air-Gapped Perpetual |
+| **Coverage Hours** | Asynchronous (Volunteer) | 9×5 Local Business | 12×5 Extended (UTC) | 24×7×365 for P1 / 12×5 for P2–P4 | 24×7×365 Continuous Priority | 24×7×365 Follow-the-Sun |
+| **P1 First Response SLA** | **Best Effort** | **24 Hours** (Bus. Days) | **4 Hours** | **2 Hours** (24/7 Guaranteed) | **1 Hour** (24/7 Guaranteed) | **15 Minutes** (Ultra-Priority) |
+| **Support Intake Channels** | GitHub Discussions &amp; Issues | Priority Email Desk (`support@dcouplr.com`) | CLI Ticket Dispatch &amp; Priority Desk | Shared Slack / Teams Channel + Priority Email | Direct PagerDuty / Opsgenie + Slack Connect | 24/7 Emergency Hotline + Private Slack Grid |
+| **Incident War-Room Bridge** | — | — | Ad-hoc Screen-Share (1/qtr) | Dedicated On-Demand Bridge (&lt; 30m) | Live Video War-Room (&lt; 15m) + PagerDuty | Instant War-Room Cell (&lt; 5m) + Dedicated On-Call |
+| **Account Management** | Community Forums | Shared Support Queue | Pooled Technical Support | Designated Associate TAM | Dedicated Named Senior TAM | Dedicated Principal TAM &amp; Solutions Architect |
+| **Custom Parser SLAs** | Community PRs | Roadmap Requests | Roadmap Priority | 30-Day Parser Commit | 14-Day Bespoke Grammar Delivery | 5-Day Bespoke Parser Sprint |
+| **Financial SLA Remedy** | — | — | — | Included (5%–15% Credits) | Included (10%–30% Credits) | Custom MSA Penalties |
+
+---
+
+## 3. Incident Severity Classification &amp; Response SLA Matrix
+
+Incoming incident tickets are categorized by operational severity. Response times represent the maximum guaranteed duration between ticket submission and active hands-on triage by a certified `&lt;dcouplr/&gt;` Site Reliability Engineer:
+
+### 3.1 Severity Classifications
+
+- **Severity 0 (P0) — Catastrophic Disaster / Cluster Failure (Tier 5 Exclusive):**
+  - *Criteria:* Total collapse of observability or migration orchestrator across production cluster; unrecoverable split-brain in Raft consensus; catastrophic data corruption risk.
+  - *Mitigation Target:* **&lt; 4 Hours**
+  - *Status Update Cadence:* Every 30 minutes on active War-Room bridge.
+
+- **Severity 1 (P1) — Critical Outage / System Inoperable:**
+  - *Criteria:* Primary `&lt;dcouplr/&gt;` in-VPC daemon halted; telemetry or alerting pipeline completely stalled; production migration wave blocked during cutover window.
+  - *Mitigation Target:* **&lt; 8 Hours** (Tiers 3–5)
+  - *Status Update Cadence:* Every 60 minutes via ticket/channel until mitigation.
+
+- **Severity 2 (P2) — Major Degradation / Impaired Core Feature:**
+  - *Criteria:* High AST transpilation error rates on specific monitor formats; replication lag exceeding 15 minutes; partial dashboard failure with CLI intact. Workaround available.
+  - *Mitigation Target:* **&lt; 24 Hours**
+  - *Status Update Cadence:* Every 4 hours during business hours.
+
+- **Severity 3 (P3) — Minor Defect / Non-Blocking Bug:**
+  - *Criteria:* Cosmetic anomalies in UI canvas, non-blocking fallback comment warnings, non-critical telemetry stream latency.
+  - *Mitigation Target:* Next scheduled patch release / sprint cycle.
+  - *Status Update Cadence:* Upon status change or release deployment.
+
+- **Severity 4 (P4) — General Inquiry / Guidance / Feature Request:**
+  - *Criteria:* AST rule configuration consultation, syntax questions, capacity planning, feature suggestions.
+  - *Mitigation Target:* Informational resolution.
+  - *Status Update Cadence:* Asynchronous follow-up.
+
+### 3.2 Response SLA Commitments by Tier
+
+| Severity Level | Tier 5 (Enterprise) | Tier 4 (Cluster Large) | Tier 3 (Cluster Medium) | Tier 2 (Cluster Small) | Tier 1 (Developer Pro) | Tier 0 (Community) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **P0 Disaster** | **15 Minutes** (24/7) | — | — | — | — | — |
+| **P1 Critical** | **15 Minutes** (24/7) | **1 Hour** (24/7) | **2 Hours** (24/7) | **4 Hours** (12/5) | 24 Hours (Bus. Days) | Best Effort |
+| **P2 Major** | **1 Hour** | **2 Hours** | **4 Hours** | **8 Hours** | 48 Hours | Best Effort |
+| **P3 Normal** | **4 Hours** | **8 Hours** | **12 Hours** | **24 Hours** | 72 Hours | Community Triage |
+| **P4 Inquiry** | **8 Hours** | **16 Hours** | **24 Hours** | **48 Hours** | 5 Business Days | Discussions |
+
+---
+
+### 3.3 Strict Governance Demarcation: Commercial Vendor Support SLA vs. In-Perimeter Metric Threshold Policies
+
+&gt; [!IMPORTANT]
+&gt; **CRITICAL ARCHITECTURAL NOTE FOR CUSTOMER OPERATING ENGINEERS:**
+&gt; Operating engineers must **never conflate** how they configure their internal in-perimeter **Severity Policies (P1–P4)** and **Sampling Evaluation Windows (1m–30m)** with their contractual **Varinull `&lt;dcouplr/&gt;` Commercial Vendor Support SLA**.
+&gt;
+&gt; These are two completely distinct operational domains:
+
+| Architectural Dimension | Plane 1: In-Perimeter Metric Telemetry &amp; Alert Policy | Plane 2: `&lt;dcouplr/&gt;` Commercial Vendor Support SLA |
+| :--- | :--- | :--- |
+| **Governing Entity** | Customer Internal SRE &amp; Infrastructure Operations Team | Varinull Commercial Technical Support &amp; Engineering Board |
+| **Purpose** | Monitors customer-owned VPCs, servers, databases, and apps | Guarantees vendor response time for `&lt;dcouplr/&gt;` software issues |
+| **Configuration Interface** | `&lt;dcouplr/&gt;` Configuration Console (`http://localhost:8000/configuration`) | Commercial Master Services Agreement (MSA) &amp; Licensing Contract |
+| **Severity Meaning** | Internal operational impact (e.g. CPU &gt; 90%, DB locks &gt; 100) | Contractual software defect severity (e.g. Raft split-brain, engine halt) |
+| **Sampling Evaluation Window** | Rolling circular ring buffer duration ($\Delta t \in \{1\text{m}, 3\text{m}, 5\text{m}, 10\text{m}, 15\text{m}, 30\text{m}\}$) for transient spike rejection | Not Applicable; vendor SLA is measured in elapsed minutes from ticket intake |
+| **Notification Routing** | Dispatched internally to customer ticketing queues (`sre-tier1`, `dba-team`), GSM pagers, Slack, ServiceNow | Ticket intake via priority email desk, shared Slack grid, or 24/7 emergency hotline |
+| **Vendor Paging Effect** | **Zero vendor involvement.** Telemetry remains 100% in-perimeter (Zero WAN Egress). | Paging engages certified Varinull Tier 3/4 on-call engineers onto a video war-room |
+| **Target SLA (MTTA)** | Internal SRE target acknowledgment (e.g., MTTA $\le 5$m for P1, $\le 15$m for P2) | Contractual vendor first response SLA (15m for Tier 5, 1h for Tier 4, 2h for Tier 3) |
+
+#### Common Misconceptions Clarified:
+1. **&quot;Does setting an internal metric alert to P1 with a 1-minute window page `&lt;dcouplr/&gt;` Support?&quot;**  
+   **No.** Setting an internal database or host metric to P1 only pages *your own internal engineering on-call rotation*. It does not submit an incident ticket to Varinull or breach zero-egress isolation.
+2. **&quot;Does our `&lt;dcouplr/&gt;` Commercial Vendor Support SLA determine how long our sliding sampling window should be?&quot;**  
+   **No.** Sampling windows are mathematical damping parameters designed to reject transient noise. A customer on a Tier 5 (15-minute response SLA) can configure a 1-minute or 30-minute metric evaluation window based purely on workload characteristics.
+3. **&quot;When is the `&lt;dcouplr/&gt;` Commercial Vendor Support SLA invoked?&quot;**  
+   The commercial vendor SLA is invoked when the `&lt;dcouplr/&gt;` engine software itself experiences a fault (e.g. unhandled AST translation exception, Raft consensus partition, memory leak) and the customer submits an issue through their designated commercial support channel.
+
+---
+
+*Copyright &amp;copy; 2026 Varinull Corporation. All rights reserved.*  
+*For questions regarding commercial support contracts or bespoke enterprise SLAs, contact [procurement@dcouplr.com](mailto:procurement@dcouplr.com).*
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;dcouplr/&gt; Support Tiers &amp; Incident SLAs Specification
+
+**Document ID:** VA-SPEC-SUPPORT-SLA-001  
+**Version:** 1.0.0 (GA Enterprise Specification)  
+**Date:** 2026-10-27  
+**Classification:** Public Specification &amp; Enterprise Master Service Agreement (MSA) Appendix  
+**Target Audience:** SREs, Platform Engineers, DevOps Leads, Procurement &amp; Legal Teams  
+**Published Reference:** [https://dcouplr.com/docs#support-slas](https://dcouplr.com/docs#support-slas)  
+
+---
+
+## 1. Executive Summary &amp; The Zero-Egress Support Paradigm
+
+`&lt;dcouplr/&gt;` is an open-core, in-perimeter observability and infrastructure-as-code transpilation engine designed to operate 100% inside private VPCs, Kubernetes clusters, and air-gapped on-premises datacenters. Because `&lt;dcouplr/&gt;` enforces a mathematical zero-egress guarantee ($Egress_{WAN} \equiv 0.00\text{ KB}$), our support and incident management model is deliberately architected for **zero-trust security**:
+
+1. **No External Credentials or Data Ingestion:** `&lt;dcouplr/&gt;` support engineers never request, store, or receive customer production credentials, private keys, database connection strings, or unredacted metric feeds.
+2. **In-Perimeter Diagnostic Pairing:** Technical troubleshooting takes place inside the customer&#x27;s perimeter via live in-VPC screen sharing or private, ephemeral WebRTC video war-rooms.
+3. **Deterministic AST Linters:** Diagnostic data shared during support engagements is processed through local HMAC-SHA256 anonymization filters (`LocalTokenAnonymizer`), ensuring zero IP or hostname disclosure.
+4. **Radical Transparency:** Every tier&#x27;s entitlements, guaranteed response times, resolution targets, and contractual financial remedies are codified publicly and objectively measured.
+
+---
+
+## 2. Tier-by-Tier Support Entitlements Matrix
+
+The table below outlines the service boundaries, coverage windows, support channels, and engineering allocation across all six commercial licensing tiers:
+
+| Attribute | Tier 0: Community Core | Tier 1: Developer Pro | Tier 2: Cluster Small | Tier 3: Cluster Medium | Tier 4: Cluster Large | Tier 5: Custom Enterprise |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Pricing Model** | **$0 / month** (Free) | **$300 / month** | **$1,500 / month** | **$3,500 / month** | **$45 / node / month** | **Custom Annual Contract** |
+| **Monitored Capacity** | 1 Local CLI / 10 Nodes | 25 Monitored Nodes | 50 Monitored Nodes | 150 Monitored Nodes | 91 to 500+ Nodes | Unlimited Enterprise Nodes |
+| **License Type** | Apache 2.0 Open-Core | Commercial In-VPC | Commercial In-VPC | Commercial Multi-VPC | Commercial Fleet Mesh | Air-Gapped Perpetual |
+| **Coverage Hours** | Asynchronous (Volunteer) | 9×5 Local Business | 12×5 Extended (UTC) | 24×7×365 for P1 / 12×5 for P2–P4 | 24×7×365 Continuous Priority | 24×7×365 Follow-the-Sun |
+| **P1 First Response SLA** | **Best Effort** | **24 Hours** (Bus. Days) | **4 Hours** | **2 Hours** (24/7 Guaranteed) | **1 Hour** (24/7 Guaranteed) | **15 Minutes** (Ultra-Priority) |
+| **Support Intake Channels** | GitHub Discussions &amp; Issues | Priority Email Desk (`support@dcouplr.com`) | CLI Ticket Dispatch &amp; Priority Desk | Shared Slack / Teams Channel + Priority Email | Direct PagerDuty / Opsgenie + Slack Connect | 24/7 Emergency Hotline + Private Slack Grid |
+| **Incident War-Room Bridge** | — | — | Ad-hoc Screen-Share (1/qtr) | Dedicated On-Demand Bridge (&lt; 30m) | Live Video War-Room (&lt; 15m) + PagerDuty | Instant War-Room Cell (&lt; 5m) + Dedicated On-Call |
+| **Account Management** | Community Forums | Shared Support Queue | Pooled Technical Support | Designated Associate TAM | Dedicated Named Senior TAM | Dedicated Principal TAM &amp; Solutions Architect |
+| **Custom Parser SLAs** | Community PRs | Roadmap Requests | Roadmap Priority | 30-Day Parser Commit | 14-Day Bespoke Grammar Delivery | 5-Day Bespoke Parser Sprint |
+| **Financial SLA Remedy** | — | — | — | Included (5%–15% Credits) | Included (10%–30% Credits) | Custom MSA Penalties |
+
+---
+
+## 3. Incident Severity Classification &amp; Response SLA Matrix
+
+Incoming incident tickets are categorized by operational severity. Response times represent the maximum guaranteed duration between ticket submission and active hands-on triage by a certified `&lt;dcouplr/&gt;` Site Reliability Engineer:
+
+### 3.1 Severity Classifications
+
+- **Severity 0 (P0) — Catastrophic Disaster / Cluster Failure (Tier 5 Exclusive):**
+  - *Criteria:* Total collapse of observability or migration orchestrator across production cluster; unrecoverable split-brain in Raft consensus; catastrophic data corruption risk.
+  - *Mitigation Target:* **&lt; 4 Hours**
+  - *Status Update Cadence:* Every 30 minutes on active War-Room bridge.
+
+- **Severity 1 (P1) — Critical Outage / System Inoperable:**
+  - *Criteria:* Primary `&lt;dcouplr/&gt;` in-VPC daemon halted; telemetry or alerting pipeline completely stalled; production migration wave blocked during cutover window.
+  - *Mitigation Target:* **&lt; 8 Hours** (Tiers 3–5)
+  - *Status Update Cadence:* Every 60 minutes via ticket/channel until mitigation.
+
+- **Severity 2 (P2) — Major Degradation / Impaired Core Feature:**
+  - *Criteria:* High AST transpilation error rates on specific monitor formats; replication lag exceeding 15 minutes; partial dashboard failure with CLI intact. Workaround available.
+  - *Mitigation Target:* **&lt; 24 Hours**
+  - *Status Update Cadence:* Every 4 hours during business hours.
+
+- **Severity 3 (P3) — Minor Defect / Non-Blocking Bug:**
+  - *Criteria:* Cosmetic anomalies in UI canvas, non-blocking fallback comment warnings, non-critical telemetry stream latency.
+  - *Mitigation Target:* Next scheduled patch release / sprint cycle.
+  - *Status Update Cadence:* Upon status change or release deployment.
+
+- **Severity 4 (P4) — General Inquiry / Guidance / Feature Request:**
+  - *Criteria:* AST rule configuration consultation, syntax questions, capacity planning, feature suggestions.
+  - *Mitigation Target:* Informational resolution.
+  - *Status Update Cadence:* Asynchronous follow-up.
+
+### 3.2 Response SLA Commitments by Tier
+
+| Severity Level | Tier 5 (Enterprise) | Tier 4 (Cluster Large) | Tier 3 (Cluster Medium) | Tier 2 (Cluster Small) | Tier 1 (Developer Pro) | Tier 0 (Community) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **P0 Disaster** | **15 Minutes** (24/7) | — | — | — | — | — |
+| **P1 Critical** | **15 Minutes** (24/7) | **1 Hour** (24/7) | **2 Hours** (24/7) | **4 Hours** (12/5) | 24 Hours (Bus. Days) | Best Effort |
+| **P2 Major** | **1 Hour** | **2 Hours** | **4 Hours** | **8 Hours** | 48 Hours | Best Effort |
+| **P3 Normal** | **4 Hours** | **8 Hours** | **12 Hours** | **24 Hours** | 72 Hours | Community Triage |
+| **P4 Inquiry** | **8 Hours** | **16 Hours** | **24 Hours** | **48 Hours** | 5 Business Days | Discussions |
+
+---
+
+### 3.3 Strict Governance Demarcation: Commercial Vendor Support SLA vs. In-Perimeter Metric Threshold Policies
+
+&gt; [!IMPORTANT]
+&gt; **CRITICAL ARCHITECTURAL NOTE FOR CUSTOMER OPERATING ENGINEERS:**
+&gt; Operating engineers must **never conflate** how they configure their internal in-perimeter **Severity Policies (P1–P4)** and **Sampling Evaluation Windows (1m–30m)** with their contractual **Varinull `&lt;dcouplr/&gt;` Commercial Vendor Support SLA**.
+&gt;
+&gt; These are two completely distinct operational domains:
+
+| Architectural Dimension | Plane 1: In-Perimeter Metric Telemetry &amp; Alert Policy | Plane 2: `&lt;dcouplr/&gt;` Commercial Vendor Support SLA |
+| :--- | :--- | :--- |
+| **Governing Entity** | Customer Internal SRE &amp; Infrastructure Operations Team | Varinull Commercial Technical Support &amp; Engineering Board |
+| **Purpose** | Monitors customer-owned VPCs, servers, databases, and apps | Guarantees vendor response time for `&lt;dcouplr/&gt;` software issues |
+| **Configuration Interface** | `&lt;dcouplr/&gt;` Configuration Console (`http://localhost:8000/configuration`) | Commercial Master Services Agreement (MSA) &amp; Licensing Contract |
+| **Severity Meaning** | Internal operational impact (e.g. CPU &gt; 90%, DB locks &gt; 100) | Contractual software defect severity (e.g. Raft split-brain, engine halt) |
+| **Sampling Evaluation Window** | Rolling circular ring buffer duration ($\Delta t \in \{1\text{m}, 3\text{m}, 5\text{m}, 10\text{m}, 15\text{m}, 30\text{m}\}$) for transient spike rejection | Not Applicable; vendor SLA is measured in elapsed minutes from ticket intake |
+| **Notification Routing** | Dispatched internally to customer ticketing queues (`sre-tier1`, `dba-team`), GSM pagers, Slack, ServiceNow | Ticket intake via priority email desk, shared Slack grid, or 24/7 emergency hotline |
+| **Vendor Paging Effect** | **Zero vendor involvement.** Telemetry remains 100% in-perimeter (Zero WAN Egress). | Paging engages certified Varinull Tier 3/4 on-call engineers onto a video war-room |
+| **Target SLA (MTTA)** | Internal SRE target acknowledgment (e.g., MTTA $\le 5$m for P1, $\le 15$m for P2) | Contractual vendor first response SLA (15m for Tier 5, 1h for Tier 4, 2h for Tier 3) |
+
+#### Common Misconceptions Clarified:
+1. **&quot;Does setting an internal metric alert to P1 with a 1-minute window page `&lt;dcouplr/&gt;` Support?&quot;**  
+   **No.** Setting an internal database or host metric to P1 only pages *your own internal engineering on-call rotation*. It does not submit an incident ticket to Varinull or breach zero-egress isolation.
+2. **&quot;Does our `&lt;dcouplr/&gt;` Commercial Vendor Support SLA determine how long our sliding sampling window should be?&quot;**  
+   **No.** Sampling windows are mathematical damping parameters designed to reject transient noise. A customer on a Tier 5 (15-minute response SLA) can configure a 1-minute or 30-minute metric evaluation window based purely on workload characteristics.
+3. **&quot;When is the `&lt;dcouplr/&gt;` Commercial Vendor Support SLA invoked?&quot;**  
+   The commercial vendor SLA is invoked when the `&lt;dcouplr/&gt;` engine software itself experiences a fault (e.g. unhandled AST translation exception, Raft consensus partition, memory leak) and the customer submits an issue through their designated commercial support channel.
+
+---
+
+*Copyright &amp;copy; 2026 Varinull Corporation. All rights reserved.*  
+*For questions regarding commercial support contracts or bespoke enterprise SLAs, contact [procurement@dcouplr.com](mailto:procurement@dcouplr.com).*
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

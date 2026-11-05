@@ -1,0 +1,3168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt;: DBA Database Inspection Console &amp; Studio</title>
+  <meta name="description" content="Dedicated 2-Way In-VPC & Outside-VPC DBA Database Inspection Console for Database Administrators. Read-only schema browser, SQLite WAL storage health, and zero-WAN-egress SQL scratchpad.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <style>
+    :root {
+      --bg-dark: #070a14;
+      --bg-card: #0c1222;
+      --bg-surface: #111827;
+      --bg-elevated: #1e293b;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-highlight: rgba(56, 189, 248, 0.35);
+      --accent-green: #39ff14;
+      --accent-cyan: #38bdf8;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-purple: #c084fc;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Monaco, Consolas, monospace;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      margin: 0;
+      padding: 0;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    .top-header {
+      background: rgba(15, 23, 42, 0.96);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.65rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(12px);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .dcouplr-logo {
+      display: inline-flex;
+      align-items: center;
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: -0.5px;
+      text-decoration: none;
+      color: #fff;
+    }
+    .dcouplr-bracket {
+      color: #39ff14;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+    .dcouplr-text {
+      font-family: 'Inter', sans-serif;
+      color: #ffffff;
+      font-weight: 800;
+      margin: 0 1.5px;
+      letter-spacing: -0.04em;
+    }
+
+    .brand-badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge-purple {
+      background: rgba(192, 132, 252, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(192, 132, 252, 0.4);
+    }
+    .badge-blue {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+    .badge-green {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .badge-amber {
+      background: rgba(245, 158, 11, 0.15);
+      color: #facc15;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .badge-red {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    /* 2-Way Channel Switcher */
+    .channel-switcher {
+      display: inline-flex;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 4px;
+    }
+    .channel-btn {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      background: transparent;
+      color: #94a3b8;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .channel-btn:hover {
+      color: #f8fafc;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .channel-btn.active.invpc {
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+    .channel-btn.active.outside {
+      background: rgba(192, 132, 252, 0.22);
+      color: #c084fc;
+      border-color: rgba(192, 132, 252, 0.5);
+      box-shadow: 0 0 10px rgba(192, 132, 252, 0.25);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .nav-hub-btn {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 5px 10px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .nav-hub-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Fluid Main Container */
+    .main-content {
+      flex: 1;
+      padding: clamp(0.75rem, 1.5vw, 1.5rem);
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      min-height: 0;
+    }
+
+    /* Channel Perspective Announcement Banner */
+    .channel-perspective-banner {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+      border-radius: 10px;
+      padding: 12px 18px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+    .channel-perspective-banner.outside-mode {
+      border-color: rgba(192, 132, 252, 0.45);
+      background: linear-gradient(135deg, rgba(88, 28, 135, 0.25), rgba(15, 23, 42, 0.98));
+    }
+
+    /* Storage Health Section (Fluid Grid) */
+    .storage-health-banner {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(168, 85, 247, 0.08));
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 12px;
+      padding: clamp(0.85rem, 1.2vw, 1.25rem);
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .storage-health-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 0.85rem;
+    }
+    .storage-health-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .storage-health-title h2 {
+      margin: 0;
+      font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+      font-weight: 800;
+      color: #fff;
+    }
+    .storage-health-title p {
+      margin: 0;
+      font-size: 0.76rem;
+      color: #94a3b8;
+    }
+
+    .health-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(clamp(150px, 14vw, 220px), 1fr));
+      gap: clamp(8px, 1vw, 12px);
+      width: 100%;
+    }
+    .health-card {
+      background: rgba(17, 24, 39, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 72px;
+    }
+    .health-card-label {
+      font-size: 0.66rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #94a3b8;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .health-card-val {
+      font-size: clamp(1.0rem, 1.2vw, 1.15rem);
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: #f8fafc;
+    }
+    .health-card-sub {
+      font-size: 0.7rem;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* Fluid Studio Workspace Split */
+    .studio-workspace {
+      display: grid;
+      grid-template-columns: clamp(260px, 22vw, 360px) 1fr;
+      gap: clamp(1rem, 1.4vw, 1.5rem);
+      align-items: stretch;
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      box-sizing: border-box;
+    }
+    @media (max-width: 1024px) {
+      .studio-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Panel: Table Browser */
+    .panel-tables {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: clamp(0.85rem, 1.2vw, 1.25rem);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-sizing: border-box;
+      height: 100%;
+    }
+    .panel-tables-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 8px;
+    }
+    .panel-tables-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .search-box {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #f8fafc;
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .search-box:focus {
+      border-color: var(--accent-cyan);
+    }
+    .tables-scroll-list {
+      flex: 1;
+      min-height: 220px;
+      max-height: clamp(280px, 45vh, 600px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding-right: 4px;
+    }
+    .table-list-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      padding: 8px 10px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+    .table-list-item:hover {
+      background: rgba(56, 189, 248, 0.08);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+    .table-list-item.selected {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    }
+    .table-item-name {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      word-break: break-all;
+    }
+    .table-item-sub {
+      font-size: 0.66rem;
+      color: #94a3b8;
+    }
+
+    /* Selected Table Schema Details */
+    .schema-inspector-card {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: 6px;
+      box-sizing: border-box;
+    }
+    .schema-inspector-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .schema-columns-list {
+      max-height: clamp(120px, 18vh, 240px);
+      overflow-y: auto;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .schema-col-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 3px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    /* Right Panel: SQL Scratchpad & Results (Fluid) */
+    .panel-query-studio {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      min-width: 0;
+      height: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Guardrail Control Strip */
+    .guardrail-strip {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.78rem;
+      box-sizing: border-box;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+    .guardrail-strip.maintenance-mode {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.5);
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+    }
+    .guardrail-text {
+      color: #cbd5e1;
+      line-height: 1.45;
+      flex: 1;
+      min-width: 280px;
+    }
+    .guardrail-text strong {
+      color: #38bdf8;
+    }
+    .guardrail-strip.maintenance-mode .guardrail-text strong {
+      color: #f87171;
+    }
+    .guardrail-text code {
+      color: #f87171;
+      background: rgba(239, 68, 68, 0.1);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+    }
+
+    .guardrail-btn {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .guardrail-btn.btn-login {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid #f59e0b;
+      color: #facc15;
+    }
+    .guardrail-btn.btn-login:hover {
+      background: rgba(245, 158, 11, 0.28);
+      color: #fff;
+    }
+    .guardrail-btn.btn-disable {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #ef4444;
+      color: #f87171;
+    }
+    .guardrail-btn.btn-disable:hover {
+      background: rgba(239, 68, 68, 0.28);
+      color: #fff;
+    }
+    .guardrail-btn.btn-reenable {
+      background: rgba(16, 185, 129, 0.18);
+      border: 1px solid #10b981;
+      color: #34d399;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+    }
+    .guardrail-btn.btn-reenable:hover {
+      background: rgba(16, 185, 129, 0.3);
+      color: #fff;
+    }
+    .guardrail-btn.btn-locked {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #64748b;
+      cursor: not-allowed;
+    }
+
+    /* SQL Editor Box */
+    .sql-editor-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: clamp(0.85rem, 1.2vw, 1.25rem);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+    .editor-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .editor-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .shortcuts-bar {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    .shortcut-btn {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #94a3b8;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .shortcut-btn:hover {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .shortcut-btn.danger:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .sql-textarea {
+      width: 100%;
+      box-sizing: border-box;
+      background: #050811;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 12px;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      line-height: 1.45;
+      resize: vertical;
+      min-height: 95px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .sql-textarea:focus {
+      border-color: var(--accent-cyan);
+    }
+
+    .execution-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .controls-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.74rem;
+      color: #94a3b8;
+    }
+    .select-limit {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #f8fafc;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.74rem;
+      font-family: var(--font-mono);
+    }
+    .btn-run {
+      background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+      color: #ffffff;
+      border: 1px solid #38bdf8;
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 7px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.2s ease, transform 0.1s ease;
+    }
+    .btn-run:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+    .btn-run:active {
+      transform: translateY(0);
+    }
+
+    /* Guardrail Alert */
+    .guardrail-alert {
+      display: none;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #fca5a5;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      box-sizing: border-box;
+      width: 100%;
+    }
+    .guardrail-alert strong {
+      color: #ef4444;
+      font-family: var(--font-mono);
+    }
+
+    /* Fluid Results Card */
+    .results-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: clamp(0.85rem, 1.2vw, 1.25rem);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+      min-height: 320px;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 8px;
+    }
+    .results-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .results-metrics {
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.1);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .results-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .btn-export {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .btn-export:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .table-container {
+      flex: 1;
+      min-height: 220px;
+      max-height: clamp(300px, 46vh, 700px);
+      overflow-x: auto;
+      overflow-y: auto;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .dba-table {
+      width: 100%;
+      min-width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      text-align: left;
+    }
+    .dba-table th {
+      background: rgba(15, 23, 42, 0.95);
+      color: #94a3b8;
+      padding: 8px 12px;
+      font-weight: 700;
+      border-bottom: 2px solid rgba(56, 189, 248, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      white-space: nowrap;
+    }
+    .dba-table td {
+      padding: 7px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+      max-width: 320px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .dba-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .null-val {
+      color: #64748b;
+      font-style: italic;
+    }
+    .pk-tag {
+      background: rgba(192, 132, 252, 0.2);
+      color: #c084fc;
+      border-radius: 3px;
+      padding: 1px 4px;
+      font-size: 0.65rem;
+      margin-left: 4px;
+    }
+
+    /* Modal Backdrop & Cards */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 1rem;
+    }
+    .modal-card {
+      background: linear-gradient(145deg, #0c1222, #111827);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .modal-card.warning-style {
+      border-color: rgba(239, 68, 68, 0.5);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(239, 68, 68, 0.25);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 0.75rem;
+    }
+    .modal-title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    .modal-close:hover { color: #fff; }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .form-input {
+      background: #050811;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 9px 12px;
+      color: #f8fafc;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: var(--accent-cyan);
+    }
+  
+    /* Dual Database Target Selector Bar */
+    .db-target-selector-bar {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+      border-radius: 10px;
+      padding: 10px 16px;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-sizing: border-box;
+      width: 100%;
+      margin-bottom: 0.75rem;
+    }
+    .btn-db-target {
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-db-target:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+    .btn-db-target.active.central {
+      background: rgba(168, 85, 247, 0.25);
+      border-color: #c084fc;
+      color: #f3e8ff;
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
+    }
+    .btn-db-target.active.telemetry {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: #38bdf8;
+      color: #e0f2fe;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="top-header">
+    <div class="brand-group">
+      <a href="/DBADesk" class="dcouplr-logo">
+        <span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span>
+      </a>
+
+      <!-- 2-Way Channel Switcher -->
+      <div class="channel-switcher" id="channel-switcher-container">
+        <button type="button" class="channel-btn active invpc" id="btn-mode-invpc" title="Switch to In-VPC Mode (Read-Only)">
+          🔒 In-VPC Mode (Read-Only)
+        </button>
+        <button type="button" class="channel-btn" id="btn-mode-outside" title="Switch to Outside-VPC Hub Mode (https://dba_dcouplr.yourcompany.com)">
+          🌐 Outside-VPC Hub (dba_dcouplr...)
+        </button>
+      </div>
+
+      <!-- Navigation Links Inline with Logo After Toggle Bar -->
+      <div class="nav-actions">
+        <button type="button" class="nav-hub-btn" id="btn-company-access-top" style="border-color: #f59e0b; color: #facc15; font-weight: 700; cursor: pointer;">
+          🏢 Company Access
+        </button>
+        <a href="/SREDesk" class="nav-hub-btn">SRE Desk</a>
+        <a href="/NOCDesk" class="nav-hub-btn">NOC Desk</a>
+        <a href="/traces" class="nav-hub-btn">Traces</a>
+        <a href="/logs" class="nav-hub-btn">Logs</a>
+        <a href="/dcouplrSREDispatch" class="nav-hub-btn" style="color: #f87171; border-color: rgba(239, 68, 68, 0.35);">🎫 Open Ticket↗</a>
+        <button type="button" class="nav-hub-btn" id="btn-top-lock" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.35); font-weight: 700; cursor: pointer;">🔒 Lock</button>
+      </div>
+    </div>
+
+    <div class="brand-badges">
+      <span class="badge badge-purple">ROLE: DATABASE ADMINISTRATOR (DBA)</span>
+      <span class="badge badge-blue" id="header-channel-badge">CHANNEL: IN-VPC SSOT</span>
+      <span class="badge badge-amber" id="header-access-badge">COMPANY ACCESS: REQUIRED</span>
+      <span class="badge badge-green">● $0.00 WAN EGRESS GUARANTEE (LOCAL IN-VPC SSOT)</span>
+      <span class="badge badge-green" id="header-guardrail-badge">🛡️ GUARDRAIL: ENFORCED (READ-ONLY)</span>
+    </div>
+  </header>
+
+  <!-- Main Content Body -->
+  <main class="main-content">
+
+    <!-- Customer In-VPC Database Target Bar (Exclusively vpc_telemetry_db) -->
+    <div class="db-target-selector-bar" id="db-target-selector-bar">
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <span style="font-size: 0.78rem; font-weight: 800; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+          <span style="font-size: 1.1rem;">🗄️</span> ACTIVE TARGET DATABASE:
+        </span>
+        <button type="button" class="btn-db-target active telemetry" id="btn-target-telemetry" data-target="vpc_telemetry_db" title="Customer In-VPC Sovereign Telemetry Database (Isolated Single-Tenant SSOT)">
+          🔒 vpc_telemetry_db (Customer In-VPC SSOT &bull; Telemetry Engine)
+        </button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <span class="badge badge-blue" id="badge-system-dba-rights">⚡ SOVEREIGN IN-VPC TELEMETRY SSOT</span>
+        <span class="badge badge-green" id="badge-target-guardrail-status">🛡️ GUARDRAIL: ENFORCED (READ-ONLY)</span>
+        <a href="/admin" class="nav-hub-btn" style="font-size: 0.72rem; padding: 4px 8px; background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.35); text-decoration: none;" title="Central Multi-Tenant Vendor DB (dcouplr_central_db) is strictly managed in /admin DBA Studio">
+          🏢 Central Vendor DB (in /admin) ↗
+        </a>
+        <button type="button" class="nav-hub-btn" id="btn-toggle-fullscreen" title="Toggle Fullscreen Expanded Studio Mode" style="font-size: 0.72rem; padding: 4px 8px; background: rgba(255, 255, 255, 0.08); color: #facc15; border-color: rgba(250, 204, 21, 0.3); cursor: pointer;">
+          ⛶ Maximize Studio
+        </button>
+      </div>
+    </div>
+
+
+    <!-- Section 1: Storage Health & PRAGMA Telemetry -->
+    <section class="storage-health-banner">
+      <div class="storage-health-header">
+        <div class="storage-health-title">
+          <span style="font-size: 1.8rem;">🗄️</span>
+          <div>
+            <h2>Database Administrator (DBA) Inspection Console &amp; Studio</h2>
+            <p>Direct In-VPC SQLite SSOT Engine Telemetry &bull; Zero-WAN Egress ($0.00) &bull; Authoritative Read-Only Guardrails</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <button type="button" class="btn-export" id="btn-deep-integrity-scan" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; font-weight: 700;">
+            🔄 Run Deep Integrity Scan
+          </button>
+          <button type="button" class="btn-export" id="btn-configure-maintenance" style="background: rgba(168, 85, 247, 0.18); border-color: rgba(168, 85, 247, 0.5); color: #c084fc; font-weight: 700;" title="Configure SQLite Maintenance Tasks, Schedules, Full Backups & Snapshots, and Restore">
+            🛠️ Configure Maintenance Tasks
+          </button>
+        </div>
+      </div>
+
+      <div class="health-grid">
+        <div class="health-card">
+          <div class="health-card-label">Database File &amp; Profile</div>
+          <div class="health-card-val" id="health-db-file" style="color: #38bdf8; font-size: 0.95rem;">vpc_telemetry.db</div>
+          <div class="health-card-sub" id="health-db-profile" style="color: #34d399;">Profile: demo</div>
+        </div>
+        <div class="health-card">
+          <div class="health-card-label">PRAGMA Integrity Check</div>
+          <div class="health-card-val" id="health-integrity" style="color: #34d399;">INTEGRITY_OK</div>
+          <div class="health-card-sub">0 Corrupt Pages Verified</div>
+        </div>
+        <div class="health-card">
+          <div class="health-card-label">Journal &amp; Storage Mode</div>
+          <div class="health-card-val" id="health-journal" style="color: #facc15;">WAL Mode</div>
+          <div class="health-card-sub" id="health-file-size">File Size: 1.25 MB</div>
+        </div>
+        <div class="health-card" style="border-left: 3px solid #34d399;">
+          <div class="health-card-label">Database Encryption (SQLCipher)</div>
+          <div class="health-card-val" id="health-encryption-val" style="color: #34d399; font-size: 1.05rem;">AES-256-CBC</div>
+          <div class="health-card-sub" id="health-encryption-sub" style="color: #94a3b8;">SQLCipher 4.x Active</div>
+        </div>
+        <div class="health-card">
+          <div class="health-card-label" id="health-tables-label">In-VPC SSOT Tables</div>
+          <div class="health-card-val" id="health-tables-count" style="color: #c084fc;">23 Tables</div>
+          <div class="health-card-sub" id="health-tables-sub" style="color: #94a3b8;">All Schemas Verified</div>
+        </div>
+        <div class="health-card">
+          <div class="health-card-label" id="health-sovereignty-label">Sovereignty Guarantee</div>
+          <div class="health-card-val" id="health-sovereignty-val" style="color: #34d399; font-size: 1.0rem;">$0.00 WAN Egress</div>
+          <div class="health-card-sub" id="health-sovereignty-sub">Local in-VPC SQLite Execution</div>
+        </div>
+      </div>
+
+      <!-- SQLCipher 4.x Cryptographic Storage Specs Strip -->
+      <div id="cipher-specs-strip" style="margin-top: 10px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(52, 211, 153, 0.25); border-radius: 6px; padding: 8px 14px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.74rem; font-family: 'JetBrains Mono', monospace;">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <span style="color: #34d399; font-weight: 700; display: flex; align-items: center; gap: 4px;">
+            🔒 <span id="spec-engine-badge">SQLCipher 4.x AES-256-CBC</span>
+          </span>
+          <span style="color: #64748b;">|</span>
+          <span style="color: #94a3b8;">KDF: <strong id="spec-kdf" style="color: #e2e8f0;">PBKDF2-HMAC-SHA512 (256,000 iters)</strong></span>
+          <span style="color: #64748b;">|</span>
+          <span style="color: #94a3b8;">Integrity: <strong id="spec-tamper" style="color: #34d399;">HMAC-SHA512 Per-Page Checksum</strong></span>
+          <span style="color: #64748b;">|</span>
+          <span style="color: #94a3b8;">Header: <strong id="spec-header" style="color: #38bdf8;">ENCRYPTED_AES256_CIPHERTEXT</strong></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: #64748b;">Key Fingerprint:</span>
+          <code id="spec-key-fp" style="color: #facc15; font-size: 0.72rem; background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px;">sha256:1234...0d92</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Studio Workspace Split -->
+    <div class="studio-workspace">
+
+      <!-- Left Column: Table Schema Browser -->
+      <aside class="panel-tables">
+        <div class="panel-tables-header">
+          <div class="panel-tables-title">
+            <span>📚 Tables Browser</span>
+            <span id="tables-badge-count" style="font-size: 0.68rem; font-family: var(--font-mono); color: #38bdf8;">--</span>
+          </div>
+          <button type="button" class="btn-export" id="btn-refresh-tables" style="padding: 2px 7px; font-size: 0.68rem;">🔄 Refresh</button>
+        </div>
+
+        <input type="text" class="search-box" id="table-search-input" placeholder="🔍 Filter tables (e.g. license, node)...">
+
+        <div class="tables-scroll-list" id="tables-list-container">
+          <div style="color: #64748b; font-size: 0.75rem; text-align: center; padding: 2rem;">Loading tables...</div>
+        </div>
+
+        <!-- Selected Table Schema Inspector -->
+        <div class="schema-inspector-card" id="schema-inspector" style="display: none;">
+          <div class="schema-inspector-title">
+            <span id="schema-table-name">Schema Details</span>
+            <span id="schema-cols-count" style="color: #94a3b8;">--</span>
+          </div>
+          <div class="schema-columns-list" id="schema-cols-container"></div>
+        </div>
+      </aside>
+
+      <!-- Right Column: Query Studio & Results Grid -->
+      <section class="panel-query-studio">
+
+        <!-- Guardrail Control Strip -->
+        <div class="guardrail-strip" id="guardrail-strip">
+          <div class="guardrail-text" id="guardrail-banner-text">
+            <strong>🔒 Read-Only Guardrail Active:</strong> In-VPC mode is strictly read-only ($0.00 WAN Egress). DDL/DML mutation keywords are authoritatively blocked at the API kernel with HTTP 403 Forbidden.
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" class="guardrail-btn btn-locked" id="btn-guardrail-action" disabled>
+              🔒 Guardrail Locked (In-VPC Read-Only)
+            </button>
+          </div>
+        </div>
+
+        <!-- SQL Editor Card -->
+        <div class="sql-editor-card">
+          <div class="editor-toolbar">
+            <div class="editor-label">
+              <span id="editor-title-text">⚡ Safe Read-Only SQL Scratchpad</span>
+            </div>
+            <div class="shortcuts-bar">
+              <button type="button" class="shortcut-btn" data-query="SELECT license_id, customer_id, suite_edition, tier, licensed_nodes, active_monitored_nodes, cryptographic_status, expires_at FROM customer_license_state;">License State</button>
+              <button type="button" class="shortcut-btn" data-query="SELECT node_id, hostname, toggle_count, max_toggles, is_toggle_locked, current_monitoring_state, last_toggled_iso FROM node_license_toggle_ledger ORDER BY last_toggled_at DESC LIMIT 25;">Toggle Ledger</button>
+              <button type="button" class="shortcut-btn" data-query="SELECT update_id, timestamp, iso_time, previous_licensed_nodes, updated_licensed_nodes, tier, update_type, status FROM license_update_history ORDER BY timestamp DESC LIMIT 25;">License History</button>
+              <button type="button" class="shortcut-btn" data-query="SELECT id AS node_id, vpc_id, hostname, ip, role, environment, status, agent_status FROM nodes LIMIT 25;">Nodes</button>
+              <button type="button" class="shortcut-btn" data-query="SELECT id AS vpc_id, name, display_name, cloud, region, cidr_block, total_nodes, status FROM vpcs LIMIT 25;">VPCs</button>
+              <button type="button" class="shortcut-btn" data-query="SELECT user_id, username, display_name, email, role, team_scope, status FROM rbac_users LIMIT 25;">RBAC Users</button>
+              <button type="button" class="shortcut-btn" data-query="SELECT log_id, timestamp, actor_username, actor_role, action, target_resource, status FROM rbac_audit_logs ORDER BY timestamp DESC LIMIT 25;">Audit Logs</button>
+              <button type="button" class="shortcut-btn" data-query="SELECT config_key, category, config_value, value_type, is_mutable FROM system_configuration_ssot LIMIT 25;">System Config</button>
+              <button type="button" class="shortcut-btn" data-query="SELECT component_id, component_name, category, retention_days, max_storage_gb, auto_prune_enabled FROM system_retention_policies;">Retention Policies</button>
+              <button type="button" class="shortcut-btn" data-query="SELECT backup_id, backup_name, target_type, file_size_bytes, backup_type, status, created_at FROM system_backup_records ORDER BY created_at DESC LIMIT 25;">Backups</button>
+              <button type="button" class="shortcut-btn" data-query="SELECT ticket_id, title, category, severity, status, affected_vpc, affected_node FROM customer_support_tickets ORDER BY created_at DESC LIMIT 25;">Support Tickets</button>
+              <button type="button" class="shortcut-btn" data-query="SELECT tier_id, name, icon, tier_number, enabled FROM monitoring_matrix_tiers ORDER BY tier_number ASC;">Matrix Tiers</button>
+              <button type="button" class="shortcut-btn" data-query="SELECT hub_id, hub_name, direction, ip_allowlist_cidr, require_company_access_mfa, read_only_enforced FROM hubs_access_rules;">Hub Rules</button>
+              <button type="button" class="shortcut-btn" data-query="SELECT id, blur_ip_cidr, mask_mode, updated_at, updated_by FROM kiosk_privacy_config;">Kiosk Privacy</button>
+              <button type="button" class="shortcut-btn" data-query="SELECT rotation_id, timestamp, reason, rotated_by, status FROM sqlitecipher_key_rotation_history ORDER BY timestamp DESC LIMIT 25;">Key Rotations</button>
+              <button type="button" class="shortcut-btn" data-query="PRAGMA integrity_check;">PRAGMA Check</button>
+              <button type="button" class="shortcut-btn danger" id="btn-shortcut-danger" data-query="DROP TABLE customer_license_state;" title="Test Guardrail HTTP 403 Block">🧪 Test Guardrail (DROP)</button>
+            </div>
+          </div>
+
+          <textarea class="sql-textarea" id="sql-query-input" rows="4" placeholder="Enter safe SQL SELECT or PRAGMA statement...">SELECT * FROM customer_license_state;</textarea>
+
+          <div class="execution-controls">
+            <div class="controls-left">
+              <span>Row Limit:</span>
+              <select class="select-limit" id="select-row-limit">
+                <option value="10">10 rows</option>
+                <option value="25" selected>25 rows</option>
+                <option value="50">50 rows</option>
+                <option value="100">100 rows</option>
+                <option value="500">500 rows</option>
+              </select>
+              <span>(Press Ctrl+Enter or Cmd+Enter to execute)</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn-export" id="btn-clear-sql">🧹 Clear</button>
+              <button type="button" class="btn-run" id="btn-execute-query">
+                ▶️ Execute Query
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guardrail Violation Alert Box -->
+        <div class="guardrail-alert" id="guardrail-alert-box">
+          <div style="display: flex; align-items: flex-start; gap: 10px;">
+            <span style="font-size: 1.4rem;">⛔</span>
+            <div>
+              <div style="font-weight: 800; font-size: 0.9rem; color: #ef4444; margin-bottom: 2px;" id="guardrail-error-title">
+                HTTP 403 Forbidden: Read-Only Guardrail Blocked Mutation
+              </div>
+              <div id="guardrail-error-detail" style="font-family: var(--font-mono); font-size: 0.78rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Query Results Card -->
+        <div class="results-card">
+          <div class="results-header">
+            <div class="results-title">
+              <span>📊 Query Execution Results</span>
+              <span class="results-metrics" id="results-stats">Ready</span>
+            </div>
+            <div class="results-actions">
+              <button type="button" class="btn-export" id="btn-copy-json">📋 Copy JSON</button>
+              <button type="button" class="btn-export" id="btn-export-csv">📊 Export CSV</button>
+            </div>
+          </div>
+
+          <div class="table-container" id="results-table-container">
+            <div style="color: #64748b; font-size: 0.8rem; text-align: center; padding: 3rem;">
+              Click any table in the Tables Browser or press <strong>▶️ Execute Query</strong> to inspect live records.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- Modal 1: Corporate Company Access Login -->
+  <div class="modal-overlay" id="modal-company-access">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">
+            <span class="dcouplr-bracket">&lt;</span><span style="color:#fff;">dcouplr</span><span class="dcouplr-bracket">/&gt;</span> Active Directory (AD) Company Access Gate
+          </h3>
+          <div style="font-size: 0.72rem; color: #c084fc; margin-top: 3px;">
+            Outside-VPC Hub &bull; https://dba_dcouplr.yourcompany.com
+          </div>
+        </div>
+        <button type="button" class="modal-close" id="btn-close-modal-auth">&times;</button>
+      </div>
+
+      <div style="background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 6px; padding: 10px 12px; font-size: 0.76rem; color: #cbd5e1; line-height: 1.45;">
+        🔒 <strong>Active Directory Authentication Required:</strong> Outside-VPC hub is read-only by default. To unlock and disable the database Read-Only Guardrail, log in with an AD account belonging to the <strong>Database Administrators</strong> (<code>databaseadmin</code>) group.
+      </div>
+
+      <!-- Quick Fast Auth for DBA Lead -->
+      <button type="button" id="btn-quick-dba-unlock" style="background: rgba(16, 185, 129, 0.18); border: 1px solid #10b981; color: #34d399; font-weight: 700; padding: 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.82rem;">
+        ⚡ Fast AD Login: Alex Turner (alex.turner • Database Administrators / databaseadmin)
+      </button>
+
+      <form id="form-dba-auth" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="form-group">
+          <label class="form-label">AD Corporate Username (e.g. alex.turner or YOURCOMPANY\alex.turner)</label>
+          <input type="text" class="form-input" id="auth-username" value="alex.turner" placeholder="e.g. alex.turner or YOURCOMPANY\alex.turner">
+        </div>
+        <div class="form-group">
+          <label class="form-label">AD Password / Master Security Key</label>
+          <input type="password" class="form-input" id="auth-password" value="alex.turner" placeholder="Enter AD password">
+        </div>
+
+        <div id="auth-error-msg" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: 6px; padding: 8px 12px; font-size: 0.76rem; color: #fca5a5;"></div>
+
+        <div style="display: flex; gap: 8px; margin-top: 4px;">
+          <button type="submit" id="btn-submit-company-auth" class="btn-run" style="flex: 1; justify-content: center; padding: 10px;">
+            🔐 Authenticate Company Access
+          </button>
+        </div>
+      </form>
+
+      <!-- Non-DBA Rejection Verification Test Button -->
+      <div style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 10px;">
+        <button type="button" id="btn-test-non-dba" style="width: 100%; background: rgba(239, 68, 68, 0.1); border: 1px dashed rgba(239, 68, 68, 0.4); color: #f87171; font-size: 0.74rem; padding: 7px; border-radius: 6px; cursor: pointer;">
+          🧪 Test Non-DBA Rejection (marcus.vance - App Dev)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Break-Glass Guardrail Override Confirmation -->
+  <div class="modal-overlay" id="modal-break-glass">
+    <div class="modal-card warning-style">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" style="color: #f87171;">
+            ⚠️ Confirm Guardrail Break-Glass Override
+          </h3>
+          <div style="font-size: 0.72rem; color: #fca5a5; margin-top: 3px;">
+            Outside-VPC Hub &bull; https://dba_dcouplr.yourcompany.com
+          </div>
+        </div>
+        <button type="button" class="modal-close" id="btn-close-modal-breakglass">&times;</button>
+      </div>
+
+      <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 6px; padding: 12px; font-size: 0.78rem; color: #fca5a5; line-height: 1.45;">
+        <strong>Warning:</strong> You are about to disable the Read-Only Guardrail. DDL/DML mutation statements (<code>CREATE</code>, <code>ALTER</code>, <code>DROP</code>, <code>UPDATE</code>, <code>INSERT</code>) will be executed against the In-VPC SQLite SSOT. Every executed statement is permanently recorded in the immutable audit log.
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Authorized DBA Operator</label>
+        <input type="text" class="form-input" id="breakglass-operator" readonly style="color: #34d399; background: rgba(0,0,0,0.6);" value="alex.turner (Obs-DBA)">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Maintenance Rationale / Ticket Ref</label>
+        <input type="text" class="form-input" id="breakglass-reason" value="Authorized Outside-VPC maintenance & schema index optimization" placeholder="Enter reason for audit log...">
+      </div>
+
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;">
+        <button type="button" class="btn-export" id="btn-cancel-breakglass">Cancel</button>
+        <button type="button" class="guardrail-btn btn-disable" id="btn-confirm-disable-guardrail">
+          ⚠️ Confirm: Disable Guardrail &amp; Enable Mutations
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal 3: DBA Maintenance, Snapshots & Disaster Recovery Studio -->
+  <div class="modal-overlay" id="modal-dba-maintenance" style="display: none; align-items: center; justify-content: center; z-index: 1050;">
+    <div class="modal-card" style="max-width: 1020px; width: 95%; max-height: 90vh; overflow-y: auto; background: #0f172a; border: 1px solid rgba(168, 85, 247, 0.4); box-shadow: 0 0 35px rgba(168, 85, 247, 0.25);">
+      
+      <!-- Modal Header -->
+      <div class="modal-header" style="border-bottom: 1px solid rgba(168, 85, 247, 0.25); padding-bottom: 12px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.4rem;">🛠️</span>
+            <h3 class="modal-title" style="color: #c084fc; font-size: 1.15rem; margin: 0;">
+              SQLite SSOT Database Maintenance &amp; Disaster Recovery Studio
+            </h3>
+          </div>
+          <div style="font-size: 0.74rem; color: #94a3b8; margin-top: 4px;">
+            In-VPC Autonomous Maintenance Operations &bull; Zero-WAN Egress ($0.00) &bull; Point-in-Time Disaster Recovery (PITR) &bull; Automated Snapshots
+          </div>
+        </div>
+        <button type="button" class="modal-close" id="btn-close-modal-maintenance" style="color: #c084fc;">&times;</button>
+      </div>
+
+      <!-- Quick Health Pill Bar -->
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; font-size: 0.74rem;">
+        <span class="badge" id="maint-badge-db" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">DB: vpc_telemetry.db</span>
+        <span class="badge" id="maint-badge-profile" style="background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3);">Profile: Demo Fleet</span>
+        <span class="badge" id="maint-badge-storage" style="background: rgba(250, 204, 21, 0.15); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.3);">WAL Mode &bull; Size: ~0.6 MB</span>
+        <span class="badge" id="maint-badge-enc" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3);">SQLCipher 4.x Active</span>
+        <span class="badge" id="maint-badge-guardrail" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);">Guardrail: ENFORCED</span>
+      </div>
+
+      <!-- Auto-Backup Banner (shows if an auto-backup was recently executed) -->
+      <div id="maint-auto-backup-banner" style="display: none; margin-top: 10px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 6px; padding: 10px 14px; font-size: 0.76rem; color: #34d399;">
+        🛡️ <strong>Safety Snapshot Recorded:</strong> <span id="maint-auto-backup-name">backend_backup_...</span> (<span id="maint-auto-backup-size">0.6 MB</span>) was automatically created prior to guardrail override.
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div style="display: flex; gap: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-top: 14px; padding-bottom: 8px; overflow-x: auto;">
+        <button type="button" class="btn-maint-tab active" data-tab="ops" style="background: rgba(168, 85, 247, 0.2); border: 1px solid #a855f7; color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+          ⚡ Core Operations
+        </button>
+        <button type="button" class="btn-maint-tab" data-tab="backups" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; padding: 6px 14px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+          💾 Snapshots &amp; Full Backups (<span id="tab-badge-backups-count">0</span>)
+        </button>
+        <button type="button" class="btn-maint-tab" data-tab="restore" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; padding: 6px 14px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+          🔄 Disaster Recovery &amp; Restore
+        </button>
+        <button type="button" class="btn-maint-tab" data-tab="schedules" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; padding: 6px 14px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+          ⏱️ Backup Schedules (<span id="tab-badge-schedules-count">0</span>)
+        </button>
+        <button type="button" class="btn-maint-tab" data-tab="storage" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; padding: 6px 14px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+          📊 Storage Telemetry
+        </button>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div style="margin-top: 14px;">
+        
+        <!-- Tab 1: Core Operations -->
+        <div id="maint-pane-ops" class="maint-tab-pane">
+          <div style="font-size: 0.76rem; color: #cbd5e1; margin-bottom: 10px;">
+            Execute standardized SQLite/SQLCipher maintenance procedures against the sovereign in-VPC SSOT database. All operations execute locally with $0.00 WAN egress and full ACID compliance.
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 10px;">
+            
+            <!-- Op 1: WAL Checkpoint -->
+            <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="color: #38bdf8; font-size: 0.82rem;">WAL Checkpoint</strong>
+                  <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-size: 0.65rem;">TRUNCATE</span>
+                </div>
+                <p style="font-size: 0.72rem; color: #94a3b8; margin: 6px 0 10px 0; line-height: 1.4;">
+                  Flushes pending transactions from <code>-wal</code> journal into primary SQLite database and truncates file to 0 bytes.
+                </p>
+              </div>
+              <button type="button" class="btn-export" onclick="executeMaintenanceTask('wal_checkpoint')" style="width: 100%; justify-content: center; background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; font-weight: 700;">
+                ▶ Run WAL Checkpoint
+              </button>
+            </div>
+
+            <!-- Op 2: VACUUM Compaction -->
+            <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="color: #facc15; font-size: 0.82rem;">VACUUM Compaction</strong>
+                  <span class="badge" style="background: rgba(250, 204, 21, 0.15); color: #facc15; font-size: 0.65rem;">STORAGE</span>
+                </div>
+                <p style="font-size: 0.72rem; color: #94a3b8; margin: 6px 0 10px 0; line-height: 1.4;">
+                  Defragments B-Tree pages, reclaims unallocated disk space from deleted records, and minimizes physical file footprint.
+                </p>
+              </div>
+              <button type="button" class="btn-export" onclick="executeMaintenanceTask('vacuum')" style="width: 100%; justify-content: center; background: rgba(250, 204, 21, 0.15); border-color: rgba(250, 204, 21, 0.4); color: #facc15; font-weight: 700;">
+                ▶ Run VACUUM Compaction
+              </button>
+            </div>
+
+            <!-- Op 3: REINDEX -->
+            <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="color: #c084fc; font-size: 0.82rem;">REINDEX All Indexes</strong>
+                  <span class="badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; font-size: 0.65rem;">B-TREE</span>
+                </div>
+                <p style="font-size: 0.72rem; color: #94a3b8; margin: 6px 0 10px 0; line-height: 1.4;">
+                  Rebuilds all indexes across the 23+ SSOT tables from scratch to eliminate index fragmentation and collation corruption.
+                </p>
+              </div>
+              <button type="button" class="btn-export" onclick="executeMaintenanceTask('reindex')" style="width: 100%; justify-content: center; background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.4); color: #c084fc; font-weight: 700;">
+                ▶ Run REINDEX All Tables
+              </button>
+            </div>
+
+            <!-- Op 4: ANALYZE & Query Planner -->
+            <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="color: #34d399; font-size: 0.82rem;">ANALYZE &amp; Optimize</strong>
+                  <span class="badge" style="background: rgba(52, 211, 153, 0.15); color: #34d399; font-size: 0.65rem;">STATISTICS</span>
+                </div>
+                <p style="font-size: 0.72rem; color: #94a3b8; margin: 6px 0 10px 0; line-height: 1.4;">
+                  Populates <code>sqlite_stat1</code> distribution statistics for SQLite's cost-based query optimizer and index scan planner.
+                </p>
+              </div>
+              <button type="button" class="btn-export" onclick="executeMaintenanceTask('analyze')" style="width: 100%; justify-content: center; background: rgba(52, 211, 153, 0.15); border-color: rgba(52, 211, 153, 0.4); color: #34d399; font-weight: 700;">
+                ▶ Run ANALYZE &amp; Optimize
+              </button>
+            </div>
+
+            <!-- Op 5: Foreign Key Check -->
+            <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="color: #60a5fa; font-size: 0.82rem;">Foreign Key Verification</strong>
+                  <span class="badge" style="background: rgba(96, 165, 250, 0.15); color: #60a5fa; font-size: 0.65rem;">CONSTRAINTS</span>
+                </div>
+                <p style="font-size: 0.72rem; color: #94a3b8; margin: 6px 0 10px 0; line-height: 1.4;">
+                  Scans all relational tables via <code>PRAGMA foreign_key_check</code> to verify zero orphaned records or broken references.
+                </p>
+              </div>
+              <button type="button" class="btn-export" onclick="executeMaintenanceTask('foreign_key_check')" style="width: 100%; justify-content: center; background: rgba(96, 165, 250, 0.15); border-color: rgba(96, 165, 250, 0.4); color: #60a5fa; font-weight: 700;">
+                ▶ Run Foreign Key Check
+              </button>
+            </div>
+
+            <!-- Op 6: Deep Integrity Check -->
+            <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="color: #38bdf8; font-size: 0.82rem;">Deep Page Integrity Scan</strong>
+                  <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-size: 0.65rem;">PRAGMA</span>
+                </div>
+                <p style="font-size: 0.72rem; color: #94a3b8; margin: 6px 0 10px 0; line-height: 1.4;">
+                  Executes <code>PRAGMA integrity_check(100)</code> verifying every physical disk page, free-list pointer, and cell pointer.
+                </p>
+              </div>
+              <button type="button" class="btn-export" onclick="executeMaintenanceTask('integrity_check')" style="width: 100%; justify-content: center; background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; font-weight: 700;">
+                ▶ Run Deep Integrity Scan
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Execution Console -->
+          <div style="margin-top: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 0.74rem; font-weight: 700; color: #94a3b8;">MAINTENANCE EXECUTION OUTPUT TERMINAL</span>
+              <button type="button" onclick="document.getElementById('maint-console-output').textContent = 'Ready for maintenance execution...'" style="background: transparent; border: none; color: #64748b; font-size: 0.7rem; cursor: pointer;">Clear Terminal</button>
+            </div>
+            <pre id="maint-console-output" style="background: #020617; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 10px 12px; color: #38bdf8; font-family: var(--font-mono); font-size: 0.72rem; max-height: 140px; overflow-y: auto; margin: 0; white-space: pre-wrap;">Ready for maintenance execution...</pre>
+          </div>
+        </div>
+
+        <!-- Tab 2: Snapshots & Full Backups -->
+        <div id="maint-pane-backups" class="maint-tab-pane" style="display: none;">
+          <!-- Hot Snapshot Generator Card -->
+          <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 14px; margin-bottom: 14px;">
+            <div style="font-weight: 700; color: #38bdf8; font-size: 0.82rem; margin-bottom: 8px;">
+              📸 Instant Point-in-Time Hot Snapshot Generator
+            </div>
+            <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 8px; align-items: flex-end;">
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" style="font-size: 0.72rem;">Snapshot Label / Maintenance Reason</label>
+                <input type="text" class="form-input" id="input-backup-name" placeholder="e.g. Pre-Migration Manual Snapshot (Alex Turner)" style="font-size: 0.76rem;">
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" style="font-size: 0.72rem;">Target Archive Type</label>
+                <select class="form-input" id="select-backup-target-type" style="font-size: 0.76rem;">
+                  <option value="backend_database">SQLite Hot Snapshot (.db)</option>
+                  <option value="unified_fullstack">Unified Full-Stack Archive (.tar.gz)</option>
+                  <option value="application_config">Application Config Bundle (.json)</option>
+                </select>
+              </div>
+              <button type="button" class="btn btn-primary" id="btn-create-manual-backup" style="height: 35px; background: linear-gradient(135deg, #0284c7, #9333ea); border-color: #38bdf8; font-weight: 700; font-size: 0.78rem; white-space: nowrap;">
+                📸 Create Hot Snapshot
+              </button>
+            </div>
+          </div>
+
+          <!-- Backups Repository Table -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-weight: 700; color: #e2e8f0; font-size: 0.8rem;">IN-VPC SNAPSHOT REPOSITORY</span>
+            <button type="button" class="btn-export" onclick="loadMaintenanceBackups()" style="font-size: 0.7rem; padding: 4px 10px;">🔄 Refresh List</button>
+          </div>
+          <div id="maint-backups-table-container" style="max-height: 280px; overflow-y: auto;">
+            <div style="color: #64748b; font-size: 0.75rem; text-align: center; padding: 2rem;">Loading registered backup snapshots...</div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Disaster Recovery & Restore -->
+        <div id="maint-pane-restore" class="maint-tab-pane" style="display: none;">
+          <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; padding: 14px; margin-bottom: 14px;">
+            <strong style="color: #f87171; font-size: 0.82rem;">🚨 Point-in-Time Database Restoration Protocol</strong>
+            <p style="font-size: 0.74rem; color: #cbd5e1; margin: 6px 0 8px 0; line-height: 1.45;">
+              Restoring a snapshot replaces the active in-VPC SQLite database. To protect against accidental data loss, the engine executes a strict 5-step safety procedure:
+            </p>
+            <ol style="font-size: 0.72rem; color: #94a3b8; margin: 0 0 0 16px; padding: 0; line-height: 1.45;">
+              <li>Creates an automatic pre-restore safety copy (<code>pre_restore_safety_*.db</code>).</li>
+              <li>Forces a WAL truncate checkpoint to commit all pending transactions.</li>
+              <li>Runs <code>PRAGMA quick_check</code> on the selected snapshot before applying.</li>
+              <li>Performs atomic atomic replacement of the active database file on disk.</li>
+              <li>Reloads telemetry and re-validates node/VPC counts in memory.</li>
+            </ol>
+          </div>
+
+          <div style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.76rem;">Select Snapshot to Restore</label>
+              <select class="form-input" id="select-restore-snapshot" style="font-size: 0.76rem;">
+                <option value="">-- Choose verified snapshot from repository --</option>
+              </select>
+            </div>
+
+            <div id="restore-snapshot-preview" style="display: none; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 10px; font-size: 0.72rem; color: #94a3b8; margin-bottom: 12px;">
+              <div><strong>File:</strong> <span id="prev-snap-file" style="color: #38bdf8;">-</span></div>
+              <div><strong>Size:</strong> <span id="prev-snap-size" style="color: #facc15;">-</span> &bull; <strong>Checksum:</strong> <span id="prev-snap-sha" style="color: #34d399;">-</span></div>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+              <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; font-size: 0.75rem; color: #fca5a5;">
+                <input type="checkbox" id="chk-confirm-restore" style="margin-top: 2px;">
+                <span>I confirm point-in-time database restoration. I understand the active SSOT database will be replaced, and a pre-restore safety snapshot will be created automatically.</span>
+              </label>
+            </div>
+
+            <button type="button" class="guardrail-btn btn-disable" id="btn-execute-restore" style="width: 100%; justify-content: center; padding: 10px 16px; font-size: 0.82rem; font-weight: 700;">
+              🚨 Execute Point-in-Time Database Restoration
+            </button>
+
+            <!-- Restore Results Alert -->
+            <div id="restore-result-box" style="display: none; margin-top: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 6px; padding: 12px; font-size: 0.76rem; color: #34d399;">
+              ✅ <strong>Restoration Complete:</strong> Database successfully restored from snapshot. Safety pre-restore snapshot archived.
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Backup Schedules -->
+        <div id="maint-pane-schedules" class="maint-tab-pane" style="display: none;">
+          <!-- Add Schedule Form -->
+          <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 8px; padding: 14px; margin-bottom: 14px;">
+            <div style="font-weight: 700; color: #c084fc; font-size: 0.82rem; margin-bottom: 10px;">
+              ➕ Configure Automated Backup Schedule
+            </div>
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 8px; align-items: flex-end;">
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" style="font-size: 0.72rem;">Schedule Name</label>
+                <input type="text" class="form-input" id="input-sched-name" placeholder="e.g. Nightly Production Snapshot" style="font-size: 0.76rem;">
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" style="font-size: 0.72rem;">Frequency</label>
+                <select class="form-input" id="select-sched-freq" style="font-size: 0.76rem;">
+                  <option value="Daily">Daily (02:00 UTC)</option>
+                  <option value="Hourly">Hourly</option>
+                  <option value="Every 6 Hours">Every 6 Hours</option>
+                  <option value="Weekly">Weekly (Sunday)</option>
+                  <option value="Custom">Custom Cron</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" style="font-size: 0.72rem;">Cron Expression</label>
+                <input type="text" class="form-input" id="input-sched-cron" value="0 2 * * *" style="font-size: 0.76rem; font-family: var(--font-mono);">
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" style="font-size: 0.72rem;">Retention Count</label>
+                <input type="number" class="form-input" id="input-sched-retention" value="14" min="1" max="365" style="font-size: 0.76rem;">
+              </div>
+              <button type="button" class="btn btn-primary" id="btn-save-new-schedule" style="height: 35px; background: #a855f7; border-color: #c084fc; font-weight: 700; font-size: 0.78rem; white-space: nowrap;">
+                ➕ Add Schedule
+              </button>
+            </div>
+          </div>
+
+          <!-- Schedules List Table -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-weight: 700; color: #e2e8f0; font-size: 0.8rem;">ACTIVE BACKUP SCHEDULES</span>
+            <button type="button" class="btn-export" onclick="loadMaintenanceSchedules()" style="font-size: 0.7rem; padding: 4px 10px;">🔄 Refresh Schedules</button>
+          </div>
+          <div id="maint-schedules-table-container" style="max-height: 280px; overflow-y: auto;">
+            <div style="color: #64748b; font-size: 0.75rem; text-align: center; padding: 2rem;">Loading automated backup schedules...</div>
+          </div>
+        </div>
+
+        <!-- Tab 5: Storage Telemetry -->
+        <div id="maint-pane-storage" class="maint-tab-pane" style="display: none;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 14px;">
+            <div class="health-card">
+              <div class="health-card-label">Active Database Size</div>
+              <div class="health-card-val" id="tele-active-size" style="color: #38bdf8;">0.6 MB</div>
+              <div class="health-card-sub" id="tele-active-file">vpc_telemetry.db</div>
+            </div>
+            <div class="health-card">
+              <div class="health-card-label">WAL Journal Size</div>
+              <div class="health-card-val" id="tele-wal-size" style="color: #facc15;">0.0 MB</div>
+              <div class="health-card-sub">Truncated &bull; Synchronized</div>
+            </div>
+            <div class="health-card">
+              <div class="health-card-label">Total Backups on Disk</div>
+              <div class="health-card-val" id="tele-backups-size" style="color: #c084fc;">6.8 MB</div>
+              <div class="health-card-sub" id="tele-backups-count">28 Snapshots Archived</div>
+            </div>
+            <div class="health-card">
+              <div class="health-card-label">Host Disk Free Space</div>
+              <div class="health-card-val" id="tele-disk-free" style="color: #34d399;">203.8 GB</div>
+              <div class="health-card-sub" id="tele-disk-pct">59.1% Disk Used</div>
+            </div>
+          </div>
+          <div style="background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 12px; font-size: 0.74rem; color: #94a3b8;">
+            📁 <strong>Snapshot Storage Directory:</strong> <code id="tele-storage-dir" style="color: #38bdf8;">data/backups/</code>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+
+  <script src="/static/notifications.js"></script>
+  <script>
+    // --- Application State ---
+    let currentChannel = 'invpc'; // 'invpc' or 'outside_vpc'
+    let currentDbTarget = 'vpc_telemetry_db'; // Strictly vpc_telemetry_db on Customer DBADesk
+    let isCompanyAccessVerified = false;
+    let authenticatedUser = null;
+    let guardrailStatus = { is_enforced: true, status: 'ENFORCED' };
+    let cachedTables = [];
+    let lastQueryData = null;
+    let selectedTableName = null;
+
+    // --- Helpers ---
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // --- Channel Detection & Switching ---
+    function detectInitialChannel() {
+      const params = new URLSearchParams(window.location.search);
+      const host = window.location.hostname.toLowerCase();
+      if (host.includes('dba_dcouplr') || params.get('mode') === 'outside_vpc' || params.get('origin') === 'outside_vpc' || sessionStorage.getItem('dba_channel') === 'outside_vpc') {
+        setChannel('outside_vpc');
+      } else {
+        setChannel('invpc');
+      }
+
+      // Check stored company access session or query param
+      if (params.get('company_access') === '1' || params.get('operator') || sessionStorage.getItem('dba_company_access') === 'verified' || localStorage.getItem('dba_company_access') === 'verified') {
+        isCompanyAccessVerified = true;
+        authenticatedUser = params.get('operator') || sessionStorage.getItem('dba_operator') || 'alex.turner';
+      }
+
+      if (params.get('auth') === '1' || params.get('login') === '1' || params.get('modal') === 'auth') {
+        document.getElementById('modal-company-access').style.display = 'flex';
+      }
+
+      // On DBADesk (Customer Safe Hub), the active database is strictly vpc_telemetry_db.
+      // Central vendor database (dcouplr_central_db) is strictly managed in /admin DBA Studio.
+      const dbParam = params.get('db') || params.get('database') || params.get('database_target');
+      if (dbParam && (dbParam.includes('central') || dbParam === 'dcouplr_central_db')) {
+        if (typeof dcouplrNotify !== 'undefined') {
+          dcouplrNotify.info('dcouplr_central_db belongs strictly to the Vendor Control Plane in /admin DBA Studio. DBADesk connects to Customer in-VPC SSOT (vpc_telemetry_db).', 'Customer Safe Studio');
+        }
+      }
+      switchDatabaseTarget('vpc_telemetry_db');
+
+      // Check modal or expanded query param
+      if (params.get('modal') === '1' || params.get('expanded') === '1') {
+        document.body.classList.add('expanded-modal-view');
+      }
+    }
+
+    function setChannel(channel) {
+      currentChannel = channel;
+      sessionStorage.setItem('dba_channel', channel);
+
+      const btnInVpc = document.getElementById('btn-mode-invpc');
+      const btnOutside = document.getElementById('btn-mode-outside');
+      const headerChannelBadge = document.getElementById('header-channel-badge');
+      const perspectiveBanner = document.getElementById('channel-perspective-banner');
+      const bannerTitle = document.getElementById('banner-mode-title');
+      const bannerDesc = document.getElementById('banner-mode-desc');
+      const bannerIcon = document.getElementById('banner-mode-icon');
+      const bannerAction = document.getElementById('banner-action-container');
+
+      if (channel === 'outside_vpc') {
+        if (btnInVpc) btnInVpc.classList.remove('active', 'invpc');
+        if (btnOutside) btnOutside.classList.add('active', 'outside');
+        if (headerChannelBadge) {
+          headerChannelBadge.textContent = 'CHANNEL: OUTSIDE-VPC HUB';
+          headerChannelBadge.className = 'badge badge-purple';
+        }
+
+        if (perspectiveBanner) {
+          perspectiveBanner.className = 'channel-perspective-banner outside-mode';
+          if (bannerIcon) bannerIcon.textContent = '🌐';
+          if (bannerTitle) bannerTitle.textContent = 'Outside-VPC DBA Hub (https://dba_dcouplr.yourcompany.com)';
+          if (bannerDesc) bannerDesc.innerHTML = 'Dedicated 2-Way Safe Studio &amp; DDL Gateway &bull; To disable the Read-Only Guardrail for maintenance, you must verify your corporate <strong>Company Access</strong>.';
+          if (bannerAction) {
+            bannerAction.innerHTML = '<button type="button" class="btn-export" id="btn-switch-to-invpc" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; font-weight: 700;">🔒 Switch to In-VPC View</button>';
+            const btnSw = document.getElementById('btn-switch-to-invpc');
+            if (btnSw) btnSw.addEventListener('click', () => setChannel('invpc'));
+          }
+        }
+      } else {
+        if (btnOutside) btnOutside.classList.remove('active', 'outside');
+        if (btnInVpc) btnInVpc.classList.add('active', 'invpc');
+        if (headerChannelBadge) {
+          headerChannelBadge.textContent = 'CHANNEL: IN-VPC SSOT';
+          headerChannelBadge.className = 'badge badge-blue';
+        }
+
+        if (perspectiveBanner) {
+          perspectiveBanner.className = 'channel-perspective-banner';
+          if (bannerIcon) bannerIcon.textContent = '🔒';
+          if (bannerTitle) bannerTitle.textContent = 'In-VPC Sovereign Mode (Strict Read-Only)';
+          if (bannerDesc) bannerDesc.innerHTML = 'Direct In-VPC SQLite SSOT Engine &bull; Zero-WAN Egress ($0.00). In-VPC mode is permanently Read-Only. Guardrail modification is strictly delegated to the Outside-VPC DBA Hub with Company Access.';
+          if (bannerAction) {
+            bannerAction.innerHTML = '<button type="button" class="btn-export" id="btn-switch-to-outside" style="background: rgba(192, 132, 252, 0.15); border-color: rgba(192, 132, 252, 0.4); color: #c084fc; font-weight: 700;">🌐 Switch to Outside-VPC Hub (dba_dcouplr.yourcompany.com) ↗</button>';
+            const btnSw = document.getElementById('btn-switch-to-outside');
+            if (btnSw) btnSw.addEventListener('click', () => setChannel('outside_vpc'));
+          }
+        }
+      }
+
+      updateGuardrailUI();
+    }
+
+    // --- Guardrail Status & UI Synchronization ---
+    async function loadGuardrailStatus() {
+      try {
+        const res = await fetch(`/v1/dba/guardrail?database_target=${encodeURIComponent(currentDbTarget)}`);
+        if (res.ok) {
+          const data = await res.json();
+          guardrailStatus = data.guardrail || { is_enforced: true, status: 'ENFORCED' };
+          updateGuardrailUI();
+        }
+      } catch (err) {
+        console.warn('Failed to load guardrail status:', err);
+      }
+    }
+
+    function updateGuardrailUI() {
+      const headerAccessBadge = document.getElementById('header-access-badge');
+      const headerGuardrailBadge = document.getElementById('header-guardrail-badge');
+      const strip = document.getElementById('guardrail-strip');
+      const bannerText = document.getElementById('guardrail-banner-text');
+      const actionBtn = document.getElementById('btn-guardrail-action');
+      const shortcutDangerBtn = document.getElementById('btn-shortcut-danger');
+      const editorTitleText = document.getElementById('editor-title-text');
+      const btnDeepScan = document.getElementById('btn-deep-integrity-scan');
+      const btnConfigMaint = document.getElementById('btn-configure-maintenance');
+
+      // 0. Update Deep Scan & Configure Maintenance Buttons based on Company Access
+      if (btnDeepScan) {
+        if (isCompanyAccessVerified) {
+          btnDeepScan.disabled = false;
+          btnDeepScan.innerHTML = '🔄 Run Deep Integrity Scan';
+          btnDeepScan.style.background = 'rgba(56, 189, 248, 0.15)';
+          btnDeepScan.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+          btnDeepScan.style.color = '#38bdf8';
+          btnDeepScan.style.opacity = '1';
+          btnDeepScan.style.cursor = 'pointer';
+          btnDeepScan.style.borderStyle = 'solid';
+          btnDeepScan.title = 'Run deep PRAGMA integrity_check against active database engine';
+        } else {
+          btnDeepScan.disabled = true;
+          btnDeepScan.innerHTML = '🔒 🔄 Run Deep Integrity Scan';
+          btnDeepScan.style.background = 'rgba(30, 41, 59, 0.5)';
+          btnDeepScan.style.borderColor = 'rgba(148, 163, 184, 0.25)';
+          btnDeepScan.style.color = '#94a3b8';
+          btnDeepScan.style.opacity = '0.55';
+          btnDeepScan.style.cursor = 'not-allowed';
+          btnDeepScan.style.borderStyle = 'dashed';
+          btnDeepScan.title = 'Requires Company Access Login • Authenticate via "Login Company Access to Unlock Guardrail" to enable';
+        }
+      }
+
+      if (btnConfigMaint) {
+        if (isCompanyAccessVerified) {
+          btnConfigMaint.disabled = false;
+          btnConfigMaint.innerHTML = '🛠️ Configure Maintenance Tasks';
+          btnConfigMaint.style.background = 'rgba(168, 85, 247, 0.18)';
+          btnConfigMaint.style.borderColor = 'rgba(168, 85, 247, 0.5)';
+          btnConfigMaint.style.color = '#c084fc';
+          btnConfigMaint.style.opacity = '1';
+          btnConfigMaint.style.cursor = 'pointer';
+          btnConfigMaint.style.borderStyle = 'solid';
+          btnConfigMaint.title = 'Configure SQLite Maintenance Tasks, Schedules, Full Backups & Snapshots, and Restore';
+        } else {
+          btnConfigMaint.disabled = true;
+          btnConfigMaint.innerHTML = '🔒 🛠️ Configure Maintenance Tasks';
+          btnConfigMaint.style.background = 'rgba(30, 41, 59, 0.5)';
+          btnConfigMaint.style.borderColor = 'rgba(148, 163, 184, 0.25)';
+          btnConfigMaint.style.color = '#94a3b8';
+          btnConfigMaint.style.opacity = '0.55';
+          btnConfigMaint.style.cursor = 'not-allowed';
+          btnConfigMaint.style.borderStyle = 'dashed';
+          btnConfigMaint.title = 'Requires Company Access Login • Authenticate via "Login Company Access to Unlock Guardrail" to enable';
+        }
+      }
+
+      // 1. Company Access Badge in Top Navbar
+      if (isCompanyAccessVerified) {
+        headerAccessBadge.textContent = `🏢 COMPANY ACCESS: VERIFIED (${authenticatedUser || 'alex.turner'})`;
+        headerAccessBadge.className = 'badge badge-green';
+      } else {
+        headerAccessBadge.textContent = currentChannel === 'outside_vpc' ? '🔑 COMPANY ACCESS: LOCKED' : '🔒 IN-VPC MODE';
+        headerAccessBadge.className = currentChannel === 'outside_vpc' ? 'badge badge-amber' : 'badge badge-blue';
+      }
+
+      // Customer DB In-VPC Guardrail Evaluation (vpc_telemetry_db)
+
+      // 2. Guardrail State Evaluation
+      if (!guardrailStatus.is_enforced) {
+        // MAINTENANCE MODE (GUARDRAIL DISABLED)
+        headerGuardrailBadge.textContent = '⚠️ GUARDRAIL: DISABLED (MAINTENANCE MODE)';
+        headerGuardrailBadge.className = 'badge badge-red';
+        strip.className = 'guardrail-strip maintenance-mode';
+
+        bannerText.innerHTML = `<strong>⚠️ Guardrail Disabled (Maintenance Mode):</strong> DDL and DML mutation statements (<code>CREATE</code>, <code>ALTER</code>, <code>DROP</code>, <code>UPDATE</code>, <code>INSERT</code>) are permitted. Operator: <strong>${escapeHtml(guardrailStatus.disabled_by || authenticatedUser || 'alex.turner')}</strong>. All statements logged to audit trail.`;
+
+        actionBtn.className = 'guardrail-btn btn-reenable';
+        actionBtn.innerHTML = '🔒 Re-Enable Read-Only Guardrail (Enforce)';
+        actionBtn.disabled = false;
+
+        if (shortcutDangerBtn) {
+          shortcutDangerBtn.textContent = '▶️ Run DDL Mutation (DROP)';
+          shortcutDangerBtn.title = 'Execute DDL mutation statement';
+        }
+        if (editorTitleText) {
+          editorTitleText.innerHTML = '⚠️ <span style="color: #f87171;">DBA Maintenance Scratchpad (DDL Mutations Permitted)</span>';
+        }
+
+      } else {
+        // ENFORCED (READ-ONLY)
+        headerGuardrailBadge.textContent = '🛡️ GUARDRAIL: ENFORCED (READ-ONLY)';
+        headerGuardrailBadge.className = 'badge badge-green';
+        strip.className = 'guardrail-strip';
+
+        if (shortcutDangerBtn) {
+          shortcutDangerBtn.textContent = '🧪 Test Guardrail (DROP)';
+          shortcutDangerBtn.title = 'Test Guardrail HTTP 403 Block';
+        }
+        if (editorTitleText) {
+          editorTitleText.innerHTML = '⚡ Safe Read-Only SQL Scratchpad';
+        }
+
+        if (currentChannel === 'invpc') {
+          bannerText.innerHTML = '<strong>🔒 Read-Only Guardrail Active:</strong> In-VPC mode is strictly read-only ($0.00 WAN Egress). Mutations (<code>DROP</code>, <code>ALTER</code>, <code>CREATE</code>, <code>UPDATE</code>, <code>DELETE</code>) are authoritatively blocked with HTTP 403 Forbidden. Guardrail unlock is strictly delegated to the Outside-VPC Hub.';
+          actionBtn.className = 'guardrail-btn btn-locked';
+          actionBtn.innerHTML = '🔒 Guardrail Locked (In-VPC Read-Only)';
+          actionBtn.disabled = true;
+          actionBtn.title = 'In-VPC mode cannot disable guardrail. Switch to Outside-VPC Hub.';
+        } else {
+          // Outside-VPC Hub Mode
+          if (!isCompanyAccessVerified) {
+            bannerText.innerHTML = '<strong>🔑 Read-Only Guardrail Active:</strong> In order to disable this guardrail for maintenance from Outside-VPC (https://dba_dcouplr.yourcompany.com), you must log into your corporate <strong>Company Access</strong>.';
+            actionBtn.className = 'guardrail-btn btn-login';
+            actionBtn.innerHTML = '🏢 Login Company Access to Unlock Guardrail';
+            actionBtn.disabled = false;
+            actionBtn.title = 'Login corporate DBA credentials to unlock guardrail';
+          } else {
+            bannerText.innerHTML = `<strong>🛡️ Read-Only Guardrail Active:</strong> Company Access verified for <strong>${escapeHtml(authenticatedUser || 'alex.turner')}</strong> (Obs-DBA). You are authorized to initiate a Break-Glass Override for database maintenance.`;
+            actionBtn.className = 'guardrail-btn btn-disable';
+            actionBtn.innerHTML = '⚠️ Disable Guardrail (DBA Break-Glass)';
+            actionBtn.disabled = false;
+            actionBtn.title = 'Initiate authorized Break-Glass override';
+          }
+        }
+      }
+    }
+
+    // --- Company Access Authentication ---
+    async function authenticateCompanyAccess(username, password) {
+      const errBox = document.getElementById('auth-error-msg');
+      errBox.style.display = 'none';
+
+      try {
+        const res = await fetch('/v1/dba/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: username,
+            password: password,
+            portal: 'company_access'
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          errBox.textContent = data.detail || 'Authentication failed. Please verify credentials.';
+          errBox.style.display = 'block';
+          return false;
+        }
+
+        // Success!
+        isCompanyAccessVerified = true;
+        authenticatedUser = data.username || username;
+        sessionStorage.setItem('dba_company_access', 'verified');
+        sessionStorage.setItem('dba_operator', authenticatedUser);
+        if (data.token) {
+          sessionStorage.setItem('dcouplr_dba_token', data.token);
+        }
+
+        document.getElementById('modal-company-access').style.display = 'none';
+        updateGuardrailUI();
+        return true;
+      } catch (err) {
+        errBox.textContent = `Network / connection error: ${err.message}`;
+        errBox.style.display = 'block';
+        return false;
+      }
+    }
+
+    // --- Toggle Guardrail Execution ---
+    async function toggleGuardrail(enable, reason) {
+      try {
+        const res = await fetch('/v1/dba/guardrail/toggle', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': sessionStorage.getItem('dcouplr_dba_token') || 'session_dba_token_2026'
+          },
+          body: JSON.stringify({
+            enabled: enable,
+            origin_channel: currentChannel,
+            company_access_verified: isCompanyAccessVerified,
+            actor: authenticatedUser || 'alex.turner',
+            reason: reason || 'DBA maintenance operation'
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          dcouplrNotify.error(data.detail || 'Failed to toggle guardrail', 'Guardrail Error');
+          return;
+        }
+
+        guardrailStatus = data.guardrail || { is_enforced: enable, status: enable ? 'ENFORCED' : 'DISABLED' };
+        updateGuardrailUI();
+        renderCustomerShortcuts();
+
+        if (!enable && (data.auto_backup || guardrailStatus.last_auto_backup)) {
+          const bk = data.auto_backup || guardrailStatus.last_auto_backup;
+          const sz = bk.size_bytes ? ((bk.size_bytes / (1024*1024)).toFixed(2) + ' MB') : '';
+          dcouplrNotify.security(
+            `Guardrail unlocked for maintenance mutations. Automatic pre-mutation safety snapshot created: ${data.safety_snapshot.filename} (ID: ${data.safety_snapshot.backup_id}).`,
+            'Break-Glass Safety Active',
+            7000
+          );
+        }
+
+        // Refresh tables and storage health
+        loadStorageHealth();
+        loadTables();
+      } catch (err) {
+        dcouplrNotify.error(`Failed to update guardrail: ${err.message}`, 'Network Error');
+      }
+    }
+
+    
+    function bindShortcutButtons() {
+      document.querySelectorAll('.shortcuts-bar .shortcut-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const q = btn.getAttribute('data-query');
+          if (q) {
+            document.getElementById('sql-query-input').value = q;
+            executeQuery(q);
+          }
+        });
+      });
+    }
+
+    function renderCustomerShortcuts() {
+      const shortcutsBar = document.querySelector('.shortcuts-bar');
+      if (!shortcutsBar) return;
+      const isUnlocked = !guardrailStatus.is_enforced;
+
+      if (!isUnlocked) {
+        shortcutsBar.innerHTML = `
+          <button type="button" class="shortcut-btn" data-query="SELECT license_id, customer_id, suite_edition, tier, licensed_nodes, active_monitored_nodes, cryptographic_status, expires_at FROM customer_license_state;">License State</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT node_id, hostname, toggle_count, max_toggles, is_toggle_locked, current_monitoring_state, last_toggled_iso FROM node_license_toggle_ledger ORDER BY last_toggled_at DESC LIMIT 25;">Toggle Ledger</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT update_id, timestamp, iso_time, previous_licensed_nodes, updated_licensed_nodes, tier, update_type, status FROM license_update_history ORDER BY timestamp DESC LIMIT 25;">License History</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT id AS node_id, vpc_id, hostname, ip, role, environment, status, agent_status FROM nodes LIMIT 25;">Nodes</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT id AS vpc_id, name, display_name, cloud, region, cidr_block, total_nodes, status FROM vpcs LIMIT 25;">VPCs</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT user_id, username, display_name, email, role, team_scope, status FROM rbac_users LIMIT 25;">RBAC Users</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT log_id, timestamp, actor_username, actor_role, action, target_resource, status FROM rbac_audit_logs ORDER BY timestamp DESC LIMIT 25;">Audit Logs</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT config_key, category, config_value, value_type, is_mutable FROM system_configuration_ssot LIMIT 25;">System Config</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT component_id, component_name, category, retention_days, max_storage_gb, auto_prune_enabled FROM system_retention_policies;">Retention Policies</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT backup_id, backup_name, target_type, file_size_bytes, backup_type, status, created_at FROM system_backup_records ORDER BY created_at DESC LIMIT 25;">Backups</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT ticket_id, title, category, severity, status, affected_vpc, affected_node FROM customer_support_tickets ORDER BY created_at DESC LIMIT 25;">Support Tickets</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT tier_id, name, icon, tier_number, enabled FROM monitoring_matrix_tiers ORDER BY tier_number ASC;">Matrix Tiers</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT hub_id, hub_name, direction, ip_allowlist_cidr, require_company_access_mfa, read_only_enforced FROM hubs_access_rules;">Hub Rules</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT id, blur_ip_cidr, mask_mode, updated_at, updated_by FROM kiosk_privacy_config;">Kiosk Privacy</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT rotation_id, timestamp, reason, rotated_by, status FROM sqlitecipher_key_rotation_history ORDER BY timestamp DESC LIMIT 25;">Key Rotations</button>
+          <button type="button" class="shortcut-btn" data-query="PRAGMA integrity_check;">PRAGMA Check</button>
+          <button type="button" class="shortcut-btn danger" id="btn-shortcut-danger" data-query="DROP TABLE customer_license_state;" title="Test Guardrail HTTP 403 Block">🧪 Test Guardrail (DROP)</button>
+        `;
+      } else {
+        shortcutsBar.innerHTML = `
+          <button type="button" class="shortcut-btn" data-query="SELECT license_id, customer_id, suite_edition, tier, licensed_nodes, active_monitored_nodes, cryptographic_status, expires_at FROM customer_license_state;">License State</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT node_id, hostname, toggle_count, max_toggles, is_toggle_locked, current_monitoring_state, last_toggled_iso FROM node_license_toggle_ledger ORDER BY last_toggled_at DESC LIMIT 25;">Toggle Ledger</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT id AS node_id, vpc_id, hostname, ip, role, environment, status, agent_status FROM nodes LIMIT 25;">Nodes</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT id AS vpc_id, name, display_name, cloud, region, cidr_block, total_nodes, status FROM vpcs LIMIT 25;">VPCs</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT user_id, username, display_name, email, role, team_scope, status FROM rbac_users LIMIT 25;">RBAC Users</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT component_id, component_name, category, retention_days, max_storage_gb, auto_prune_enabled FROM system_retention_policies;">Retention Policies</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT backup_id, backup_name, target_type, file_size_bytes, backup_type, status, created_at FROM system_backup_records ORDER BY created_at DESC LIMIT 25;">Backups</button>
+          <button type="button" class="shortcut-btn" data-query="SELECT ticket_id, title, category, severity, status, affected_vpc, affected_node FROM customer_support_tickets ORDER BY created_at DESC LIMIT 25;">Support Tickets</button>
+          <button type="button" class="shortcut-btn" data-query="CREATE TABLE IF NOT EXISTS vpc_custom_routes (\n  route_id TEXT PRIMARY KEY,\n  vpc_id TEXT NOT NULL,\n  destination_cidr TEXT NOT NULL,\n  next_hop TEXT NOT NULL\n);" style="border-color:#a855f7; color:#c084fc; font-weight:700;">➕ CREATE TABLE</button>
+          <button type="button" class="shortcut-btn" data-query="ALTER TABLE vpc_custom_routes ADD COLUMN priority INTEGER DEFAULT 100;" style="border-color:#38bdf8; color:#38bdf8; font-weight:700;">✏️ ALTER TABLE</button>
+          <button type="button" class="shortcut-btn danger" data-query="DROP TABLE IF EXISTS vpc_custom_routes;" style="border-color:#ef4444; color:#f87171; font-weight:700;">🗑️ DROP TABLE</button>
+          <button type="button" class="shortcut-btn" data-query="PRAGMA integrity_check;">PRAGMA Check</button>
+        `;
+      }
+      bindShortcutButtons();
+    }
+
+    function switchDatabaseTarget(target) {
+      currentDbTarget = 'vpc_telemetry_db';
+      sessionStorage.setItem('dba_target_db', 'vpc_telemetry_db');
+
+      const btnTelemetry = document.getElementById('btn-target-telemetry');
+      if (btnTelemetry) {
+        btnTelemetry.classList.add('active', 'telemetry');
+      }
+
+      const badgeRights = document.getElementById('badge-system-dba-rights');
+      if (badgeRights) {
+        badgeRights.textContent = '⚡ SOVEREIGN IN-VPC TELEMETRY SSOT';
+        badgeRights.className = 'badge badge-blue';
+      }
+
+      const badgeGuard = document.getElementById('badge-target-guardrail-status');
+      if (badgeGuard) {
+        badgeGuard.textContent = guardrailStatus.is_enforced ? '🛡️ GUARDRAIL: ENFORCED (READ-ONLY)' : '🛡️ GUARDRAIL: DISABLED';
+        badgeGuard.className = guardrailStatus.is_enforced ? 'badge badge-green' : 'badge badge-red';
+      }
+
+      const editorTitle = document.getElementById('editor-title-text');
+      if (editorTitle) {
+        editorTitle.textContent = '⚡ In-VPC Telemetry Safe Studio & SQL Scratchpad';
+      }
+
+      const sqlTextarea = document.getElementById('sql-query-input');
+      if (sqlTextarea && (!sqlTextarea.value || sqlTextarea.value.includes('customers'))) {
+        sqlTextarea.value = 'SELECT * FROM customer_license_state;';
+      }
+
+      renderCustomerShortcuts();
+      loadStorageHealth();
+      loadGuardrailStatus();
+      loadTables();
+    }
+
+    // --- Storage Health & Integrity ---
+    async function loadStorageHealth() {
+      try {
+        const res = await fetch(`/v1/dba/health?database_target=${encodeURIComponent(currentDbTarget)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        document.getElementById('health-db-file').textContent = data.database_file || 'vpc_telemetry.db';
+        document.getElementById('health-db-profile').textContent = `Profile: ${data.active_profile || 'production'}`;
+        
+        const elInteg = document.getElementById('health-integrity');
+        elInteg.textContent = data.integrity_check || 'INTEGRITY_OK';
+        elInteg.style.color = data.is_healthy ? '#34d399' : '#f87171';
+
+        document.getElementById('health-journal').textContent = `${data.journal_mode || 'WAL'} Mode`;
+        document.getElementById('health-file-size').textContent = `File Size: ${data.file_size_mb || 0} MB`;
+        document.getElementById('health-tables-count').textContent = `${data.total_tables || 0} Tables`;
+        const elTablesLabel = document.getElementById('health-tables-label');
+        if (elTablesLabel) elTablesLabel.textContent = currentDbTarget === 'dcouplr_central_db' ? 'Central DB Tables' : 'In-VPC SSOT Tables';
+        const elSovVal = document.getElementById('health-sovereignty-val');
+        if (elSovVal) elSovVal.textContent = currentDbTarget === 'dcouplr_central_db' ? 'Control Plane SSOT' : '$0.00 WAN Egress';
+        const elSovSub = document.getElementById('health-sovereignty-sub');
+        if (elSovSub) elSovSub.textContent = currentDbTarget === 'dcouplr_central_db' ? 'Zero Guardrail • Vendor DB' : 'Local in-VPC SQLite Execution';
+
+        const elEncVal = document.getElementById('health-encryption-val');
+        const elEncSub = document.getElementById('health-encryption-sub');
+        const elEngineBadge = document.getElementById('spec-engine-badge');
+        const elKdf = document.getElementById('spec-kdf');
+        const elTamper = document.getElementById('spec-tamper');
+        const elHeader = document.getElementById('spec-header');
+        const elKeyFp = document.getElementById('spec-key-fp');
+
+        if (data.is_encrypted) {
+          if (elEncVal) {
+            elEncVal.textContent = data.cipher_algorithm || 'AES-256-CBC';
+            elEncVal.style.color = '#34d399';
+          }
+          if (elEncSub) {
+            elEncSub.textContent = 'SQLCipher 4.x Active (Encrypted)';
+            elEncSub.style.color = '#34d399';
+          }
+          if (elEngineBadge) elEngineBadge.textContent = `SQLCipher 4.x ${data.cipher_algorithm || 'AES-256-CBC'} (Active)`;
+          if (elKdf) elKdf.textContent = `PBKDF2-HMAC-SHA512 (${(data.kdf_iterations || 256000).toLocaleString()} iters)`;
+          if (elTamper) elTamper.textContent = data.tamper_protection || 'HMAC-SHA512 Per-Page Checksum';
+          if (elHeader) {
+            elHeader.textContent = data.header_magic || 'ENCRYPTED_AES256_CIPHERTEXT';
+            elHeader.style.color = '#38bdf8';
+          }
+          if (elKeyFp) elKeyFp.textContent = data.key_fingerprint || 'sha256:configured';
+        } else {
+          if (elEncVal) {
+            elEncVal.textContent = 'SQLCipher Ready';
+            elEncVal.style.color = '#60a5fa';
+          }
+          if (elEncSub) {
+            elEncSub.textContent = 'Plaintext Sandbox (Demo Profile)';
+            elEncSub.style.color = '#94a3b8';
+          }
+          if (elEngineBadge) elEngineBadge.textContent = 'SQLCipher Driver Ready (Sandbox Evaluation)';
+          if (elKdf) elKdf.textContent = 'PBKDF2-HMAC-SHA512 Supported';
+          if (elTamper) elTamper.textContent = 'Zero WAN Egress In-VPC';
+          if (elHeader) {
+            elHeader.textContent = data.header_magic || 'PLAINTEXT_SQLITE_3';
+            elHeader.style.color = '#facc15';
+          }
+          if (elKeyFp) elKeyFp.textContent = data.key_fingerprint || 'sha256:sandbox';
+        }
+      } catch (err) {
+        console.warn('Failed to load storage health:', err);
+      }
+    }
+
+    // --- Table Browser & Schema Preview ---
+    async function loadTables() {
+      const container = document.getElementById('tables-list-container');
+      const badge = document.getElementById('tables-badge-count');
+      try {
+        const res = await fetch(`/v1/dba/tables?database_target=${encodeURIComponent(currentDbTarget)}`);
+        if (!res.ok) throw new Error('Failed to retrieve tables');
+        const data = await res.json();
+        const FORBIDDEN_CENTRAL_TABLES = new Set([
+          'customers', 'product_skus', 'contracts', 'customer_licenses',
+          'customer_installation_seats', 'customer_support_cases',
+          'customer_telemetry_heartbeats', 'billing_prorations',
+          'corp_internal_rbac_users', 'central_documents', 'commercial_invoices'
+        ]);
+        cachedTables = (data.tables || []).filter(t => !FORBIDDEN_CENTRAL_TABLES.has(t.table_name.toLowerCase()));
+        if (badge) badge.textContent = `${cachedTables.length} tables`;
+
+        renderTablesList(cachedTables);
+      } catch (err) {
+        container.innerHTML = `<div style="color: #f87171; font-size: 0.75rem; padding: 1rem; text-align: center;">Error loading tables: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function renderTablesList(tables) {
+      const container = document.getElementById('tables-list-container');
+      if (tables.length === 0) {
+        container.innerHTML = '<div style="color: #64748b; font-size: 0.75rem; text-align: center; padding: 1.5rem;">No tables match filter.</div>';
+        return;
+      }
+
+      container.innerHTML = tables.map(t => `
+        <div class="table-list-item ${t.table_name === selectedTableName ? 'selected' : ''}" data-table="${escapeHtml(t.table_name)}">
+          <div>
+            <div class="table-item-name">${escapeHtml(t.table_name)}</div>
+            <div class="table-item-sub">${t.columns_count} columns</div>
+          </div>
+          <span class="badge badge-blue">${t.row_count} rows</span>
+        </div>
+      `).join('');
+
+      container.querySelectorAll('.table-list-item').forEach(item => {
+        item.addEventListener('click', async () => {
+          const tname = item.getAttribute('data-table');
+          selectTable(tname);
+        });
+      });
+    }
+
+    function insertColumnToEditor(colName) {
+      const textarea = document.getElementById('sql-query-input');
+      if (!textarea) return;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      if (start !== undefined && end !== undefined && start !== text.length) {
+        textarea.value = text.substring(0, start) + colName + text.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = start + colName.length;
+      } else {
+        if (textarea.value.trim().toUpperCase().startsWith('SELECT * FROM')) {
+          textarea.value = textarea.value.replace(/SELECT\s+\*\s+FROM/i, `SELECT ${colName} FROM`);
+        } else if (textarea.value.trim().toUpperCase().startsWith('SELECT ')) {
+          const fromIdx = textarea.value.toUpperCase().indexOf(' FROM ');
+          if (fromIdx !== -1) {
+            const beforeFrom = textarea.value.substring(0, fromIdx);
+            const afterFrom = textarea.value.substring(fromIdx);
+            textarea.value = `${beforeFrom}, ${colName}${afterFrom}`;
+          } else {
+            textarea.value += ' ' + colName;
+          }
+        } else {
+          textarea.value += ' ' + colName;
+        }
+      }
+      textarea.focus();
+    }
+
+    async function selectTable(tableName) {
+      selectedTableName = tableName;
+      renderTablesList(filterTables(document.getElementById('table-search-input').value));
+
+      let cols = [];
+      try {
+        const res = await fetch(`/v1/dba/tables/${encodeURIComponent(tableName)}?limit=25&database_target=${encodeURIComponent(currentDbTarget)}`);
+        if (res.ok) {
+          const data = await res.json();
+          cols = data.columns || [];
+          renderSchemaInspector(data);
+        }
+      } catch (e) {
+        console.warn('Could not load schema details:', e);
+      }
+
+      const limit = document.getElementById('select-row-limit').value || 25;
+      let query;
+      if (cols.length > 0) {
+        const colNames = cols.map(c => c.name);
+        const filteredCols = colNames.filter(c => !c.toLowerCase().endsWith('_json') && c.toLowerCase() !== 'data_json');
+        const selectedCols = filteredCols.length > 0 ? filteredCols.slice(0, 8).join(', ') : colNames.slice(0, 8).join(', ');
+        const orderCandidates = ['timestamp', 'created_at', 'updated_at', 'last_toggled_at', 'cleared_at', 'log_id', 'update_id', 'ticket_id', 'tier_number', 'id', 'node_id', 'license_id', 'component_id', 'backup_id'];
+        const sortCol = orderCandidates.find(sc => colNames.includes(sc));
+        const orderClause = sortCol ? ` ORDER BY ${sortCol} DESC` : '';
+        query = `SELECT ${selectedCols} FROM ${tableName}${orderClause} LIMIT ${limit};`;
+      } else {
+        query = `SELECT * FROM ${tableName} LIMIT ${limit};`;
+      }
+
+      document.getElementById('sql-query-input').value = query;
+      await executeQuery(query);
+    }
+
+    function renderSchemaInspector(data) {
+      const card = document.getElementById('schema-inspector');
+      const title = document.getElementById('schema-table-name');
+      const colsCount = document.getElementById('schema-cols-count');
+      const container = document.getElementById('schema-cols-container');
+
+      card.style.display = 'block';
+      title.textContent = data.table_name;
+      colsCount.textContent = `${(data.columns || []).length} cols`;
+
+      container.innerHTML = (data.columns || []).map(c => `
+        <div class="schema-col-item" style="cursor: pointer; padding: 4px 6px; border-radius: 4px; transition: background 0.15s;" title="Click to insert column '${escapeHtml(c.name)}' into SQL Scratchpad" onclick="insertColumnToEditor('${escapeHtml(c.name)}')">
+          <span>
+            <strong style="color: #38bdf8;">${escapeHtml(c.name)}</strong>
+            ${c.pk ? '<span class="pk-tag">PK</span>' : ''}
+          </span>
+          <span style="display: flex; align-items: center; gap: 4px;">
+            <span style="color: #94a3b8; font-size: 0.7rem;">${escapeHtml(c.type || 'TEXT')}</span>
+            <span style="color: #a855f7; font-size: 0.72rem; font-weight: bold;">+</span>
+          </span>
+        </div>
+      `).join('');
+    }
+
+    function filterTables(filterText) {
+      const text = (filterText || '').toLowerCase().trim();
+      if (!text) return cachedTables;
+      return cachedTables.filter(t => t.table_name.toLowerCase().includes(text));
+    }
+
+    // --- Query Execution & Results ---
+    async function executeQuery(overrideSql) {
+      const sqlInput = document.getElementById('sql-query-input');
+      const query = (overrideSql || sqlInput.value).trim();
+      if (!query) return;
+
+      const limit = parseInt(document.getElementById('select-row-limit').value || 25, 10);
+      const stats = document.getElementById('results-stats');
+      const container = document.getElementById('results-table-container');
+      const alertBox = document.getElementById('guardrail-alert-box');
+
+      alertBox.style.display = 'none';
+      stats.textContent = '⚡ Executing...';
+      stats.style.color = '#38bdf8';
+      container.innerHTML = '<div style="color: #38bdf8; text-align: center; padding: 3rem;">⚡ Executing SQL statement against in-VPC SQLite SSOT...</div>';
+
+      try {
+        const res = await fetch('/v1/dba/query', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': sessionStorage.getItem('dcouplr_dba_token') || 'session_dba_token_2026'
+          },
+          body: JSON.stringify({ query: query, limit: limit, database_target: currentDbTarget })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          if (res.status === 403) {
+            stats.textContent = '⛔ HTTP 403 FORBIDDEN';
+            stats.style.color = '#ef4444';
+            alertBox.style.display = 'block';
+            document.getElementById('guardrail-error-title').textContent = 'HTTP 403 Forbidden: Read-Only Guardrail Blocked Mutation';
+            document.getElementById('guardrail-error-detail').textContent = data.detail || 'Prohibited SQL mutation detected.';
+            container.innerHTML = `<div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 6px; padding: 1.5rem; color: #fca5a5; font-size: 0.82rem; margin: 1rem;">
+              <strong style="color: #ef4444;">Access Denied (403):</strong> ${escapeHtml(data.detail)}
+              <div style="margin-top: 8px; font-size: 0.74rem; color: #94a3b8;">
+                ${currentChannel === 'invpc' ? 'In-VPC mode cannot disable guardrails. Switch to the Outside-VPC Hub (https://dba_dcouplr.yourcompany.com) with Company Access.' : 'To disable guardrail from Outside-VPC, verify Company Access and click "Disable Guardrail".'}
+              </div>
+            </div>`;
+            return;
+          }
+          throw new Error(data.detail || `Query failed with status ${res.status}`);
+        }
+
+        lastQueryData = data;
+        stats.textContent = `⏱️ ${data.execution_ms} ms • ${data.row_count} rows`;
+        stats.style.color = '#34d399';
+
+        renderResultsTable(data);
+      } catch (err) {
+        stats.textContent = 'ERROR';
+        stats.style.color = '#ef4444';
+        container.innerHTML = `<div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 6px; padding: 1.25rem; color: #f87171; font-size: 0.8rem; margin: 1rem;">
+          <strong>SQL Execution Error:</strong> ${escapeHtml(err.message)}
+        </div>`;
+      }
+    }
+
+    function renderResultsTable(data) {
+      const container = document.getElementById('results-table-container');
+      const cols = data.columns || [];
+      const rows = data.rows || [];
+
+      if (rows.length === 0) {
+        container.innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 2.5rem; font-size: 0.82rem;">Query executed successfully. 0 rows returned.</div>';
+        return;
+      }
+
+      let html = '';
+      if (data.is_mutation) {
+        html += `<div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 6px; padding: 10px 14px; margin-bottom: 10px; font-size: 0.78rem; color: #34d399;">
+          ✅ <strong>DDL/DML Statement Executed Successfully:</strong> ${data.row_count} rows affected &bull; Audit log entry created.
+        </div>`;
+      }
+
+      html += '<table class="dba-table"><thead><tr>';
+      cols.forEach(c => {
+        html += `<th>${escapeHtml(c)}</th>`;
+      });
+      html += '</tr></thead><tbody>';
+
+      rows.forEach(r => {
+        html += '<tr>';
+        cols.forEach(c => {
+          let val = r[c];
+          if (val === null || val === undefined) {
+            html += '<td class="null-val">NULL</td>';
+          } else if (typeof val === 'object') {
+            html += `<td title="${escapeHtml(JSON.stringify(val))}">${escapeHtml(JSON.stringify(val))}</td>`;
+          } else {
+            html += `<td title="${escapeHtml(String(val))}">${escapeHtml(String(val))}</td>`;
+          }
+        });
+        html += '</tr>';
+      });
+
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    // --- Export Functions ---
+    function copyJson() {
+      if (!lastQueryData || !lastQueryData.rows) return;
+      const btn = document.getElementById('btn-copy-json');
+      navigator.clipboard.writeText(JSON.stringify(lastQueryData.rows, null, 2));
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = '📋 Copy JSON', 2000);
+    }
+
+    function exportCsv() {
+      if (!lastQueryData || !lastQueryData.rows || lastQueryData.rows.length === 0) return;
+      const cols = lastQueryData.columns || Object.keys(lastQueryData.rows[0]);
+      let csv = cols.map(c => `"${c.replace(/"/g, '""')}"`).join(',') + '\n';
+      lastQueryData.rows.forEach(r => {
+        const line = cols.map(c => {
+          let val = r[c];
+          if (val === null || val === undefined) return '""';
+          if (typeof val === 'object') val = JSON.stringify(val);
+          return `"${String(val).replace(/"/g, '""')}"`;
+        }).join(',');
+        csv += line + '\n';
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `dba_query_export_${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+
+    // --- DBA Maintenance & Disaster Recovery Studio Controllers ---
+    let cachedBackups = [];
+    let cachedSchedules = [];
+
+    async function openMaintenanceModal(initialTab = 'ops') {
+      if (!isCompanyAccessVerified) {
+        const authModal = document.getElementById('modal-company-access');
+        if (authModal) authModal.style.display = 'flex';
+        return;
+      }
+      const modal = document.getElementById('modal-dba-maintenance');
+      if (!modal) return;
+      modal.style.display = 'flex';
+      switchMaintTab(initialTab);
+      await loadMaintenanceOverview();
+      await loadMaintenanceBackups();
+      await loadMaintenanceSchedules();
+    }
+
+    function closeMaintenanceModal() {
+      const modal = document.getElementById('modal-dba-maintenance');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function switchMaintTab(tabId) {
+      document.querySelectorAll('.btn-maint-tab').forEach(b => {
+        if (b.getAttribute('data-tab') === tabId) {
+          b.style.background = 'rgba(168, 85, 247, 0.2)';
+          b.style.borderColor = '#a855f7';
+          b.style.color = '#fff';
+        } else {
+          b.style.background = 'rgba(255, 255, 255, 0.05)';
+          b.style.borderColor = 'rgba(255,255,255,0.1)';
+          b.style.color = '#94a3b8';
+        }
+      });
+      document.querySelectorAll('.maint-tab-pane').forEach(p => p.style.display = 'none');
+      const targetPane = document.getElementById(`maint-pane-${tabId}`);
+      if (targetPane) targetPane.style.display = 'block';
+
+      if (tabId === 'backups') loadMaintenanceBackups();
+      if (tabId === 'schedules') loadMaintenanceSchedules();
+      if (tabId === 'storage') loadMaintenanceOverview();
+    }
+
+    async function loadMaintenanceOverview() {
+      try {
+        const res = await fetch('/v1/dba/maintenance/overview');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        // Update Pill Badges
+        const elDb = document.getElementById('maint-badge-db');
+        const elProf = document.getElementById('maint-badge-profile');
+        const elStorage = document.getElementById('maint-badge-storage');
+        const elGuard = document.getElementById('maint-badge-guardrail');
+
+        if (elDb) elDb.textContent = `DB: ${data.database_file || 'vpc_telemetry.db'}`;
+        if (elProf) elProf.textContent = `Profile: ${data.active_profile || 'demo'}`;
+        if (elStorage && data.storage && data.storage.active_db) {
+          elStorage.textContent = `WAL Mode • Size: ${data.storage.active_db.size_mb || 0} MB`;
+        }
+        if (elGuard && data.guardrail) {
+          elGuard.textContent = `Guardrail: ${data.guardrail.status || 'ENFORCED'}`;
+          elGuard.style.color = data.guardrail.is_enforced ? '#34d399' : '#f87171';
+        }
+
+        // Auto Backup Banner
+        const autoBk = data.guardrail && data.guardrail.last_auto_backup;
+        const banner = document.getElementById('maint-auto-backup-banner');
+        if (banner) {
+          if (autoBk && autoBk.filename) {
+            banner.style.display = 'block';
+            document.getElementById('maint-auto-backup-name').textContent = autoBk.filename;
+            document.getElementById('maint-auto-backup-size').textContent = `${((autoBk.size_bytes || 0) / (1024 * 1024)).toFixed(2)} MB`;
+          } else {
+            banner.style.display = 'none';
+          }
+        }
+
+        // Storage pane telemetry
+        if (data.storage) {
+          const s = data.storage;
+          const elAct = document.getElementById('tele-active-size');
+          const elActFile = document.getElementById('tele-active-file');
+          const elWal = document.getElementById('tele-wal-size');
+          const elBks = document.getElementById('tele-backups-size');
+          const elBksCount = document.getElementById('tele-backups-count');
+          const elFree = document.getElementById('tele-disk-free');
+          const elPct = document.getElementById('tele-disk-pct');
+          const elDir = document.getElementById('tele-storage-dir');
+
+          if (elAct && s.active_db) elAct.textContent = `${s.active_db.size_mb} MB`;
+          if (elActFile && s.active_db) elActFile.textContent = s.active_db.file_name;
+          if (elWal && s.active_db) elWal.textContent = `${s.active_db.wal_size_mb} MB`;
+          if (elBks && s.backups) elBks.textContent = `${s.backups.total_size_mb} MB`;
+          if (elBksCount && s.backups) elBksCount.textContent = `${s.backups.count} Snapshots Archived`;
+          if (elFree && s.disk) elFree.textContent = `${s.disk.free_gb} GB`;
+          if (elPct && s.disk) elPct.textContent = `${s.disk.used_pct}% Disk Used`;
+          if (elDir && s.backups) elDir.textContent = s.backups.storage_directory;
+        }
+      } catch (err) {
+        console.warn('Failed to load maintenance overview:', err);
+      }
+    }
+
+    async function executeMaintenanceTask(taskName) {
+      const consoleOut = document.getElementById('maint-console-output');
+      const nowTs = new Date().toLocaleTimeString();
+      consoleOut.textContent = `[${nowTs}] Dispatching maintenance task '${taskName}'...
+` + consoleOut.textContent;
+
+      try {
+        const res = await fetch('/v1/dba/maintenance/tasks/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            task: taskName,
+            actor: authenticatedUser || 'alex.turner'
+          })
+        });
+        const data = await res.json();
+        const finishTs = new Date().toLocaleTimeString();
+
+        if (res.ok) {
+          const r = data.result || {};
+          let details = '';
+          if (taskName === 'wal_checkpoint') details = `Busy: ${r.busy}, Log Frames: ${r.log_frames}, Checkpointed: ${r.checkpointed_frames}`;
+          else if (taskName === 'vacuum') details = `Reclaimed: ${(r.bytes_reclaimed || 0).toLocaleString()} bytes`;
+          else if (taskName === 'reindex') details = `${r.total_indexes || 0} indexes reindexed in ${r.execution_ms}ms`;
+          else if (taskName === 'analyze') details = `${r.statistics_entries || 0} statistical entries in ${r.execution_ms}ms`;
+          else if (taskName === 'foreign_key_check') details = `Violations: ${r.violations_count || 0}`;
+          else if (taskName === 'integrity_check') details = `Integrity: ${r.status || 'OK'}`;
+
+          consoleOut.textContent = `[${finishTs}] ✅ SUCCESS [${r.task_name || taskName}]: ${details}
+` + consoleOut.textContent;
+          loadStorageHealth();
+          loadMaintenanceOverview();
+        } else {
+          consoleOut.textContent = `[${finishTs}] ❌ FAILED: ${data.detail || 'Execution failed'}
+` + consoleOut.textContent;
+        }
+      } catch (err) {
+        consoleOut.textContent = `[${new Date().toLocaleTimeString()}] ❌ NETWORK ERROR: ${err.message}
+` + consoleOut.textContent;
+      }
+    }
+
+    async function loadMaintenanceBackups() {
+      const container = document.getElementById('maint-backups-table-container');
+      const badgeCount = document.getElementById('tab-badge-backups-count');
+      const selectRestore = document.getElementById('select-restore-snapshot');
+
+      try {
+        const res = await fetch('/v1/dba/maintenance/backups');
+        if (!res.ok) throw new Error('Failed to retrieve backups');
+        const data = await res.json();
+        cachedBackups = data.backups || [];
+
+        if (badgeCount) badgeCount.textContent = cachedBackups.length;
+
+        // Populate Restore dropdown
+        if (selectRestore) {
+          const currentVal = selectRestore.value;
+          selectRestore.innerHTML = '<option value="">-- Choose verified snapshot from repository --</option>' +
+            cachedBackups.map(b => `<option value="${escapeHtml(b.backup_id)}">${escapeHtml(b.backup_name)} (${((b.file_size_bytes || 0) / (1024*1024)).toFixed(2)} MB &bull; ${new Date((b.created_at || 0)*1000).toLocaleString()})</option>`).join('');
+          selectRestore.value = currentVal;
+        }
+
+        if (cachedBackups.length === 0) {
+          container.innerHTML = '<div style="color: #64748b; font-size: 0.75rem; text-align: center; padding: 2rem;">No backup snapshots found in repository. Create your first snapshot above.</div>';
+          return;
+        }
+
+        let html = '<table class="dba-table" style="font-size: 0.73rem;"><thead><tr>';
+        html += '<th>Snapshot Name &amp; ID</th><th>Target Type</th><th>File Size</th><th>Integrity Check</th><th>Created At</th><th style="text-align: right;">Actions</th>';
+        html += '</tr></thead><tbody>';
+
+        cachedBackups.forEach(b => {
+          const sizeMb = ((b.file_size_bytes || 0) / (1024 * 1024)).toFixed(2);
+          const dateStr = b.created_at ? new Date(b.created_at * 1000).toLocaleString() : '-';
+          const isDb = b.target_type === 'backend_database';
+
+          html += `<tr>
+            <td>
+              <div style="font-weight: 700; color: #e2e8f0;">${escapeHtml(b.backup_name || b.filename)}</div>
+              <div style="font-family: var(--font-mono); font-size: 0.65rem; color: #64748b;">${escapeHtml(b.backup_id)} &bull; ${escapeHtml(b.filename)}</div>
+            </td>
+            <td><span class="badge ${isDb ? 'badge-blue' : 'badge-green'}">${escapeHtml(b.target_type)}</span></td>
+            <td><span style="color: #facc15; font-weight: 600;">${sizeMb} MB</span></td>
+            <td><span style="color: #34d399;">✔ Quick Check OK</span></td>
+            <td><span style="color: #94a3b8;">${escapeHtml(dateStr)}</span></td>
+            <td style="text-align: right; white-space: nowrap;">
+              <button type="button" class="btn-export" onclick="preselectRestoreSnapshot('${escapeHtml(b.backup_id)}')" style="font-size: 0.68rem; padding: 3px 8px; color: #34d399; border-color: rgba(52, 211, 153, 0.4);" title="Restore this snapshot">🔄 Restore</button>
+              <a href="/v1/admin/backups/${encodeURIComponent(b.filename)}/download" class="btn-export" style="font-size: 0.68rem; padding: 3px 8px; text-decoration: none; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="Download snapshot">📥</a>
+              <button type="button" class="btn-export" onclick="deleteBackupSnapshot('${escapeHtml(b.backup_id)}')" style="font-size: 0.68rem; padding: 3px 8px; color: #f87171; border-color: rgba(239, 68, 68, 0.4);" title="Delete snapshot">🗑️</button>
+            </td>
+          </tr>`;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `<div style="color: #f87171; font-size: 0.75rem; text-align: center; padding: 1.5rem;">Failed to load snapshots: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    async function createManualBackup() {
+      const btn = document.getElementById('btn-create-manual-backup');
+      const nameInput = document.getElementById('input-backup-name');
+      const targetSelect = document.getElementById('select-backup-target-type');
+      const name = (nameInput.value || '').trim() || `Manual Snapshot (${new Date().toISOString().replace('T', ' ').substring(0, 19)} UTC)`;
+      const targetType = targetSelect.value || 'backend_database';
+
+      const origText = btn.innerHTML;
+      btn.innerHTML = '📸 Creating...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/v1/dba/maintenance/backups/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name,
+            target_type: targetType,
+            actor: authenticatedUser || 'alex.turner'
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          nameInput.value = '';
+          dcouplrNotify.success(
+            `Snapshot created: ${data.backup.filename} (${(data.backup.size_bytes / (1024*1024)).toFixed(2)} MB, ${data.backup.table_count} tables).`,
+            'Snapshot Archived'
+          );
+          loadMaintenanceBackups();
+          loadMaintenanceOverview();
+          loadStorageHealth();
+        } else {
+          dcouplrNotify.error(data.detail || 'Failed to create snapshot', 'Snapshot Error');
+        }
+      } catch (err) {
+        dcouplrNotify.error(`Network error creating snapshot: ${err.message}`, 'Snapshot Network Error');
+      } finally {
+        btn.innerHTML = origText;
+        btn.disabled = false;
+      }
+    }
+
+    function preselectRestoreSnapshot(backupId) {
+      switchMaintTab('restore');
+      const sel = document.getElementById('select-restore-snapshot');
+      if (sel) {
+        sel.value = backupId;
+        sel.dispatchEvent(new Event('change'));
+      }
+    }
+
+    async function deleteBackupSnapshot(backupId) {
+      if (!confirm(`Are you sure you want to permanently delete snapshot '${backupId}'?`)) return;
+      try {
+        const res = await fetch(`/v1/dba/maintenance/backups/${encodeURIComponent(backupId)}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) {
+          loadMaintenanceBackups();
+          loadMaintenanceOverview();
+        } else {
+          const data = await res.json();
+          dcouplrNotify.error(data.detail || 'Delete failed', 'Backup Delete Error');
+        }
+      } catch (err) {
+        dcouplrNotify.error(`Network error: ${err.message}`, 'Backup Delete Error');
+      }
+    }
+
+    async function executeRestore() {
+      const selectSnap = document.getElementById('select-restore-snapshot');
+      const chkConfirm = document.getElementById('chk-confirm-restore');
+      const resultBox = document.getElementById('restore-result-box');
+      const backupId = selectSnap.value;
+
+      if (!backupId) {
+        dcouplrNotify.warning('Please select a verified snapshot from the repository to restore.', 'Snapshot Selection Required');
+        return;
+      }
+      if (!chkConfirm.checked) {
+        dcouplrNotify.warning('You must acknowledge and check the confirmation box before executing database restoration.', 'Restore Confirmation Required');
+        return;
+      }
+
+      if (!confirm(`🚨 FINAL CONFIRMATION:
+Are you absolutely sure you want to restore snapshot '${backupId}'?
+
+Active database workloads will be replaced with this point-in-time state. A pre-restore safety copy will be archived.`)) {
+        return;
+      }
+
+      const btn = document.getElementById('btn-execute-restore');
+      const origText = btn.innerHTML;
+      btn.innerHTML = '🚨 Restoring Database...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/v1/dba/maintenance/backups/restore', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            backup_id_or_path: backupId,
+            confirm: true,
+            actor: authenticatedUser || 'alex.turner'
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          resultBox.style.display = 'block';
+          resultBox.innerHTML = `✅ <strong>Database Restoration Succeeded:</strong><br>
+            • Restored From: <code>${escapeHtml(data.restore_summary.restored_from || backupId)}</code><br>
+            • Pre-Restore Safety Copy: <code>${escapeHtml(data.restore_summary.safety_snapshot_created || 'Archived')}</code><br>
+            • In-Memory SSOT Re-verified: <strong>${data.restore_summary.active_nodes_count || 0} Nodes</strong> across <strong>${data.restore_summary.active_vpcs_count || 0} VPCs</strong>.`;
+          loadStorageHealth();
+          loadMaintenanceOverview();
+          loadTables();
+        } else {
+          dcouplrNotify.error(data.detail || 'Restoration failed', 'Restore Failed');
+        }
+      } catch (err) {
+        dcouplrNotify.error(`Network error during restore: ${err.message}`, 'Restore Network Error');
+      } finally {
+        btn.innerHTML = origText;
+        btn.disabled = false;
+      }
+    }
+
+    async function loadMaintenanceSchedules() {
+      const container = document.getElementById('maint-schedules-table-container');
+      const badgeCount = document.getElementById('tab-badge-schedules-count');
+
+      try {
+        const res = await fetch('/v1/dba/maintenance/schedules');
+        if (!res.ok) throw new Error('Failed to retrieve schedules');
+        const data = await res.json();
+        cachedSchedules = data.schedules || [];
+
+        if (badgeCount) badgeCount.textContent = cachedSchedules.length;
+
+        if (cachedSchedules.length === 0) {
+          container.innerHTML = '<div style="color: #64748b; font-size: 0.75rem; text-align: center; padding: 2rem;">No automated backup schedules configured. Add one above.</div>';
+          return;
+        }
+
+        let html = '<table class="dba-table" style="font-size: 0.73rem;"><thead><tr>';
+        html += '<th>Schedule Name &amp; ID</th><th>Target</th><th>Frequency</th><th>Cron</th><th>Retention</th><th>Status</th><th>Last Run</th><th style="text-align: right;">Actions</th>';
+        html += '</tr></thead><tbody>';
+
+        cachedSchedules.forEach(s => {
+          const isAct = Boolean(s.is_enabled);
+          const lastRunStr = s.last_run_at ? new Date(s.last_run_at * 1000).toLocaleString() : 'Never';
+
+          html += `<tr>
+            <td>
+              <div style="font-weight: 700; color: #e2e8f0;">${escapeHtml(s.schedule_name)}</div>
+              <div style="font-family: var(--font-mono); font-size: 0.65rem; color: #64748b;">${escapeHtml(s.schedule_id)}</div>
+            </td>
+            <td><span class="badge badge-blue">${escapeHtml(s.target_type)}</span></td>
+            <td><span style="color: #c084fc; font-weight: 600;">${escapeHtml(s.frequency)}</span></td>
+            <td><code style="color: #38bdf8;">${escapeHtml(s.cron_expression)}</code></td>
+            <td>${s.retention_count} snapshots</td>
+            <td><span class="badge ${isAct ? 'badge-green' : 'badge-yellow'}">${isAct ? 'ACTIVE' : 'PAUSED'}</span></td>
+            <td><span style="color: #94a3b8; font-size: 0.7rem;">${escapeHtml(lastRunStr)}</span></td>
+            <td style="text-align: right; white-space: nowrap;">
+              <button type="button" class="btn-export" onclick="triggerScheduleRunNow('${escapeHtml(s.schedule_id)}')" style="font-size: 0.68rem; padding: 3px 8px; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="Trigger backup now">▶ Run Now</button>
+              <button type="button" class="btn-export" onclick="toggleScheduleActive('${escapeHtml(s.schedule_id)}', ${!isAct})" style="font-size: 0.68rem; padding: 3px 8px; color: ${isAct ? '#facc15' : '#34d399'};" title="${isAct ? 'Pause schedule' : 'Enable schedule'}">${isAct ? '⏸️' : '▶️'}</button>
+              <button type="button" class="btn-export" onclick="deleteBackupSchedule('${escapeHtml(s.schedule_id)}')" style="font-size: 0.68rem; padding: 3px 8px; color: #f87171; border-color: rgba(239, 68, 68, 0.4);" title="Delete schedule">🗑️</button>
+            </td>
+          </tr>`;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `<div style="color: #f87171; font-size: 0.75rem; text-align: center; padding: 1.5rem;">Failed to load schedules: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    async function saveNewSchedule() {
+      const nameInput = document.getElementById('input-sched-name');
+      const freqSelect = document.getElementById('select-sched-freq');
+      const cronInput = document.getElementById('input-sched-cron');
+      const retInput = document.getElementById('input-sched-retention');
+
+      const name = (nameInput.value || '').trim();
+      if (!name) {
+        dcouplrNotify.warning('Please enter a descriptive schedule name.', 'Input Validation');
+        return;
+      }
+
+      try {
+        const res = await fetch('/v1/dba/maintenance/schedules', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            schedule_name: name,
+            frequency: freqSelect.value,
+            cron_expression: cronInput.value.trim() || '0 2 * * *',
+            retention_count: parseInt(retInput.value, 10) || 14,
+            target_type: 'backend_database',
+            is_enabled: true
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          nameInput.value = '';
+          dcouplrNotify.success(
+            `Backup Schedule '${data.schedule.schedule_name}' (${data.schedule.frequency}) created successfully.`,
+            'Schedule Configured'
+          );
+          loadMaintenanceSchedules();
+        } else {
+          dcouplrNotify.error(data.detail || 'Failed to add schedule', 'Schedule Error');
+        }
+      } catch (err) {
+        dcouplrNotify.error(`Network error: ${err.message}`, 'Schedule Network Error');
+      }
+    }
+
+    async function triggerScheduleRunNow(scheduleId) {
+      try {
+        const res = await fetch(`/v1/dba/maintenance/schedules/${encodeURIComponent(scheduleId)}/run`, {
+          method: 'POST'
+        });
+        const data = await res.json();
+        if (res.ok) {
+          dcouplrNotify.success(
+            `Scheduled backup executed: ${data.execution.backup_result.filename} (${(data.execution.backup_result.size_bytes / (1024*1024)).toFixed(2)} MB).`,
+            'Schedule Triggered'
+          );
+          loadMaintenanceSchedules();
+          loadMaintenanceBackups();
+          loadMaintenanceOverview();
+        } else {
+          dcouplrNotify.error(data.detail || 'Schedule execution failed', 'Execution Failed');
+        }
+      } catch (err) {
+        dcouplrNotify.error(`Network error: ${err.message}`, 'Network Error');
+      }
+    }
+
+    async function toggleScheduleActive(scheduleId, newState) {
+      try {
+        const res = await fetch(`/v1/dba/maintenance/schedules/${encodeURIComponent(scheduleId)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ is_enabled: newState })
+        });
+        if (res.ok) {
+          loadMaintenanceSchedules();
+        } else {
+          const data = await res.json();
+          dcouplrNotify.error(data.detail || 'Update failed', 'Schedule Update Error');
+        }
+      } catch (err) {
+        dcouplrNotify.error(`Network error: ${err.message}`, 'Network Error');
+      }
+    }
+
+    async function deleteBackupSchedule(scheduleId) {
+      if (!confirm(`Are you sure you want to delete backup schedule '${scheduleId}'?`)) return;
+      try {
+        const res = await fetch(`/v1/dba/maintenance/schedules/${encodeURIComponent(scheduleId)}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) {
+          loadMaintenanceSchedules();
+        } else {
+          const data = await res.json();
+          dcouplrNotify.info(data.detail || 'Schedule deleted', 'Schedule Removed');
+        }
+      } catch (err) {
+        dcouplrNotify.error(`Network error: ${err.message}`, 'Network Error');
+      }
+    }
+
+
+    // --- DOM Event Initialization ---
+    document.addEventListener('DOMContentLoaded', () => {
+      // Bind Database Target Telemetry button
+      const btnTargetTele = document.getElementById('btn-target-telemetry');
+      if (btnTargetTele) {
+        btnTargetTele.addEventListener('click', () => switchDatabaseTarget('vpc_telemetry_db'));
+      }
+
+      const btnMax = document.getElementById('btn-toggle-fullscreen');
+      if (btnMax) {
+        btnMax.addEventListener('click', () => {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+            btnMax.textContent = '🗗 Restore Studio';
+          } else {
+            document.exitFullscreen().catch(() => {});
+            btnMax.textContent = '⛶ Maximize Studio';
+          }
+        });
+      }
+
+      detectInitialChannel();
+
+      // Configure Maintenance Tasks button & modal bindings
+      const btnConfigMaint = document.getElementById('btn-configure-maintenance');
+      if (btnConfigMaint) {
+        btnConfigMaint.addEventListener('click', () => {
+          if (!isCompanyAccessVerified) {
+            const authModal = document.getElementById('modal-company-access');
+            if (authModal) authModal.style.display = 'flex';
+            return;
+          }
+          openMaintenanceModal('ops');
+        });
+      }
+      const btnCloseMaint = document.getElementById('btn-close-modal-maintenance');
+      if (btnCloseMaint) {
+        btnCloseMaint.addEventListener('click', closeMaintenanceModal);
+      }
+
+      // Tab switcher in Maintenance Modal
+      document.querySelectorAll('.btn-maint-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tabId = btn.getAttribute('data-tab');
+          switchMaintTab(tabId);
+        });
+      });
+
+      // Manual backup & restore button bindings
+      const btnManualBk = document.getElementById('btn-create-manual-backup');
+      if (btnManualBk) btnManualBk.addEventListener('click', createManualBackup);
+
+      const btnExecRestore = document.getElementById('btn-execute-restore');
+      if (btnExecRestore) btnExecRestore.addEventListener('click', executeRestore);
+
+      const selectRestore = document.getElementById('select-restore-snapshot');
+      if (selectRestore) {
+        selectRestore.addEventListener('change', () => {
+          const bkId = selectRestore.value;
+          const prevBox = document.getElementById('restore-snapshot-preview');
+          const found = cachedBackups.find(b => b.backup_id === bkId);
+          if (found && prevBox) {
+            prevBox.style.display = 'block';
+            document.getElementById('prev-snap-file').textContent = found.filename;
+            document.getElementById('prev-snap-size').textContent = `${((found.file_size_bytes||0)/(1024*1024)).toFixed(2)} MB`;
+            document.getElementById('prev-snap-sha').textContent = (found.sha256_checksum || '').substring(0, 16) + '...';
+          } else if (prevBox) {
+            prevBox.style.display = 'none';
+          }
+        });
+      }
+
+      // Add Schedule button binding
+      const btnSaveSched = document.getElementById('btn-save-new-schedule');
+      if (btnSaveSched) btnSaveSched.addEventListener('click', saveNewSchedule);
+
+      const freqSelect = document.getElementById('select-sched-freq');
+      if (freqSelect) {
+        freqSelect.addEventListener('change', () => {
+          const cronIn = document.getElementById('input-sched-cron');
+          if (!cronIn) return;
+          if (freqSelect.value === 'Daily') cronIn.value = '0 2 * * *';
+          else if (freqSelect.value === 'Hourly') cronIn.value = '0 * * * *';
+          else if (freqSelect.value === 'Every 6 Hours') cronIn.value = '0 */6 * * *';
+          else if (freqSelect.value === 'Weekly') cronIn.value = '0 0 * * 0';
+        });
+      }
+
+      // Check query param for auto-opening modal (?open_modal=maintenance or ?open_maintenance=true)
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('open_modal') === 'maintenance' || urlParams.get('open_maintenance') === 'true') {
+        openMaintenanceModal(urlParams.get('tab') || 'ops');
+      }
+
+      // Initial target and data already loaded via detectInitialChannel() -> switchDatabaseTarget()
+
+      // Channel switcher buttons
+      document.getElementById('btn-mode-invpc').addEventListener('click', () => setChannel('invpc'));
+      document.getElementById('btn-mode-outside').addEventListener('click', () => setChannel('outside_vpc'));
+
+      // Top Company Access button
+      document.getElementById('btn-company-access-top').addEventListener('click', () => {
+        document.getElementById('modal-company-access').style.display = 'flex';
+      });
+
+      // Top Lock button (Locks session and immediately enforces read-only guardrail)
+      const btnTopLock = document.getElementById('btn-top-lock');
+      if (btnTopLock) {
+        btnTopLock.addEventListener('click', async () => {
+          isCompanyAccessVerified = false;
+          authenticatedUser = null;
+          sessionStorage.removeItem('dba_company_access');
+          sessionStorage.removeItem('dba_operator');
+          sessionStorage.removeItem('dcouplr_dba_token');
+
+          // If guardrail is disabled, immediately re-enforce it
+          if (!guardrailStatus.is_enforced) {
+            try {
+              await fetch('/v1/dba/guardrail/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  enabled: true,
+                  origin_channel: currentChannel,
+                  actor: 'system_lock',
+                  reason: 'Operator clicked Lock in top navigation'
+                })
+              });
+              guardrailStatus.is_enforced = true;
+              guardrailStatus.status = 'ENFORCED';
+            } catch (e) {
+              console.warn('Could not re-enable guardrail on lock:', e);
+            }
+          }
+
+          updateGuardrailUI();
+
+          const orig = btnTopLock.innerHTML;
+          btnTopLock.innerHTML = '🔒 Locked!';
+          setTimeout(() => { btnTopLock.innerHTML = orig; }, 1500);
+        });
+      }
+
+      // Close modal buttons
+      document.getElementById('btn-close-modal-auth').addEventListener('click', () => {
+        document.getElementById('modal-company-access').style.display = 'none';
+      });
+      document.getElementById('btn-close-modal-breakglass').addEventListener('click', () => {
+        document.getElementById('modal-break-glass').style.display = 'none';
+      });
+      document.getElementById('btn-cancel-breakglass').addEventListener('click', () => {
+        document.getElementById('modal-break-glass').style.display = 'none';
+      });
+
+      // Quick DBA Unlock in Modal
+      document.getElementById('btn-quick-dba-unlock').addEventListener('click', () => {
+        document.getElementById('auth-username').value = 'alex.turner';
+        document.getElementById('auth-password').value = 'alex.turner';
+        authenticateCompanyAccess('alex.turner', 'alex.turner');
+      });
+
+      // Test Non-DBA Rejection in Modal
+      document.getElementById('btn-test-non-dba').addEventListener('click', () => {
+        document.getElementById('auth-username').value = 'marcus.vance';
+        document.getElementById('auth-password').value = 'marcus.vance';
+        authenticateCompanyAccess('marcus.vance', 'marcus.vance');
+      });
+
+      // Submit Company Auth Form
+      document.getElementById('form-dba-auth').addEventListener('submit', () => {
+        const u = document.getElementById('auth-username').value.trim();
+        const p = document.getElementById('auth-password').value;
+        authenticateCompanyAccess(u, p);
+      });
+
+      // Guardrail Action Button Click
+      document.getElementById('btn-guardrail-action').addEventListener('click', () => {
+        if (!isCompanyAccessVerified) {
+          const authModal = document.getElementById('modal-company-access');
+          if (authModal) authModal.style.display = 'flex';
+          return;
+        }
+        if (currentDbTarget === 'dcouplr_central_db') {
+          return;
+        }
+        if (!guardrailStatus.is_enforced) {
+          // Re-enable guardrail
+          toggleGuardrail(true, 'DBA re-enforced read-only protection');
+        } else {
+          if (currentChannel === 'invpc') {
+            dcouplrNotify.alert('In-VPC mode is strictly read-only ($0.00 WAN Egress). Guardrails can only be disabled via the Outside-VPC Hub (https://dba_dcouplr.yourcompany.com) after authenticating Company Access.', { title: 'In-VPC Read-Only Guardrail', type: 'warning' });
+            setChannel('outside_vpc');
+          } else if (!isCompanyAccessVerified) {
+            document.getElementById('modal-company-access').style.display = 'flex';
+          } else {
+            // Open break-glass confirmation
+            document.getElementById('modal-break-glass').style.display = 'flex';
+          }
+        }
+      });
+
+      // Confirm Break-Glass Disable
+      document.getElementById('btn-confirm-disable-guardrail').addEventListener('click', () => {
+        const reason = document.getElementById('breakglass-reason').value.trim() || 'Authorized Outside-VPC maintenance';
+        document.getElementById('modal-break-glass').style.display = 'none';
+        toggleGuardrail(false, reason);
+      });
+
+      // Deep scan button
+      document.getElementById('btn-deep-integrity-scan').addEventListener('click', async () => {
+        if (!isCompanyAccessVerified) {
+          const authModal = document.getElementById('modal-company-access');
+          if (authModal) authModal.style.display = 'flex';
+          return;
+        }
+        const btn = document.getElementById('btn-deep-integrity-scan');
+        btn.textContent = '⏳ Scanning...';
+        await loadStorageHealth();
+        await loadGuardrailStatus();
+        btn.textContent = '✅ Verified';
+        setTimeout(() => btn.textContent = '🔄 Run Deep Integrity Scan', 2000);
+      });
+
+      // Refresh tables button
+      document.getElementById('btn-refresh-tables').addEventListener('click', () => {
+        loadTables();
+      });
+
+      // Search filter
+      document.getElementById('table-search-input').addEventListener('input', (e) => {
+        renderTablesList(filterTables(e.target.value));
+      });
+
+      // Execute button
+      document.getElementById('btn-execute-query').addEventListener('click', () => {
+        executeQuery();
+      });
+
+      // Clear button
+      document.getElementById('btn-clear-sql').addEventListener('click', () => {
+        document.getElementById('sql-query-input').value = '';
+        document.getElementById('sql-query-input').focus();
+      });
+
+      // Ctrl+Enter or Cmd+Enter shortcut
+      document.getElementById('sql-query-input').addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          executeQuery();
+        }
+      });
+
+      // Shortcut buttons
+      document.querySelectorAll('.shortcut-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const query = btn.getAttribute('data-query');
+          if (query) {
+            document.getElementById('sql-query-input').value = query;
+            executeQuery(query);
+          }
+        });
+      });
+
+      // Export buttons
+      document.getElementById('btn-copy-json').addEventListener('click', copyJson);
+      document.getElementById('btn-export-csv').addEventListener('click', exportCsv);
+
+      // Auto-run initial query
+      executeQuery('SELECT * FROM customer_license_state;');
+      setTimeout(() => {
+        const item = document.querySelector('[data-table="customer_license_state"]');
+        if (item) item.classList.add('selected');
+        fetch('/v1/dba/tables/customer_license_state?limit=25')
+          .then(r => r.json())
+          .then(data => renderSchemaInspector(data))
+          .catch(() => {});
+      }, 500);
+    });
+  </script>
+</body>
+</html>

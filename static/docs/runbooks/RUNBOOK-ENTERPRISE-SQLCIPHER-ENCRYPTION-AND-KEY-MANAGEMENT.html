@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-ENTERPRISE-SQLCIPHER-ENCRYPTION-AND-KEY-MANAGEMENT.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-ENTERPRISE-SQLCIPHER-ENCRYPTION-AND-KEY-MANAGEMENT.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-ENTERPRISE-SQLCIPHER-ENCRYPTION-AND-KEY-MANAGEMENT.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="operational-runbook-enterprise-sqlcipher-database-encryption-key-management">Operational Runbook: Enterprise SQLCipher Database Encryption &amp; Key Management</h1>
+<p><strong>Document Classification:</strong> Standard Operating Procedure (SOP) • In-Perimeter Security Operations<br />
+<strong>Runbook ID:</strong> <code>RUN-SQLCIPHER-001</code><br />
+<strong>Governing Baseline:</strong> Class 4 Enterprise Cryptographic Security Standard<br />
+<strong>Target Roles:</strong> Platform SREs, SecOps Engineers, Enterprise Database Administrators (DBAs), Compliance Auditors<br />
+<strong>Applicability:</strong> In-VPC Production Single Source of Truth (<code>customer_vpc.db</code> / <code>vpc_telemetry_prod.db</code>)<br />
+<strong>Version:</strong> 4.3.0-PROD • Approved for Customer Production</p>
+<hr />
+<h2 id="1-purpose-overview">1. Purpose &amp; Overview</h2>
+<p>This runbook outlines standard operating procedures for configuring, verifying, rotating, and troubleshooting <strong>SQLCipher AES-256 database encryption at rest</strong> within <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>.</p>
+<p>All cryptographic procedures in this runbook execute <strong>100% In-Perimeter with Zero-WAN Egress ($0.00)</strong>. No database keys, cleartext rows, or cipher fragments ever traverse external internet gateways.</p>
+<hr />
+<h2 id="2-quick-reference-commands-pragmas">2. Quick Reference Commands &amp; Pragmas</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Operation</th>
+<th style="text-align:left">CLI / Shell / Pragma Command</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Inspect Cipher Status</strong></td>
+<td style="text-align:left"><code>curl -s http://localhost:8000/v1/admin/encryption/status | jq</code></td>
+<td style="text-align:left">Retrieves engine, cipher algorithm, KDF iterations, and header hex</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Check Header Magic</strong></td>
+<td style="text-align:left"><code>head -c 16 data/vpc_telemetry_prod.db | xxd -p</code></td>
+<td style="text-align:left">Shows raw 16-byte salt; proves absence of plaintext <code>SQLite format 3</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Verify Page Integrity</strong></td>
+<td style="text-align:left"><code>curl -s -X POST http://localhost:8000/v1/admin/encryption/verify | jq</code></td>
+<td style="text-align:left">Executes <code>PRAGMA cipher_integrity_check;</code> across all database pages</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Rotate Key (Rekey)</strong></td>
+<td style="text-align:left"><code>curl -s -X POST http://localhost:8000/v1/admin/encryption/rekey -H &quot;Content-Type: application/json&quot; -d '{&quot;new_passphrase&quot;:&quot;...&quot;}'</code></td>
+<td style="text-align:left">Online zero-downtime key rotation (<code>PRAGMA rekey</code>)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Hot Backup Snapshot</strong></td>
+<td style="text-align:left"><code>curl -s -X POST http://localhost:8000/v1/admin/backups/create -H &quot;Content-Type: application/json&quot; -d '{&quot;target_type&quot;:&quot;backend_database&quot;}'</code></td>
+<td style="text-align:left">Generates AES-256 encrypted hot snapshot via <code>VACUUM INTO</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Export Plaintext Dump</strong></td>
+<td style="text-align:left"><code>curl -s -X POST http://localhost:8000/v1/admin/encryption/export-decrypted | jq</code></td>
+<td style="text-align:left">Generates unencrypted copy for offline auditing/migration</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-initial-configuration-supplying-master-passphrase">3. Initial Configuration: Supplying Master Passphrase</h2>
+<h3 id="method-a-environment-variable-recommended-for-kubernetes-cloud">Method A: Environment Variable (Recommended for Kubernetes / Cloud)</h3>
+<p>Set the <code>SQLCIPHER_KEY</code> environment variable in your container manifest, systemd service, or secret manager:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># In Kubernetes Pod Specification / Helm values:
+env:
+  - name: SQLCIPHER_KEY
+    valueFrom:
+      secretKeyRef:
+        name: dcouplr-db-credentials
+        key: master-encryption-key
+</code></pre></div>
+<h3 id="method-b-autonomous-local-keyfile-standalone-vm-bare-metal">Method B: Autonomous Local Keyfile (Standalone VM / Bare-Metal)</h3>
+<p>If no environment variable is provided, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> automatically provisions a 256-bit cryptographically secure pseudorandom token in:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">data/customer_db.key
+</code></pre></div>
+<p>Verify that only the service user has read access:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">chmod 600 data/customer_db.key
+</code></pre></div>
+<hr />
+<h2 id="4-step-by-step-procedure-verifying-database-encryption-at-rest">4. Step-by-Step Procedure: Verifying Database Encryption at Rest</h2>
+<h3 id="step-41-inspect-binary-header-on-disk">Step 4.1: Inspect Binary Header on Disk</h3>
+<p>To independently verify that the database file is encrypted and does <strong>not</strong> contain standard plaintext SQLite headers:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">python3 -c &quot;
+with open('data/vpc_telemetry_prod.db', 'rb') as f:
+    hdr = f.read(16)
+    is_plain = hdr.startswith(b'SQLite format 3\x00')
+    print('Header Hex:', ' '.join(f'{b:02x}' for b in hdr))
+    print('Is Plaintext SQLite:', is_plain)
+    print('Is SQLCipher Encrypted:', not is_plain)
+&quot;
+</code></pre></div>
+<ul>
+<li><strong>Expected Output:</strong><div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">Header Hex: 26 c2 c5 36 ac 94 36 65 e0 fb 45 9a dc 1f 03 67
+Is Plaintext SQLite: False
+Is SQLCipher Encrypted: True
+</code></pre></div>
+</li>
+</ul>
+<h3 id="step-42-verify-via-administrative-api">Step 4.2: Verify via Administrative API</h3>
+<p>Execute the encryption diagnostic endpoint:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -s http://localhost:8000/v1/admin/encryption/status | jq .
+</code></pre></div>
+<p>Verify the following JSON attributes:</p>
+<ul>
+<li><code>&quot;is_encrypted&quot;: true</code></li>
+<li><code>&quot;cipher_algorithm&quot;: &quot;AES-256-CBC&quot;</code></li>
+<li><code>&quot;kdf_iterations&quot;: 256000</code></li>
+<li><code>&quot;header_magic&quot;: &quot;ENCRYPTED_AES256_CIPHERTEXT&quot;</code></li>
+<li><code>&quot;tamper_protection&quot;: &quot;HMAC-SHA512 Per-Page Checksum&quot;</code></li>
+</ul>
+<h3 id="step-43-verify-via-configuration-web-console">Step 4.3: Verify via <code>/configuration</code> Web Console</h3>
+<ol>
+<li>Navigate to <a href="http://localhost:8000/companyadmin"><code>http://localhost:8000/companyadmin</code></a>.</li>
+<li>Click the <strong>🗄️ Retention &amp; Backup</strong> button.</li>
+<li>Select the <strong><code>🔐 SQLCipher Encryption (AES-256)</code></strong> sub-tab.</li>
+<li>Confirm that the status badge shows <code>ENCRYPTION ACTIVE: AES-256-CBC</code> and the Header Hex Inspector displays the high-entropy salt.</li>
+</ol>
+<hr />
+<h2 id="5-step-by-step-procedure-online-key-rotation-pragma-rekey">5. Step-by-Step Procedure: Online Key Rotation (<code>PRAGMA rekey</code>)</h2>
+<p>Key rotation must be performed periodically (e.g., every 90 days) or immediately following personnel transitions.</p>
+<h3 id="step-51-generate-high-entropy-new-passphrase">Step 5.1: Generate High-Entropy New Passphrase</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">NEW_KEY=$(python3 -c &quot;import secrets; print(secrets.token_urlsafe(32))&quot;)
+echo &quot;Generated New Key: ${NEW_KEY}&quot;
+</code></pre></div>
+<h3 id="step-52-execute-rotation-via-api">Step 5.2: Execute Rotation via API</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -s -X POST http://localhost:8000/v1/admin/encryption/rekey \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &quot;{\&quot;new_passphrase\&quot;: \&quot;${NEW_KEY}\&quot;}&quot; | jq .
+</code></pre></div>
+<ul>
+<li><strong>Expected Output:</strong><div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;status&quot;: &quot;SUCCESS&quot;,
+  &quot;message&quot;: &quot;Database vpc_telemetry_prod.db successfully rekeyed.&quot;,
+  &quot;old_fingerprint&quot;: &quot;sha256:7f3a...b89c&quot;,
+  &quot;new_fingerprint&quot;: &quot;sha256:4d12...e8a2&quot;
+}
+</code></pre></div>
+</li>
+</ul>
+<h3 id="step-53-verify-audit-trail">Step 5.3: Verify Audit Trail</h3>
+<p>Verify that the key rotation was recorded in the immutable audit log:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -s &quot;http://localhost:8000/v1/admin/rbac/audit-logs?limit=5&quot; | jq .
+</code></pre></div>
+<p>Confirm the presence of action <code>DATABASE_REKEYED_SQLCIPHER</code> with actor username and key fingerprints.</p>
+<hr />
+<h2 id="6-step-by-step-procedure-restoring-an-encrypted-backup">6. Step-by-Step Procedure: Restoring an Encrypted Backup</h2>
+<p>When restoring a hot database backup snapshot generated while SQLCipher was active:</p>
+<ol>
+<li>Identify candidate snapshot from <code>/v1/admin/backups</code> list:<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -s http://localhost:8000/v1/admin/backups | jq '.backups[] | select(.target_type==&quot;backend_database&quot;)'
+</code></pre></div>
+</li>
+<li>Verify candidate snapshot file integrity:<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -s -X POST http://localhost:8000/v1/admin/encryption/verify | jq .
+</code></pre></div>
+</li>
+<li>Execute restore with automatic safety pre-flight check:<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -s -X POST http://localhost:8000/v1/admin/backups/restore \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;target_type&quot;:&quot;backend_database&quot;, &quot;backup_id&quot;:&quot;backend_backup_prod_20261102_020000_a1b2c3.db&quot;}' | jq .
+</code></pre></div>
+</li>
+<li>The system automatically creates a safety snapshot of the active database before applying the restoration.</li>
+</ol>
+<hr />
+<h2 id="7-troubleshooting-faq">7. Troubleshooting &amp; FAQ</h2>
+<h3 id="issue-sqlite3databaseerror-file-is-not-a-database">Issue: <code>sqlite3.DatabaseError: file is not a database</code></h3>
+<ul>
+<li><strong>Root Cause:</strong> A client attempted to open the encrypted SQLCipher database without supplying the encryption key, or supplied an incorrect passphrase.</li>
+<li><strong>Resolution:</strong>
+<ol>
+<li>Confirm that <code>SQLCIPHER_KEY</code> is set in the runtime environment or that <code>data/customer_db.key</code> is present and non-empty.</li>
+<li>Test manual authentication via Python <code>sqlcipher3</code>:<div class="code-box"><div class="code-box-header"><span>python</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-python">import sqlcipher3
+conn = sqlcipher3.connect(&quot;data/vpc_telemetry_prod.db&quot;)
+conn.execute(&quot;PRAGMA key = 'YourPassphrase';&quot;)
+print(conn.execute(&quot;SELECT count(*) FROM sqlite_master;&quot;).fetchone())
+conn.close()
+</code></pre></div>
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="issue-pragma-cipherintegritycheck-reports-non-empty-errors">Issue: <code>PRAGMA cipher_integrity_check</code> reports non-empty errors</h3>
+<ul>
+<li><strong>Root Cause:</strong> One or more pages have suffered disk-level bit corruption or unauthorized alteration, triggering an HMAC-SHA512 verification failure.</li>
+<li><strong>Resolution:</strong>
+<ol>
+<li>Immediately isolate the damaged file: <code>cp data/vpc_telemetry_prod.db data/corrupted_investigation.db</code>.</li>
+<li>Restore the latest verified hot snapshot using <code>POST /v1/admin/backups/restore</code>.</li>
+<li>Contact Infosec team to inspect storage hardware logs for uncorrectable sector read errors.</li>
+</ol>
+</li>
+</ul>
+<hr />
+<h2 id="8-compliance-certification-sign-off">8. Compliance Certification Sign-Off</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric</th>
+<th style="text-align:left">Target Standard</th>
+<th style="text-align:left">Observed Value</th>
+<th style="text-align:left">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Cipher Algorithm</strong></td>
+<td style="text-align:left">AES-256 Symmetric Encryption</td>
+<td style="text-align:left"><code>AES-256-CBC</code></td>
+<td style="text-align:left"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>KDF Iterations</strong></td>
+<td style="text-align:left">$\ge 100,000$ (NIST SP 800-132)</td>
+<td style="text-align:left"><code>256,000</code></td>
+<td style="text-align:left"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Page HMAC Verification</strong></td>
+<td style="text-align:left">HMAC-SHA512 Per Page</td>
+<td style="text-align:left"><code>HMAC-SHA512</code></td>
+<td style="text-align:left"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>WAN Data Egress</strong></td>
+<td style="text-align:left">Zero-WAN Egress ($0.00)</td>
+<td style="text-align:left"><code>$0.00</code></td>
+<td style="text-align:left"><strong>PASS</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Audit Logging</strong></td>
+<td style="text-align:left">Immutable Local SSoT Trail</td>
+<td style="text-align:left"><code>rbac_audit_logs</code> Active</td>
+<td style="text-align:left"><strong>PASS</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+      <pre id="raw-view"><code># Operational Runbook: Enterprise SQLCipher Database Encryption &amp; Key Management
+**Document Classification:** Standard Operating Procedure (SOP) • In-Perimeter Security Operations  
+**Runbook ID:** `RUN-SQLCIPHER-001`  
+**Governing Baseline:** Class 4 Enterprise Cryptographic Security Standard  
+**Target Roles:** Platform SREs, SecOps Engineers, Enterprise Database Administrators (DBAs), Compliance Auditors  
+**Applicability:** In-VPC Production Single Source of Truth (`customer_vpc.db` / `vpc_telemetry_prod.db`)  
+**Version:** 4.3.0-PROD • Approved for Customer Production  
+
+---
+
+## 1. Purpose &amp; Overview
+
+This runbook outlines standard operating procedures for configuring, verifying, rotating, and troubleshooting **SQLCipher AES-256 database encryption at rest** within `&lt;dcouplr/&gt;`. 
+
+All cryptographic procedures in this runbook execute **100% In-Perimeter with Zero-WAN Egress ($0.00)**. No database keys, cleartext rows, or cipher fragments ever traverse external internet gateways.
+
+---
+
+## 2. Quick Reference Commands &amp; Pragmas
+
+| Operation | CLI / Shell / Pragma Command | Description |
+| :--- | :--- | :--- |
+| **Inspect Cipher Status** | `curl -s http://localhost:8000/v1/admin/encryption/status \| jq` | Retrieves engine, cipher algorithm, KDF iterations, and header hex |
+| **Check Header Magic** | `head -c 16 data/vpc_telemetry_prod.db \| xxd -p` | Shows raw 16-byte salt; proves absence of plaintext `SQLite format 3` |
+| **Verify Page Integrity** | `curl -s -X POST http://localhost:8000/v1/admin/encryption/verify \| jq` | Executes `PRAGMA cipher_integrity_check;` across all database pages |
+| **Rotate Key (Rekey)** | `curl -s -X POST http://localhost:8000/v1/admin/encryption/rekey -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;new_passphrase&quot;:&quot;...&quot;}&#x27;` | Online zero-downtime key rotation (`PRAGMA rekey`) |
+| **Hot Backup Snapshot** | `curl -s -X POST http://localhost:8000/v1/admin/backups/create -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;target_type&quot;:&quot;backend_database&quot;}&#x27;` | Generates AES-256 encrypted hot snapshot via `VACUUM INTO` |
+| **Export Plaintext Dump** | `curl -s -X POST http://localhost:8000/v1/admin/encryption/export-decrypted \| jq` | Generates unencrypted copy for offline auditing/migration |
+
+---
+
+## 3. Initial Configuration: Supplying Master Passphrase
+
+### Method A: Environment Variable (Recommended for Kubernetes / Cloud)
+Set the `SQLCIPHER_KEY` environment variable in your container manifest, systemd service, or secret manager:
+
+```bash
+# In Kubernetes Pod Specification / Helm values:
+env:
+  - name: SQLCIPHER_KEY
+    valueFrom:
+      secretKeyRef:
+        name: dcouplr-db-credentials
+        key: master-encryption-key
+```
+
+### Method B: Autonomous Local Keyfile (Standalone VM / Bare-Metal)
+If no environment variable is provided, `&lt;dcouplr/&gt;` automatically provisions a 256-bit cryptographically secure pseudorandom token in:
+```bash
+data/customer_db.key
+```
+Verify that only the service user has read access:
+```bash
+chmod 600 data/customer_db.key
+```
+
+---
+
+## 4. Step-by-Step Procedure: Verifying Database Encryption at Rest
+
+### Step 4.1: Inspect Binary Header on Disk
+To independently verify that the database file is encrypted and does **not** contain standard plaintext SQLite headers:
+
+```bash
+python3 -c &quot;
+with open(&#x27;data/vpc_telemetry_prod.db&#x27;, &#x27;rb&#x27;) as f:
+    hdr = f.read(16)
+    is_plain = hdr.startswith(b&#x27;SQLite format 3\x00&#x27;)
+    print(&#x27;Header Hex:&#x27;, &#x27; &#x27;.join(f&#x27;{b:02x}&#x27; for b in hdr))
+    print(&#x27;Is Plaintext SQLite:&#x27;, is_plain)
+    print(&#x27;Is SQLCipher Encrypted:&#x27;, not is_plain)
+&quot;
+```
+* **Expected Output:**
+  ```text
+  Header Hex: 26 c2 c5 36 ac 94 36 65 e0 fb 45 9a dc 1f 03 67
+  Is Plaintext SQLite: False
+  Is SQLCipher Encrypted: True
+  ```
+
+### Step 4.2: Verify via Administrative API
+Execute the encryption diagnostic endpoint:
+```bash
+curl -s http://localhost:8000/v1/admin/encryption/status | jq .
+```
+Verify the following JSON attributes:
+* `&quot;is_encrypted&quot;: true`
+* `&quot;cipher_algorithm&quot;: &quot;AES-256-CBC&quot;`
+* `&quot;kdf_iterations&quot;: 256000`
+* `&quot;header_magic&quot;: &quot;ENCRYPTED_AES256_CIPHERTEXT&quot;`
+* `&quot;tamper_protection&quot;: &quot;HMAC-SHA512 Per-Page Checksum&quot;`
+
+### Step 4.3: Verify via `/configuration` Web Console
+1. Navigate to [`http://localhost:8000/companyadmin`](http://localhost:8000/companyadmin).
+2. Click the **🗄️ Retention &amp; Backup** button.
+3. Select the **`🔐 SQLCipher Encryption (AES-256)`** sub-tab.
+4. Confirm that the status badge shows `ENCRYPTION ACTIVE: AES-256-CBC` and the Header Hex Inspector displays the high-entropy salt.
+
+---
+
+## 5. Step-by-Step Procedure: Online Key Rotation (`PRAGMA rekey`)
+
+Key rotation must be performed periodically (e.g., every 90 days) or immediately following personnel transitions.
+
+### Step 5.1: Generate High-Entropy New Passphrase
+```bash
+NEW_KEY=$(python3 -c &quot;import secrets; print(secrets.token_urlsafe(32))&quot;)
+echo &quot;Generated New Key: ${NEW_KEY}&quot;
+```
+
+### Step 5.2: Execute Rotation via API
+```bash
+curl -s -X POST http://localhost:8000/v1/admin/encryption/rekey \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &quot;{\&quot;new_passphrase\&quot;: \&quot;${NEW_KEY}\&quot;}&quot; | jq .
+```
+* **Expected Output:**
+  ```json
+  {
+    &quot;status&quot;: &quot;SUCCESS&quot;,
+    &quot;message&quot;: &quot;Database vpc_telemetry_prod.db successfully rekeyed.&quot;,
+    &quot;old_fingerprint&quot;: &quot;sha256:7f3a...b89c&quot;,
+    &quot;new_fingerprint&quot;: &quot;sha256:4d12...e8a2&quot;
+  }
+  ```
+
+### Step 5.3: Verify Audit Trail
+Verify that the key rotation was recorded in the immutable audit log:
+```bash
+curl -s &quot;http://localhost:8000/v1/admin/rbac/audit-logs?limit=5&quot; | jq .
+```
+Confirm the presence of action `DATABASE_REKEYED_SQLCIPHER` with actor username and key fingerprints.
+
+---
+
+## 6. Step-by-Step Procedure: Restoring an Encrypted Backup
+
+When restoring a hot database backup snapshot generated while SQLCipher was active:
+
+1. Identify candidate snapshot from `/v1/admin/backups` list:
+   ```bash
+   curl -s http://localhost:8000/v1/admin/backups | jq &#x27;.backups[] | select(.target_type==&quot;backend_database&quot;)&#x27;
+   ```
+2. Verify candidate snapshot file integrity:
+   ```bash
+   curl -s -X POST http://localhost:8000/v1/admin/encryption/verify | jq .
+   ```
+3. Execute restore with automatic safety pre-flight check:
+   ```bash
+   curl -s -X POST http://localhost:8000/v1/admin/backups/restore \
+     -H &quot;Content-Type: application/json&quot; \
+     -d &#x27;{&quot;target_type&quot;:&quot;backend_database&quot;, &quot;backup_id&quot;:&quot;backend_backup_prod_20261102_020000_a1b2c3.db&quot;}&#x27; | jq .
+   ```
+4. The system automatically creates a safety snapshot of the active database before applying the restoration.
+
+---
+
+## 7. Troubleshooting &amp; FAQ
+
+### Issue: `sqlite3.DatabaseError: file is not a database`
+* **Root Cause:** A client attempted to open the encrypted SQLCipher database without supplying the encryption key, or supplied an incorrect passphrase.
+* **Resolution:**
+  1. Confirm that `SQLCIPHER_KEY` is set in the runtime environment or that `data/customer_db.key` is present and non-empty.
+  2. Test manual authentication via Python `sqlcipher3`:
+     ```python
+     import sqlcipher3
+     conn = sqlcipher3.connect(&quot;data/vpc_telemetry_prod.db&quot;)
+     conn.execute(&quot;PRAGMA key = &#x27;YourPassphrase&#x27;;&quot;)
+     print(conn.execute(&quot;SELECT count(*) FROM sqlite_master;&quot;).fetchone())
+     conn.close()
+     ```
+
+### Issue: `PRAGMA cipher_integrity_check` reports non-empty errors
+* **Root Cause:** One or more pages have suffered disk-level bit corruption or unauthorized alteration, triggering an HMAC-SHA512 verification failure.
+* **Resolution:**
+  1. Immediately isolate the damaged file: `cp data/vpc_telemetry_prod.db data/corrupted_investigation.db`.
+  2. Restore the latest verified hot snapshot using `POST /v1/admin/backups/restore`.
+  3. Contact Infosec team to inspect storage hardware logs for uncorrectable sector read errors.
+
+---
+
+## 8. Compliance Certification Sign-Off
+
+| Metric | Target Standard | Observed Value | Result |
+| :--- | :--- | :--- | :--- |
+| **Cipher Algorithm** | AES-256 Symmetric Encryption | `AES-256-CBC` | **PASS** |
+| **KDF Iterations** | $\ge 100,000$ (NIST SP 800-132) | `256,000` | **PASS** |
+| **Page HMAC Verification** | HMAC-SHA512 Per Page | `HMAC-SHA512` | **PASS** |
+| **WAN Data Egress** | Zero-WAN Egress ($0.00) | `$0.00` | **PASS** |
+| **Audit Logging** | Immutable Local SSoT Trail | `rbac_audit_logs` Active | **PASS** |
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># Operational Runbook: Enterprise SQLCipher Database Encryption &amp; Key Management
+**Document Classification:** Standard Operating Procedure (SOP) • In-Perimeter Security Operations  
+**Runbook ID:** `RUN-SQLCIPHER-001`  
+**Governing Baseline:** Class 4 Enterprise Cryptographic Security Standard  
+**Target Roles:** Platform SREs, SecOps Engineers, Enterprise Database Administrators (DBAs), Compliance Auditors  
+**Applicability:** In-VPC Production Single Source of Truth (`customer_vpc.db` / `vpc_telemetry_prod.db`)  
+**Version:** 4.3.0-PROD • Approved for Customer Production  
+
+---
+
+## 1. Purpose &amp; Overview
+
+This runbook outlines standard operating procedures for configuring, verifying, rotating, and troubleshooting **SQLCipher AES-256 database encryption at rest** within `&lt;dcouplr/&gt;`. 
+
+All cryptographic procedures in this runbook execute **100% In-Perimeter with Zero-WAN Egress ($0.00)**. No database keys, cleartext rows, or cipher fragments ever traverse external internet gateways.
+
+---
+
+## 2. Quick Reference Commands &amp; Pragmas
+
+| Operation | CLI / Shell / Pragma Command | Description |
+| :--- | :--- | :--- |
+| **Inspect Cipher Status** | `curl -s http://localhost:8000/v1/admin/encryption/status \| jq` | Retrieves engine, cipher algorithm, KDF iterations, and header hex |
+| **Check Header Magic** | `head -c 16 data/vpc_telemetry_prod.db \| xxd -p` | Shows raw 16-byte salt; proves absence of plaintext `SQLite format 3` |
+| **Verify Page Integrity** | `curl -s -X POST http://localhost:8000/v1/admin/encryption/verify \| jq` | Executes `PRAGMA cipher_integrity_check;` across all database pages |
+| **Rotate Key (Rekey)** | `curl -s -X POST http://localhost:8000/v1/admin/encryption/rekey -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;new_passphrase&quot;:&quot;...&quot;}&#x27;` | Online zero-downtime key rotation (`PRAGMA rekey`) |
+| **Hot Backup Snapshot** | `curl -s -X POST http://localhost:8000/v1/admin/backups/create -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;target_type&quot;:&quot;backend_database&quot;}&#x27;` | Generates AES-256 encrypted hot snapshot via `VACUUM INTO` |
+| **Export Plaintext Dump** | `curl -s -X POST http://localhost:8000/v1/admin/encryption/export-decrypted \| jq` | Generates unencrypted copy for offline auditing/migration |
+
+---
+
+## 3. Initial Configuration: Supplying Master Passphrase
+
+### Method A: Environment Variable (Recommended for Kubernetes / Cloud)
+Set the `SQLCIPHER_KEY` environment variable in your container manifest, systemd service, or secret manager:
+
+```bash
+# In Kubernetes Pod Specification / Helm values:
+env:
+  - name: SQLCIPHER_KEY
+    valueFrom:
+      secretKeyRef:
+        name: dcouplr-db-credentials
+        key: master-encryption-key
+```
+
+### Method B: Autonomous Local Keyfile (Standalone VM / Bare-Metal)
+If no environment variable is provided, `&lt;dcouplr/&gt;` automatically provisions a 256-bit cryptographically secure pseudorandom token in:
+```bash
+data/customer_db.key
+```
+Verify that only the service user has read access:
+```bash
+chmod 600 data/customer_db.key
+```
+
+---
+
+## 4. Step-by-Step Procedure: Verifying Database Encryption at Rest
+
+### Step 4.1: Inspect Binary Header on Disk
+To independently verify that the database file is encrypted and does **not** contain standard plaintext SQLite headers:
+
+```bash
+python3 -c &quot;
+with open(&#x27;data/vpc_telemetry_prod.db&#x27;, &#x27;rb&#x27;) as f:
+    hdr = f.read(16)
+    is_plain = hdr.startswith(b&#x27;SQLite format 3\x00&#x27;)
+    print(&#x27;Header Hex:&#x27;, &#x27; &#x27;.join(f&#x27;{b:02x}&#x27; for b in hdr))
+    print(&#x27;Is Plaintext SQLite:&#x27;, is_plain)
+    print(&#x27;Is SQLCipher Encrypted:&#x27;, not is_plain)
+&quot;
+```
+* **Expected Output:**
+  ```text
+  Header Hex: 26 c2 c5 36 ac 94 36 65 e0 fb 45 9a dc 1f 03 67
+  Is Plaintext SQLite: False
+  Is SQLCipher Encrypted: True
+  ```
+
+### Step 4.2: Verify via Administrative API
+Execute the encryption diagnostic endpoint:
+```bash
+curl -s http://localhost:8000/v1/admin/encryption/status | jq .
+```
+Verify the following JSON attributes:
+* `&quot;is_encrypted&quot;: true`
+* `&quot;cipher_algorithm&quot;: &quot;AES-256-CBC&quot;`
+* `&quot;kdf_iterations&quot;: 256000`
+* `&quot;header_magic&quot;: &quot;ENCRYPTED_AES256_CIPHERTEXT&quot;`
+* `&quot;tamper_protection&quot;: &quot;HMAC-SHA512 Per-Page Checksum&quot;`
+
+### Step 4.3: Verify via `/configuration` Web Console
+1. Navigate to [`http://localhost:8000/companyadmin`](http://localhost:8000/companyadmin).
+2. Click the **🗄️ Retention &amp; Backup** button.
+3. Select the **`🔐 SQLCipher Encryption (AES-256)`** sub-tab.
+4. Confirm that the status badge shows `ENCRYPTION ACTIVE: AES-256-CBC` and the Header Hex Inspector displays the high-entropy salt.
+
+---
+
+## 5. Step-by-Step Procedure: Online Key Rotation (`PRAGMA rekey`)
+
+Key rotation must be performed periodically (e.g., every 90 days) or immediately following personnel transitions.
+
+### Step 5.1: Generate High-Entropy New Passphrase
+```bash
+NEW_KEY=$(python3 -c &quot;import secrets; print(secrets.token_urlsafe(32))&quot;)
+echo &quot;Generated New Key: ${NEW_KEY}&quot;
+```
+
+### Step 5.2: Execute Rotation via API
+```bash
+curl -s -X POST http://localhost:8000/v1/admin/encryption/rekey \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &quot;{\&quot;new_passphrase\&quot;: \&quot;${NEW_KEY}\&quot;}&quot; | jq .
+```
+* **Expected Output:**
+  ```json
+  {
+    &quot;status&quot;: &quot;SUCCESS&quot;,
+    &quot;message&quot;: &quot;Database vpc_telemetry_prod.db successfully rekeyed.&quot;,
+    &quot;old_fingerprint&quot;: &quot;sha256:7f3a...b89c&quot;,
+    &quot;new_fingerprint&quot;: &quot;sha256:4d12...e8a2&quot;
+  }
+  ```
+
+### Step 5.3: Verify Audit Trail
+Verify that the key rotation was recorded in the immutable audit log:
+```bash
+curl -s &quot;http://localhost:8000/v1/admin/rbac/audit-logs?limit=5&quot; | jq .
+```
+Confirm the presence of action `DATABASE_REKEYED_SQLCIPHER` with actor username and key fingerprints.
+
+---
+
+## 6. Step-by-Step Procedure: Restoring an Encrypted Backup
+
+When restoring a hot database backup snapshot generated while SQLCipher was active:
+
+1. Identify candidate snapshot from `/v1/admin/backups` list:
+   ```bash
+   curl -s http://localhost:8000/v1/admin/backups | jq &#x27;.backups[] | select(.target_type==&quot;backend_database&quot;)&#x27;
+   ```
+2. Verify candidate snapshot file integrity:
+   ```bash
+   curl -s -X POST http://localhost:8000/v1/admin/encryption/verify | jq .
+   ```
+3. Execute restore with automatic safety pre-flight check:
+   ```bash
+   curl -s -X POST http://localhost:8000/v1/admin/backups/restore \
+     -H &quot;Content-Type: application/json&quot; \
+     -d &#x27;{&quot;target_type&quot;:&quot;backend_database&quot;, &quot;backup_id&quot;:&quot;backend_backup_prod_20261102_020000_a1b2c3.db&quot;}&#x27; | jq .
+   ```
+4. The system automatically creates a safety snapshot of the active database before applying the restoration.
+
+---
+
+## 7. Troubleshooting &amp; FAQ
+
+### Issue: `sqlite3.DatabaseError: file is not a database`
+* **Root Cause:** A client attempted to open the encrypted SQLCipher database without supplying the encryption key, or supplied an incorrect passphrase.
+* **Resolution:**
+  1. Confirm that `SQLCIPHER_KEY` is set in the runtime environment or that `data/customer_db.key` is present and non-empty.
+  2. Test manual authentication via Python `sqlcipher3`:
+     ```python
+     import sqlcipher3
+     conn = sqlcipher3.connect(&quot;data/vpc_telemetry_prod.db&quot;)
+     conn.execute(&quot;PRAGMA key = &#x27;YourPassphrase&#x27;;&quot;)
+     print(conn.execute(&quot;SELECT count(*) FROM sqlite_master;&quot;).fetchone())
+     conn.close()
+     ```
+
+### Issue: `PRAGMA cipher_integrity_check` reports non-empty errors
+* **Root Cause:** One or more pages have suffered disk-level bit corruption or unauthorized alteration, triggering an HMAC-SHA512 verification failure.
+* **Resolution:**
+  1. Immediately isolate the damaged file: `cp data/vpc_telemetry_prod.db data/corrupted_investigation.db`.
+  2. Restore the latest verified hot snapshot using `POST /v1/admin/backups/restore`.
+  3. Contact Infosec team to inspect storage hardware logs for uncorrectable sector read errors.
+
+---
+
+## 8. Compliance Certification Sign-Off
+
+| Metric | Target Standard | Observed Value | Result |
+| :--- | :--- | :--- | :--- |
+| **Cipher Algorithm** | AES-256 Symmetric Encryption | `AES-256-CBC` | **PASS** |
+| **KDF Iterations** | $\ge 100,000$ (NIST SP 800-132) | `256,000` | **PASS** |
+| **Page HMAC Verification** | HMAC-SHA512 Per Page | `HMAC-SHA512` | **PASS** |
+| **WAN Data Egress** | Zero-WAN Egress ($0.00) | `$0.00` | **PASS** |
+| **Audit Logging** | Immutable Local SSoT Trail | `rbac_audit_logs` Active | **PASS** |
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

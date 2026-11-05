@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - IN_VPC_FULL_STACK_OBSERVABILITY_AND_PACKAGING_GUIDE.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/IN_VPC_FULL_STACK_OBSERVABILITY_AND_PACKAGING_GUIDE.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="IN_VPC_FULL_STACK_OBSERVABILITY_AND_PACKAGING_GUIDE.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="in-vpc-full-stack-observability-commercial-packaging-guide"><dcouplr/> In-VPC Full-Stack Observability &amp; Commercial Packaging Guide</h1>
+<p><strong>Document ID:</strong> <code>VA-GUIDE-OBS-PACKAGING-001</code><br />
+<strong>Classification:</strong> Enterprise Engineering, Field Operations &amp; Commercial FinOps Strategy<br />
+<strong>Audience:</strong> Enterprise Customers, Cloud Architects, SRE Leads, and Commercial Operations</p>
+<hr />
+<h2 id="1-executive-summary-the-modular-in-vpc-observability-architecture">1. Executive Summary: The Modular In-VPC Observability Architecture</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> introduces a <strong>Modular Capabilities Checklist</strong> that transforms installation from a one-size-fits-all binary into a tailored, scalable in-VPC observability deployment.</p>
+<p>Customers configure their exact operational footprint during installation:</p>
+<ul>
+<li><strong>Low Footprint (&lt; 50 MiB RAM):</strong> Core Consensus, Replication, Host Metrics, and 24x7 NOC Wallboard.</li>
+<li><strong>Enterprise Max (~385 MiB RAM):</strong> Full-Stack Observability Suite including OpenTelemetry OTLP Ingestion, Code-Level APM Tracing (request flamegraphs), and High-Throughput Log Search.</li>
+</ul>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+----------------------------------------------------------------------------------------------------+
+|                                    PRIVATE VPC BOUNDARY (10.0.0.0/16)                             |
+|                                                                                                    |
+|                              CUSTOMER SRE / NOC WEB BROWSER                                        |
+|                                            |                                                       |
+|                                            v                                                       |
+|                        +---------------------------------------+                                   |
+|                        |   <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Unified Gateway (:8000)  |                                   |
+|                        +---------------------------------------+                                   |
+|                                 |       |       |       |                                          |
+|      +--------------------------+       |       |       +--------------------------+               |
+|      |                                  |       |                                  |               |
+|      v                                  v       v                                  v               |
+|  /dashboard &amp; /wallboard             /compiler  /traces                            /logs           |
+|  [Built-in SRE HUD &amp; NOC]            [AST Rule] [In-VPC Jaeger / Tempo Sidecar]    [In-VPC Victoria|
+|                                                 - Method execution flamegraphs      Logs Sidecar]  |
+|                                                 - Distributed request spans        - Millions of   |
+|                                                                                      lines/hr      |
+|                                                                                    - Fast grep UI  |
+|                                                                                                    |
+|   INCOMING APPLICATION TELEMETRY (Private Subnet):                                                 |
+|   App Services ======&gt; OTLP Port 4317 (gRPC) / 4318 (HTTP) ======&gt; In-VPC OTel Collector Sidecar   |
+|                                                                                                    |
+|   PUBLIC INTERNET (0.0.0.0/0): [BLOCKED / ZERO PACKETS / $0.00 BILLABLE CLOUD EGRESS]              |
++----------------------------------------------------------------------------------------------------+
+</code></pre></div>
+<hr />
+<h2 id="2-capabilities-checklist-matrix">2. Capabilities Checklist Matrix</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">#</th>
+<th style="text-align:left">Capability Module</th>
+<th style="text-align:left">Engine / Sidecar</th>
+<th style="text-align:left">RAM Footprint</th>
+<th style="text-align:left">Operational Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>1</strong></td>
+<td style="text-align:left"><strong>Consensus &amp; CDC Replication</strong></td>
+<td style="text-align:left">Go Raft In-Memory</td>
+<td style="text-align:left">~35 MiB RAM</td>
+<td style="text-align:left">Change Data Capture (CDC) block replication lag, Raft quorum health, SHA-256 zero-egress attestation. <em>(Mandatory Core)</em></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>2</strong></td>
+<td style="text-align:left"><strong>Host Metrics &amp; 24x7 Wallboard</strong></td>
+<td style="text-align:left">In-App Ring Buffers</td>
+<td style="text-align:left">+15 MiB RAM</td>
+<td style="text-align:left">Host CPU, RAM, network I/O, socket descriptors, Live SRE Dashboard (<code>/dashboard</code>), 24x7 NOC Wallboard (<code>/wallboard</code>). <em>(Recommended)</em></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>3</strong></td>
+<td style="text-align:left"><strong>Living AST Alert Compiler</strong></td>
+<td style="text-align:left">In-Memory AST Engine</td>
+<td style="text-align:left">Negligible</td>
+<td style="text-align:left">Transpiles Datadog, New Relic NRQL, and CloudWatch alerts into calibrated Prometheus/Grafana rules (<code>/compiler</code>).</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>4</strong></td>
+<td style="text-align:left"><strong>In-VPC OTel Collector Pipeline</strong></td>
+<td style="text-align:left">OTel Core Sidecar</td>
+<td style="text-align:left">+35 MiB RAM</td>
+<td style="text-align:left">Standard CNCF OTLP v1.0 ingestion receivers (gRPC port 4317, HTTP port 4318) for native application frameworks.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>5</strong></td>
+<td style="text-align:left"><strong>Code-Level APM Tracing</strong></td>
+<td style="text-align:left">In-VPC Jaeger Sidecar</td>
+<td style="text-align:left">+120 MiB RAM</td>
+<td style="text-align:left">End-to-end distributed span tracing, SQL query latency, and method execution flamegraphs (<code>/traces</code>). Replaces Datadog APM &amp; New Relic.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>6</strong></td>
+<td style="text-align:left"><strong>High-Throughput Log Search</strong></td>
+<td style="text-align:left">In-VPC VictoriaLogs</td>
+<td style="text-align:left">+150 MiB RAM</td>
+<td style="text-align:left">Millions of stdout/syslog lines/hour with instant regex grep and zero Lucene indexing overhead (<code>/logs</code>). Replaces Datadog Logs &amp; Loki.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>7</strong></td>
+<td style="text-align:left"><strong>Long-Term Cold TSDB (GAP-06)</strong></td>
+<td style="text-align:left">In-VPC VictoriaMetrics</td>
+<td style="text-align:left">+80 MiB RAM</td>
+<td style="text-align:left">Prometheus Remote-Write protocol with Snappy Protobuf compression for 1-to-7 year regulatory retention.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-deployment-profiles-installation">3. Deployment Profiles &amp; Installation</h2>
+<h3 id="profile-a-core-profile-core">Profile A: Core (<code>--profile core</code>)</h3>
+<ul>
+<li><strong>Modules Enabled:</strong> 1</li>
+<li><strong>Footprint:</strong> ~35 MiB RAM</li>
+<li><strong>Use Case:</strong> Headless database state replication nodes and consensus bridge agents.</li>
+</ul>
+<h3 id="profile-b-infra-profile-infra-default">Profile B: Infra (<code>--profile infra</code>) — Default</h3>
+<ul>
+<li><strong>Modules Enabled:</strong> 1, 2, 3</li>
+<li><strong>Footprint:</strong> ~50 MiB RAM</li>
+<li><strong>Use Case:</strong> Standard production cluster nodes, NOC wallboard monitoring, Datadog alert migration.</li>
+</ul>
+<h3 id="profile-c-full-observability-profile-full-observability">Profile C: Full Observability (<code>--profile full-observability</code>)</h3>
+<ul>
+<li><strong>Modules Enabled:</strong> 1, 2, 3, 4, 5, 6, 7</li>
+<li><strong>Footprint:</strong> ~385 MiB RAM</li>
+<li><strong>Use Case:</strong> Full replacement of Datadog, New Relic, Grafana, and Prometheus.</li>
+</ul>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Configure via CLI:
+dcouplr setup --profile full-observability --compose
+
+# Or run interactive web checklist:
+http://localhost:8000/setup
+</code></pre></div>
+<hr />
+<h2 id="4-commercial-packaging-value-assessment-should-the-cost-increase">4. Commercial Packaging &amp; Value Assessment: Should the Cost Increase?</h2>
+<h3 id="a-the-core-value-shift-migration-tool-vs-permanent-observability-platform">A. The Core Value Shift: &quot;Migration Tool&quot; vs. &quot;Permanent Observability Platform&quot;</h3>
+<ul>
+<li><strong>Before This Capability:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> was purchased primarily as a <strong>one-time migration utility</strong>. Migration budgets are typically discretionary project expenses capped at $15,000–$25,000.</li>
+<li><strong>With This Capability:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> becomes a <strong>Permanent Operational Observability Platform</strong>. It replaces Datadog ($15–$23/host/mo base + $0.10/GB logs + APM fees = ~$120/host/mo blended) and New Relic ($0.35/GB + user seats).</li>
+</ul>
+<h3 id="b-enterprise-cost-comparison-100-production-nodes">B. Enterprise Cost Comparison (100 Production Nodes)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Cost Component</th>
+<th style="text-align:left">Datadog + AWS Cloud</th>
+<th style="text-align:left">New Relic + AWS Cloud</th>
+<th style="text-align:left"><dcouplr/> Full Suite</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Base Infrastructure Agents</strong></td>
+<td style="text-align:left">$27,600 / yr ($23/host)</td>
+<td style="text-align:left">$18,000 / yr</td>
+<td style="text-align:left">Included in Tier</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>APM Distributed Tracing</strong></td>
+<td style="text-align:left">$37,200 / yr ($31/host)</td>
+<td style="text-align:left">Included in GB pricing</td>
+<td style="text-align:left">Included in Tier</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Log Management (5 TB/mo)</strong></td>
+<td style="text-align:left">$30,000 / yr ($0.50/GB)</td>
+<td style="text-align:left">$21,000 / yr ($0.35/GB)</td>
+<td style="text-align:left">Included in Tier</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Cloud NAT Gateway Egress</strong></td>
+<td style="text-align:left">$18,000 / yr ($0.09/GB)</td>
+<td style="text-align:left">$18,000 / yr ($0.09/GB)</td>
+<td style="text-align:left"><strong>$0.00 (Zero Egress)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Total Annual Cost</strong></td>
+<td style="text-align:left"><strong>$112,800 / year</strong></td>
+<td style="text-align:left"><strong>$78,000 / year</strong></td>
+<td style="text-align:left"><strong>$36,000 – $48,000 / year</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Customer Net Savings</strong></td>
+<td style="text-align:left">—</td>
+<td style="text-align:left">—</td>
+<td style="text-align:left"><strong>57% – 68% Annual Savings</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="c-recommended-commercial-packaging-strategy">C. Recommended Commercial Packaging Strategy</h3>
+<p>Do not apply an indiscriminate flat price hike. Instead, use a <strong>Modular Value-Tier Multiplier</strong>:</p>
+<ol>
+<li><strong>Base Tier (Cluster Small / Medium / Large):</strong>
+<ul>
+<li>Retains current competitive pricing ($1,500/mo, $3,500/mo, $45/node/mo).</li>
+<li>Covers Core Consensus, Replication, Host Metrics, and 24x7 NOC Wallboard.</li>
+</ul>
+</li>
+<li><strong>Full-Stack Observability Add-On (+ $30/node/month or +$1,500/mo package):</strong>
+<ul>
+<li>Unlocks the In-VPC OpenTelemetry Collector, Jaeger APM, and VictoriaLogs orchestration.</li>
+<li>Total customer price moves to <strong>$75/node/month</strong>—still <strong>37% below Datadog's $120/host blended rate</strong>, while increasing <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> contract values from $42,000 to <strong>$90,000 ARR</strong>.</li>
+</ul>
+</li>
+<li><strong>Enterprise Site License ($120,000/year flat):</strong>
+<ul>
+<li>Unlimited nodes, full-stack APM &amp; Log Search, and dedicated FinOps support with <code>cloaudit</code>.</li>
+</ul>
+</li>
+</ol>
+</div>
+      <pre id="raw-view"><code># &lt;dcouplr/&gt; In-VPC Full-Stack Observability &amp; Commercial Packaging Guide
+**Document ID:** `VA-GUIDE-OBS-PACKAGING-001`  
+**Classification:** Enterprise Engineering, Field Operations &amp; Commercial FinOps Strategy  
+**Audience:** Enterprise Customers, Cloud Architects, SRE Leads, and Commercial Operations  
+
+---
+
+## 1. Executive Summary: The Modular In-VPC Observability Architecture
+
+`&lt;dcouplr/&gt;` introduces a **Modular Capabilities Checklist** that transforms installation from a one-size-fits-all binary into a tailored, scalable in-VPC observability deployment.
+
+Customers configure their exact operational footprint during installation:
+- **Low Footprint (&lt; 50 MiB RAM):** Core Consensus, Replication, Host Metrics, and 24x7 NOC Wallboard.
+- **Enterprise Max (~385 MiB RAM):** Full-Stack Observability Suite including OpenTelemetry OTLP Ingestion, Code-Level APM Tracing (request flamegraphs), and High-Throughput Log Search.
+
+```
++----------------------------------------------------------------------------------------------------+
+|                                    PRIVATE VPC BOUNDARY (10.0.0.0/16)                             |
+|                                                                                                    |
+|                              CUSTOMER SRE / NOC WEB BROWSER                                        |
+|                                            |                                                       |
+|                                            v                                                       |
+|                        +---------------------------------------+                                   |
+|                        |   &lt;dcouplr/&gt; Unified Gateway (:8000)  |                                   |
+|                        +---------------------------------------+                                   |
+|                                 |       |       |       |                                          |
+|      +--------------------------+       |       |       +--------------------------+               |
+|      |                                  |       |                                  |               |
+|      v                                  v       v                                  v               |
+|  /dashboard &amp; /wallboard             /compiler  /traces                            /logs           |
+|  [Built-in SRE HUD &amp; NOC]            [AST Rule] [In-VPC Jaeger / Tempo Sidecar]    [In-VPC Victoria|
+|                                                 - Method execution flamegraphs      Logs Sidecar]  |
+|                                                 - Distributed request spans        - Millions of   |
+|                                                                                      lines/hr      |
+|                                                                                    - Fast grep UI  |
+|                                                                                                    |
+|   INCOMING APPLICATION TELEMETRY (Private Subnet):                                                 |
+|   App Services ======&gt; OTLP Port 4317 (gRPC) / 4318 (HTTP) ======&gt; In-VPC OTel Collector Sidecar   |
+|                                                                                                    |
+|   PUBLIC INTERNET (0.0.0.0/0): [BLOCKED / ZERO PACKETS / $0.00 BILLABLE CLOUD EGRESS]              |
++----------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## 2. Capabilities Checklist Matrix
+
+| # | Capability Module | Engine / Sidecar | RAM Footprint | Operational Role |
+| :- | :--- | :--- | :--- | :--- |
+| **1** | **Consensus &amp; CDC Replication** | Go Raft In-Memory | ~35 MiB RAM | Change Data Capture (CDC) block replication lag, Raft quorum health, SHA-256 zero-egress attestation. *(Mandatory Core)* |
+| **2** | **Host Metrics &amp; 24x7 Wallboard** | In-App Ring Buffers | +15 MiB RAM | Host CPU, RAM, network I/O, socket descriptors, Live SRE Dashboard (`/dashboard`), 24x7 NOC Wallboard (`/wallboard`). *(Recommended)* |
+| **3** | **Living AST Alert Compiler** | In-Memory AST Engine | Negligible | Transpiles Datadog, New Relic NRQL, and CloudWatch alerts into calibrated Prometheus/Grafana rules (`/compiler`). |
+| **4** | **In-VPC OTel Collector Pipeline** | OTel Core Sidecar | +35 MiB RAM | Standard CNCF OTLP v1.0 ingestion receivers (gRPC port 4317, HTTP port 4318) for native application frameworks. |
+| **5** | **Code-Level APM Tracing** | In-VPC Jaeger Sidecar | +120 MiB RAM | End-to-end distributed span tracing, SQL query latency, and method execution flamegraphs (`/traces`). Replaces Datadog APM &amp; New Relic. |
+| **6** | **High-Throughput Log Search** | In-VPC VictoriaLogs | +150 MiB RAM | Millions of stdout/syslog lines/hour with instant regex grep and zero Lucene indexing overhead (`/logs`). Replaces Datadog Logs &amp; Loki. |
+| **7** | **Long-Term Cold TSDB (GAP-06)** | In-VPC VictoriaMetrics | +80 MiB RAM | Prometheus Remote-Write protocol with Snappy Protobuf compression for 1-to-7 year regulatory retention. |
+
+---
+
+## 3. Deployment Profiles &amp; Installation
+
+### Profile A: Core (`--profile core`)
+- **Modules Enabled:** 1
+- **Footprint:** ~35 MiB RAM
+- **Use Case:** Headless database state replication nodes and consensus bridge agents.
+
+### Profile B: Infra (`--profile infra`) — Default
+- **Modules Enabled:** 1, 2, 3
+- **Footprint:** ~50 MiB RAM
+- **Use Case:** Standard production cluster nodes, NOC wallboard monitoring, Datadog alert migration.
+
+### Profile C: Full Observability (`--profile full-observability`)
+- **Modules Enabled:** 1, 2, 3, 4, 5, 6, 7
+- **Footprint:** ~385 MiB RAM
+- **Use Case:** Full replacement of Datadog, New Relic, Grafana, and Prometheus.
+
+```bash
+# Configure via CLI:
+dcouplr setup --profile full-observability --compose
+
+# Or run interactive web checklist:
+http://localhost:8000/setup
+```
+
+---
+
+## 4. Commercial Packaging &amp; Value Assessment: Should the Cost Increase?
+
+### A. The Core Value Shift: &quot;Migration Tool&quot; vs. &quot;Permanent Observability Platform&quot;
+- **Before This Capability:** `&lt;dcouplr/&gt;` was purchased primarily as a **one-time migration utility**. Migration budgets are typically discretionary project expenses capped at $15,000–$25,000.
+- **With This Capability:** `&lt;dcouplr/&gt;` becomes a **Permanent Operational Observability Platform**. It replaces Datadog ($15–$23/host/mo base + $0.10/GB logs + APM fees = ~$120/host/mo blended) and New Relic ($0.35/GB + user seats).
+
+### B. Enterprise Cost Comparison (100 Production Nodes)
+
+| Cost Component | Datadog + AWS Cloud | New Relic + AWS Cloud | &lt;dcouplr/&gt; Full Suite |
+| :--- | :--- | :--- | :--- |
+| **Base Infrastructure Agents** | $27,600 / yr ($23/host) | $18,000 / yr | Included in Tier |
+| **APM Distributed Tracing** | $37,200 / yr ($31/host) | Included in GB pricing | Included in Tier |
+| **Log Management (5 TB/mo)** | $30,000 / yr ($0.50/GB) | $21,000 / yr ($0.35/GB) | Included in Tier |
+| **Cloud NAT Gateway Egress** | $18,000 / yr ($0.09/GB) | $18,000 / yr ($0.09/GB) | **$0.00 (Zero Egress)** |
+| **Total Annual Cost** | **$112,800 / year** | **$78,000 / year** | **$36,000 – $48,000 / year** |
+| **Customer Net Savings** | — | — | **57% – 68% Annual Savings** |
+
+### C. Recommended Commercial Packaging Strategy
+Do not apply an indiscriminate flat price hike. Instead, use a **Modular Value-Tier Multiplier**:
+
+1. **Base Tier (Cluster Small / Medium / Large):**
+   - Retains current competitive pricing ($1,500/mo, $3,500/mo, $45/node/mo).
+   - Covers Core Consensus, Replication, Host Metrics, and 24x7 NOC Wallboard.
+2. **Full-Stack Observability Add-On (+ $30/node/month or +$1,500/mo package):**
+   - Unlocks the In-VPC OpenTelemetry Collector, Jaeger APM, and VictoriaLogs orchestration.
+   - Total customer price moves to **$75/node/month**—still **37% below Datadog&#x27;s $120/host blended rate**, while increasing `&lt;dcouplr/&gt;` contract values from $42,000 to **$90,000 ARR**.
+3. **Enterprise Site License ($120,000/year flat):**
+   - Unlimited nodes, full-stack APM &amp; Log Search, and dedicated FinOps support with `cloaudit`.
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;dcouplr/&gt; In-VPC Full-Stack Observability &amp; Commercial Packaging Guide
+**Document ID:** `VA-GUIDE-OBS-PACKAGING-001`  
+**Classification:** Enterprise Engineering, Field Operations &amp; Commercial FinOps Strategy  
+**Audience:** Enterprise Customers, Cloud Architects, SRE Leads, and Commercial Operations  
+
+---
+
+## 1. Executive Summary: The Modular In-VPC Observability Architecture
+
+`&lt;dcouplr/&gt;` introduces a **Modular Capabilities Checklist** that transforms installation from a one-size-fits-all binary into a tailored, scalable in-VPC observability deployment.
+
+Customers configure their exact operational footprint during installation:
+- **Low Footprint (&lt; 50 MiB RAM):** Core Consensus, Replication, Host Metrics, and 24x7 NOC Wallboard.
+- **Enterprise Max (~385 MiB RAM):** Full-Stack Observability Suite including OpenTelemetry OTLP Ingestion, Code-Level APM Tracing (request flamegraphs), and High-Throughput Log Search.
+
+```
++----------------------------------------------------------------------------------------------------+
+|                                    PRIVATE VPC BOUNDARY (10.0.0.0/16)                             |
+|                                                                                                    |
+|                              CUSTOMER SRE / NOC WEB BROWSER                                        |
+|                                            |                                                       |
+|                                            v                                                       |
+|                        +---------------------------------------+                                   |
+|                        |   &lt;dcouplr/&gt; Unified Gateway (:8000)  |                                   |
+|                        +---------------------------------------+                                   |
+|                                 |       |       |       |                                          |
+|      +--------------------------+       |       |       +--------------------------+               |
+|      |                                  |       |                                  |               |
+|      v                                  v       v                                  v               |
+|  /dashboard &amp; /wallboard             /compiler  /traces                            /logs           |
+|  [Built-in SRE HUD &amp; NOC]            [AST Rule] [In-VPC Jaeger / Tempo Sidecar]    [In-VPC Victoria|
+|                                                 - Method execution flamegraphs      Logs Sidecar]  |
+|                                                 - Distributed request spans        - Millions of   |
+|                                                                                      lines/hr      |
+|                                                                                    - Fast grep UI  |
+|                                                                                                    |
+|   INCOMING APPLICATION TELEMETRY (Private Subnet):                                                 |
+|   App Services ======&gt; OTLP Port 4317 (gRPC) / 4318 (HTTP) ======&gt; In-VPC OTel Collector Sidecar   |
+|                                                                                                    |
+|   PUBLIC INTERNET (0.0.0.0/0): [BLOCKED / ZERO PACKETS / $0.00 BILLABLE CLOUD EGRESS]              |
++----------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## 2. Capabilities Checklist Matrix
+
+| # | Capability Module | Engine / Sidecar | RAM Footprint | Operational Role |
+| :- | :--- | :--- | :--- | :--- |
+| **1** | **Consensus &amp; CDC Replication** | Go Raft In-Memory | ~35 MiB RAM | Change Data Capture (CDC) block replication lag, Raft quorum health, SHA-256 zero-egress attestation. *(Mandatory Core)* |
+| **2** | **Host Metrics &amp; 24x7 Wallboard** | In-App Ring Buffers | +15 MiB RAM | Host CPU, RAM, network I/O, socket descriptors, Live SRE Dashboard (`/dashboard`), 24x7 NOC Wallboard (`/wallboard`). *(Recommended)* |
+| **3** | **Living AST Alert Compiler** | In-Memory AST Engine | Negligible | Transpiles Datadog, New Relic NRQL, and CloudWatch alerts into calibrated Prometheus/Grafana rules (`/compiler`). |
+| **4** | **In-VPC OTel Collector Pipeline** | OTel Core Sidecar | +35 MiB RAM | Standard CNCF OTLP v1.0 ingestion receivers (gRPC port 4317, HTTP port 4318) for native application frameworks. |
+| **5** | **Code-Level APM Tracing** | In-VPC Jaeger Sidecar | +120 MiB RAM | End-to-end distributed span tracing, SQL query latency, and method execution flamegraphs (`/traces`). Replaces Datadog APM &amp; New Relic. |
+| **6** | **High-Throughput Log Search** | In-VPC VictoriaLogs | +150 MiB RAM | Millions of stdout/syslog lines/hour with instant regex grep and zero Lucene indexing overhead (`/logs`). Replaces Datadog Logs &amp; Loki. |
+| **7** | **Long-Term Cold TSDB (GAP-06)** | In-VPC VictoriaMetrics | +80 MiB RAM | Prometheus Remote-Write protocol with Snappy Protobuf compression for 1-to-7 year regulatory retention. |
+
+---
+
+## 3. Deployment Profiles &amp; Installation
+
+### Profile A: Core (`--profile core`)
+- **Modules Enabled:** 1
+- **Footprint:** ~35 MiB RAM
+- **Use Case:** Headless database state replication nodes and consensus bridge agents.
+
+### Profile B: Infra (`--profile infra`) — Default
+- **Modules Enabled:** 1, 2, 3
+- **Footprint:** ~50 MiB RAM
+- **Use Case:** Standard production cluster nodes, NOC wallboard monitoring, Datadog alert migration.
+
+### Profile C: Full Observability (`--profile full-observability`)
+- **Modules Enabled:** 1, 2, 3, 4, 5, 6, 7
+- **Footprint:** ~385 MiB RAM
+- **Use Case:** Full replacement of Datadog, New Relic, Grafana, and Prometheus.
+
+```bash
+# Configure via CLI:
+dcouplr setup --profile full-observability --compose
+
+# Or run interactive web checklist:
+http://localhost:8000/setup
+```
+
+---
+
+## 4. Commercial Packaging &amp; Value Assessment: Should the Cost Increase?
+
+### A. The Core Value Shift: &quot;Migration Tool&quot; vs. &quot;Permanent Observability Platform&quot;
+- **Before This Capability:** `&lt;dcouplr/&gt;` was purchased primarily as a **one-time migration utility**. Migration budgets are typically discretionary project expenses capped at $15,000–$25,000.
+- **With This Capability:** `&lt;dcouplr/&gt;` becomes a **Permanent Operational Observability Platform**. It replaces Datadog ($15–$23/host/mo base + $0.10/GB logs + APM fees = ~$120/host/mo blended) and New Relic ($0.35/GB + user seats).
+
+### B. Enterprise Cost Comparison (100 Production Nodes)
+
+| Cost Component | Datadog + AWS Cloud | New Relic + AWS Cloud | &lt;dcouplr/&gt; Full Suite |
+| :--- | :--- | :--- | :--- |
+| **Base Infrastructure Agents** | $27,600 / yr ($23/host) | $18,000 / yr | Included in Tier |
+| **APM Distributed Tracing** | $37,200 / yr ($31/host) | Included in GB pricing | Included in Tier |
+| **Log Management (5 TB/mo)** | $30,000 / yr ($0.50/GB) | $21,000 / yr ($0.35/GB) | Included in Tier |
+| **Cloud NAT Gateway Egress** | $18,000 / yr ($0.09/GB) | $18,000 / yr ($0.09/GB) | **$0.00 (Zero Egress)** |
+| **Total Annual Cost** | **$112,800 / year** | **$78,000 / year** | **$36,000 – $48,000 / year** |
+| **Customer Net Savings** | — | — | **57% – 68% Annual Savings** |
+
+### C. Recommended Commercial Packaging Strategy
+Do not apply an indiscriminate flat price hike. Instead, use a **Modular Value-Tier Multiplier**:
+
+1. **Base Tier (Cluster Small / Medium / Large):**
+   - Retains current competitive pricing ($1,500/mo, $3,500/mo, $45/node/mo).
+   - Covers Core Consensus, Replication, Host Metrics, and 24x7 NOC Wallboard.
+2. **Full-Stack Observability Add-On (+ $30/node/month or +$1,500/mo package):**
+   - Unlocks the In-VPC OpenTelemetry Collector, Jaeger APM, and VictoriaLogs orchestration.
+   - Total customer price moves to **$75/node/month**—still **37% below Datadog&#x27;s $120/host blended rate**, while increasing `&lt;dcouplr/&gt;` contract values from $42,000 to **$90,000 ARR**.
+3. **Enterprise Site License ($120,000/year flat):**
+   - Unlimited nodes, full-stack APM &amp; Log Search, and dedicated FinOps support with `cloaudit`.
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

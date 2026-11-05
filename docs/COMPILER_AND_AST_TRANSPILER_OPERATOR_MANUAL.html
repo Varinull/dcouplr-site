@@ -1,0 +1,2173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - COMPILER_AND_AST_TRANSPILER_OPERATOR_MANUAL.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/COMPILER_AND_AST_TRANSPILER_OPERATOR_MANUAL.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="COMPILER_AND_AST_TRANSPILER_OPERATOR_MANUAL.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="dcouplr-compiler-ast-transpiler-operator-manual">⚙️ <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Compiler &amp; AST Transpiler Operator Manual</h1>
+<p><strong>Document ID:</strong> <code>VA-MAN-COMPILER-001</code><br />
+<strong>Classification:</strong> Enterprise Engineering Technical Specification &amp; Operator Runbook<br />
+<strong>Target Audience:</strong> Staff SREs, Platform Engineers, Cloud Architects, and Field TAMs<br />
+<strong>Status:</strong> Approved for Production (<code>v1.0.0-GA</code>)<br />
+<strong>Security Guarantee:</strong> Zero-Egress Local-First In-VPC Execution ($0 Cloud Egress)</p>
+<hr />
+<h2 id="executive-summary-table-of-contents">📑 Executive Summary &amp; Table of Contents</h2>
+<p>The <strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Compiler &amp; AST Transpiler Engine</strong> is an open-core, deterministic translation system designed to eliminate multi-million dollar SaaS observability and infrastructure lock-in. Operating strictly inside the customer's Virtual Private Cloud (VPC) in volatile memory, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> parses proprietary vendor configurations (Datadog monitors, New Relic NRQL, AWS CloudWatch alarms, Azure Monitor alerts, and Terraform HCL) into a vendor-neutral <strong>Universal Infrastructure &amp; Telemetry Intermediate Representation (<code>UITGraph</code>)</strong>, performs mathematical semantic normalization ($\Phi(q) \equiv \Psi(\text{PromQL})$), and synthesizes production-ready open-source artifacts (Grafana 11 Unified Alerting, Prometheus Alertmanager, OpenTofu HCL, and Azure Bicep).</p>
+<h3 id="table-of-contents">Table of Contents</h3>
+<ol>
+<li><a href="#1-compiler-architecture--design-philosophy">Compiler Architecture &amp; Design Philosophy</a></li>
+<li><a href="#2-the-uit-ir-abstract-syntax-tree-specification">The UIT-IR Abstract Syntax Tree Specification</a></li>
+<li><a href="#3-multi-vendor-source-parsers--lexers">Multi-Vendor Source Parsers &amp; Lexers</a></li>
+<li><a href="#4-target-code-generators--emitters">Target Code Generators &amp; Emitters</a></li>
+<li><a href="#5-promql--telemetry-normalization-mathematics">PromQL &amp; Telemetry Normalization Mathematics</a></li>
+<li><a href="#6-cross-cloud-iam-transpilation-engine">Cross-Cloud IAM Transpilation Engine</a></li>
+<li><a href="#7-dynamic-core-function-hud--autonomous-dialect-detection">Dynamic Core Function HUD &amp; Autonomous Dialect Detection</a></li>
+<li><a href="#8-turnkey-enterprise-migration-recipes-catalog-recipes-18">Turnkey Enterprise Migration Recipes Catalog (Recipes 1–8)</a></li>
+<li><a href="#9-web-compiler-studio--headless-rest-api-reference">Web Compiler Studio &amp; Headless REST API Reference</a></li>
+<li><a href="#10-cli-tooling-diagnostics--error-taxonomy">CLI Tooling, Diagnostics &amp; Error Taxonomy</a></li>
+</ol>
+<hr />
+<h2 id="1-compiler-architecture-design-philosophy">1. Compiler Architecture &amp; Design Philosophy</h2>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">  ┌─────────────────────────────────────────────────────────────────────────────────┐
+  │                 IN-VPC VOLATILE MEMORY BOUNDARY (ZERO-EGRESS)                   │
+  │                                                                                 │
+  │  Source Input                     Pre-Flight Guard           Semantic AST Graph │
+  │  ┌───────────────┐               ┌─────────────────┐        ┌────────────────┐  │
+  │  │ Datadog JSON  │──────────────▶│ In-Memory Regex │───────▶│                │  │
+  │  │ New Relic     │ (Plaintext /  │ Token Scrubber  │        │  UITGraph AST  │  │
+  │  │ CloudWatch    │  Stream)      │ (RFC 1918 Mask, │        │  (Nodes/Edges) │  │
+  │  │ Azure Monitor │               │  Secret Redact) │        │                │  │
+  │  │ Terraform HCL │               └─────────────────┘        └───────┬────────┘  │
+  │  └───────────────┘                                                  │           │
+  │                                                                     │           │
+  │                                                                     ▼           │
+  │  Synthesized Code                 Target Emitters            Math Normalizer    │
+  │  ┌───────────────┐               ┌─────────────────┐        ┌────────────────┐  │
+  │  │ Grafana 11 YAML│◀──────────────│ Prometheus/Alert│◀───────│ Parity Proof:  │  │
+  │  │ PromQL Rules  │               │ OpenTofu HCL    │        │ Φ(q) ≡ Ψ(Prom) │  │
+  │  │ OpenTofu HCL  │               │ Azure Bicep     │        │ 2σ Anomaly Res │  │
+  │  │ Azure Bicep   │               │ State Relocator │        │ Rate Smoothing │  │
+  │  └───────────────┘               └─────────────────┘        └────────────────┘  │
+  └─────────────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="11-the-4-architectural-tenets">1.1 The 4 Architectural Tenets</h3>
+<ol>
+<li><strong>Deterministic AST Transformation over LLM Prompting:</strong>
+Core syntax trees are parsed using deterministic lexers and compiled via mathematical AST node mappings. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> never relies on non-deterministic generative LLMs for syntax tree emission, eliminating syntax hallucination, floating threshold skew, and uncompilable IaC blocks.</li>
+<li><strong>Strict In-VPC Zero-Egress Guarantee:</strong>
+All compilation passes execute inside customer-managed compute (Bare-metal, EC2, GCE, AKS/EKS/GKE, or Local CLI). No telemetry metadata, AST nodes, internal IP addresses, or IAM credentials ever leave volatile RAM ($0 cloud egress bill).</li>
+<li><strong>In-Memory Volatile Token Scrubbing:</strong>
+Before any AST node is constructed, the scanner passes the payload through an in-memory regex sanitizer (<code>anonymizer.py</code>) that replaces private RFC 1918 IP addresses (<code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, <code>192.168.0.0/16</code>), AWS secret access keys, database passwords, and internal hostnames with deterministic cryptographic aliases (e.g. <code>ip-10-x-x-12.internal</code>).</li>
+<li><strong>Mathematical Parity Verification ($\Phi(q) \equiv \Psi(\text{PromQL})$):</strong>
+Query transformations preserve time-series integration calculus. Cumulative counter rollups (<code>.as_count()</code>) are synthesized into <code>increase()</code> expressions over evaluation windows, rate gauges (<code>.as_rate()</code>) are mapped into <code>rate()</code>, and Datadog 2-sigma anomaly detection queries are compiled into dual-sided <code>avg_over_time()</code> and <code>stddev_over_time()</code> standard deviation bounds.</li>
+</ol>
+<hr />
+<h2 id="2-the-uit-ir-abstract-syntax-tree-specification">2. The UIT-IR Abstract Syntax Tree Specification</h2>
+<p>The <strong>Universal Infrastructure &amp; Telemetry Intermediate Representation (UIT-IR)</strong> is a strongly typed, directed graph defined in <code>migration_tools/ir/models.py</code> and <code>migration_tools/ir/graph.py</code>.</p>
+<h3 id="21-top-level-ast-container-uitgraph">2.1 Top-Level AST Container: <code>UITGraph</code></h3>
+<div class="code-box"><div class="code-box-header"><span>python</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-python">class UITGraph(BaseModel):
+    schema_version: str = &quot;1.0.0&quot;
+    source_system: str             # &quot;datadog&quot;, &quot;new_relic&quot;, &quot;cloudwatch&quot;, &quot;azure_monitor&quot;, &quot;terraform&quot;
+    monitors: List[MonitorNode]    # Telemetry and alert definitions
+    resources: List[ResourceNode]  # Compute, network, database, storage resources
+    policies: List[PolicyNode]     # IAM roles, security groups, firewall rules
+    edges: List[Edge]              # Dependency relationships (MONITORS, SECURES, DEPENDS_ON)
+    created_at: Optional[str]      # ISO 8601 compilation timestamp
+</code></pre></div>
+<h3 id="22-alert-node-specification-monitornode">2.2 Alert Node Specification: <code>MonitorNode</code></h3>
+<div class="code-box"><div class="code-box-header"><span>python</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-python">class MonitorNode(BaseModel):
+    id: str                                # Unique canonical identifier (e.g., &quot;mon-dd-10921&quot;)
+    name: str                              # Human-readable title
+    description: Optional[str]             # Alert playbook, runbook URL, or notification message
+    source_vendor: str                     # &quot;datadog&quot;, &quot;newrelic&quot;, &quot;cloudwatch&quot;, &quot;azure&quot;
+    monitor_type: MonitorType              # METRIC_THRESHOLD, LOG_ALERT, COMPOSITE, SERVICE_CHECK
+    target_metric: MetricTarget            # Detailed metric query AST
+    condition: ComparisonOperator          # GT (&gt;), GTE (&gt;=), LT (&lt;), LTE (&lt;=), EQ (==), NEQ (!=)
+    critical_threshold: float              # Critical firing limit
+    warning_threshold: Optional[float]     # Optional warning/escalation limit
+    evaluation_window: str                 # Duration condition must hold (e.g., &quot;5m&quot;, &quot;15m&quot;)
+    tags: List[str]                        # Metadata tags (e.g., [&quot;env:prod&quot;, &quot;service:checkout&quot;])
+    notification_channels: List[str]       # Alert endpoints (e.g., [&quot;slack-sre&quot;, &quot;pagerduty-p1&quot;])
+    metadata: Dict[str, Any]               # Preserved source-specific options
+</code></pre></div>
+<h3 id="23-normalized-metric-query-ast-metrictarget">2.3 Normalized Metric Query AST: <code>MetricTarget</code></h3>
+<div class="code-box"><div class="code-box-header"><span>python</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-python">class MetricTarget(BaseModel):
+    raw_query: str                         # Original vendor query string
+    metric_name: str                       # Canonical metric ID (e.g., &quot;system.cpu.user&quot;)
+    filters: Dict[str, str]                # Key-value label selectors (e.g., {&quot;env&quot;: &quot;prod&quot;})
+    group_by: List[str]                    # Aggregation dimensions (e.g., [&quot;host&quot;, &quot;region&quot;])
+    aggregation: AggregationFunction       # AVG, SUM, MIN, MAX, COUNT, RATE
+    time_window: str                       # Resolution window (e.g., &quot;5m&quot;, &quot;1h&quot;)
+    metric_modifier: Optional[str]         # &quot;.as_count()&quot;, &quot;.as_rate()&quot;, &quot;.rollup()&quot;
+    is_anomaly_fallback: bool              # True if translated from statistical anomaly function
+    anomaly_bounds: Optional[float]        # Standard deviations (e.g., 2.0 = 95.4% confidence)
+    anomaly_algorithm: Optional[str]       # &quot;basic&quot;, &quot;agile&quot;, &quot;robust&quot;
+    anomaly_window: Optional[str]          # Rolling baseline window (e.g., &quot;1d&quot;, &quot;7d&quot;)
+    math_wrapper: Optional[str]            # &quot;abs&quot;, &quot;log10&quot;, &quot;clamp_min&quot;, &quot;clamp_max&quot;
+    math_parameter: Optional[float]        # Numerical operand for clamp functions
+    temporal_offset: Optional[str]         # Historical time shift (e.g., &quot;1h&quot;, &quot;1d&quot;, &quot;7d&quot;)
+    is_outlier_fallback: bool              # True if translated from DBSCAN/MAD outlier detection
+    outlier_bounds: Optional[float]        # Outlier distance threshold
+    unmapped_tokens: List[str]             # Preserved tokens for compiler diagnostic logs
+    diagnostics: List[str]                 # Compiler transformation trace messages
+</code></pre></div>
+<h3 id="24-infrastructure-resource-node-resourcenode">2.4 Infrastructure Resource Node: <code>ResourceNode</code></h3>
+<div class="code-box"><div class="code-box-header"><span>python</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-python">class ResourceNode(BaseModel):
+    id: str                                # Canonical ID (e.g., &quot;res-aws-i-0a1b2c3d&quot;)
+    name: str                              # Resource name (e.g., &quot;web-frontend-prod&quot;)
+    resource_type: str                     # Canonical standard type (e.g., &quot;compute.instance&quot;)
+    source_provider: str                   # &quot;aws&quot;, &quot;gcp&quot;, &quot;azure&quot;
+    properties: Dict[str, Any]             # Machine type, CIDR blocks, storage capacity, IOPS
+    tags: Dict[str, str]                   # Operational tags
+</code></pre></div>
+<hr />
+<h2 id="3-multi-vendor-source-parsers-lexers">3. Multi-Vendor Source Parsers &amp; Lexers</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> includes five dedicated parser implementations in <code>migration_tools/parsers/</code>:</p>
+<h3 id="31-datadog-monitor-parser-datadogmonitorpy">3.1 Datadog Monitor Parser (<code>datadog_monitor.py</code>)</h3>
+<ul>
+<li><strong>Query Grammar Pattern:</strong>
+Parses Datadog query expressions matching:
+<code>{eval_agg}(last_{window}):{metric_agg}:{metric_name}{tags}.{modifier} by {group_by} {op} {threshold}</code></li>
+<li><strong>Extended Function Handlers:</strong>
+<ul>
+<li><code>anomalies(metric, 'algorithm', bounds)</code> → Translates to dual-sided moving window deviation.</li>
+<li><code>outliers(metric, 'dbscan', tolerance)</code> → Translates to peer-group dispersion thresholding.</li>
+<li><code>hour_before()</code>, <code>day_before()</code>, <code>week_before()</code> → Translates to PromQL temporal <code>offset</code>.</li>
+<li><code>abs()</code>, <code>log10()</code>, <code>clamp_min()</code>, <code>clamp_max()</code> → Translates to canonical PromQL math functions.</li>
+</ul>
+</li>
+<li><strong>Notification Target Extraction:</strong>
+Scans <code>@channel</code> tokens in monitor message bodies (e.g., <code>@slack-infra</code>, <code>@pagerduty-critical</code>) and maps them to alert notification channel lists.</li>
+</ul>
+<h3 id="32-new-relic-nrql-alert-parser-nrqlalertpy">3.2 New Relic NRQL Alert Parser (<code>nrql_alert.py</code>)</h3>
+<ul>
+<li><strong>Query Grammar Pattern:</strong>
+Matches standard New Relic queries:
+<code>SELECT {agg}({target}) FROM {table} WHERE {filters} FACET {dimensions} SINCE {window}</code></li>
+<li><strong>Table Remappings:</strong>
+<ul>
+<li><code>SystemSample</code> → <code>system.cpu.user</code>, <code>system.mem.used</code>, <code>system.load.15</code></li>
+<li><code>ProcessSample</code> → <code>process.cpu.user</code>, <code>process.memory.rss</code></li>
+<li><code>Transaction</code> → <code>trace.http.request.duration</code>, <code>http.requests.total</code></li>
+<li><code>TransactionError</code> → <code>http.requests.errors</code></li>
+</ul>
+</li>
+<li><strong>Aggregation Translations:</strong>
+NRQL <code>average()</code>, <code>percentile()</code>, <code>rate()</code>, and <code>filter()</code> clauses are tokenized into canonical aggregation AST primitives.</li>
+</ul>
+<h3 id="33-aws-cloudwatch-alarm-parser-cloudwatchalarmpy">3.3 AWS CloudWatch Alarm Parser (<code>cloudwatch_alarm.py</code>)</h3>
+<ul>
+<li><strong>Alarm Types Supported:</strong>
+<ul>
+<li>Standard Metric Alarms (<code>Namespace</code>, <code>MetricName</code>, <code>Statistic</code>, <code>Dimensions</code>, <code>Threshold</code>).</li>
+<li>Metric Math Alarms (<code>MetricDataQueries</code> array with math expressions e.g. <code>m1 / m2 * 100</code>).</li>
+<li>Anomaly Detection Alarms (<code>ANOMALY_DETECTION_BAND(m1, 2)</code>).</li>
+</ul>
+</li>
+<li><strong>Canonical Metrics:</strong>
+<ul>
+<li><code>AWS/EC2 CPUUtilization</code> → <code>node_cpu_utilization_user</code></li>
+<li><code>AWS/EC2 NetworkIn</code> / <code>NetworkOut</code> → <code>node_network_receive_bytes_total</code> / <code>transmit</code></li>
+<li><code>AWS/RDS CPUUtilization</code> → <code>aws_rds_cpu_utilization_average</code></li>
+<li><code>AWS/ApplicationELB RequestCount</code> → <code>http_requests_total</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="34-azure-monitor-metric-alert-parser-azuremonitorpy">3.4 Azure Monitor Metric Alert Parser (<code>azure_monitor.py</code>)</h3>
+<ul>
+<li><strong>Alert Payloads Supported:</strong>
+<ul>
+<li>Static Metric Alerts (<code>Microsoft.Insights/metricAlerts</code>).</li>
+<li>Dynamic Threshold Alerts (<code>DynamicThresholdCriteria</code> with <code>failingPeriods</code> and <code>sensitivity</code>).</li>
+<li>Scheduled Query Rules (Kusto KQL queries over Log Analytics).</li>
+</ul>
+</li>
+<li><strong>Metric Translations:</strong>
+<ul>
+<li><code>Percentage CPU</code> → <code>azure_vm_percentage_cpu</code></li>
+<li><code>Available Memory Bytes</code> → <code>azure_vm_available_memory_bytes</code></li>
+<li><code>DTU percentage</code> → <code>azure_sql_dtu_percentage</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="35-terraform-opentofu-hcl-parser-terraformhclpy">3.5 Terraform / OpenTofu HCL Parser (<code>terraform_hcl.py</code>)</h3>
+<ul>
+<li><strong>Block Tokenizer:</strong>
+Parses both native HCL text files and <code>tf.json</code> configuration structures into <code>ResourceNode</code>, <code>PolicyNode</code>, and dependency <code>Edge</code> elements.</li>
+<li><strong>Canonical Resource Typing:</strong>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Source Cloud Provider</th>
+<th style="text-align:left">Source Terraform Resource</th>
+<th style="text-align:left">Canonical UIT-IR Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>AWS</strong></td>
+<td style="text-align:left"><code>aws_instance</code></td>
+<td style="text-align:left"><code>compute.instance</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>AWS</strong></td>
+<td style="text-align:left"><code>aws_vpc</code> / <code>aws_subnet</code></td>
+<td style="text-align:left"><code>network.vpc</code> / <code>network.subnet</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>AWS</strong></td>
+<td style="text-align:left"><code>aws_db_instance</code></td>
+<td style="text-align:left"><code>database.relational</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>AWS</strong></td>
+<td style="text-align:left"><code>aws_eks_cluster</code> / <code>aws_eks_node_group</code></td>
+<td style="text-align:left"><code>container.kubernetes_cluster</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>AWS</strong></td>
+<td style="text-align:left"><code>aws_sqs_queue</code> / <code>aws_sns_topic</code></td>
+<td style="text-align:left"><code>queue.message_queue</code> / <code>pubsub_topic</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>AWS</strong></td>
+<td style="text-align:left"><code>aws_lb</code> / <code>aws_alb</code></td>
+<td style="text-align:left"><code>network.load_balancer</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>AWS</strong></td>
+<td style="text-align:left"><code>aws_kms_key</code></td>
+<td style="text-align:left"><code>security.key_management</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>AWS</strong></td>
+<td style="text-align:left"><code>aws_iam_role</code> / <code>aws_iam_policy</code></td>
+<td style="text-align:left"><code>iam.role</code> / <code>iam.policy</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>GCP</strong></td>
+<td style="text-align:left"><code>google_compute_instance</code></td>
+<td style="text-align:left"><code>compute.instance</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>GCP</strong></td>
+<td style="text-align:left"><code>google_compute_network</code></td>
+<td style="text-align:left"><code>network.vpc</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>GCP</strong></td>
+<td style="text-align:left"><code>google_sql_database_instance</code></td>
+<td style="text-align:left"><code>database.relational</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>GCP</strong></td>
+<td style="text-align:left"><code>google_container_cluster</code></td>
+<td style="text-align:left"><code>container.kubernetes_cluster</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Azure</strong></td>
+<td style="text-align:left"><code>azurerm_linux_virtual_machine</code></td>
+<td style="text-align:left"><code>compute.instance</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Azure</strong></td>
+<td style="text-align:left"><code>azurerm_virtual_network</code></td>
+<td style="text-align:left"><code>network.vpc</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Azure</strong></td>
+<td style="text-align:left"><code>azurerm_postgresql_flexible_server</code></td>
+<td style="text-align:left"><code>database.relational</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Azure</strong></td>
+<td style="text-align:left"><code>azurerm_kubernetes_cluster</code></td>
+<td style="text-align:left"><code>container.kubernetes_cluster</code></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<hr />
+<h2 id="4-target-code-generators-emitters">4. Target Code Generators &amp; Emitters</h2>
+<p>The emission layer in <code>migration_tools/generators/</code> transforms the validated <code>UITGraph</code> into deployment-ready configurations:</p>
+<h3 id="41-grafana-11-unified-alerting-emitter-grafanaalertpy">4.1 Grafana 11 Unified Alerting Emitter (<code>grafana_alert.py</code>)</h3>
+<ul>
+<li><strong>Output:</strong> Provisioning YAML matching Grafana 10+ and 11 Alerting schema.</li>
+<li><strong>Execution Pipeline:</strong>
+<ul>
+<li><strong>RefId &quot;A&quot;:</strong> Time-series query using the synthesized PromQL query.</li>
+<li><strong>RefId &quot;B&quot;:</strong> Reduce expression (<code>last</code>, <code>mean</code>, or <code>max</code> over the evaluation window).</li>
+<li><strong>RefId &quot;C&quot;:</strong> Math threshold comparison (<code>$B &gt; CriticalThreshold</code>).</li>
+</ul>
+</li>
+<li><strong>Multi-Threshold Pipeline (Enterprise Mode):</strong>
+When warning thresholds are configured, emits a 4-step pipeline: RefId &quot;A&quot; (Query), RefId &quot;B&quot; (Reduce), RefId &quot;C&quot; (Warning Condition), RefId &quot;D&quot; (Critical Condition), allowing Grafana to escalate alerts gracefully.</li>
+</ul>
+<h3 id="42-prometheus-alertmanager-rules-emitter-grafanaalertpy">4.2 Prometheus Alertmanager Rules Emitter (<code>grafana_alert.py</code>)</h3>
+<ul>
+<li><strong>Output:</strong> PrometheusRule YAML or native Alertmanager <code>rules.yaml</code>.</li>
+<li><strong>Structure:</strong><div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml">groups:
+  - name: Migrated_Datadog_Alerts
+    rules:
+      - alert: HighCPUUsage_Prod
+        expr: avg by (host) (node_cpu_utilization_user{env=&quot;prod&quot;}) &gt; 85.0
+        for: 5m
+        labels:
+          severity: critical
+          team: sre
+        annotations:
+          summary: High CPU usage detected on {{ $labels.host }}
+          runbook_url: https://docs.dcouplr.com/runbooks/cpu-spike
+</code></pre></div>
+</li>
+</ul>
+<h3 id="43-opentofu-multi-cloud-iac-emitter-opentofugeneratorpy">4.3 OpenTofu Multi-Cloud IaC Emitter (<code>opentofu_generator.py</code>)</h3>
+<p>Generates native, declarative HCL code targeting Google Cloud Platform (<code>hashicorp/google</code>), Amazon Web Services (<code>hashicorp/aws</code>), or Microsoft Azure (<code>hashicorp/azurerm</code>):</p>
+<ul>
+<li><strong>Sizing Equivalence Engine:</strong>
+Automatically translates instance sizes across hyperscalers (e.g. AWS <code>t3.medium</code> $\to$ GCP <code>e2-medium</code> $\to$ Azure <code>Standard_B2ms</code>).</li>
+<li><strong>Subnet &amp; IP Allocation:</strong>
+Preserves non-overlapping RFC 1918 CIDRs while substituting target-native routing resources.</li>
+<li><strong>CRD &amp; Unmapped Attribute Fallback:</strong>
+Any proprietary or custom CRD block not strictly in the canonical ontology is wrapped into an <code># [UNMAPPED-RESOURCE-FALLBACK]</code> block with all key-value attributes preserved as commented HCL, guaranteeing zero data loss.</li>
+</ul>
+<h3 id="44-azure-bicep-emitter-bicepgeneratorpy">4.4 Azure Bicep Emitter (<code>bicep_generator.py</code>)</h3>
+<p>Emits strongly typed Azure Bicep templates (<code>.bicep</code>) for deployment via Azure CLI or Azure Resource Manager, compiling network definitions into <code>Microsoft.Network/virtualNetworks</code>, compute into <code>Microsoft.Compute/virtualMachines</code>, and identities into <code>Microsoft.ManagedIdentity/userAssignedIdentities</code>.</p>
+<h3 id="45-datadog-monitor-generator-bi-directional-query-emitter-datadogmonitorpy">4.5 Datadog Monitor Generator &amp; Bi-Directional Query Emitter (<code>datadog_monitor.py</code>)</h3>
+<p>Unlocks true <strong>two-way bi-directional translation</strong> ($\phi \circ \psi = 	ext{id}$), allowing engineers to transpile Prometheus alert rules, Grafana Unified Alerting definitions, or multi-vendor monitors back into native Datadog Monitor JSON format:</p>
+<ul>
+<li><strong>Canonical Reverse Metric Mapping:</strong>
+Maps standard OpenMetrics and node_exporter identifiers back to Datadog metrics (e.g. <code>node_cpu_utilization_user</code> $	o$ <code>system.cpu.user</code>, <code>node_memory_active_bytes</code> $	o$ <code>system.mem.used</code>, <code>http_request_duration_seconds</code> $	o$ <code>trace.http.request.duration</code>).</li>
+<li><strong>Query Grammar Synthesis:</strong>
+Reconstructs Datadog evaluation syntax <code>avg(last_5m):system.cpu.user{env:prod} by {host} &gt; 85</code> including time windows (<code>last_5m</code>, <code>last_1h</code>), tag dimensions (<code>{env:prod}</code>), group-by blocks (<code>by {host}</code>), comparison operators (<code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code>), and threshold conditions.</li>
+<li><strong>Notification &amp; Message Bridge:</strong>
+Formats notification channels with Datadog <code>@</code> tags (<code>@slack-sre @pagerduty</code>) and appends provenance tags (<code>migrated_by:dcouplr</code>).</li>
+<li><strong>Two-Way CLI Invocation:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">dcouplr translate --source prometheus --target datadog --input rules.yaml --output datadog-monitor.json
+</code></pre></div>
+</li>
+</ul>
+<hr />
+<h2 id="5-promql-telemetry-normalization-mathematics">5. PromQL &amp; Telemetry Normalization Mathematics</h2>
+<p>Observability transpilation is fundamentally a mathematical mapping problem across time-series querying models. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> implements formal parity proofs to ensure alerts fire under identical conditions.</p>
+<h3 id="51-cumulative-counters-ascount-vs-increase">5.1 Cumulative Counters: <code>.as_count()</code> vs. <code>increase()</code></h3>
+<ul>
+<li><strong>Datadog Semantic:</strong>
+<code>sum:http.requests.total{env:prod}.as_count()</code> computes the sum of discrete increments that occurred within the evaluation bucket.</li>
+<li><strong>PromQL Synthesis:</strong>
+In Prometheus, cumulative counters are monotonically increasing values subject to host reboots and container restarts.
+$$\Psi(q) = \text{sum}(\text{increase}(http_requests_total{env=&quot;prod&quot;}[5m]))$$
+<code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> detects the <code>.as_count()</code> modifier and synthesizes an <code>increase()</code> function over the evaluation window with automatic counter reset compensation.</li>
+</ul>
+<h3 id="52-rate-derivation-asrate-vs-rate">5.2 Rate Derivation: <code>.as_rate()</code> vs. <code>rate()</code></h3>
+<ul>
+<li><strong>Datadog Semantic:</strong>
+<code>avg:system.io.ops{host:db-01}.as_rate()</code> computes per-second rate of change.</li>
+<li><strong>PromQL Synthesis:</strong>
+$$\Psi(q) = \text{rate}(system_io_ops{host=&quot;db-01&quot;}[5m])$$</li>
+</ul>
+<h3 id="53-statistical-anomaly-approximation-2-sigma-proof">5.3 Statistical Anomaly Approximation (2-Sigma Proof)</h3>
+<p>Proprietary SaaS engines charge high premiums for black-box ML anomaly detectors. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> compiles Datadog's <code>anomalies()</code> function into transparent, zero-cost moving-window statistical PromQL:</p>
+<p>$$\text{Datadog:} \quad \text{avg}(last_4h):\text{anomalies}(\text{avg}:system.cpu.user{env:prod}, 'basic', 2) &gt; 0.5$$</p>
+<p>$$\Downarrow \text{ Transpiled PromQL } \Downarrow$$</p>
+<p>$$\text{abs}(\text{avg}(system_cpu_user{env=&quot;prod&quot;}) - \text{avg_over_time}(system_cpu_user{env=&quot;prod&quot;}[1d])) &gt; (2.0 \times \text{stddev_over_time}(system_cpu_user{env=&quot;prod&quot;}[1d]))$$</p>
+<p><strong>Mathematical Proof:</strong><br />
+Let $X_t$ be the real-time metric value. The rolling mean $\mu_t = \text{avg_over_time}(X_t[W])$ and rolling standard deviation $\sigma_t = \text{stddev_over_time}(X_t[W])$ establish the normal operating envelope. For a normal distribution, $|X_t - \mu_t| &gt; 2\sigma_t$ captures values outside the 95.4% confidence interval without requiring proprietary ML models.</p>
+<h3 id="54-metric-name-dimension-normalization">5.4 Metric Name &amp; Dimension Normalization</h3>
+<ul>
+<li>All periods (<code>.</code>) and hyphens (<code>-</code>) in metric names and filter keys are converted to underscores (<code>_</code>) to comply with Prometheus OpenMetrics regex <code>[a-zA-Z_:][a-zA-Z0-9_:]*</code>.</li>
+<li>Standard tag prefixes (<code>env:</code>, <code>team:</code>, <code>service:</code>) are parsed into distinct label-value pairs: <code>{env=&quot;prod&quot;, team=&quot;sre&quot;, service=&quot;cart&quot;}</code>.</li>
+</ul>
+<hr />
+<h2 id="6-cross-cloud-iam-transpilation-engine">6. Cross-Cloud IAM Transpilation Engine</h2>
+<p>Security identity translation is often the highest-risk component of any cloud migration. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> provides a bi-directional IAM mapping compiler in <code>opentofu_generator.py</code>:</p>
+<h3 id="61-iam-entity-equivalence-map">6.1 IAM Entity Equivalence Map</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Cloud Concept</th>
+<th style="text-align:left">AWS IAM</th>
+<th style="text-align:left">Google Cloud Platform IAM</th>
+<th style="text-align:left">Azure RBAC &amp; Managed Identity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Workload Identity</strong></td>
+<td style="text-align:left"><code>aws_iam_role</code></td>
+<td style="text-align:left"><code>google_service_account</code></td>
+<td style="text-align:left"><code>azurerm_user_assigned_identity</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Instance Attachment</strong></td>
+<td style="text-align:left"><code>aws_iam_instance_profile</code></td>
+<td style="text-align:left">Compute Service Account Binding</td>
+<td style="text-align:left">VM Identity Block (<code>type = &quot;UserAssigned&quot;</code>)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Policy Definition</strong></td>
+<td style="text-align:left"><code>aws_iam_policy</code></td>
+<td style="text-align:left"><code>google_project_iam_custom_role</code></td>
+<td style="text-align:left"><code>azurerm_role_definition</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Role Assignment</strong></td>
+<td style="text-align:left"><code>aws_iam_role_policy_attachment</code></td>
+<td style="text-align:left"><code>google_project_iam_member</code></td>
+<td style="text-align:left"><code>azurerm_role_assignment</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-aws-iam-policy-to-gcp-iam-member-transpilation-example">6.2 AWS IAM Policy to GCP IAM Member Transpilation Example</h3>
+<p><strong>Input (AWS IAM Policy JSON in Terraform):</strong></p>
+<div class="code-box"><div class="code-box-header"><span>hcl</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-hcl">resource &quot;aws_iam_role&quot; &quot;app_executor&quot; {
+  name = &quot;app-executor-role&quot;
+}
+
+resource &quot;aws_iam_policy&quot; &quot;s3_read&quot; {
+  name = &quot;s3-read-policy&quot;
+  policy = jsonencode({
+    Version = &quot;2012-10-17&quot;
+    Statement = [{
+      Effect   = &quot;Allow&quot;
+      Action   = [&quot;s3:GetObject&quot;, &quot;s3:ListBucket&quot;]
+      Resource = &quot;arn:aws:s3:::my-corp-data/*&quot;
+    }]
+  })
+}
+
+resource &quot;aws_iam_role_policy_attachment&quot; &quot;app_attach&quot; {
+  role       = aws_iam_role.app_executor.name
+  policy_arn = aws_iam_policy.s3_read.arn
+}
+</code></pre></div>
+<p><strong>Transpiled Output (Target OpenTofu GCP HCL):</strong></p>
+<div class="code-box"><div class="code-box-header"><span>hcl</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-hcl"># Transpiled by <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> IAM Engine: AWS IAM -&gt; GCP IAM
+resource &quot;google_service_account&quot; &quot;app_executor&quot; {
+  account_id   = &quot;app-executor-role&quot;
+  display_name = &quot;Transpiled from AWS IAM Role app-executor-role&quot;
+}
+
+# Canonical Mapping: s3:GetObject / s3:ListBucket -&gt; roles/storage.objectViewer
+resource &quot;google_project_iam_member&quot; &quot;app_attach&quot; {
+  project = var.gcp_project_id
+  role    = &quot;roles/storage.objectViewer&quot;
+  member  = &quot;serviceAccount:${google_service_account.app_executor.email}&quot;
+}
+</code></pre></div>
+<hr />
+<h2 id="7-dynamic-core-function-hud-autonomous-dialect-detection">7. Dynamic Core Function HUD &amp; Autonomous Dialect Detection</h2>
+<p>When operators input configurations into <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> (via CLI, REST API, or Compiler Studio), the system automatically analyzes input tokens to determine source grammar dialects without requiring manual flag specification.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌────────────────────────────────────────────────────────────────────────┐
+│                      DYNAMIC CORE FUNCTION HUD                         │
+├────────────────────────────────┬───────────────────────────────────────┤
+│ Detected Source Dialect        │ Datadog Monitor JSON v2               │
+│ Parser Confidence Score        │ 99.8% (Matched AST signature)         │
+│ Core Grammar Features Detected │ [Metric Threshold, Rate Modifier,     │
+│                                │  Anomaly Function (2.0σ), Tag Filters]│
+│ Entities Parsed                │ 8 Monitors • 0 Deadlocks              │
+│ Mathematical Parity Status     │ 100.0% Guaranteed                     │
+│ Zero-Egress Boundary           │ ENFORCED (In-Memory Volatile RAM)     │
+└────────────────────────────────┴───────────────────────────────────────┘
+</code></pre></div>
+<h3 id="71-autonomous-dialect-heuristics">7.1 Autonomous Dialect Heuristics</h3>
+<ol>
+<li><strong>Datadog JSON Signature:</strong> Presence of keys <code>&quot;query&quot;</code>, <code>&quot;options&quot;</code>, <code>&quot;thresholds&quot;</code>, <code>&quot;message&quot;</code>, or query prefixes <code>avg(last_</code>, <code>max(last_</code>, <code>anomalies(</code>.</li>
+<li><strong>New Relic NRQL Signature:</strong> Presence of <code>&quot;nrql&quot;</code>, <code>&quot;query&quot;</code>, or strings beginning with <code>SELECT ... FROM ... WHERE ... FACET</code>.</li>
+<li><strong>AWS CloudWatch Signature:</strong> Presence of <code>&quot;AlarmName&quot;</code>, <code>&quot;MetricName&quot;</code>, <code>&quot;Namespace&quot;</code>, <code>&quot;Dimensions&quot;</code>, <code>&quot;MetricDataQueries&quot;</code>.</li>
+<li><strong>Azure Monitor Signature:</strong> Presence of <code>&quot;criteria&quot;</code>, <code>&quot;allOf&quot;</code>, <code>&quot;metricNamespace&quot;</code>, <code>&quot;odata.type&quot;</code>, or KQL queries.</li>
+<li><strong>Terraform / OpenTofu HCL:</strong> Tokens <code>resource &quot;...&quot;</code>, <code>variable &quot;...&quot;</code>, <code>terraform {</code>, <code>module &quot;...&quot;</code>.</li>
+</ol>
+<hr />
+<h2 id="8-turnkey-enterprise-migration-recipes-catalog-recipes-18">8. Turnkey Enterprise Migration Recipes Catalog (Recipes 1–8)</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> ships with 8 pre-compiled, verified enterprise migration recipes located in <code>recipes/</code>:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">recipes/
+├── datadog_to_grafana11/                # Recipe 1: Datadog Monitors -&gt; Grafana 11 Unified Alerting
+├── cloudformation_to_opentofu_gcp/      # Recipe 2: AWS CloudFormation / IaC -&gt; OpenTofu GCP
+├── promql_standardization_azure_arc_anthos/ # Recipe 3: Multi-Cloud Telemetry Standardization
+├── newrelic_to_prometheus/              # Recipe 4: New Relic NRQL Alerts -&gt; Prometheus Rules
+├── cloudwatch_to_grafana11/             # Recipe 5: AWS CloudWatch Alarms -&gt; Grafana 11 Alerts
+├── datadog_slo_to_prometheus_rules/     # Recipe 6: Datadog Service Level Objectives -&gt; PromQL SLOs
+├── azure_monitor_to_grafana11/          # Recipe 7: Azure Monitor Metric Alerts -&gt; Grafana 11
+└── cloud_run_direct_vpc_egress/         # Recipe 8: OpenTofu Cloud Run Direct VPC Egress Subnets
+</code></pre></div>
+<h3 id="recipe-1-datadog-monitors-to-grafana-11-unified-alerting">Recipe 1: Datadog Monitors $\to$ Grafana 11 Unified Alerting</h3>
+<ul>
+<li><strong>Input:</strong> JSON array of Datadog monitor definitions.</li>
+<li><strong>Output:</strong> Grafana 11 provisioning YAML with 3-stage RefId A/B/C query pipelines and PromQL syntax.</li>
+<li><strong>CLI Command:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">dcouplr translate --input monitors.json --source datadog --target grafana --output grafana-alerts.yaml
+</code></pre></div>
+</li>
+</ul>
+<h3 id="recipe-2-aws-cloudformation-iac-to-opentofu-gcp">Recipe 2: AWS CloudFormation / IaC $\to$ OpenTofu GCP</h3>
+<ul>
+<li><strong>Input:</strong> AWS CloudFormation JSON/YAML or Terraform AWS HCL.</li>
+<li><strong>Output:</strong> Declarative OpenTofu Google Cloud Platform configuration (<code>google_compute_instance</code>, <code>google_compute_network</code>, <code>google_sql_database_instance</code>).</li>
+<li><strong>CLI Command:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">dcouplr translate --input infrastructure.tf --source terraform --target opentofu_gcp --output gcp_infra.tf
+</code></pre></div>
+</li>
+</ul>
+<h3 id="recipe-3-promql-standardization-azure-arc-google-anthos">Recipe 3: PromQL Standardization (Azure Arc &amp; Google Anthos)</h3>
+<ul>
+<li><strong>Input:</strong> Mixed multi-cloud monitoring queries from heterogeneous clusters.</li>
+<li><strong>Output:</strong> Unified, cluster-agnostic PromQL queries with standardized dimensional labels (<code>cluster_id</code>, <code>node_role</code>, <code>datacenter</code>).</li>
+</ul>
+<h3 id="recipe-4-new-relic-nrql-to-prometheus-alertmanager">Recipe 4: New Relic NRQL $\to$ Prometheus Alertmanager</h3>
+<ul>
+<li><strong>Input:</strong> New Relic NRQL alert condition JSON exports.</li>
+<li><strong>Output:</strong> Prometheus Alertmanager rules YAML mapping NRQL tables and facets to OpenMetrics queries.</li>
+<li><strong>CLI Command:</strong><div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">dcouplr translate --input newrelic_alerts.json --source new_relic --target prometheus --output prometheus_rules.yaml
+</code></pre></div>
+</li>
+</ul>
+<h3 id="recipe-5-aws-cloudwatch-alarms-to-grafana-11-alerts">Recipe 5: AWS CloudWatch Alarms $\to$ Grafana 11 Alerts</h3>
+<ul>
+<li><strong>Input:</strong> CloudWatch alarm configurations from AWS CLI (<code>describe-alarms</code>).</li>
+<li><strong>Output:</strong> Grafana Unified Alerting YAML mapping <code>AWS/EC2</code>, <code>AWS/RDS</code>, and <code>AWS/ApplicationELB</code> metrics.</li>
+</ul>
+<h3 id="recipe-6-datadog-slos-to-prometheus-recording-alert-rules">Recipe 6: Datadog SLOs $\to$ Prometheus Recording &amp; Alert Rules</h3>
+<ul>
+<li><strong>Input:</strong> Datadog 7-day and 30-day Service Level Objective (SLO) definitions.</li>
+<li><strong>Output:</strong> Prometheus recording rules calculating rolling error budgets ($1 - \text{SLI}$) and burn rate multi-window alerts.</li>
+</ul>
+<h3 id="recipe-7-azure-monitor-to-grafana-11-alerts">Recipe 7: Azure Monitor $\to$ Grafana 11 Alerts</h3>
+<ul>
+<li><strong>Input:</strong> Azure Monitor Metric Alert ARM JSON.</li>
+<li><strong>Output:</strong> Grafana 11 YAML with dynamic threshold compensation and Azure VM metric translations.</li>
+</ul>
+<h3 id="recipe-8-opentofu-cloud-run-direct-vpc-egress-subnets">Recipe 8: OpenTofu Cloud Run Direct VPC Egress Subnets</h3>
+<ul>
+<li><strong>Input:</strong> Legacy Google Cloud Serverless VPC Access connector configurations (<code>google_vpc_access_connector</code>).</li>
+<li><strong>Output:</strong> Modern <code>google_cloud_run_v2_service</code> Direct VPC Egress network interface blocks, eliminating connector VM overhead and recurring egress latency.</li>
+</ul>
+<hr />
+<h2 id="9-web-compiler-studio-headless-rest-api-reference">9. Web Compiler Studio &amp; Headless REST API Reference</h2>
+<h3 id="91-visual-compiler-studio-compiler">9.1 Visual Compiler Studio (<code>/compiler</code>)</h3>
+<p>The Web Compiler Studio provides a live, dual-pane interactive environment with real-time token scrubbing, AST inspection, and syntax highlighting:</p>
+<ul>
+<li><strong>Left Pane:</strong> Source configuration input with format selector, VPC topology picker, and preset loader.</li>
+<li><strong>Right Pane:</strong> Live synthesized target output (YAML/HCL/Bicep) with Parity Fidelity Score indicator, download button, and copy-to-clipboard action.</li>
+<li><strong>Audit Bar:</strong> Real-time log showing in-memory secret masking, IP tokenization, and PromQL synthesis steps.</li>
+</ul>
+<h3 id="92-headless-rest-api-endpoints">9.2 Headless REST API Endpoints</h3>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> exposes a high-throughput, headless REST API for CI/CD GitOps pipelines:</p>
+<h4 id="post-v1translate"><code>POST /v1/translate</code></h4>
+<p>Executes end-to-end multi-vendor parsing, validation, and target code generation.</p>
+<ul>
+<li><strong>Request:</strong><div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;content&quot;: &quot;{\&quot;name\&quot;: \&quot;High CPU\&quot;, \&quot;query\&quot;: \&quot;avg(last_5m):system.cpu.user{env:prod} by {host} &gt; 80\&quot;}&quot;,
+  &quot;source_vendor&quot;: &quot;datadog&quot;,
+  &quot;target_platform&quot;: &quot;grafana&quot;,
+  &quot;dry_run&quot;: false
+}
+</code></pre></div>
+</li>
+<li><strong>Response:</strong><div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;artifact&quot;: &quot;apiVersion: 1\ngroups: ...&quot;,
+  &quot;fidelity_score&quot;: 100.0,
+  &quot;diagnostics&quot;: [&quot;Mapped Datadog query to PromQL with 100% mathematical parity&quot;],
+  &quot;entity_count&quot;: 1
+}
+</code></pre></div>
+</li>
+</ul>
+<h4 id="post-v1parse"><code>POST /v1/parse</code></h4>
+<p>Parses input syntax into raw <code>UITGraph</code> JSON AST without code generation.</p>
+<h4 id="post-v1generate"><code>POST /v1/generate</code></h4>
+<p>Ingests an existing <code>UITGraph</code> AST and synthesizes target platform configuration code.</p>
+<h4 id="get-v1supported-matrix"><code>GET /v1/supported-matrix</code></h4>
+<p>Returns the operational capability matrix across all supported source formats and target emitters.</p>
+<h4 id="get-v1recipes"><code>GET /v1/recipes</code></h4>
+<p>Dynamically returns metadata, sample inputs, and CLI execution commands for all 8 enterprise turnkey migration recipes.</p>
+<hr />
+<h2 id="10-cli-tooling-diagnostics-error-taxonomy">10. CLI Tooling, Diagnostics &amp; Error Taxonomy</h2>
+<h3 id="101-command-line-interface-reference">10.1 Command-Line Interface Reference</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Display version and license entitlement status
+dcouplr version
+
+# Perform end-to-end translation
+dcouplr translate --input &lt;file&gt; --source &lt;vendor&gt; --target &lt;platform&gt; [--output &lt;dest&gt;] [--dry-run]
+
+# Inspect intermediate representation AST JSON
+dcouplr inspect --input &lt;file&gt; --source &lt;vendor&gt;
+
+# Lint configurations for syntax issues and unmapped metrics
+dcouplr lint --input &lt;file&gt; --source &lt;vendor&gt;
+
+# Run preflight system diagnostics and memory check
+dcouplr doctor
+
+# Generate OpenTofu state relocation plans (state mv)
+dcouplr state-plan --input &lt;tf-file&gt; --target gcp --project &lt;project-id&gt;
+
+# Commercial Entitlement Management (Tier 1-4)
+dcouplr auth login --license-key &lt;key&gt;
+dcouplr auth status
+dcouplr auth logout
+</code></pre></div>
+<h3 id="102-diagnostic-error-code-taxonomy">10.2 Diagnostic Error Code Taxonomy</h3>
+<p>When the compiler detects syntax irregularities or security policy violations, it emits structured error codes:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Error Code</th>
+<th style="text-align:center">Severity</th>
+<th style="text-align:left">Description</th>
+<th style="text-align:left">Remediation Workflow</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong><code>ERR_SYNTAX_PARSE</code></strong></td>
+<td style="text-align:center"><code>CRITICAL</code></td>
+<td style="text-align:left">Input payload contains malformed JSON or invalid HCL blocks.</td>
+<td style="text-align:left">Validate JSON syntax via <code>jq</code> or run <code>dcouplr lint</code> to pinpoint line offset.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>ERR_UNMAPPED_METRIC</code></strong></td>
+<td style="text-align:center"><code>WARNING</code></td>
+<td style="text-align:left">Source metric has no standard PromQL canonical equivalent.</td>
+<td style="text-align:left">Pass <code>--metric-map &quot;source_metric=target_metric&quot;</code> to specify custom translation.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>ERR_SECRET_DETECTED</code></strong></td>
+<td style="text-align:center"><code>ALERT</code></td>
+<td style="text-align:left">Cleartext AWS secret key or private password discovered.</td>
+<td style="text-align:left">The in-memory scrubber will mask the token automatically; rotate exposed secret in source repository.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>ERR_CYCLIC_DEPENDENCY</code></strong></td>
+<td style="text-align:center"><code>CRITICAL</code></td>
+<td style="text-align:left">Circular <code>DEPENDS_ON</code> or <code>MONITORS</code> edge loop detected in <code>UITGraph</code>.</td>
+<td style="text-align:left">Review resource dependency graph and break circular references in IaC definition.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>ERR_ANOMALY_FALLBACK</code></strong></td>
+<td style="text-align:center"><code>INFO</code></td>
+<td style="text-align:left">Black-box proprietary anomaly detector replaced with 2$\sigma$ PromQL.</td>
+<td style="text-align:left">Inform SRE team that standard deviation baseline (<code>1d</code> window) is active.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="support-field-engineering-escalation">📞 Support &amp; Field Engineering Escalation</h2>
+<p>For questions or assistance with complex AST transpilation pipelines, reach out through your guaranteed support channel:</p>
+<ul>
+<li><strong>Community Core (Tier 0):</strong> <a href="https://github.com/varinull/dcouplr/discussions">GitHub Discussions</a></li>
+<li><strong>Developer Pro (Tier 1):</strong> Email support queue (<code>support@dcouplr.com</code>, 48-hour SLA)</li>
+<li><strong>Cluster Small/Medium (Tier 2/3):</strong> Support Portal &amp; Shared Slack Channel (<code>#dcouplr-war-room</code>, 2-hour SLA)</li>
+<li><strong>Cluster Large (Tier 4):</strong> Dedicated Technical Account Manager (TAM) &amp; 1-Hour SLA War-Room</li>
+</ul>
+</div>
+      <pre id="raw-view"><code># ⚙️ `&lt;dcouplr/&gt;` Compiler &amp; AST Transpiler Operator Manual
+**Document ID:** `VA-MAN-COMPILER-001`  
+**Classification:** Enterprise Engineering Technical Specification &amp; Operator Runbook  
+**Target Audience:** Staff SREs, Platform Engineers, Cloud Architects, and Field TAMs  
+**Status:** Approved for Production (`v1.0.0-GA`)  
+**Security Guarantee:** Zero-Egress Local-First In-VPC Execution ($0 Cloud Egress)  
+
+---
+
+## 📑 Executive Summary &amp; Table of Contents
+
+The **`&lt;dcouplr/&gt;` Compiler &amp; AST Transpiler Engine** is an open-core, deterministic translation system designed to eliminate multi-million dollar SaaS observability and infrastructure lock-in. Operating strictly inside the customer&#x27;s Virtual Private Cloud (VPC) in volatile memory, `&lt;dcouplr/&gt;` parses proprietary vendor configurations (Datadog monitors, New Relic NRQL, AWS CloudWatch alarms, Azure Monitor alerts, and Terraform HCL) into a vendor-neutral **Universal Infrastructure &amp; Telemetry Intermediate Representation (`UITGraph`)**, performs mathematical semantic normalization ($\Phi(q) \equiv \Psi(\text{PromQL})$), and synthesizes production-ready open-source artifacts (Grafana 11 Unified Alerting, Prometheus Alertmanager, OpenTofu HCL, and Azure Bicep).
+
+### Table of Contents
+1. [Compiler Architecture &amp; Design Philosophy](#1-compiler-architecture--design-philosophy)
+2. [The UIT-IR Abstract Syntax Tree Specification](#2-the-uit-ir-abstract-syntax-tree-specification)
+3. [Multi-Vendor Source Parsers &amp; Lexers](#3-multi-vendor-source-parsers--lexers)
+4. [Target Code Generators &amp; Emitters](#4-target-code-generators--emitters)
+5. [PromQL &amp; Telemetry Normalization Mathematics](#5-promql--telemetry-normalization-mathematics)
+6. [Cross-Cloud IAM Transpilation Engine](#6-cross-cloud-iam-transpilation-engine)
+7. [Dynamic Core Function HUD &amp; Autonomous Dialect Detection](#7-dynamic-core-function-hud--autonomous-dialect-detection)
+8. [Turnkey Enterprise Migration Recipes Catalog (Recipes 1–8)](#8-turnkey-enterprise-migration-recipes-catalog-recipes-18)
+9. [Web Compiler Studio &amp; Headless REST API Reference](#9-web-compiler-studio--headless-rest-api-reference)
+10. [CLI Tooling, Diagnostics &amp; Error Taxonomy](#10-cli-tooling-diagnostics--error-taxonomy)
+
+---
+
+## 1. Compiler Architecture &amp; Design Philosophy
+
+```
+  ┌─────────────────────────────────────────────────────────────────────────────────┐
+  │                 IN-VPC VOLATILE MEMORY BOUNDARY (ZERO-EGRESS)                   │
+  │                                                                                 │
+  │  Source Input                     Pre-Flight Guard           Semantic AST Graph │
+  │  ┌───────────────┐               ┌─────────────────┐        ┌────────────────┐  │
+  │  │ Datadog JSON  │──────────────▶│ In-Memory Regex │───────▶│                │  │
+  │  │ New Relic     │ (Plaintext /  │ Token Scrubber  │        │  UITGraph AST  │  │
+  │  │ CloudWatch    │  Stream)      │ (RFC 1918 Mask, │        │  (Nodes/Edges) │  │
+  │  │ Azure Monitor │               │  Secret Redact) │        │                │  │
+  │  │ Terraform HCL │               └─────────────────┘        └───────┬────────┘  │
+  │  └───────────────┘                                                  │           │
+  │                                                                     │           │
+  │                                                                     ▼           │
+  │  Synthesized Code                 Target Emitters            Math Normalizer    │
+  │  ┌───────────────┐               ┌─────────────────┐        ┌────────────────┐  │
+  │  │ Grafana 11 YAML│◀──────────────│ Prometheus/Alert│◀───────│ Parity Proof:  │  │
+  │  │ PromQL Rules  │               │ OpenTofu HCL    │        │ Φ(q) ≡ Ψ(Prom) │  │
+  │  │ OpenTofu HCL  │               │ Azure Bicep     │        │ 2σ Anomaly Res │  │
+  │  │ Azure Bicep   │               │ State Relocator │        │ Rate Smoothing │  │
+  │  └───────────────┘               └─────────────────┘        └────────────────┘  │
+  └─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 1.1 The 4 Architectural Tenets
+1. **Deterministic AST Transformation over LLM Prompting:**
+   Core syntax trees are parsed using deterministic lexers and compiled via mathematical AST node mappings. `&lt;dcouplr/&gt;` never relies on non-deterministic generative LLMs for syntax tree emission, eliminating syntax hallucination, floating threshold skew, and uncompilable IaC blocks.
+2. **Strict In-VPC Zero-Egress Guarantee:**
+   All compilation passes execute inside customer-managed compute (Bare-metal, EC2, GCE, AKS/EKS/GKE, or Local CLI). No telemetry metadata, AST nodes, internal IP addresses, or IAM credentials ever leave volatile RAM ($0 cloud egress bill).
+3. **In-Memory Volatile Token Scrubbing:**
+   Before any AST node is constructed, the scanner passes the payload through an in-memory regex sanitizer (``anonymizer.py``) that replaces private RFC 1918 IP addresses (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), AWS secret access keys, database passwords, and internal hostnames with deterministic cryptographic aliases (e.g. `ip-10-x-x-12.internal`).
+4. **Mathematical Parity Verification ($\Phi(q) \equiv \Psi(\text{PromQL})$):**
+   Query transformations preserve time-series integration calculus. Cumulative counter rollups (`.as_count()`) are synthesized into `increase()` expressions over evaluation windows, rate gauges (`.as_rate()`) are mapped into `rate()`, and Datadog 2-sigma anomaly detection queries are compiled into dual-sided `avg_over_time()` and `stddev_over_time()` standard deviation bounds.
+
+---
+
+## 2. The UIT-IR Abstract Syntax Tree Specification
+
+The **Universal Infrastructure &amp; Telemetry Intermediate Representation (UIT-IR)** is a strongly typed, directed graph defined in ``migration_tools/ir/models.py`` and ``migration_tools/ir/graph.py``.
+
+### 2.1 Top-Level AST Container: `UITGraph`
+```python
+class UITGraph(BaseModel):
+    schema_version: str = &quot;1.0.0&quot;
+    source_system: str             # &quot;datadog&quot;, &quot;new_relic&quot;, &quot;cloudwatch&quot;, &quot;azure_monitor&quot;, &quot;terraform&quot;
+    monitors: List[MonitorNode]    # Telemetry and alert definitions
+    resources: List[ResourceNode]  # Compute, network, database, storage resources
+    policies: List[PolicyNode]     # IAM roles, security groups, firewall rules
+    edges: List[Edge]              # Dependency relationships (MONITORS, SECURES, DEPENDS_ON)
+    created_at: Optional[str]      # ISO 8601 compilation timestamp
+```
+
+### 2.2 Alert Node Specification: `MonitorNode`
+```python
+class MonitorNode(BaseModel):
+    id: str                                # Unique canonical identifier (e.g., &quot;mon-dd-10921&quot;)
+    name: str                              # Human-readable title
+    description: Optional[str]             # Alert playbook, runbook URL, or notification message
+    source_vendor: str                     # &quot;datadog&quot;, &quot;newrelic&quot;, &quot;cloudwatch&quot;, &quot;azure&quot;
+    monitor_type: MonitorType              # METRIC_THRESHOLD, LOG_ALERT, COMPOSITE, SERVICE_CHECK
+    target_metric: MetricTarget            # Detailed metric query AST
+    condition: ComparisonOperator          # GT (&gt;), GTE (&gt;=), LT (&lt;), LTE (&lt;=), EQ (==), NEQ (!=)
+    critical_threshold: float              # Critical firing limit
+    warning_threshold: Optional[float]     # Optional warning/escalation limit
+    evaluation_window: str                 # Duration condition must hold (e.g., &quot;5m&quot;, &quot;15m&quot;)
+    tags: List[str]                        # Metadata tags (e.g., [&quot;env:prod&quot;, &quot;service:checkout&quot;])
+    notification_channels: List[str]       # Alert endpoints (e.g., [&quot;slack-sre&quot;, &quot;pagerduty-p1&quot;])
+    metadata: Dict[str, Any]               # Preserved source-specific options
+```
+
+### 2.3 Normalized Metric Query AST: `MetricTarget`
+```python
+class MetricTarget(BaseModel):
+    raw_query: str                         # Original vendor query string
+    metric_name: str                       # Canonical metric ID (e.g., &quot;system.cpu.user&quot;)
+    filters: Dict[str, str]                # Key-value label selectors (e.g., {&quot;env&quot;: &quot;prod&quot;})
+    group_by: List[str]                    # Aggregation dimensions (e.g., [&quot;host&quot;, &quot;region&quot;])
+    aggregation: AggregationFunction       # AVG, SUM, MIN, MAX, COUNT, RATE
+    time_window: str                       # Resolution window (e.g., &quot;5m&quot;, &quot;1h&quot;)
+    metric_modifier: Optional[str]         # &quot;.as_count()&quot;, &quot;.as_rate()&quot;, &quot;.rollup()&quot;
+    is_anomaly_fallback: bool              # True if translated from statistical anomaly function
+    anomaly_bounds: Optional[float]        # Standard deviations (e.g., 2.0 = 95.4% confidence)
+    anomaly_algorithm: Optional[str]       # &quot;basic&quot;, &quot;agile&quot;, &quot;robust&quot;
+    anomaly_window: Optional[str]          # Rolling baseline window (e.g., &quot;1d&quot;, &quot;7d&quot;)
+    math_wrapper: Optional[str]            # &quot;abs&quot;, &quot;log10&quot;, &quot;clamp_min&quot;, &quot;clamp_max&quot;
+    math_parameter: Optional[float]        # Numerical operand for clamp functions
+    temporal_offset: Optional[str]         # Historical time shift (e.g., &quot;1h&quot;, &quot;1d&quot;, &quot;7d&quot;)
+    is_outlier_fallback: bool              # True if translated from DBSCAN/MAD outlier detection
+    outlier_bounds: Optional[float]        # Outlier distance threshold
+    unmapped_tokens: List[str]             # Preserved tokens for compiler diagnostic logs
+    diagnostics: List[str]                 # Compiler transformation trace messages
+```
+
+### 2.4 Infrastructure Resource Node: `ResourceNode`
+```python
+class ResourceNode(BaseModel):
+    id: str                                # Canonical ID (e.g., &quot;res-aws-i-0a1b2c3d&quot;)
+    name: str                              # Resource name (e.g., &quot;web-frontend-prod&quot;)
+    resource_type: str                     # Canonical standard type (e.g., &quot;compute.instance&quot;)
+    source_provider: str                   # &quot;aws&quot;, &quot;gcp&quot;, &quot;azure&quot;
+    properties: Dict[str, Any]             # Machine type, CIDR blocks, storage capacity, IOPS
+    tags: Dict[str, str]                   # Operational tags
+```
+
+---
+
+## 3. Multi-Vendor Source Parsers &amp; Lexers
+
+`&lt;dcouplr/&gt;` includes five dedicated parser implementations in ``migration_tools/parsers/``:
+
+### 3.1 Datadog Monitor Parser (`datadog_monitor.py`)
+- **Query Grammar Pattern:**
+  Parses Datadog query expressions matching:
+  `{eval_agg}(last_{window}):{metric_agg}:{metric_name}{tags}.{modifier} by {group_by} {op} {threshold}`
+- **Extended Function Handlers:**
+  - `anomalies(metric, &#x27;algorithm&#x27;, bounds)` &amp;rarr; Translates to dual-sided moving window deviation.
+  - `outliers(metric, &#x27;dbscan&#x27;, tolerance)` &amp;rarr; Translates to peer-group dispersion thresholding.
+  - `hour_before()`, `day_before()`, `week_before()` &amp;rarr; Translates to PromQL temporal `offset`.
+  - `abs()`, `log10()`, `clamp_min()`, `clamp_max()` &amp;rarr; Translates to canonical PromQL math functions.
+- **Notification Target Extraction:**
+  Scans `@channel` tokens in monitor message bodies (e.g., `@slack-infra`, `@pagerduty-critical`) and maps them to alert notification channel lists.
+
+### 3.2 New Relic NRQL Alert Parser (`nrql_alert.py`)
+- **Query Grammar Pattern:**
+  Matches standard New Relic queries:
+  `SELECT {agg}({target}) FROM {table} WHERE {filters} FACET {dimensions} SINCE {window}`
+- **Table Remappings:**
+  - `SystemSample` &amp;rarr; `system.cpu.user`, `system.mem.used`, `system.load.15`
+  - `ProcessSample` &amp;rarr; `process.cpu.user`, `process.memory.rss`
+  - `Transaction` &amp;rarr; `trace.http.request.duration`, `http.requests.total`
+  - `TransactionError` &amp;rarr; `http.requests.errors`
+- **Aggregation Translations:**
+  NRQL `average()`, `percentile()`, `rate()`, and `filter()` clauses are tokenized into canonical aggregation AST primitives.
+
+### 3.3 AWS CloudWatch Alarm Parser (`cloudwatch_alarm.py`)
+- **Alarm Types Supported:**
+  - Standard Metric Alarms (`Namespace`, `MetricName`, `Statistic`, `Dimensions`, `Threshold`).
+  - Metric Math Alarms (`MetricDataQueries` array with math expressions e.g. `m1 / m2 * 100`).
+  - Anomaly Detection Alarms (`ANOMALY_DETECTION_BAND(m1, 2)`).
+- **Canonical Metrics:**
+  - `AWS/EC2 CPUUtilization` &amp;rarr; `node_cpu_utilization_user`
+  - `AWS/EC2 NetworkIn` / `NetworkOut` &amp;rarr; `node_network_receive_bytes_total` / `transmit`
+  - `AWS/RDS CPUUtilization` &amp;rarr; `aws_rds_cpu_utilization_average`
+  - `AWS/ApplicationELB RequestCount` &amp;rarr; `http_requests_total`
+
+### 3.4 Azure Monitor Metric Alert Parser (`azure_monitor.py`)
+- **Alert Payloads Supported:**
+  - Static Metric Alerts (`Microsoft.Insights/metricAlerts`).
+  - Dynamic Threshold Alerts (`DynamicThresholdCriteria` with `failingPeriods` and `sensitivity`).
+  - Scheduled Query Rules (Kusto KQL queries over Log Analytics).
+- **Metric Translations:**
+  - `Percentage CPU` &amp;rarr; `azure_vm_percentage_cpu`
+  - `Available Memory Bytes` &amp;rarr; `azure_vm_available_memory_bytes`
+  - `DTU percentage` &amp;rarr; `azure_sql_dtu_percentage`
+
+### 3.5 Terraform / OpenTofu HCL Parser (`terraform_hcl.py`)
+- **Block Tokenizer:**
+  Parses both native HCL text files and `tf.json` configuration structures into `ResourceNode`, `PolicyNode`, and dependency `Edge` elements.
+- **Canonical Resource Typing:**
+  | Source Cloud Provider | Source Terraform Resource | Canonical UIT-IR Type |
+  | :--- | :--- | :--- |
+  | **AWS** | `aws_instance` | `compute.instance` |
+  | **AWS** | `aws_vpc` / `aws_subnet` | `network.vpc` / `network.subnet` |
+  | **AWS** | `aws_db_instance` | `database.relational` |
+  | **AWS** | `aws_eks_cluster` / `aws_eks_node_group` | `container.kubernetes_cluster` |
+  | **AWS** | `aws_sqs_queue` / `aws_sns_topic` | `queue.message_queue` / `pubsub_topic` |
+  | **AWS** | `aws_lb` / `aws_alb` | `network.load_balancer` |
+  | **AWS** | `aws_kms_key` | `security.key_management` |
+  | **AWS** | `aws_iam_role` / `aws_iam_policy` | `iam.role` / `iam.policy` |
+  | **GCP** | `google_compute_instance` | `compute.instance` |
+  | **GCP** | `google_compute_network` | `network.vpc` |
+  | **GCP** | `google_sql_database_instance` | `database.relational` |
+  | **GCP** | `google_container_cluster` | `container.kubernetes_cluster` |
+  | **Azure** | `azurerm_linux_virtual_machine` | `compute.instance` |
+  | **Azure** | `azurerm_virtual_network` | `network.vpc` |
+  | **Azure** | `azurerm_postgresql_flexible_server`| `database.relational` |
+  | **Azure** | `azurerm_kubernetes_cluster` | `container.kubernetes_cluster` |
+
+---
+
+## 4. Target Code Generators &amp; Emitters
+
+The emission layer in ``migration_tools/generators/`` transforms the validated `UITGraph` into deployment-ready configurations:
+
+### 4.1 Grafana 11 Unified Alerting Emitter (`grafana_alert.py`)
+- **Output:** Provisioning YAML matching Grafana 10+ and 11 Alerting schema.
+- **Execution Pipeline:**
+  - **RefId &quot;A&quot;:** Time-series query using the synthesized PromQL query.
+  - **RefId &quot;B&quot;:** Reduce expression (`last`, `mean`, or `max` over the evaluation window).
+  - **RefId &quot;C&quot;:** Math threshold comparison (`$B &gt; CriticalThreshold`).
+- **Multi-Threshold Pipeline (Enterprise Mode):**
+  When warning thresholds are configured, emits a 4-step pipeline: RefId &quot;A&quot; (Query), RefId &quot;B&quot; (Reduce), RefId &quot;C&quot; (Warning Condition), RefId &quot;D&quot; (Critical Condition), allowing Grafana to escalate alerts gracefully.
+
+### 4.2 Prometheus Alertmanager Rules Emitter (`grafana_alert.py`)
+- **Output:** PrometheusRule YAML or native Alertmanager `rules.yaml`.
+- **Structure:**
+  ```yaml
+  groups:
+    - name: Migrated_Datadog_Alerts
+      rules:
+        - alert: HighCPUUsage_Prod
+          expr: avg by (host) (node_cpu_utilization_user{env=&quot;prod&quot;}) &gt; 85.0
+          for: 5m
+          labels:
+            severity: critical
+            team: sre
+          annotations:
+            summary: High CPU usage detected on {{ $labels.host }}
+            runbook_url: https://docs.dcouplr.com/runbooks/cpu-spike
+  ```
+
+### 4.3 OpenTofu Multi-Cloud IaC Emitter (`opentofu_generator.py`)
+Generates native, declarative HCL code targeting Google Cloud Platform (`hashicorp/google`), Amazon Web Services (`hashicorp/aws`), or Microsoft Azure (`hashicorp/azurerm`):
+- **Sizing Equivalence Engine:**
+  Automatically translates instance sizes across hyperscalers (e.g. AWS `t3.medium` $\to$ GCP `e2-medium` $\to$ Azure `Standard_B2ms`).
+- **Subnet &amp; IP Allocation:**
+  Preserves non-overlapping RFC 1918 CIDRs while substituting target-native routing resources.
+- **CRD &amp; Unmapped Attribute Fallback:**
+  Any proprietary or custom CRD block not strictly in the canonical ontology is wrapped into an `# [UNMAPPED-RESOURCE-FALLBACK]` block with all key-value attributes preserved as commented HCL, guaranteeing zero data loss.
+
+### 4.4 Azure Bicep Emitter (`bicep_generator.py`)
+Emits strongly typed Azure Bicep templates (`.bicep`) for deployment via Azure CLI or Azure Resource Manager, compiling network definitions into `Microsoft.Network/virtualNetworks`, compute into `Microsoft.Compute/virtualMachines`, and identities into `Microsoft.ManagedIdentity/userAssignedIdentities`.
+
+### 4.5 Datadog Monitor Generator &amp; Bi-Directional Query Emitter (`datadog_monitor.py`)
+Unlocks true **two-way bi-directional translation** ($\phi \circ \psi = 	ext{id}$), allowing engineers to transpile Prometheus alert rules, Grafana Unified Alerting definitions, or multi-vendor monitors back into native Datadog Monitor JSON format:
+- **Canonical Reverse Metric Mapping:**
+  Maps standard OpenMetrics and node_exporter identifiers back to Datadog metrics (e.g. `node_cpu_utilization_user` $	o$ `system.cpu.user`, `node_memory_active_bytes` $	o$ `system.mem.used`, `http_request_duration_seconds` $	o$ `trace.http.request.duration`).
+- **Query Grammar Synthesis:**
+  Reconstructs Datadog evaluation syntax `avg(last_5m):system.cpu.user{env:prod} by {host} &gt; 85` including time windows (`last_5m`, `last_1h`), tag dimensions (`{env:prod}`), group-by blocks (`by {host}`), comparison operators (`&gt;`, `&gt;=`, `&lt;`, `&lt;=`), and threshold conditions.
+- **Notification &amp; Message Bridge:**
+  Formats notification channels with Datadog `@` tags (`@slack-sre @pagerduty`) and appends provenance tags (`migrated_by:dcouplr`).
+- **Two-Way CLI Invocation:**
+  ```bash
+  dcouplr translate --source prometheus --target datadog --input rules.yaml --output datadog-monitor.json
+  ```
+
+---
+
+## 5. PromQL &amp; Telemetry Normalization Mathematics
+
+Observability transpilation is fundamentally a mathematical mapping problem across time-series querying models. `&lt;dcouplr/&gt;` implements formal parity proofs to ensure alerts fire under identical conditions.
+
+### 5.1 Cumulative Counters: `.as_count()` vs. `increase()`
+- **Datadog Semantic:**
+  `sum:http.requests.total{env:prod}.as_count()` computes the sum of discrete increments that occurred within the evaluation bucket.
+- **PromQL Synthesis:**
+  In Prometheus, cumulative counters are monotonically increasing values subject to host reboots and container restarts.
+  $$\Psi(q) = \text{sum}(\text{increase}(http\_requests\_total\{env=&quot;prod&quot;\}[5m]))$$
+  `&lt;dcouplr/&gt;` detects the `.as_count()` modifier and synthesizes an `increase()` function over the evaluation window with automatic counter reset compensation.
+
+### 5.2 Rate Derivation: `.as_rate()` vs. `rate()`
+- **Datadog Semantic:**
+  `avg:system.io.ops{host:db-01}.as_rate()` computes per-second rate of change.
+- **PromQL Synthesis:**
+  $$\Psi(q) = \text{rate}(system\_io\_ops\{host=&quot;db-01&quot;\}[5m])$$
+
+### 5.3 Statistical Anomaly Approximation (2-Sigma Proof)
+Proprietary SaaS engines charge high premiums for black-box ML anomaly detectors. `&lt;dcouplr/&gt;` compiles Datadog&#x27;s `anomalies()` function into transparent, zero-cost moving-window statistical PromQL:
+
+$$\text{Datadog:} \quad \text{avg}(last\_4h):\text{anomalies}(\text{avg}:system.cpu.user\{env:prod\}, &#x27;basic&#x27;, 2) &gt; 0.5$$
+
+$$\Downarrow \text{ Transpiled PromQL } \Downarrow$$
+
+$$\text{abs}(\text{avg}(system\_cpu\_user\{env=&quot;prod&quot;\}) - \text{avg\_over\_time}(system\_cpu\_user\{env=&quot;prod&quot;\}[1d])) &gt; (2.0 \times \text{stddev\_over\_time}(system\_cpu\_user\{env=&quot;prod&quot;\}[1d]))$$
+
+**Mathematical Proof:**  
+Let $X_t$ be the real-time metric value. The rolling mean $\mu_t = \text{avg\_over\_time}(X_t[W])$ and rolling standard deviation $\sigma_t = \text{stddev\_over\_time}(X_t[W])$ establish the normal operating envelope. For a normal distribution, $|X_t - \mu_t| &gt; 2\sigma_t$ captures values outside the 95.4% confidence interval without requiring proprietary ML models.
+
+### 5.4 Metric Name &amp; Dimension Normalization
+- All periods (`.`) and hyphens (`-`) in metric names and filter keys are converted to underscores (`_`) to comply with Prometheus OpenMetrics regex `[a-zA-Z_:][a-zA-Z0-9_:]*`.
+- Standard tag prefixes (`env:`, `team:`, `service:`) are parsed into distinct label-value pairs: `{env=&quot;prod&quot;, team=&quot;sre&quot;, service=&quot;cart&quot;}`.
+
+---
+
+## 6. Cross-Cloud IAM Transpilation Engine
+
+Security identity translation is often the highest-risk component of any cloud migration. `&lt;dcouplr/&gt;` provides a bi-directional IAM mapping compiler in ``opentofu_generator.py``:
+
+### 6.1 IAM Entity Equivalence Map
+| Cloud Concept | AWS IAM | Google Cloud Platform IAM | Azure RBAC &amp; Managed Identity |
+| :--- | :--- | :--- | :--- |
+| **Workload Identity** | `aws_iam_role` | `google_service_account` | `azurerm_user_assigned_identity` |
+| **Instance Attachment**| `aws_iam_instance_profile`| Compute Service Account Binding | VM Identity Block (`type = &quot;UserAssigned&quot;`) |
+| **Policy Definition** | `aws_iam_policy` | `google_project_iam_custom_role` | `azurerm_role_definition` |
+| **Role Assignment** | `aws_iam_role_policy_attachment`| `google_project_iam_member` | `azurerm_role_assignment` |
+
+### 6.2 AWS IAM Policy to GCP IAM Member Transpilation Example
+**Input (AWS IAM Policy JSON in Terraform):**
+```hcl
+resource &quot;aws_iam_role&quot; &quot;app_executor&quot; {
+  name = &quot;app-executor-role&quot;
+}
+
+resource &quot;aws_iam_policy&quot; &quot;s3_read&quot; {
+  name = &quot;s3-read-policy&quot;
+  policy = jsonencode({
+    Version = &quot;2012-10-17&quot;
+    Statement = [{
+      Effect   = &quot;Allow&quot;
+      Action   = [&quot;s3:GetObject&quot;, &quot;s3:ListBucket&quot;]
+      Resource = &quot;arn:aws:s3:::my-corp-data/*&quot;
+    }]
+  })
+}
+
+resource &quot;aws_iam_role_policy_attachment&quot; &quot;app_attach&quot; {
+  role       = aws_iam_role.app_executor.name
+  policy_arn = aws_iam_policy.s3_read.arn
+}
+```
+
+**Transpiled Output (Target OpenTofu GCP HCL):**
+```hcl
+# Transpiled by &lt;dcouplr/&gt; IAM Engine: AWS IAM -&gt; GCP IAM
+resource &quot;google_service_account&quot; &quot;app_executor&quot; {
+  account_id   = &quot;app-executor-role&quot;
+  display_name = &quot;Transpiled from AWS IAM Role app-executor-role&quot;
+}
+
+# Canonical Mapping: s3:GetObject / s3:ListBucket -&gt; roles/storage.objectViewer
+resource &quot;google_project_iam_member&quot; &quot;app_attach&quot; {
+  project = var.gcp_project_id
+  role    = &quot;roles/storage.objectViewer&quot;
+  member  = &quot;serviceAccount:${google_service_account.app_executor.email}&quot;
+}
+```
+
+---
+
+## 7. Dynamic Core Function HUD &amp; Autonomous Dialect Detection
+
+When operators input configurations into `&lt;dcouplr/&gt;` (via CLI, REST API, or Compiler Studio), the system automatically analyzes input tokens to determine source grammar dialects without requiring manual flag specification.
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                      DYNAMIC CORE FUNCTION HUD                         │
+├────────────────────────────────┬───────────────────────────────────────┤
+│ Detected Source Dialect        │ Datadog Monitor JSON v2               │
+│ Parser Confidence Score        │ 99.8% (Matched AST signature)         │
+│ Core Grammar Features Detected │ [Metric Threshold, Rate Modifier,     │
+│                                │  Anomaly Function (2.0σ), Tag Filters]│
+│ Entities Parsed                │ 8 Monitors • 0 Deadlocks              │
+│ Mathematical Parity Status     │ 100.0% Guaranteed                     │
+│ Zero-Egress Boundary           │ ENFORCED (In-Memory Volatile RAM)     │
+└────────────────────────────────┴───────────────────────────────────────┘
+```
+
+### 7.1 Autonomous Dialect Heuristics
+1. **Datadog JSON Signature:** Presence of keys `&quot;query&quot;`, `&quot;options&quot;`, `&quot;thresholds&quot;`, `&quot;message&quot;`, or query prefixes `avg(last_`, `max(last_`, `anomalies(`.
+2. **New Relic NRQL Signature:** Presence of `&quot;nrql&quot;`, `&quot;query&quot;`, or strings beginning with `SELECT ... FROM ... WHERE ... FACET`.
+3. **AWS CloudWatch Signature:** Presence of `&quot;AlarmName&quot;`, `&quot;MetricName&quot;`, `&quot;Namespace&quot;`, `&quot;Dimensions&quot;`, `&quot;MetricDataQueries&quot;`.
+4. **Azure Monitor Signature:** Presence of `&quot;criteria&quot;`, `&quot;allOf&quot;`, `&quot;metricNamespace&quot;`, `&quot;odata.type&quot;`, or KQL queries.
+5. **Terraform / OpenTofu HCL:** Tokens `resource &quot;...&quot;`, `variable &quot;...&quot;`, `terraform {`, `module &quot;...&quot;`.
+
+---
+
+## 8. Turnkey Enterprise Migration Recipes Catalog (Recipes 1–8)
+
+`&lt;dcouplr/&gt;` ships with 8 pre-compiled, verified enterprise migration recipes located in ``recipes/``:
+
+```
+recipes/
+├── datadog_to_grafana11/                # Recipe 1: Datadog Monitors -&gt; Grafana 11 Unified Alerting
+├── cloudformation_to_opentofu_gcp/      # Recipe 2: AWS CloudFormation / IaC -&gt; OpenTofu GCP
+├── promql_standardization_azure_arc_anthos/ # Recipe 3: Multi-Cloud Telemetry Standardization
+├── newrelic_to_prometheus/              # Recipe 4: New Relic NRQL Alerts -&gt; Prometheus Rules
+├── cloudwatch_to_grafana11/             # Recipe 5: AWS CloudWatch Alarms -&gt; Grafana 11 Alerts
+├── datadog_slo_to_prometheus_rules/     # Recipe 6: Datadog Service Level Objectives -&gt; PromQL SLOs
+├── azure_monitor_to_grafana11/          # Recipe 7: Azure Monitor Metric Alerts -&gt; Grafana 11
+└── cloud_run_direct_vpc_egress/         # Recipe 8: OpenTofu Cloud Run Direct VPC Egress Subnets
+```
+
+### Recipe 1: Datadog Monitors $\to$ Grafana 11 Unified Alerting
+- **Input:** JSON array of Datadog monitor definitions.
+- **Output:** Grafana 11 provisioning YAML with 3-stage RefId A/B/C query pipelines and PromQL syntax.
+- **CLI Command:**
+  ```bash
+  dcouplr translate --input monitors.json --source datadog --target grafana --output grafana-alerts.yaml
+  ```
+
+### Recipe 2: AWS CloudFormation / IaC $\to$ OpenTofu GCP
+- **Input:** AWS CloudFormation JSON/YAML or Terraform AWS HCL.
+- **Output:** Declarative OpenTofu Google Cloud Platform configuration (`google_compute_instance`, `google_compute_network`, `google_sql_database_instance`).
+- **CLI Command:**
+  ```bash
+  dcouplr translate --input infrastructure.tf --source terraform --target opentofu_gcp --output gcp_infra.tf
+  ```
+
+### Recipe 3: PromQL Standardization (Azure Arc &amp; Google Anthos)
+- **Input:** Mixed multi-cloud monitoring queries from heterogeneous clusters.
+- **Output:** Unified, cluster-agnostic PromQL queries with standardized dimensional labels (`cluster_id`, `node_role`, `datacenter`).
+
+### Recipe 4: New Relic NRQL $\to$ Prometheus Alertmanager
+- **Input:** New Relic NRQL alert condition JSON exports.
+- **Output:** Prometheus Alertmanager rules YAML mapping NRQL tables and facets to OpenMetrics queries.
+- **CLI Command:**
+  ```bash
+  dcouplr translate --input newrelic_alerts.json --source new_relic --target prometheus --output prometheus_rules.yaml
+  ```
+
+### Recipe 5: AWS CloudWatch Alarms $\to$ Grafana 11 Alerts
+- **Input:** CloudWatch alarm configurations from AWS CLI (`describe-alarms`).
+- **Output:** Grafana Unified Alerting YAML mapping `AWS/EC2`, `AWS/RDS`, and `AWS/ApplicationELB` metrics.
+
+### Recipe 6: Datadog SLOs $\to$ Prometheus Recording &amp; Alert Rules
+- **Input:** Datadog 7-day and 30-day Service Level Objective (SLO) definitions.
+- **Output:** Prometheus recording rules calculating rolling error budgets ($1 - \text{SLI}$) and burn rate multi-window alerts.
+
+### Recipe 7: Azure Monitor $\to$ Grafana 11 Alerts
+- **Input:** Azure Monitor Metric Alert ARM JSON.
+- **Output:** Grafana 11 YAML with dynamic threshold compensation and Azure VM metric translations.
+
+### Recipe 8: OpenTofu Cloud Run Direct VPC Egress Subnets
+- **Input:** Legacy Google Cloud Serverless VPC Access connector configurations (`google_vpc_access_connector`).
+- **Output:** Modern `google_cloud_run_v2_service` Direct VPC Egress network interface blocks, eliminating connector VM overhead and recurring egress latency.
+
+---
+
+## 9. Web Compiler Studio &amp; Headless REST API Reference
+
+### 9.1 Visual Compiler Studio (`/compiler`)
+The Web Compiler Studio provides a live, dual-pane interactive environment with real-time token scrubbing, AST inspection, and syntax highlighting:
+- **Left Pane:** Source configuration input with format selector, VPC topology picker, and preset loader.
+- **Right Pane:** Live synthesized target output (YAML/HCL/Bicep) with Parity Fidelity Score indicator, download button, and copy-to-clipboard action.
+- **Audit Bar:** Real-time log showing in-memory secret masking, IP tokenization, and PromQL synthesis steps.
+
+### 9.2 Headless REST API Endpoints
+`&lt;dcouplr/&gt;` exposes a high-throughput, headless REST API for CI/CD GitOps pipelines:
+
+#### `POST /v1/translate`
+Executes end-to-end multi-vendor parsing, validation, and target code generation.
+- **Request:**
+  ```json
+  {
+    &quot;content&quot;: &quot;{\&quot;name\&quot;: \&quot;High CPU\&quot;, \&quot;query\&quot;: \&quot;avg(last_5m):system.cpu.user{env:prod} by {host} &gt; 80\&quot;}&quot;,
+    &quot;source_vendor&quot;: &quot;datadog&quot;,
+    &quot;target_platform&quot;: &quot;grafana&quot;,
+    &quot;dry_run&quot;: false
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    &quot;artifact&quot;: &quot;apiVersion: 1\ngroups: ...&quot;,
+    &quot;fidelity_score&quot;: 100.0,
+    &quot;diagnostics&quot;: [&quot;Mapped Datadog query to PromQL with 100% mathematical parity&quot;],
+    &quot;entity_count&quot;: 1
+  }
+  ```
+
+#### `POST /v1/parse`
+Parses input syntax into raw `UITGraph` JSON AST without code generation.
+
+#### `POST /v1/generate`
+Ingests an existing `UITGraph` AST and synthesizes target platform configuration code.
+
+#### `GET /v1/supported-matrix`
+Returns the operational capability matrix across all supported source formats and target emitters.
+
+#### `GET /v1/recipes`
+Dynamically returns metadata, sample inputs, and CLI execution commands for all 8 enterprise turnkey migration recipes.
+
+---
+
+## 10. CLI Tooling, Diagnostics &amp; Error Taxonomy
+
+### 10.1 Command-Line Interface Reference
+```bash
+# Display version and license entitlement status
+dcouplr version
+
+# Perform end-to-end translation
+dcouplr translate --input &lt;file&gt; --source &lt;vendor&gt; --target &lt;platform&gt; [--output &lt;dest&gt;] [--dry-run]
+
+# Inspect intermediate representation AST JSON
+dcouplr inspect --input &lt;file&gt; --source &lt;vendor&gt;
+
+# Lint configurations for syntax issues and unmapped metrics
+dcouplr lint --input &lt;file&gt; --source &lt;vendor&gt;
+
+# Run preflight system diagnostics and memory check
+dcouplr doctor
+
+# Generate OpenTofu state relocation plans (state mv)
+dcouplr state-plan --input &lt;tf-file&gt; --target gcp --project &lt;project-id&gt;
+
+# Commercial Entitlement Management (Tier 1-4)
+dcouplr auth login --license-key &lt;key&gt;
+dcouplr auth status
+dcouplr auth logout
+```
+
+### 10.2 Diagnostic Error Code Taxonomy
+When the compiler detects syntax irregularities or security policy violations, it emits structured error codes:
+
+| Error Code | Severity | Description | Remediation Workflow |
+| :--- | :---: | :--- | :--- |
+| **`ERR_SYNTAX_PARSE`** | `CRITICAL` | Input payload contains malformed JSON or invalid HCL blocks. | Validate JSON syntax via `jq` or run `dcouplr lint` to pinpoint line offset. |
+| **`ERR_UNMAPPED_METRIC`** | `WARNING` | Source metric has no standard PromQL canonical equivalent. | Pass `--metric-map &quot;source_metric=target_metric&quot;` to specify custom translation. |
+| **`ERR_SECRET_DETECTED`** | `ALERT` | Cleartext AWS secret key or private password discovered. | The in-memory scrubber will mask the token automatically; rotate exposed secret in source repository. |
+| **`ERR_CYCLIC_DEPENDENCY`**| `CRITICAL` | Circular `DEPENDS_ON` or `MONITORS` edge loop detected in `UITGraph`. | Review resource dependency graph and break circular references in IaC definition. |
+| **`ERR_ANOMALY_FALLBACK`** | `INFO` | Black-box proprietary anomaly detector replaced with 2$\sigma$ PromQL. | Inform SRE team that standard deviation baseline (`1d` window) is active. |
+
+---
+
+## 📞 Support &amp; Field Engineering Escalation
+
+For questions or assistance with complex AST transpilation pipelines, reach out through your guaranteed support channel:
+- **Community Core (Tier 0):** [GitHub Discussions](https://github.com/varinull/dcouplr/discussions)
+- **Developer Pro (Tier 1):** Email support queue (`support@dcouplr.com`, 48-hour SLA)
+- **Cluster Small/Medium (Tier 2/3):** Support Portal &amp; Shared Slack Channel (`#dcouplr-war-room`, 2-hour SLA)
+- **Cluster Large (Tier 4):** Dedicated Technical Account Manager (TAM) &amp; 1-Hour SLA War-Room
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># ⚙️ `&lt;dcouplr/&gt;` Compiler &amp; AST Transpiler Operator Manual
+**Document ID:** `VA-MAN-COMPILER-001`  
+**Classification:** Enterprise Engineering Technical Specification &amp; Operator Runbook  
+**Target Audience:** Staff SREs, Platform Engineers, Cloud Architects, and Field TAMs  
+**Status:** Approved for Production (`v1.0.0-GA`)  
+**Security Guarantee:** Zero-Egress Local-First In-VPC Execution ($0 Cloud Egress)  
+
+---
+
+## 📑 Executive Summary &amp; Table of Contents
+
+The **`&lt;dcouplr/&gt;` Compiler &amp; AST Transpiler Engine** is an open-core, deterministic translation system designed to eliminate multi-million dollar SaaS observability and infrastructure lock-in. Operating strictly inside the customer&#x27;s Virtual Private Cloud (VPC) in volatile memory, `&lt;dcouplr/&gt;` parses proprietary vendor configurations (Datadog monitors, New Relic NRQL, AWS CloudWatch alarms, Azure Monitor alerts, and Terraform HCL) into a vendor-neutral **Universal Infrastructure &amp; Telemetry Intermediate Representation (`UITGraph`)**, performs mathematical semantic normalization ($\Phi(q) \equiv \Psi(\text{PromQL})$), and synthesizes production-ready open-source artifacts (Grafana 11 Unified Alerting, Prometheus Alertmanager, OpenTofu HCL, and Azure Bicep).
+
+### Table of Contents
+1. [Compiler Architecture &amp; Design Philosophy](#1-compiler-architecture--design-philosophy)
+2. [The UIT-IR Abstract Syntax Tree Specification](#2-the-uit-ir-abstract-syntax-tree-specification)
+3. [Multi-Vendor Source Parsers &amp; Lexers](#3-multi-vendor-source-parsers--lexers)
+4. [Target Code Generators &amp; Emitters](#4-target-code-generators--emitters)
+5. [PromQL &amp; Telemetry Normalization Mathematics](#5-promql--telemetry-normalization-mathematics)
+6. [Cross-Cloud IAM Transpilation Engine](#6-cross-cloud-iam-transpilation-engine)
+7. [Dynamic Core Function HUD &amp; Autonomous Dialect Detection](#7-dynamic-core-function-hud--autonomous-dialect-detection)
+8. [Turnkey Enterprise Migration Recipes Catalog (Recipes 1–8)](#8-turnkey-enterprise-migration-recipes-catalog-recipes-18)
+9. [Web Compiler Studio &amp; Headless REST API Reference](#9-web-compiler-studio--headless-rest-api-reference)
+10. [CLI Tooling, Diagnostics &amp; Error Taxonomy](#10-cli-tooling-diagnostics--error-taxonomy)
+
+---
+
+## 1. Compiler Architecture &amp; Design Philosophy
+
+```
+  ┌─────────────────────────────────────────────────────────────────────────────────┐
+  │                 IN-VPC VOLATILE MEMORY BOUNDARY (ZERO-EGRESS)                   │
+  │                                                                                 │
+  │  Source Input                     Pre-Flight Guard           Semantic AST Graph │
+  │  ┌───────────────┐               ┌─────────────────┐        ┌────────────────┐  │
+  │  │ Datadog JSON  │──────────────▶│ In-Memory Regex │───────▶│                │  │
+  │  │ New Relic     │ (Plaintext /  │ Token Scrubber  │        │  UITGraph AST  │  │
+  │  │ CloudWatch    │  Stream)      │ (RFC 1918 Mask, │        │  (Nodes/Edges) │  │
+  │  │ Azure Monitor │               │  Secret Redact) │        │                │  │
+  │  │ Terraform HCL │               └─────────────────┘        └───────┬────────┘  │
+  │  └───────────────┘                                                  │           │
+  │                                                                     │           │
+  │                                                                     ▼           │
+  │  Synthesized Code                 Target Emitters            Math Normalizer    │
+  │  ┌───────────────┐               ┌─────────────────┐        ┌────────────────┐  │
+  │  │ Grafana 11 YAML│◀──────────────│ Prometheus/Alert│◀───────│ Parity Proof:  │  │
+  │  │ PromQL Rules  │               │ OpenTofu HCL    │        │ Φ(q) ≡ Ψ(Prom) │  │
+  │  │ OpenTofu HCL  │               │ Azure Bicep     │        │ 2σ Anomaly Res │  │
+  │  │ Azure Bicep   │               │ State Relocator │        │ Rate Smoothing │  │
+  │  └───────────────┘               └─────────────────┘        └────────────────┘  │
+  └─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 1.1 The 4 Architectural Tenets
+1. **Deterministic AST Transformation over LLM Prompting:**
+   Core syntax trees are parsed using deterministic lexers and compiled via mathematical AST node mappings. `&lt;dcouplr/&gt;` never relies on non-deterministic generative LLMs for syntax tree emission, eliminating syntax hallucination, floating threshold skew, and uncompilable IaC blocks.
+2. **Strict In-VPC Zero-Egress Guarantee:**
+   All compilation passes execute inside customer-managed compute (Bare-metal, EC2, GCE, AKS/EKS/GKE, or Local CLI). No telemetry metadata, AST nodes, internal IP addresses, or IAM credentials ever leave volatile RAM ($0 cloud egress bill).
+3. **In-Memory Volatile Token Scrubbing:**
+   Before any AST node is constructed, the scanner passes the payload through an in-memory regex sanitizer (``anonymizer.py``) that replaces private RFC 1918 IP addresses (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), AWS secret access keys, database passwords, and internal hostnames with deterministic cryptographic aliases (e.g. `ip-10-x-x-12.internal`).
+4. **Mathematical Parity Verification ($\Phi(q) \equiv \Psi(\text{PromQL})$):**
+   Query transformations preserve time-series integration calculus. Cumulative counter rollups (`.as_count()`) are synthesized into `increase()` expressions over evaluation windows, rate gauges (`.as_rate()`) are mapped into `rate()`, and Datadog 2-sigma anomaly detection queries are compiled into dual-sided `avg_over_time()` and `stddev_over_time()` standard deviation bounds.
+
+---
+
+## 2. The UIT-IR Abstract Syntax Tree Specification
+
+The **Universal Infrastructure &amp; Telemetry Intermediate Representation (UIT-IR)** is a strongly typed, directed graph defined in ``migration_tools/ir/models.py`` and ``migration_tools/ir/graph.py``.
+
+### 2.1 Top-Level AST Container: `UITGraph`
+```python
+class UITGraph(BaseModel):
+    schema_version: str = &quot;1.0.0&quot;
+    source_system: str             # &quot;datadog&quot;, &quot;new_relic&quot;, &quot;cloudwatch&quot;, &quot;azure_monitor&quot;, &quot;terraform&quot;
+    monitors: List[MonitorNode]    # Telemetry and alert definitions
+    resources: List[ResourceNode]  # Compute, network, database, storage resources
+    policies: List[PolicyNode]     # IAM roles, security groups, firewall rules
+    edges: List[Edge]              # Dependency relationships (MONITORS, SECURES, DEPENDS_ON)
+    created_at: Optional[str]      # ISO 8601 compilation timestamp
+```
+
+### 2.2 Alert Node Specification: `MonitorNode`
+```python
+class MonitorNode(BaseModel):
+    id: str                                # Unique canonical identifier (e.g., &quot;mon-dd-10921&quot;)
+    name: str                              # Human-readable title
+    description: Optional[str]             # Alert playbook, runbook URL, or notification message
+    source_vendor: str                     # &quot;datadog&quot;, &quot;newrelic&quot;, &quot;cloudwatch&quot;, &quot;azure&quot;
+    monitor_type: MonitorType              # METRIC_THRESHOLD, LOG_ALERT, COMPOSITE, SERVICE_CHECK
+    target_metric: MetricTarget            # Detailed metric query AST
+    condition: ComparisonOperator          # GT (&gt;), GTE (&gt;=), LT (&lt;), LTE (&lt;=), EQ (==), NEQ (!=)
+    critical_threshold: float              # Critical firing limit
+    warning_threshold: Optional[float]     # Optional warning/escalation limit
+    evaluation_window: str                 # Duration condition must hold (e.g., &quot;5m&quot;, &quot;15m&quot;)
+    tags: List[str]                        # Metadata tags (e.g., [&quot;env:prod&quot;, &quot;service:checkout&quot;])
+    notification_channels: List[str]       # Alert endpoints (e.g., [&quot;slack-sre&quot;, &quot;pagerduty-p1&quot;])
+    metadata: Dict[str, Any]               # Preserved source-specific options
+```
+
+### 2.3 Normalized Metric Query AST: `MetricTarget`
+```python
+class MetricTarget(BaseModel):
+    raw_query: str                         # Original vendor query string
+    metric_name: str                       # Canonical metric ID (e.g., &quot;system.cpu.user&quot;)
+    filters: Dict[str, str]                # Key-value label selectors (e.g., {&quot;env&quot;: &quot;prod&quot;})
+    group_by: List[str]                    # Aggregation dimensions (e.g., [&quot;host&quot;, &quot;region&quot;])
+    aggregation: AggregationFunction       # AVG, SUM, MIN, MAX, COUNT, RATE
+    time_window: str                       # Resolution window (e.g., &quot;5m&quot;, &quot;1h&quot;)
+    metric_modifier: Optional[str]         # &quot;.as_count()&quot;, &quot;.as_rate()&quot;, &quot;.rollup()&quot;
+    is_anomaly_fallback: bool              # True if translated from statistical anomaly function
+    anomaly_bounds: Optional[float]        # Standard deviations (e.g., 2.0 = 95.4% confidence)
+    anomaly_algorithm: Optional[str]       # &quot;basic&quot;, &quot;agile&quot;, &quot;robust&quot;
+    anomaly_window: Optional[str]          # Rolling baseline window (e.g., &quot;1d&quot;, &quot;7d&quot;)
+    math_wrapper: Optional[str]            # &quot;abs&quot;, &quot;log10&quot;, &quot;clamp_min&quot;, &quot;clamp_max&quot;
+    math_parameter: Optional[float]        # Numerical operand for clamp functions
+    temporal_offset: Optional[str]         # Historical time shift (e.g., &quot;1h&quot;, &quot;1d&quot;, &quot;7d&quot;)
+    is_outlier_fallback: bool              # True if translated from DBSCAN/MAD outlier detection
+    outlier_bounds: Optional[float]        # Outlier distance threshold
+    unmapped_tokens: List[str]             # Preserved tokens for compiler diagnostic logs
+    diagnostics: List[str]                 # Compiler transformation trace messages
+```
+
+### 2.4 Infrastructure Resource Node: `ResourceNode`
+```python
+class ResourceNode(BaseModel):
+    id: str                                # Canonical ID (e.g., &quot;res-aws-i-0a1b2c3d&quot;)
+    name: str                              # Resource name (e.g., &quot;web-frontend-prod&quot;)
+    resource_type: str                     # Canonical standard type (e.g., &quot;compute.instance&quot;)
+    source_provider: str                   # &quot;aws&quot;, &quot;gcp&quot;, &quot;azure&quot;
+    properties: Dict[str, Any]             # Machine type, CIDR blocks, storage capacity, IOPS
+    tags: Dict[str, str]                   # Operational tags
+```
+
+---
+
+## 3. Multi-Vendor Source Parsers &amp; Lexers
+
+`&lt;dcouplr/&gt;` includes five dedicated parser implementations in ``migration_tools/parsers/``:
+
+### 3.1 Datadog Monitor Parser (`datadog_monitor.py`)
+- **Query Grammar Pattern:**
+  Parses Datadog query expressions matching:
+  `{eval_agg}(last_{window}):{metric_agg}:{metric_name}{tags}.{modifier} by {group_by} {op} {threshold}`
+- **Extended Function Handlers:**
+  - `anomalies(metric, &#x27;algorithm&#x27;, bounds)` &amp;rarr; Translates to dual-sided moving window deviation.
+  - `outliers(metric, &#x27;dbscan&#x27;, tolerance)` &amp;rarr; Translates to peer-group dispersion thresholding.
+  - `hour_before()`, `day_before()`, `week_before()` &amp;rarr; Translates to PromQL temporal `offset`.
+  - `abs()`, `log10()`, `clamp_min()`, `clamp_max()` &amp;rarr; Translates to canonical PromQL math functions.
+- **Notification Target Extraction:**
+  Scans `@channel` tokens in monitor message bodies (e.g., `@slack-infra`, `@pagerduty-critical`) and maps them to alert notification channel lists.
+
+### 3.2 New Relic NRQL Alert Parser (`nrql_alert.py`)
+- **Query Grammar Pattern:**
+  Matches standard New Relic queries:
+  `SELECT {agg}({target}) FROM {table} WHERE {filters} FACET {dimensions} SINCE {window}`
+- **Table Remappings:**
+  - `SystemSample` &amp;rarr; `system.cpu.user`, `system.mem.used`, `system.load.15`
+  - `ProcessSample` &amp;rarr; `process.cpu.user`, `process.memory.rss`
+  - `Transaction` &amp;rarr; `trace.http.request.duration`, `http.requests.total`
+  - `TransactionError` &amp;rarr; `http.requests.errors`
+- **Aggregation Translations:**
+  NRQL `average()`, `percentile()`, `rate()`, and `filter()` clauses are tokenized into canonical aggregation AST primitives.
+
+### 3.3 AWS CloudWatch Alarm Parser (`cloudwatch_alarm.py`)
+- **Alarm Types Supported:**
+  - Standard Metric Alarms (`Namespace`, `MetricName`, `Statistic`, `Dimensions`, `Threshold`).
+  - Metric Math Alarms (`MetricDataQueries` array with math expressions e.g. `m1 / m2 * 100`).
+  - Anomaly Detection Alarms (`ANOMALY_DETECTION_BAND(m1, 2)`).
+- **Canonical Metrics:**
+  - `AWS/EC2 CPUUtilization` &amp;rarr; `node_cpu_utilization_user`
+  - `AWS/EC2 NetworkIn` / `NetworkOut` &amp;rarr; `node_network_receive_bytes_total` / `transmit`
+  - `AWS/RDS CPUUtilization` &amp;rarr; `aws_rds_cpu_utilization_average`
+  - `AWS/ApplicationELB RequestCount` &amp;rarr; `http_requests_total`
+
+### 3.4 Azure Monitor Metric Alert Parser (`azure_monitor.py`)
+- **Alert Payloads Supported:**
+  - Static Metric Alerts (`Microsoft.Insights/metricAlerts`).
+  - Dynamic Threshold Alerts (`DynamicThresholdCriteria` with `failingPeriods` and `sensitivity`).
+  - Scheduled Query Rules (Kusto KQL queries over Log Analytics).
+- **Metric Translations:**
+  - `Percentage CPU` &amp;rarr; `azure_vm_percentage_cpu`
+  - `Available Memory Bytes` &amp;rarr; `azure_vm_available_memory_bytes`
+  - `DTU percentage` &amp;rarr; `azure_sql_dtu_percentage`
+
+### 3.5 Terraform / OpenTofu HCL Parser (`terraform_hcl.py`)
+- **Block Tokenizer:**
+  Parses both native HCL text files and `tf.json` configuration structures into `ResourceNode`, `PolicyNode`, and dependency `Edge` elements.
+- **Canonical Resource Typing:**
+  | Source Cloud Provider | Source Terraform Resource | Canonical UIT-IR Type |
+  | :--- | :--- | :--- |
+  | **AWS** | `aws_instance` | `compute.instance` |
+  | **AWS** | `aws_vpc` / `aws_subnet` | `network.vpc` / `network.subnet` |
+  | **AWS** | `aws_db_instance` | `database.relational` |
+  | **AWS** | `aws_eks_cluster` / `aws_eks_node_group` | `container.kubernetes_cluster` |
+  | **AWS** | `aws_sqs_queue` / `aws_sns_topic` | `queue.message_queue` / `pubsub_topic` |
+  | **AWS** | `aws_lb` / `aws_alb` | `network.load_balancer` |
+  | **AWS** | `aws_kms_key` | `security.key_management` |
+  | **AWS** | `aws_iam_role` / `aws_iam_policy` | `iam.role` / `iam.policy` |
+  | **GCP** | `google_compute_instance` | `compute.instance` |
+  | **GCP** | `google_compute_network` | `network.vpc` |
+  | **GCP** | `google_sql_database_instance` | `database.relational` |
+  | **GCP** | `google_container_cluster` | `container.kubernetes_cluster` |
+  | **Azure** | `azurerm_linux_virtual_machine` | `compute.instance` |
+  | **Azure** | `azurerm_virtual_network` | `network.vpc` |
+  | **Azure** | `azurerm_postgresql_flexible_server`| `database.relational` |
+  | **Azure** | `azurerm_kubernetes_cluster` | `container.kubernetes_cluster` |
+
+---
+
+## 4. Target Code Generators &amp; Emitters
+
+The emission layer in ``migration_tools/generators/`` transforms the validated `UITGraph` into deployment-ready configurations:
+
+### 4.1 Grafana 11 Unified Alerting Emitter (`grafana_alert.py`)
+- **Output:** Provisioning YAML matching Grafana 10+ and 11 Alerting schema.
+- **Execution Pipeline:**
+  - **RefId &quot;A&quot;:** Time-series query using the synthesized PromQL query.
+  - **RefId &quot;B&quot;:** Reduce expression (`last`, `mean`, or `max` over the evaluation window).
+  - **RefId &quot;C&quot;:** Math threshold comparison (`$B &gt; CriticalThreshold`).
+- **Multi-Threshold Pipeline (Enterprise Mode):**
+  When warning thresholds are configured, emits a 4-step pipeline: RefId &quot;A&quot; (Query), RefId &quot;B&quot; (Reduce), RefId &quot;C&quot; (Warning Condition), RefId &quot;D&quot; (Critical Condition), allowing Grafana to escalate alerts gracefully.
+
+### 4.2 Prometheus Alertmanager Rules Emitter (`grafana_alert.py`)
+- **Output:** PrometheusRule YAML or native Alertmanager `rules.yaml`.
+- **Structure:**
+  ```yaml
+  groups:
+    - name: Migrated_Datadog_Alerts
+      rules:
+        - alert: HighCPUUsage_Prod
+          expr: avg by (host) (node_cpu_utilization_user{env=&quot;prod&quot;}) &gt; 85.0
+          for: 5m
+          labels:
+            severity: critical
+            team: sre
+          annotations:
+            summary: High CPU usage detected on {{ $labels.host }}
+            runbook_url: https://docs.dcouplr.com/runbooks/cpu-spike
+  ```
+
+### 4.3 OpenTofu Multi-Cloud IaC Emitter (`opentofu_generator.py`)
+Generates native, declarative HCL code targeting Google Cloud Platform (`hashicorp/google`), Amazon Web Services (`hashicorp/aws`), or Microsoft Azure (`hashicorp/azurerm`):
+- **Sizing Equivalence Engine:**
+  Automatically translates instance sizes across hyperscalers (e.g. AWS `t3.medium` $\to$ GCP `e2-medium` $\to$ Azure `Standard_B2ms`).
+- **Subnet &amp; IP Allocation:**
+  Preserves non-overlapping RFC 1918 CIDRs while substituting target-native routing resources.
+- **CRD &amp; Unmapped Attribute Fallback:**
+  Any proprietary or custom CRD block not strictly in the canonical ontology is wrapped into an `# [UNMAPPED-RESOURCE-FALLBACK]` block with all key-value attributes preserved as commented HCL, guaranteeing zero data loss.
+
+### 4.4 Azure Bicep Emitter (`bicep_generator.py`)
+Emits strongly typed Azure Bicep templates (`.bicep`) for deployment via Azure CLI or Azure Resource Manager, compiling network definitions into `Microsoft.Network/virtualNetworks`, compute into `Microsoft.Compute/virtualMachines`, and identities into `Microsoft.ManagedIdentity/userAssignedIdentities`.
+
+### 4.5 Datadog Monitor Generator &amp; Bi-Directional Query Emitter (`datadog_monitor.py`)
+Unlocks true **two-way bi-directional translation** ($\phi \circ \psi = 	ext{id}$), allowing engineers to transpile Prometheus alert rules, Grafana Unified Alerting definitions, or multi-vendor monitors back into native Datadog Monitor JSON format:
+- **Canonical Reverse Metric Mapping:**
+  Maps standard OpenMetrics and node_exporter identifiers back to Datadog metrics (e.g. `node_cpu_utilization_user` $	o$ `system.cpu.user`, `node_memory_active_bytes` $	o$ `system.mem.used`, `http_request_duration_seconds` $	o$ `trace.http.request.duration`).
+- **Query Grammar Synthesis:**
+  Reconstructs Datadog evaluation syntax `avg(last_5m):system.cpu.user{env:prod} by {host} &gt; 85` including time windows (`last_5m`, `last_1h`), tag dimensions (`{env:prod}`), group-by blocks (`by {host}`), comparison operators (`&gt;`, `&gt;=`, `&lt;`, `&lt;=`), and threshold conditions.
+- **Notification &amp; Message Bridge:**
+  Formats notification channels with Datadog `@` tags (`@slack-sre @pagerduty`) and appends provenance tags (`migrated_by:dcouplr`).
+- **Two-Way CLI Invocation:**
+  ```bash
+  dcouplr translate --source prometheus --target datadog --input rules.yaml --output datadog-monitor.json
+  ```
+
+---
+
+## 5. PromQL &amp; Telemetry Normalization Mathematics
+
+Observability transpilation is fundamentally a mathematical mapping problem across time-series querying models. `&lt;dcouplr/&gt;` implements formal parity proofs to ensure alerts fire under identical conditions.
+
+### 5.1 Cumulative Counters: `.as_count()` vs. `increase()`
+- **Datadog Semantic:**
+  `sum:http.requests.total{env:prod}.as_count()` computes the sum of discrete increments that occurred within the evaluation bucket.
+- **PromQL Synthesis:**
+  In Prometheus, cumulative counters are monotonically increasing values subject to host reboots and container restarts.
+  $$\Psi(q) = \text{sum}(\text{increase}(http\_requests\_total\{env=&quot;prod&quot;\}[5m]))$$
+  `&lt;dcouplr/&gt;` detects the `.as_count()` modifier and synthesizes an `increase()` function over the evaluation window with automatic counter reset compensation.
+
+### 5.2 Rate Derivation: `.as_rate()` vs. `rate()`
+- **Datadog Semantic:**
+  `avg:system.io.ops{host:db-01}.as_rate()` computes per-second rate of change.
+- **PromQL Synthesis:**
+  $$\Psi(q) = \text{rate}(system\_io\_ops\{host=&quot;db-01&quot;\}[5m])$$
+
+### 5.3 Statistical Anomaly Approximation (2-Sigma Proof)
+Proprietary SaaS engines charge high premiums for black-box ML anomaly detectors. `&lt;dcouplr/&gt;` compiles Datadog&#x27;s `anomalies()` function into transparent, zero-cost moving-window statistical PromQL:
+
+$$\text{Datadog:} \quad \text{avg}(last\_4h):\text{anomalies}(\text{avg}:system.cpu.user\{env:prod\}, &#x27;basic&#x27;, 2) &gt; 0.5$$
+
+$$\Downarrow \text{ Transpiled PromQL } \Downarrow$$
+
+$$\text{abs}(\text{avg}(system\_cpu\_user\{env=&quot;prod&quot;\}) - \text{avg\_over\_time}(system\_cpu\_user\{env=&quot;prod&quot;\}[1d])) &gt; (2.0 \times \text{stddev\_over\_time}(system\_cpu\_user\{env=&quot;prod&quot;\}[1d]))$$
+
+**Mathematical Proof:**  
+Let $X_t$ be the real-time metric value. The rolling mean $\mu_t = \text{avg\_over\_time}(X_t[W])$ and rolling standard deviation $\sigma_t = \text{stddev\_over\_time}(X_t[W])$ establish the normal operating envelope. For a normal distribution, $|X_t - \mu_t| &gt; 2\sigma_t$ captures values outside the 95.4% confidence interval without requiring proprietary ML models.
+
+### 5.4 Metric Name &amp; Dimension Normalization
+- All periods (`.`) and hyphens (`-`) in metric names and filter keys are converted to underscores (`_`) to comply with Prometheus OpenMetrics regex `[a-zA-Z_:][a-zA-Z0-9_:]*`.
+- Standard tag prefixes (`env:`, `team:`, `service:`) are parsed into distinct label-value pairs: `{env=&quot;prod&quot;, team=&quot;sre&quot;, service=&quot;cart&quot;}`.
+
+---
+
+## 6. Cross-Cloud IAM Transpilation Engine
+
+Security identity translation is often the highest-risk component of any cloud migration. `&lt;dcouplr/&gt;` provides a bi-directional IAM mapping compiler in ``opentofu_generator.py``:
+
+### 6.1 IAM Entity Equivalence Map
+| Cloud Concept | AWS IAM | Google Cloud Platform IAM | Azure RBAC &amp; Managed Identity |
+| :--- | :--- | :--- | :--- |
+| **Workload Identity** | `aws_iam_role` | `google_service_account` | `azurerm_user_assigned_identity` |
+| **Instance Attachment**| `aws_iam_instance_profile`| Compute Service Account Binding | VM Identity Block (`type = &quot;UserAssigned&quot;`) |
+| **Policy Definition** | `aws_iam_policy` | `google_project_iam_custom_role` | `azurerm_role_definition` |
+| **Role Assignment** | `aws_iam_role_policy_attachment`| `google_project_iam_member` | `azurerm_role_assignment` |
+
+### 6.2 AWS IAM Policy to GCP IAM Member Transpilation Example
+**Input (AWS IAM Policy JSON in Terraform):**
+```hcl
+resource &quot;aws_iam_role&quot; &quot;app_executor&quot; {
+  name = &quot;app-executor-role&quot;
+}
+
+resource &quot;aws_iam_policy&quot; &quot;s3_read&quot; {
+  name = &quot;s3-read-policy&quot;
+  policy = jsonencode({
+    Version = &quot;2012-10-17&quot;
+    Statement = [{
+      Effect   = &quot;Allow&quot;
+      Action   = [&quot;s3:GetObject&quot;, &quot;s3:ListBucket&quot;]
+      Resource = &quot;arn:aws:s3:::my-corp-data/*&quot;
+    }]
+  })
+}
+
+resource &quot;aws_iam_role_policy_attachment&quot; &quot;app_attach&quot; {
+  role       = aws_iam_role.app_executor.name
+  policy_arn = aws_iam_policy.s3_read.arn
+}
+```
+
+**Transpiled Output (Target OpenTofu GCP HCL):**
+```hcl
+# Transpiled by &lt;dcouplr/&gt; IAM Engine: AWS IAM -&gt; GCP IAM
+resource &quot;google_service_account&quot; &quot;app_executor&quot; {
+  account_id   = &quot;app-executor-role&quot;
+  display_name = &quot;Transpiled from AWS IAM Role app-executor-role&quot;
+}
+
+# Canonical Mapping: s3:GetObject / s3:ListBucket -&gt; roles/storage.objectViewer
+resource &quot;google_project_iam_member&quot; &quot;app_attach&quot; {
+  project = var.gcp_project_id
+  role    = &quot;roles/storage.objectViewer&quot;
+  member  = &quot;serviceAccount:${google_service_account.app_executor.email}&quot;
+}
+```
+
+---
+
+## 7. Dynamic Core Function HUD &amp; Autonomous Dialect Detection
+
+When operators input configurations into `&lt;dcouplr/&gt;` (via CLI, REST API, or Compiler Studio), the system automatically analyzes input tokens to determine source grammar dialects without requiring manual flag specification.
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                      DYNAMIC CORE FUNCTION HUD                         │
+├────────────────────────────────┬───────────────────────────────────────┤
+│ Detected Source Dialect        │ Datadog Monitor JSON v2               │
+│ Parser Confidence Score        │ 99.8% (Matched AST signature)         │
+│ Core Grammar Features Detected │ [Metric Threshold, Rate Modifier,     │
+│                                │  Anomaly Function (2.0σ), Tag Filters]│
+│ Entities Parsed                │ 8 Monitors • 0 Deadlocks              │
+│ Mathematical Parity Status     │ 100.0% Guaranteed                     │
+│ Zero-Egress Boundary           │ ENFORCED (In-Memory Volatile RAM)     │
+└────────────────────────────────┴───────────────────────────────────────┘
+```
+
+### 7.1 Autonomous Dialect Heuristics
+1. **Datadog JSON Signature:** Presence of keys `&quot;query&quot;`, `&quot;options&quot;`, `&quot;thresholds&quot;`, `&quot;message&quot;`, or query prefixes `avg(last_`, `max(last_`, `anomalies(`.
+2. **New Relic NRQL Signature:** Presence of `&quot;nrql&quot;`, `&quot;query&quot;`, or strings beginning with `SELECT ... FROM ... WHERE ... FACET`.
+3. **AWS CloudWatch Signature:** Presence of `&quot;AlarmName&quot;`, `&quot;MetricName&quot;`, `&quot;Namespace&quot;`, `&quot;Dimensions&quot;`, `&quot;MetricDataQueries&quot;`.
+4. **Azure Monitor Signature:** Presence of `&quot;criteria&quot;`, `&quot;allOf&quot;`, `&quot;metricNamespace&quot;`, `&quot;odata.type&quot;`, or KQL queries.
+5. **Terraform / OpenTofu HCL:** Tokens `resource &quot;...&quot;`, `variable &quot;...&quot;`, `terraform {`, `module &quot;...&quot;`.
+
+---
+
+## 8. Turnkey Enterprise Migration Recipes Catalog (Recipes 1–8)
+
+`&lt;dcouplr/&gt;` ships with 8 pre-compiled, verified enterprise migration recipes located in ``recipes/``:
+
+```
+recipes/
+├── datadog_to_grafana11/                # Recipe 1: Datadog Monitors -&gt; Grafana 11 Unified Alerting
+├── cloudformation_to_opentofu_gcp/      # Recipe 2: AWS CloudFormation / IaC -&gt; OpenTofu GCP
+├── promql_standardization_azure_arc_anthos/ # Recipe 3: Multi-Cloud Telemetry Standardization
+├── newrelic_to_prometheus/              # Recipe 4: New Relic NRQL Alerts -&gt; Prometheus Rules
+├── cloudwatch_to_grafana11/             # Recipe 5: AWS CloudWatch Alarms -&gt; Grafana 11 Alerts
+├── datadog_slo_to_prometheus_rules/     # Recipe 6: Datadog Service Level Objectives -&gt; PromQL SLOs
+├── azure_monitor_to_grafana11/          # Recipe 7: Azure Monitor Metric Alerts -&gt; Grafana 11
+└── cloud_run_direct_vpc_egress/         # Recipe 8: OpenTofu Cloud Run Direct VPC Egress Subnets
+```
+
+### Recipe 1: Datadog Monitors $\to$ Grafana 11 Unified Alerting
+- **Input:** JSON array of Datadog monitor definitions.
+- **Output:** Grafana 11 provisioning YAML with 3-stage RefId A/B/C query pipelines and PromQL syntax.
+- **CLI Command:**
+  ```bash
+  dcouplr translate --input monitors.json --source datadog --target grafana --output grafana-alerts.yaml
+  ```
+
+### Recipe 2: AWS CloudFormation / IaC $\to$ OpenTofu GCP
+- **Input:** AWS CloudFormation JSON/YAML or Terraform AWS HCL.
+- **Output:** Declarative OpenTofu Google Cloud Platform configuration (`google_compute_instance`, `google_compute_network`, `google_sql_database_instance`).
+- **CLI Command:**
+  ```bash
+  dcouplr translate --input infrastructure.tf --source terraform --target opentofu_gcp --output gcp_infra.tf
+  ```
+
+### Recipe 3: PromQL Standardization (Azure Arc &amp; Google Anthos)
+- **Input:** Mixed multi-cloud monitoring queries from heterogeneous clusters.
+- **Output:** Unified, cluster-agnostic PromQL queries with standardized dimensional labels (`cluster_id`, `node_role`, `datacenter`).
+
+### Recipe 4: New Relic NRQL $\to$ Prometheus Alertmanager
+- **Input:** New Relic NRQL alert condition JSON exports.
+- **Output:** Prometheus Alertmanager rules YAML mapping NRQL tables and facets to OpenMetrics queries.
+- **CLI Command:**
+  ```bash
+  dcouplr translate --input newrelic_alerts.json --source new_relic --target prometheus --output prometheus_rules.yaml
+  ```
+
+### Recipe 5: AWS CloudWatch Alarms $\to$ Grafana 11 Alerts
+- **Input:** CloudWatch alarm configurations from AWS CLI (`describe-alarms`).
+- **Output:** Grafana Unified Alerting YAML mapping `AWS/EC2`, `AWS/RDS`, and `AWS/ApplicationELB` metrics.
+
+### Recipe 6: Datadog SLOs $\to$ Prometheus Recording &amp; Alert Rules
+- **Input:** Datadog 7-day and 30-day Service Level Objective (SLO) definitions.
+- **Output:** Prometheus recording rules calculating rolling error budgets ($1 - \text{SLI}$) and burn rate multi-window alerts.
+
+### Recipe 7: Azure Monitor $\to$ Grafana 11 Alerts
+- **Input:** Azure Monitor Metric Alert ARM JSON.
+- **Output:** Grafana 11 YAML with dynamic threshold compensation and Azure VM metric translations.
+
+### Recipe 8: OpenTofu Cloud Run Direct VPC Egress Subnets
+- **Input:** Legacy Google Cloud Serverless VPC Access connector configurations (`google_vpc_access_connector`).
+- **Output:** Modern `google_cloud_run_v2_service` Direct VPC Egress network interface blocks, eliminating connector VM overhead and recurring egress latency.
+
+---
+
+## 9. Web Compiler Studio &amp; Headless REST API Reference
+
+### 9.1 Visual Compiler Studio (`/compiler`)
+The Web Compiler Studio provides a live, dual-pane interactive environment with real-time token scrubbing, AST inspection, and syntax highlighting:
+- **Left Pane:** Source configuration input with format selector, VPC topology picker, and preset loader.
+- **Right Pane:** Live synthesized target output (YAML/HCL/Bicep) with Parity Fidelity Score indicator, download button, and copy-to-clipboard action.
+- **Audit Bar:** Real-time log showing in-memory secret masking, IP tokenization, and PromQL synthesis steps.
+
+### 9.2 Headless REST API Endpoints
+`&lt;dcouplr/&gt;` exposes a high-throughput, headless REST API for CI/CD GitOps pipelines:
+
+#### `POST /v1/translate`
+Executes end-to-end multi-vendor parsing, validation, and target code generation.
+- **Request:**
+  ```json
+  {
+    &quot;content&quot;: &quot;{\&quot;name\&quot;: \&quot;High CPU\&quot;, \&quot;query\&quot;: \&quot;avg(last_5m):system.cpu.user{env:prod} by {host} &gt; 80\&quot;}&quot;,
+    &quot;source_vendor&quot;: &quot;datadog&quot;,
+    &quot;target_platform&quot;: &quot;grafana&quot;,
+    &quot;dry_run&quot;: false
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    &quot;artifact&quot;: &quot;apiVersion: 1\ngroups: ...&quot;,
+    &quot;fidelity_score&quot;: 100.0,
+    &quot;diagnostics&quot;: [&quot;Mapped Datadog query to PromQL with 100% mathematical parity&quot;],
+    &quot;entity_count&quot;: 1
+  }
+  ```
+
+#### `POST /v1/parse`
+Parses input syntax into raw `UITGraph` JSON AST without code generation.
+
+#### `POST /v1/generate`
+Ingests an existing `UITGraph` AST and synthesizes target platform configuration code.
+
+#### `GET /v1/supported-matrix`
+Returns the operational capability matrix across all supported source formats and target emitters.
+
+#### `GET /v1/recipes`
+Dynamically returns metadata, sample inputs, and CLI execution commands for all 8 enterprise turnkey migration recipes.
+
+---
+
+## 10. CLI Tooling, Diagnostics &amp; Error Taxonomy
+
+### 10.1 Command-Line Interface Reference
+```bash
+# Display version and license entitlement status
+dcouplr version
+
+# Perform end-to-end translation
+dcouplr translate --input &lt;file&gt; --source &lt;vendor&gt; --target &lt;platform&gt; [--output &lt;dest&gt;] [--dry-run]
+
+# Inspect intermediate representation AST JSON
+dcouplr inspect --input &lt;file&gt; --source &lt;vendor&gt;
+
+# Lint configurations for syntax issues and unmapped metrics
+dcouplr lint --input &lt;file&gt; --source &lt;vendor&gt;
+
+# Run preflight system diagnostics and memory check
+dcouplr doctor
+
+# Generate OpenTofu state relocation plans (state mv)
+dcouplr state-plan --input &lt;tf-file&gt; --target gcp --project &lt;project-id&gt;
+
+# Commercial Entitlement Management (Tier 1-4)
+dcouplr auth login --license-key &lt;key&gt;
+dcouplr auth status
+dcouplr auth logout
+```
+
+### 10.2 Diagnostic Error Code Taxonomy
+When the compiler detects syntax irregularities or security policy violations, it emits structured error codes:
+
+| Error Code | Severity | Description | Remediation Workflow |
+| :--- | :---: | :--- | :--- |
+| **`ERR_SYNTAX_PARSE`** | `CRITICAL` | Input payload contains malformed JSON or invalid HCL blocks. | Validate JSON syntax via `jq` or run `dcouplr lint` to pinpoint line offset. |
+| **`ERR_UNMAPPED_METRIC`** | `WARNING` | Source metric has no standard PromQL canonical equivalent. | Pass `--metric-map &quot;source_metric=target_metric&quot;` to specify custom translation. |
+| **`ERR_SECRET_DETECTED`** | `ALERT` | Cleartext AWS secret key or private password discovered. | The in-memory scrubber will mask the token automatically; rotate exposed secret in source repository. |
+| **`ERR_CYCLIC_DEPENDENCY`**| `CRITICAL` | Circular `DEPENDS_ON` or `MONITORS` edge loop detected in `UITGraph`. | Review resource dependency graph and break circular references in IaC definition. |
+| **`ERR_ANOMALY_FALLBACK`** | `INFO` | Black-box proprietary anomaly detector replaced with 2$\sigma$ PromQL. | Inform SRE team that standard deviation baseline (`1d` window) is active. |
+
+---
+
+## 📞 Support &amp; Field Engineering Escalation
+
+For questions or assistance with complex AST transpilation pipelines, reach out through your guaranteed support channel:
+- **Community Core (Tier 0):** [GitHub Discussions](https://github.com/varinull/dcouplr/discussions)
+- **Developer Pro (Tier 1):** Email support queue (`support@dcouplr.com`, 48-hour SLA)
+- **Cluster Small/Medium (Tier 2/3):** Support Portal &amp; Shared Slack Channel (`#dcouplr-war-room`, 2-hour SLA)
+- **Cluster Large (Tier 4):** Dedicated Technical Account Manager (TAM) &amp; 1-Hour SLA War-Room
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

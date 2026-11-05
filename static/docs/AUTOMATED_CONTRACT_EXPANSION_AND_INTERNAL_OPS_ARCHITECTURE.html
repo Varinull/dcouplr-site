@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - AUTOMATED_CONTRACT_EXPANSION_AND_INTERNAL_OPS_ARCHITECTURE.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/AUTOMATED_CONTRACT_EXPANSION_AND_INTERNAL_OPS_ARCHITECTURE.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="AUTOMATED_CONTRACT_EXPANSION_AND_INTERNAL_OPS_ARCHITECTURE.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="architectural-specification-in-vpc-license-census-automated-contract-expansion-internal-ops-hub">Architectural Specification: In-VPC License Census, Automated Contract Expansion &amp; Internal Ops Hub</h1>
+<p><strong>Document Identifier:</strong> <code>VA-SPEC-OPS-EXPANSION-001</code><br />
+<strong>Governing Decisions:</strong> <code>D-12</code>, <code>D-41</code>, <code>D-44</code>, <code>D-46</code>, <code>D-50</code><br />
+<strong>Classification:</strong> Enterprise System Architecture &amp; Commercial Engineering Specification<br />
+<strong>Target Audience:</strong> Enterprise Architects, FinOps Directors, VP of Engineering, SRE Incident Commanders, Commercial Sales Operations<br />
+<strong>Compliance Standards:</strong> SOC-2 Type II, ISO 27001, Zero-Egress Invariant ($0.00 Unauthorized WAN Egress)</p>
+<hr />
+<h2 id="1-executive-summary-core-architectural-invariants">1. Executive Summary &amp; Core Architectural Invariants</h2>
+<p>This specification formalizes the bidirectional commercial and operational lifecycle connecting <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> in-VPC clusters, frictionless contract upgrades, and isolated internal sales/support operations.</p>
+<p>Modern enterprise customers operating in-VPC observability and IaC transpilations face two critical operational bottlenecks during scaling:</p>
+<ol>
+<li><strong>The Human-Error Upgrade Barrier</strong>: Forcing customer engineers to log into an external billing portal, manually count deployed nodes, and select contract tiers introduces typos, misaligned commitments, and delayed procurement.</li>
+<li><strong>Internal Operations Exposure Risk</strong>: Mixing customer-facing applications with internal sales monitoring and SRE incident triage creates attack surface vulnerabilities and breaks zero-trust compliance.</li>
+</ol>
+<p>To solve both challenges, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> specifies:</p>
+<ol>
+<li><strong>Mathematical Alignment</strong>: 100% equivalence between the <strong>In-VPC License Entitlement &amp; Installation Census</strong> and the <strong>Smart Contract &amp; Proration Calculator</strong>.</li>
+<li><strong>Zero-Login Automated Expansion Pipeline</strong>: In-VPC cluster telemetry automatically extracts contract identity, calculates co-termed daily proration, and hands off pre-authenticated, tamper-evident checkout sessions.</li>
+<li><strong>Isolated Internal Operations Hub (<code>ops.dcouplr.com</code>)</strong>: A dedicated internal control plane decoupled from public customer traffic, protected behind Cloudflare Zero Trust, providing unified desks for Sales expansion monitoring and SRE tier-gated incident response.</li>
+</ol>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                            AUTOMATED IN-VPC TO SALES PIPELINE                                    │
+├──────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                  │
+│  [1. In-VPC Cluster]                [2. One-Click Handoff]          [3. Pre-Filled Checkout]     │
+│  ┌───────────────────────────┐      ┌─────────────────────────┐     ┌────────────────────────┐   │
+│  │ Census detects:           │      │ Engineer clicks:        │     │ Hosted Checkout:       │   │
+│  │ • Active: 71 nodes        │ ───&gt; │ &quot;Upgrade &amp; Prorate ↗&quot;   │ ──&gt; │ • Company: ACME Corp   │   │
+│  │ • Contract: DCL-CLUS-SM-..│      │ Opens signed link with  │     │ • Tier: Cluster Medium │   │
+│  │ • Days Remaining: 142     │      │ payload (Zero typing)   │     │ • Prorated: $9,336.98  │   │
+│  └───────────────────────────┘      └─────────────────────────┘     └───────────┬────────────┘   │
+│                                                                                 │                │
+│                                                                                 ▼                │
+│  [5. Zero-Touch Hot-Reload]         [4b. License Delivery]          [4a. Real-Time Sales Alerts] │
+│  ┌───────────────────────────┐      ┌─────────────────────────┐     ┌────────────────────────┐   │
+│  │ Cluster reloads dcouplr.lic│ &lt;─── │ 1-Click download of     │ &lt;── │ Webhook fires:         │   │
+│  │ in-memory in 1 second     │      │ Ed25519 signed          │     │ • Slack #sales-alerts  │   │
+│  │ (0 cluster restart)       │      │ updated dcouplr.lic     │     │ • CRM: +$24k ARR bump  │   │
+│  └───────────────────────────┘      └─────────────────────────┘     │ • Stripe/Mktpl adjust  │   │
+│                                                                     └────────────────────────┘   │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="2-mathematical-parity-in-vpc-census-vs-smart-proration-calculator">2. Mathematical Parity: In-VPC Census vs. Smart Proration Calculator</h2>
+<p>The in-VPC workload census evaluated by <code>migration_tools/licensing/commercial.py</code> and rendered in <code>dashboard.html</code> (<code>#modal-upgrade-recommendation</code>) adheres to the deterministic pricing rules executed in the public Smart Contract &amp; Proration Calculator (<code>index.html#section-proration-calculator</code>).</p>
+<h3 id="21-pricing-tier-capacity-baseline">2.1 Pricing Tier &amp; Capacity Baseline</h3>
+<p>The system recognizes 5 commercial enterprise tiers:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Tier</th>
+<th style="text-align:left">Base Monthly</th>
+<th style="text-align:left">Base Annual</th>
+<th style="text-align:left">Base Nodes</th>
+<th style="text-align:left">Max Overages Allowed</th>
+<th style="text-align:left">Overage Rate (Mo / Yr)</th>
+<th style="text-align:left">Hard Cap</th>
+<th style="text-align:left">Support SLA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Developer Pro</strong></td>
+<td style="text-align:left">$300</td>
+<td style="text-align:left">$3,600</td>
+<td style="text-align:left">25</td>
+<td style="text-align:left">0</td>
+<td style="text-align:left">Ineligible ($0)</td>
+<td style="text-align:left">25 nodes</td>
+<td style="text-align:left">Community (Best Effort)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Cluster Small</strong></td>
+<td style="text-align:left">$1,500</td>
+<td style="text-align:left">$18,000</td>
+<td style="text-align:left">25</td>
+<td style="text-align:left">35</td>
+<td style="text-align:left">$60 / $720</td>
+<td style="text-align:left">60 nodes</td>
+<td style="text-align:left">Business 8x5 (P1 24h)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Cluster Medium</strong></td>
+<td style="text-align:left">$3,500</td>
+<td style="text-align:left">$42,000</td>
+<td style="text-align:left">75</td>
+<td style="text-align:left">75</td>
+<td style="text-align:left">$50 / $600</td>
+<td style="text-align:left">150 nodes</td>
+<td style="text-align:left">24x7 P1 (2h response)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Cluster Large</strong></td>
+<td style="text-align:left">$7,500</td>
+<td style="text-align:left">$90,000</td>
+<td style="text-align:left">200</td>
+<td style="text-align:left">200</td>
+<td style="text-align:left">$45 / $540</td>
+<td style="text-align:left">400 nodes</td>
+<td style="text-align:left">24x7 Mission-Critical (1h)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Enterprise Fleet</strong></td>
+<td style="text-align:left">$18,000</td>
+<td style="text-align:left">$216,000</td>
+<td style="text-align:left">500</td>
+<td style="text-align:left">Unlimited</td>
+<td style="text-align:left">$35 / $420</td>
+<td style="text-align:left">Custom</td>
+<td style="text-align:left">Custom Dedicated War-Room (15m)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-concrete-census-case-study-71-monitored-nodes">2.2 Concrete Census Case Study: 71 Monitored Nodes</h3>
+<p>Consider a customer running <code>Cluster Small</code> (25 licensed nodes) whose cluster expands to <strong>71 active nodes</strong>:</p>
+<ol>
+<li><strong>Deficit Audit</strong>:
+$$\text{Deficit} = \text{Active Nodes} (71) - \text{Base Licensed Nodes} (25) = +46 \text{ Nodes}$$</li>
+<li><strong>FinOps Ineligibility Analysis</strong>:
+<ul>
+<li><em>Developer Pro</em>: Hard-capped at 25 nodes; completely ineligible.</li>
+<li><em>Cluster Small + Max Overages</em>: Cluster Small permits at most 35 overage add-ons ($25 + 35 = 60$ nodes max).
+$$\text{Max Small Cost} = $1,500 + (35 \times $60) = $3,600 / \text{mo} \quad ($43,200 / \text{yr})$$
+Even at max overage spend, the customer is <strong>still 11 nodes short of 71</strong>, breaching the hard cap.</li>
+</ul>
+</li>
+<li><strong>Recommended Upgrade (Cluster Medium)</strong>:
+<ul>
+<li>Base Capacity: <strong>75 nodes flat</strong> (covers 71 nodes natively with 4 spare buffer seats).</li>
+<li>Flat Cost: <strong>$3,500 / mo</strong> ($42,000 / yr).</li>
+<li><strong>Net ROI</strong>: Saves $100/mo ($1,200/yr) compared to maxed-out Small overages, provides full headroom, and automatically upgrades support to 24x7 P1 with a shared Slack channel.</li>
+</ul>
+</li>
+</ol>
+<h3 id="23-co-termed-daily-proration-equation">2.3 Co-Termed Daily Proration Equation</h3>
+<p>When upgrading mid-contract, customers never pay double or reset term dates. The Smart Proration Calculator applies co-termed daily accrual:</p>
+<p>$$\text{Prorated Due} = \left( \text{Annual}<em>{\text{Target}} - \text{Annual}</em>{\text{Current}} \right) \times \left( \frac{D_{\text{remaining}}}{365} \right)$$</p>
+<p><em>Example with 142 days remaining on contract:</em>
+$$\text{Prorated Due} = ($42,000 - $18,000) \times \left( \frac{142}{365} \right) = $24,000 \times 0.389041 = \mathbf{$9,336.98}$$</p>
+<p>The In-VPC Census and the Smart Calculator compute this exact figure to the cent.</p>
+<hr />
+<h2 id="3-zero-login-automated-contract-expansion-pipeline">3. Zero-Login Automated Contract Expansion Pipeline</h2>
+<p>Because the in-VPC cluster already measures active nodes, forcing an engineer to log into an external portal introduces human error:</p>
+<ul>
+<li>Typoing the company legal entity or Contract ID.</li>
+<li>Miscounting active node pools across multi-cloud VPCs.</li>
+<li>Inadvertently purchasing the wrong tier or missing co-terming dates.</li>
+</ul>
+<h3 id="31-pre-authenticated-cryptographic-handoff-token">3.1 Pre-Authenticated Cryptographic Handoff Token</h3>
+<p>When the engineer clicks <strong>&quot;⚡ Proceed to Contract Upgrade &amp; Prorated Checkout&quot;</strong> in the Dashboard Census modal:</p>
+<ol>
+<li>The local in-VPC daemon generates a signed, ephemeral HMAC-SHA256 <strong>Handoff Token</strong>:<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;contract_id&quot;: &quot;DCL-CLUS-SM-ACME-8821B47C9&quot;,
+  &quot;company_name&quot;: &quot;ACME Corporation&quot;,
+  &quot;current_tier&quot;: &quot;Cluster Small&quot;,
+  &quot;active_census_nodes&quot;: 71,
+  &quot;recommended_tier&quot;: &quot;Cluster Medium&quot;,
+  &quot;contract_anniversary&quot;: &quot;2027-03-18T00:00:00Z&quot;,
+  &quot;days_remaining&quot;: 142,
+  &quot;prorated_amount_usd&quot;: 9336.98,
+  &quot;nonce&quot;: &quot;a7f4e912b3&quot;,
+  &quot;timestamp&quot;: 1793158000
+}
+</code></pre></div>
+</li>
+<li>The browser navigates directly to the pre-filled checkout:
+<code>https://dcouplr.com/checkout?token=&lt;ENCODED_SIGNATURE&gt;</code></li>
+<li>The checkout screen presents the exact pre-calculated upgrade with zero manual data entry required.</li>
+</ol>
+<h3 id="32-dual-procurement-fulfillment-channels">3.2 Dual Procurement Fulfillment Channels</h3>
+<p>The automated checkout accommodates three corporate procurement modes:</p>
+<ol>
+<li><strong>Instant Stripe Checkout</strong>: Credit card or ACH pull for existing payment methods on file.</li>
+<li><strong>Hyperscaler Marketplace Drawdown</strong>: 1-click private offer drawdown against committed AWS EDP, GCP Commit, or Azure MACC.</li>
+<li><strong>Net-30 Invoiced Purchase Order</strong>: Auto-generates an amendment addendum to the master services agreement (MSA) with automated electronic signature.</li>
+</ol>
+<h3 id="33-automated-hot-reloading-zero-in-vpc-downtime">3.3 Automated Hot Reloading (Zero In-VPC Downtime)</h3>
+<p>Upon payment or PO execution:</p>
+<ol>
+<li>The licensing engine signs a new Ed25519 <code>dcouplr.lic</code> file.</li>
+<li>The customer downloads the discrete key file, or the cluster receives it via AWS Secrets Manager / HashiCorp Vault.</li>
+<li>Running <code>dcouplr auth activate --key-file /secure/path/dcouplr.lic</code> hot-reloads the active node ceiling in volatile memory <strong>in under 1 second without restarting pods or breaking replication streams</strong>.</li>
+</ol>
+<hr />
+<h2 id="4-internal-tool-architecture-opsdcouplrcom">4. Internal Tool Architecture: <code>ops.dcouplr.com</code></h2>
+<p>To maintain clean separation between public marketing/documentation and internal business operations, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> specifies an isolated internal hub hosted on a dedicated subdomain.</p>
+<h3 id="41-subdomain-recommendation-opsdcouplrcom">4.1 Subdomain Recommendation: <code>ops.dcouplr.com</code></h3>
+<p>The subdomain <code>ops.dcouplr.com</code> provides clean organizational identity while preserving wildcard SSL (<code>*.dcouplr.com</code>) and enterprise Single Sign-On (SSO).</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">                             PUBLIC INTERNET
+                                   │
+              ┌────────────────────┴────────────────────┐
+              │                                         │
+              ▼                                         ▼
+     https://dcouplr.com                       https://ops.dcouplr.com
+  (Public Website &amp; Docs)                     (Internal Sales &amp; Support)
+  ┌─────────────────────────┐               ┌─────────────────────────────┐
+  │ • Hostinger / Edge CDN  │               │ 🔒 Cloudflare Zero Trust    │
+  │ • Static HTML / Assets  │               │ • Okta / Google Workspace   │
+  │ • 0 Database            │               │ • Hardware Key / 2FA        │
+  │ • 0 Customer Data       │               │ • IP Allowlist              │
+  │ • 100% Public Access    │               │ • 0 Public Access (403/DNS) │
+  └─────────────────────────┘               └──────────────┬──────────────┘
+                                                           │
+                                                           ▼
+                                            ┌─────────────────────────────┐
+                                            │ <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Internal Ops Hub │
+                                            │ ┌─────────────┬───────────┐ │
+                                            │ │ Sales Desk  │ SRE Desk  │ │
+                                            │ └─────────────┴───────────┘ │
+                                            └─────────────────────────────┘
+</code></pre></div>
+<h3 id="42-the-3-firewalls-of-complete-isolation">4.2 The 3 Firewalls of Complete Isolation</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Boundary Layer</th>
+<th style="text-align:left">Isolation Enforcement Mechanism</th>
+<th style="text-align:left">Threat Mitigated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>1. Network &amp; Ingress</strong></td>
+<td style="text-align:left">Point-to-point <strong>Cloudflare Zero Trust Access Tunnel (<code>cloudflared</code>)</strong>. 0 open public inbound ports. Unauthenticated requests are dropped at the Cloudflare edge with no DNS response or 403.</td>
+<td style="text-align:left">Automated vulnerability scanners, brute-force attacks, public IP leaks.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>2. Infrastructure</strong></td>
+<td style="text-align:left">Hosted on private containers (AWS ECS / GCP Cloud Run / private Kubernetes) completely separate from the public static web server (Hostinger LiteSpeed).</td>
+<td style="text-align:left">Cross-site scripting contamination, web server compromises, shared resource exhaustion.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>3. In-VPC Data Privacy</strong></td>
+<td style="text-align:left">Interacts with customer VPCs strictly through <strong>one-way outbound customer-initiated tokens</strong> or signed webhook beacons. The internal hub <strong>never opens inbound network connections into customer VPCs</strong>.</td>
+<td style="text-align:left">Breach of Zero-Egress Invariant, regulatory compliance violations, customer data exfiltration.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-unified-internal-ops-capabilities">5. Unified Internal Ops Capabilities</h2>
+<p>The internal console unifies Sales Expansion and SRE Customer Support on a single role-gated backend:</p>
+<h3 id="51-module-a-sales-expansion-desk">5.1 Module A: 💼 Sales &amp; Expansion Desk</h3>
+<ol>
+<li><strong>Contract &amp; License Census Database</strong>:
+<ul>
+<li>Instant search across all enterprise customers by Company Name, Domain, or Contract ID (<code>DCL-CLUS-...</code>).</li>
+<li>Tracks committed nodes, deployed nodes, contract start/end dates, and billing channels (Stripe / AWS / GCP / PO).</li>
+</ul>
+</li>
+<li><strong>Automated Overage &amp; Expansion Beacon Feed</strong>:
+<ul>
+<li>Receives anonymized beacon triggers when clusters run over quota:
+<blockquote>
+<p>🔔 <strong>Expansion Signal:</strong> ACME Corp (Contract <code>DCL-CLUS-SM-ACME-8821B47C9</code>) has operated at <strong>71 nodes</strong> (+46 deficit) for 48 hours.<br />
+<strong>Recommended Action:</strong> Upgrade to Cluster Medium.<br />
+<strong>ARR Growth:</strong> +$24,000 / yr (Prorated immediate cash: $9,336.98).</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><strong>One-Click Quote &amp; Private Offer Generator</strong>:
+<ul>
+<li>Generates AWS Marketplace Private Offer links or pre-co-termed Stripe checkout sessions with one click.</li>
+</ul>
+</li>
+<li><strong>Discrete Cryptographic License Signer</strong>:
+<ul>
+<li>Encrypted in-memory Ed25519 signer generating tamper-evident <code>dcouplr.lic</code> bundles without exposing keys on public servers.</li>
+</ul>
+</li>
+</ol>
+<h3 id="52-module-b-support-sre-desk">5.2 Module B: 🎫 Support &amp; SRE Desk</h3>
+<ol>
+<li><strong>Tier-Gated Incident Queue</strong>:
+<ul>
+<li>Automatically prioritizes tickets based on the customer’s contractual SLA:
+<ul>
+<li><strong>P0 Disaster</strong>: 15-Minute Guaranteed First Response Time (FRT).</li>
+<li><strong>P1 Critical</strong>: 15m–2h FRT with automatic Slack war-room trigger.</li>
+<li><strong>P2 Major</strong>: 1h–4h FRT.</li>
+<li><strong>P3/P4</strong>: 4h–24h FRT.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>SLA Penalty Breach Countdown Clocks</strong>:
+<ul>
+<li>Dynamic timers warning SREs before contractual service credit penalties apply (e.g., <em>10% invoice credit if unacknowledged in 12 minutes</em>).</li>
+</ul>
+</li>
+<li><strong>In-VPC Emergency War-Room Launcher</strong>:
+<ul>
+<li>Spawns ephemeral WebRTC video and screen-share bridges directly inside customer perimeters (<code>support.html#bridges</code>) with zero external software accounts.</li>
+</ul>
+</li>
+<li><strong>Transpiler AST Diagnostic Testbench</strong>:
+<ul>
+<li>Replays and validates customer rule parsing failures in a sandboxed, anonymized environment with zero customer metric exfiltration.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="6-implementation-rollout-roadmap">6. Implementation &amp; Rollout Roadmap</h2>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">gantt
+    title Automated Contract Expansion &amp; Internal Ops Roadmap
+    dateFormat  YYYY-MM-DD
+    section Phase 1: Core Automation
+    Mathematical Parity &amp; Handoff Token API   :done, p1, 2026-10-27, 2d
+    Pre-filled Checkout &amp; Stripe/Marketplace  :active, p2, 2026-10-29, 3d
+    section Phase 2: Internal Ops Hub
+    Deploy ops.dcouplr.com behind CF Access    :p3, 2026-11-01, 2d
+    Sales Desk &amp; Overage Beacon Feed          :p4, 2026-11-03, 3d
+    Support Desk SLA Timers &amp; War-Room Bridge :p5, 2026-11-06, 2d
+    section Phase 3: GA Enterprise Hardening
+    AWS Secrets Manager / Vault Key Sync      :p6, 2026-11-08, 4d
+    Full E2E Audit &amp; Penetration Attestation :p7, 2026-11-12, 3d
+</code></pre></div>
+<ol>
+<li><strong>Step 1 (Immediate)</strong>: Document the complete architecture in the Technical Documentation Hub (<code>/docs</code>) and register in <code>DOCUMENT_REGISTRY</code>.</li>
+<li><strong>Step 2</strong>: Provision <code>ops.dcouplr.com</code> with Cloudflare Zero Trust Tunnel routing to our hardened <code>admin.html</code> and <code>support.html</code> core.</li>
+<li><strong>Step 3</strong>: Connect the Dashboard Census &quot;Proceed to Upgrade&quot; button to the cryptographic token handoff URL to eliminate all customer login friction.</li>
+</ol>
+</div>
+      <pre id="raw-view"><code># Architectural Specification: In-VPC License Census, Automated Contract Expansion &amp; Internal Ops Hub
+
+**Document Identifier:** `VA-SPEC-OPS-EXPANSION-001`  
+**Governing Decisions:** `D-12`, `D-41`, `D-44`, `D-46`, `D-50`  
+**Classification:** Enterprise System Architecture &amp; Commercial Engineering Specification  
+**Target Audience:** Enterprise Architects, FinOps Directors, VP of Engineering, SRE Incident Commanders, Commercial Sales Operations  
+**Compliance Standards:** SOC-2 Type II, ISO 27001, Zero-Egress Invariant ($0.00 Unauthorized WAN Egress)
+
+---
+
+## 1. Executive Summary &amp; Core Architectural Invariants
+
+This specification formalizes the bidirectional commercial and operational lifecycle connecting `&lt;dcouplr/&gt;` in-VPC clusters, frictionless contract upgrades, and isolated internal sales/support operations.
+
+Modern enterprise customers operating in-VPC observability and IaC transpilations face two critical operational bottlenecks during scaling:
+1. **The Human-Error Upgrade Barrier**: Forcing customer engineers to log into an external billing portal, manually count deployed nodes, and select contract tiers introduces typos, misaligned commitments, and delayed procurement.
+2. **Internal Operations Exposure Risk**: Mixing customer-facing applications with internal sales monitoring and SRE incident triage creates attack surface vulnerabilities and breaks zero-trust compliance.
+
+To solve both challenges, `&lt;dcouplr/&gt;` specifies:
+1. **Mathematical Alignment**: 100% equivalence between the **In-VPC License Entitlement &amp; Installation Census** and the **Smart Contract &amp; Proration Calculator**.
+2. **Zero-Login Automated Expansion Pipeline**: In-VPC cluster telemetry automatically extracts contract identity, calculates co-termed daily proration, and hands off pre-authenticated, tamper-evident checkout sessions.
+3. **Isolated Internal Operations Hub (`ops.dcouplr.com`)**: A dedicated internal control plane decoupled from public customer traffic, protected behind Cloudflare Zero Trust, providing unified desks for Sales expansion monitoring and SRE tier-gated incident response.
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                            AUTOMATED IN-VPC TO SALES PIPELINE                                    │
+├──────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                  │
+│  [1. In-VPC Cluster]                [2. One-Click Handoff]          [3. Pre-Filled Checkout]     │
+│  ┌───────────────────────────┐      ┌─────────────────────────┐     ┌────────────────────────┐   │
+│  │ Census detects:           │      │ Engineer clicks:        │     │ Hosted Checkout:       │   │
+│  │ • Active: 71 nodes        │ ───&gt; │ &quot;Upgrade &amp; Prorate ↗&quot;   │ ──&gt; │ • Company: ACME Corp   │   │
+│  │ • Contract: DCL-CLUS-SM-..│      │ Opens signed link with  │     │ • Tier: Cluster Medium │   │
+│  │ • Days Remaining: 142     │      │ payload (Zero typing)   │     │ • Prorated: $9,336.98  │   │
+│  └───────────────────────────┘      └─────────────────────────┘     └───────────┬────────────┘   │
+│                                                                                 │                │
+│                                                                                 ▼                │
+│  [5. Zero-Touch Hot-Reload]         [4b. License Delivery]          [4a. Real-Time Sales Alerts] │
+│  ┌───────────────────────────┐      ┌─────────────────────────┐     ┌────────────────────────┐   │
+│  │ Cluster reloads dcouplr.lic│ &lt;─── │ 1-Click download of     │ &lt;── │ Webhook fires:         │   │
+│  │ in-memory in 1 second     │      │ Ed25519 signed          │     │ • Slack #sales-alerts  │   │
+│  │ (0 cluster restart)       │      │ updated dcouplr.lic     │     │ • CRM: +$24k ARR bump  │   │
+│  └───────────────────────────┘      └─────────────────────────┘     │ • Stripe/Mktpl adjust  │   │
+│                                                                     └────────────────────────┘   │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. Mathematical Parity: In-VPC Census vs. Smart Proration Calculator
+
+The in-VPC workload census evaluated by `migration_tools/licensing/commercial.py` and rendered in `dashboard.html` (`#modal-upgrade-recommendation`) adheres to the deterministic pricing rules executed in the public Smart Contract &amp; Proration Calculator (`index.html#section-proration-calculator`).
+
+### 2.1 Pricing Tier &amp; Capacity Baseline
+The system recognizes 5 commercial enterprise tiers:
+
+| Tier | Base Monthly | Base Annual | Base Nodes | Max Overages Allowed | Overage Rate (Mo / Yr) | Hard Cap | Support SLA |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Developer Pro** | $300 | $3,600 | 25 | 0 | Ineligible ($0) | 25 nodes | Community (Best Effort) |
+| **Cluster Small** | $1,500 | $18,000 | 25 | 35 | $60 / $720 | 60 nodes | Business 8x5 (P1 24h) |
+| **Cluster Medium** | $3,500 | $42,000 | 75 | 75 | $50 / $600 | 150 nodes | 24x7 P1 (2h response) |
+| **Cluster Large** | $7,500 | $90,000 | 200 | 200 | $45 / $540 | 400 nodes | 24x7 Mission-Critical (1h) |
+| **Enterprise Fleet** | $18,000 | $216,000 | 500 | Unlimited | $35 / $420 | Custom | Custom Dedicated War-Room (15m) |
+
+### 2.2 Concrete Census Case Study: 71 Monitored Nodes
+Consider a customer running `Cluster Small` (25 licensed nodes) whose cluster expands to **71 active nodes**:
+
+1. **Deficit Audit**:
+   $$\text{Deficit} = \text{Active Nodes} (71) - \text{Base Licensed Nodes} (25) = +46 \text{ Nodes}$$
+2. **FinOps Ineligibility Analysis**:
+   - *Developer Pro*: Hard-capped at 25 nodes; completely ineligible.
+   - *Cluster Small + Max Overages*: Cluster Small permits at most 35 overage add-ons ($25 + 35 = 60$ nodes max).
+     $$\text{Max Small Cost} = \$1,500 + (35 \times \$60) = \$3,600 / \text{mo} \quad (\$43,200 / \text{yr})$$
+     Even at max overage spend, the customer is **still 11 nodes short of 71**, breaching the hard cap.
+3. **Recommended Upgrade (Cluster Medium)**:
+   - Base Capacity: **75 nodes flat** (covers 71 nodes natively with 4 spare buffer seats).
+   - Flat Cost: **$3,500 / mo** ($42,000 / yr).
+   - **Net ROI**: Saves $100/mo ($1,200/yr) compared to maxed-out Small overages, provides full headroom, and automatically upgrades support to 24x7 P1 with a shared Slack channel.
+
+### 2.3 Co-Termed Daily Proration Equation
+When upgrading mid-contract, customers never pay double or reset term dates. The Smart Proration Calculator applies co-termed daily accrual:
+
+$$\text{Prorated Due} = \left( \text{Annual}_{\text{Target}} - \text{Annual}_{\text{Current}} \right) \times \left( \frac{D_{\text{remaining}}}{365} \right)$$
+
+*Example with 142 days remaining on contract:*
+$$\text{Prorated Due} = (\$42,000 - \$18,000) \times \left( \frac{142}{365} \right) = \$24,000 \times 0.389041 = \mathbf{\$9,336.98}$$
+
+The In-VPC Census and the Smart Calculator compute this exact figure to the cent.
+
+---
+
+## 3. Zero-Login Automated Contract Expansion Pipeline
+
+Because the in-VPC cluster already measures active nodes, forcing an engineer to log into an external portal introduces human error:
+- Typoing the company legal entity or Contract ID.
+- Miscounting active node pools across multi-cloud VPCs.
+- Inadvertently purchasing the wrong tier or missing co-terming dates.
+
+### 3.1 Pre-Authenticated Cryptographic Handoff Token
+When the engineer clicks **&quot;⚡ Proceed to Contract Upgrade &amp; Prorated Checkout&quot;** in the Dashboard Census modal:
+1. The local in-VPC daemon generates a signed, ephemeral HMAC-SHA256 **Handoff Token**:
+   ```json
+   {
+     &quot;contract_id&quot;: &quot;DCL-CLUS-SM-ACME-8821B47C9&quot;,
+     &quot;company_name&quot;: &quot;ACME Corporation&quot;,
+     &quot;current_tier&quot;: &quot;Cluster Small&quot;,
+     &quot;active_census_nodes&quot;: 71,
+     &quot;recommended_tier&quot;: &quot;Cluster Medium&quot;,
+     &quot;contract_anniversary&quot;: &quot;2027-03-18T00:00:00Z&quot;,
+     &quot;days_remaining&quot;: 142,
+     &quot;prorated_amount_usd&quot;: 9336.98,
+     &quot;nonce&quot;: &quot;a7f4e912b3&quot;,
+     &quot;timestamp&quot;: 1793158000
+   }
+   ```
+2. The browser navigates directly to the pre-filled checkout:
+   `https://dcouplr.com/checkout?token=&lt;ENCODED_SIGNATURE&gt;`
+3. The checkout screen presents the exact pre-calculated upgrade with zero manual data entry required.
+
+### 3.2 Dual Procurement Fulfillment Channels
+The automated checkout accommodates three corporate procurement modes:
+1. **Instant Stripe Checkout**: Credit card or ACH pull for existing payment methods on file.
+2. **Hyperscaler Marketplace Drawdown**: 1-click private offer drawdown against committed AWS EDP, GCP Commit, or Azure MACC.
+3. **Net-30 Invoiced Purchase Order**: Auto-generates an amendment addendum to the master services agreement (MSA) with automated electronic signature.
+
+### 3.3 Automated Hot Reloading (Zero In-VPC Downtime)
+Upon payment or PO execution:
+1. The licensing engine signs a new Ed25519 `dcouplr.lic` file.
+2. The customer downloads the discrete key file, or the cluster receives it via AWS Secrets Manager / HashiCorp Vault.
+3. Running `dcouplr auth activate --key-file /secure/path/dcouplr.lic` hot-reloads the active node ceiling in volatile memory **in under 1 second without restarting pods or breaking replication streams**.
+
+---
+
+## 4. Internal Tool Architecture: `ops.dcouplr.com`
+
+To maintain clean separation between public marketing/documentation and internal business operations, `&lt;dcouplr/&gt;` specifies an isolated internal hub hosted on a dedicated subdomain.
+
+### 4.1 Subdomain Recommendation: `ops.dcouplr.com`
+The subdomain `ops.dcouplr.com` provides clean organizational identity while preserving wildcard SSL (`*.dcouplr.com`) and enterprise Single Sign-On (SSO).
+
+```
+                             PUBLIC INTERNET
+                                   │
+              ┌────────────────────┴────────────────────┐
+              │                                         │
+              ▼                                         ▼
+     https://dcouplr.com                       https://ops.dcouplr.com
+  (Public Website &amp; Docs)                     (Internal Sales &amp; Support)
+  ┌─────────────────────────┐               ┌─────────────────────────────┐
+  │ • Hostinger / Edge CDN  │               │ 🔒 Cloudflare Zero Trust    │
+  │ • Static HTML / Assets  │               │ • Okta / Google Workspace   │
+  │ • 0 Database            │               │ • Hardware Key / 2FA        │
+  │ • 0 Customer Data       │               │ • IP Allowlist              │
+  │ • 100% Public Access    │               │ • 0 Public Access (403/DNS) │
+  └─────────────────────────┘               └──────────────┬──────────────┘
+                                                           │
+                                                           ▼
+                                            ┌─────────────────────────────┐
+                                            │ &lt;dcouplr/&gt; Internal Ops Hub │
+                                            │ ┌─────────────┬───────────┐ │
+                                            │ │ Sales Desk  │ SRE Desk  │ │
+                                            │ └─────────────┴───────────┘ │
+                                            └─────────────────────────────┘
+```
+
+### 4.2 The 3 Firewalls of Complete Isolation
+
+| Boundary Layer | Isolation Enforcement Mechanism | Threat Mitigated |
+| :--- | :--- | :--- |
+| **1. Network &amp; Ingress** | Point-to-point **Cloudflare Zero Trust Access Tunnel (`cloudflared`)**. 0 open public inbound ports. Unauthenticated requests are dropped at the Cloudflare edge with no DNS response or 403. | Automated vulnerability scanners, brute-force attacks, public IP leaks. |
+| **2. Infrastructure** | Hosted on private containers (AWS ECS / GCP Cloud Run / private Kubernetes) completely separate from the public static web server (Hostinger LiteSpeed). | Cross-site scripting contamination, web server compromises, shared resource exhaustion. |
+| **3. In-VPC Data Privacy** | Interacts with customer VPCs strictly through **one-way outbound customer-initiated tokens** or signed webhook beacons. The internal hub **never opens inbound network connections into customer VPCs**. | Breach of Zero-Egress Invariant, regulatory compliance violations, customer data exfiltration. |
+
+---
+
+## 5. Unified Internal Ops Capabilities
+
+The internal console unifies Sales Expansion and SRE Customer Support on a single role-gated backend:
+
+### 5.1 Module A: 💼 Sales &amp; Expansion Desk
+1. **Contract &amp; License Census Database**:
+   - Instant search across all enterprise customers by Company Name, Domain, or Contract ID (`DCL-CLUS-...`).
+   - Tracks committed nodes, deployed nodes, contract start/end dates, and billing channels (Stripe / AWS / GCP / PO).
+2. **Automated Overage &amp; Expansion Beacon Feed**:
+   - Receives anonymized beacon triggers when clusters run over quota:
+     &gt; 🔔 **Expansion Signal:** ACME Corp (Contract `DCL-CLUS-SM-ACME-8821B47C9`) has operated at **71 nodes** (+46 deficit) for 48 hours.  
+     &gt; **Recommended Action:** Upgrade to Cluster Medium.  
+     &gt; **ARR Growth:** +$24,000 / yr (Prorated immediate cash: $9,336.98).
+3. **One-Click Quote &amp; Private Offer Generator**:
+   - Generates AWS Marketplace Private Offer links or pre-co-termed Stripe checkout sessions with one click.
+4. **Discrete Cryptographic License Signer**:
+   - Encrypted in-memory Ed25519 signer generating tamper-evident `dcouplr.lic` bundles without exposing keys on public servers.
+
+### 5.2 Module B: 🎫 Support &amp; SRE Desk
+1. **Tier-Gated Incident Queue**:
+   - Automatically prioritizes tickets based on the customer’s contractual SLA:
+     - **P0 Disaster**: 15-Minute Guaranteed First Response Time (FRT).
+     - **P1 Critical**: 15m–2h FRT with automatic Slack war-room trigger.
+     - **P2 Major**: 1h–4h FRT.
+     - **P3/P4**: 4h–24h FRT.
+2. **SLA Penalty Breach Countdown Clocks**:
+   - Dynamic timers warning SREs before contractual service credit penalties apply (e.g., *10% invoice credit if unacknowledged in 12 minutes*).
+3. **In-VPC Emergency War-Room Launcher**:
+   - Spawns ephemeral WebRTC video and screen-share bridges directly inside customer perimeters (`support.html#bridges`) with zero external software accounts.
+4. **Transpiler AST Diagnostic Testbench**:
+   - Replays and validates customer rule parsing failures in a sandboxed, anonymized environment with zero customer metric exfiltration.
+
+---
+
+## 6. Implementation &amp; Rollout Roadmap
+
+```mermaid
+gantt
+    title Automated Contract Expansion &amp; Internal Ops Roadmap
+    dateFormat  YYYY-MM-DD
+    section Phase 1: Core Automation
+    Mathematical Parity &amp; Handoff Token API   :done, p1, 2026-10-27, 2d
+    Pre-filled Checkout &amp; Stripe/Marketplace  :active, p2, 2026-10-29, 3d
+    section Phase 2: Internal Ops Hub
+    Deploy ops.dcouplr.com behind CF Access    :p3, 2026-11-01, 2d
+    Sales Desk &amp; Overage Beacon Feed          :p4, 2026-11-03, 3d
+    Support Desk SLA Timers &amp; War-Room Bridge :p5, 2026-11-06, 2d
+    section Phase 3: GA Enterprise Hardening
+    AWS Secrets Manager / Vault Key Sync      :p6, 2026-11-08, 4d
+    Full E2E Audit &amp; Penetration Attestation :p7, 2026-11-12, 3d
+```
+
+1. **Step 1 (Immediate)**: Document the complete architecture in the Technical Documentation Hub (`/docs`) and register in `DOCUMENT_REGISTRY`.
+2. **Step 2**: Provision `ops.dcouplr.com` with Cloudflare Zero Trust Tunnel routing to our hardened `admin.html` and `support.html` core.
+3. **Step 3**: Connect the Dashboard Census &quot;Proceed to Upgrade&quot; button to the cryptographic token handoff URL to eliminate all customer login friction.
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># Architectural Specification: In-VPC License Census, Automated Contract Expansion &amp; Internal Ops Hub
+
+**Document Identifier:** `VA-SPEC-OPS-EXPANSION-001`  
+**Governing Decisions:** `D-12`, `D-41`, `D-44`, `D-46`, `D-50`  
+**Classification:** Enterprise System Architecture &amp; Commercial Engineering Specification  
+**Target Audience:** Enterprise Architects, FinOps Directors, VP of Engineering, SRE Incident Commanders, Commercial Sales Operations  
+**Compliance Standards:** SOC-2 Type II, ISO 27001, Zero-Egress Invariant ($0.00 Unauthorized WAN Egress)
+
+---
+
+## 1. Executive Summary &amp; Core Architectural Invariants
+
+This specification formalizes the bidirectional commercial and operational lifecycle connecting `&lt;dcouplr/&gt;` in-VPC clusters, frictionless contract upgrades, and isolated internal sales/support operations.
+
+Modern enterprise customers operating in-VPC observability and IaC transpilations face two critical operational bottlenecks during scaling:
+1. **The Human-Error Upgrade Barrier**: Forcing customer engineers to log into an external billing portal, manually count deployed nodes, and select contract tiers introduces typos, misaligned commitments, and delayed procurement.
+2. **Internal Operations Exposure Risk**: Mixing customer-facing applications with internal sales monitoring and SRE incident triage creates attack surface vulnerabilities and breaks zero-trust compliance.
+
+To solve both challenges, `&lt;dcouplr/&gt;` specifies:
+1. **Mathematical Alignment**: 100% equivalence between the **In-VPC License Entitlement &amp; Installation Census** and the **Smart Contract &amp; Proration Calculator**.
+2. **Zero-Login Automated Expansion Pipeline**: In-VPC cluster telemetry automatically extracts contract identity, calculates co-termed daily proration, and hands off pre-authenticated, tamper-evident checkout sessions.
+3. **Isolated Internal Operations Hub (`ops.dcouplr.com`)**: A dedicated internal control plane decoupled from public customer traffic, protected behind Cloudflare Zero Trust, providing unified desks for Sales expansion monitoring and SRE tier-gated incident response.
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                            AUTOMATED IN-VPC TO SALES PIPELINE                                    │
+├──────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                  │
+│  [1. In-VPC Cluster]                [2. One-Click Handoff]          [3. Pre-Filled Checkout]     │
+│  ┌───────────────────────────┐      ┌─────────────────────────┐     ┌────────────────────────┐   │
+│  │ Census detects:           │      │ Engineer clicks:        │     │ Hosted Checkout:       │   │
+│  │ • Active: 71 nodes        │ ───&gt; │ &quot;Upgrade &amp; Prorate ↗&quot;   │ ──&gt; │ • Company: ACME Corp   │   │
+│  │ • Contract: DCL-CLUS-SM-..│      │ Opens signed link with  │     │ • Tier: Cluster Medium │   │
+│  │ • Days Remaining: 142     │      │ payload (Zero typing)   │     │ • Prorated: $9,336.98  │   │
+│  └───────────────────────────┘      └─────────────────────────┘     └───────────┬────────────┘   │
+│                                                                                 │                │
+│                                                                                 ▼                │
+│  [5. Zero-Touch Hot-Reload]         [4b. License Delivery]          [4a. Real-Time Sales Alerts] │
+│  ┌───────────────────────────┐      ┌─────────────────────────┐     ┌────────────────────────┐   │
+│  │ Cluster reloads dcouplr.lic│ &lt;─── │ 1-Click download of     │ &lt;── │ Webhook fires:         │   │
+│  │ in-memory in 1 second     │      │ Ed25519 signed          │     │ • Slack #sales-alerts  │   │
+│  │ (0 cluster restart)       │      │ updated dcouplr.lic     │     │ • CRM: +$24k ARR bump  │   │
+│  └───────────────────────────┘      └─────────────────────────┘     │ • Stripe/Mktpl adjust  │   │
+│                                                                     └────────────────────────┘   │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. Mathematical Parity: In-VPC Census vs. Smart Proration Calculator
+
+The in-VPC workload census evaluated by `migration_tools/licensing/commercial.py` and rendered in `dashboard.html` (`#modal-upgrade-recommendation`) adheres to the deterministic pricing rules executed in the public Smart Contract &amp; Proration Calculator (`index.html#section-proration-calculator`).
+
+### 2.1 Pricing Tier &amp; Capacity Baseline
+The system recognizes 5 commercial enterprise tiers:
+
+| Tier | Base Monthly | Base Annual | Base Nodes | Max Overages Allowed | Overage Rate (Mo / Yr) | Hard Cap | Support SLA |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Developer Pro** | $300 | $3,600 | 25 | 0 | Ineligible ($0) | 25 nodes | Community (Best Effort) |
+| **Cluster Small** | $1,500 | $18,000 | 25 | 35 | $60 / $720 | 60 nodes | Business 8x5 (P1 24h) |
+| **Cluster Medium** | $3,500 | $42,000 | 75 | 75 | $50 / $600 | 150 nodes | 24x7 P1 (2h response) |
+| **Cluster Large** | $7,500 | $90,000 | 200 | 200 | $45 / $540 | 400 nodes | 24x7 Mission-Critical (1h) |
+| **Enterprise Fleet** | $18,000 | $216,000 | 500 | Unlimited | $35 / $420 | Custom | Custom Dedicated War-Room (15m) |
+
+### 2.2 Concrete Census Case Study: 71 Monitored Nodes
+Consider a customer running `Cluster Small` (25 licensed nodes) whose cluster expands to **71 active nodes**:
+
+1. **Deficit Audit**:
+   $$\text{Deficit} = \text{Active Nodes} (71) - \text{Base Licensed Nodes} (25) = +46 \text{ Nodes}$$
+2. **FinOps Ineligibility Analysis**:
+   - *Developer Pro*: Hard-capped at 25 nodes; completely ineligible.
+   - *Cluster Small + Max Overages*: Cluster Small permits at most 35 overage add-ons ($25 + 35 = 60$ nodes max).
+     $$\text{Max Small Cost} = \$1,500 + (35 \times \$60) = \$3,600 / \text{mo} \quad (\$43,200 / \text{yr})$$
+     Even at max overage spend, the customer is **still 11 nodes short of 71**, breaching the hard cap.
+3. **Recommended Upgrade (Cluster Medium)**:
+   - Base Capacity: **75 nodes flat** (covers 71 nodes natively with 4 spare buffer seats).
+   - Flat Cost: **$3,500 / mo** ($42,000 / yr).
+   - **Net ROI**: Saves $100/mo ($1,200/yr) compared to maxed-out Small overages, provides full headroom, and automatically upgrades support to 24x7 P1 with a shared Slack channel.
+
+### 2.3 Co-Termed Daily Proration Equation
+When upgrading mid-contract, customers never pay double or reset term dates. The Smart Proration Calculator applies co-termed daily accrual:
+
+$$\text{Prorated Due} = \left( \text{Annual}_{\text{Target}} - \text{Annual}_{\text{Current}} \right) \times \left( \frac{D_{\text{remaining}}}{365} \right)$$
+
+*Example with 142 days remaining on contract:*
+$$\text{Prorated Due} = (\$42,000 - \$18,000) \times \left( \frac{142}{365} \right) = \$24,000 \times 0.389041 = \mathbf{\$9,336.98}$$
+
+The In-VPC Census and the Smart Calculator compute this exact figure to the cent.
+
+---
+
+## 3. Zero-Login Automated Contract Expansion Pipeline
+
+Because the in-VPC cluster already measures active nodes, forcing an engineer to log into an external portal introduces human error:
+- Typoing the company legal entity or Contract ID.
+- Miscounting active node pools across multi-cloud VPCs.
+- Inadvertently purchasing the wrong tier or missing co-terming dates.
+
+### 3.1 Pre-Authenticated Cryptographic Handoff Token
+When the engineer clicks **&quot;⚡ Proceed to Contract Upgrade &amp; Prorated Checkout&quot;** in the Dashboard Census modal:
+1. The local in-VPC daemon generates a signed, ephemeral HMAC-SHA256 **Handoff Token**:
+   ```json
+   {
+     &quot;contract_id&quot;: &quot;DCL-CLUS-SM-ACME-8821B47C9&quot;,
+     &quot;company_name&quot;: &quot;ACME Corporation&quot;,
+     &quot;current_tier&quot;: &quot;Cluster Small&quot;,
+     &quot;active_census_nodes&quot;: 71,
+     &quot;recommended_tier&quot;: &quot;Cluster Medium&quot;,
+     &quot;contract_anniversary&quot;: &quot;2027-03-18T00:00:00Z&quot;,
+     &quot;days_remaining&quot;: 142,
+     &quot;prorated_amount_usd&quot;: 9336.98,
+     &quot;nonce&quot;: &quot;a7f4e912b3&quot;,
+     &quot;timestamp&quot;: 1793158000
+   }
+   ```
+2. The browser navigates directly to the pre-filled checkout:
+   `https://dcouplr.com/checkout?token=&lt;ENCODED_SIGNATURE&gt;`
+3. The checkout screen presents the exact pre-calculated upgrade with zero manual data entry required.
+
+### 3.2 Dual Procurement Fulfillment Channels
+The automated checkout accommodates three corporate procurement modes:
+1. **Instant Stripe Checkout**: Credit card or ACH pull for existing payment methods on file.
+2. **Hyperscaler Marketplace Drawdown**: 1-click private offer drawdown against committed AWS EDP, GCP Commit, or Azure MACC.
+3. **Net-30 Invoiced Purchase Order**: Auto-generates an amendment addendum to the master services agreement (MSA) with automated electronic signature.
+
+### 3.3 Automated Hot Reloading (Zero In-VPC Downtime)
+Upon payment or PO execution:
+1. The licensing engine signs a new Ed25519 `dcouplr.lic` file.
+2. The customer downloads the discrete key file, or the cluster receives it via AWS Secrets Manager / HashiCorp Vault.
+3. Running `dcouplr auth activate --key-file /secure/path/dcouplr.lic` hot-reloads the active node ceiling in volatile memory **in under 1 second without restarting pods or breaking replication streams**.
+
+---
+
+## 4. Internal Tool Architecture: `ops.dcouplr.com`
+
+To maintain clean separation between public marketing/documentation and internal business operations, `&lt;dcouplr/&gt;` specifies an isolated internal hub hosted on a dedicated subdomain.
+
+### 4.1 Subdomain Recommendation: `ops.dcouplr.com`
+The subdomain `ops.dcouplr.com` provides clean organizational identity while preserving wildcard SSL (`*.dcouplr.com`) and enterprise Single Sign-On (SSO).
+
+```
+                             PUBLIC INTERNET
+                                   │
+              ┌────────────────────┴────────────────────┐
+              │                                         │
+              ▼                                         ▼
+     https://dcouplr.com                       https://ops.dcouplr.com
+  (Public Website &amp; Docs)                     (Internal Sales &amp; Support)
+  ┌─────────────────────────┐               ┌─────────────────────────────┐
+  │ • Hostinger / Edge CDN  │               │ 🔒 Cloudflare Zero Trust    │
+  │ • Static HTML / Assets  │               │ • Okta / Google Workspace   │
+  │ • 0 Database            │               │ • Hardware Key / 2FA        │
+  │ • 0 Customer Data       │               │ • IP Allowlist              │
+  │ • 100% Public Access    │               │ • 0 Public Access (403/DNS) │
+  └─────────────────────────┘               └──────────────┬──────────────┘
+                                                           │
+                                                           ▼
+                                            ┌─────────────────────────────┐
+                                            │ &lt;dcouplr/&gt; Internal Ops Hub │
+                                            │ ┌─────────────┬───────────┐ │
+                                            │ │ Sales Desk  │ SRE Desk  │ │
+                                            │ └─────────────┴───────────┘ │
+                                            └─────────────────────────────┘
+```
+
+### 4.2 The 3 Firewalls of Complete Isolation
+
+| Boundary Layer | Isolation Enforcement Mechanism | Threat Mitigated |
+| :--- | :--- | :--- |
+| **1. Network &amp; Ingress** | Point-to-point **Cloudflare Zero Trust Access Tunnel (`cloudflared`)**. 0 open public inbound ports. Unauthenticated requests are dropped at the Cloudflare edge with no DNS response or 403. | Automated vulnerability scanners, brute-force attacks, public IP leaks. |
+| **2. Infrastructure** | Hosted on private containers (AWS ECS / GCP Cloud Run / private Kubernetes) completely separate from the public static web server (Hostinger LiteSpeed). | Cross-site scripting contamination, web server compromises, shared resource exhaustion. |
+| **3. In-VPC Data Privacy** | Interacts with customer VPCs strictly through **one-way outbound customer-initiated tokens** or signed webhook beacons. The internal hub **never opens inbound network connections into customer VPCs**. | Breach of Zero-Egress Invariant, regulatory compliance violations, customer data exfiltration. |
+
+---
+
+## 5. Unified Internal Ops Capabilities
+
+The internal console unifies Sales Expansion and SRE Customer Support on a single role-gated backend:
+
+### 5.1 Module A: 💼 Sales &amp; Expansion Desk
+1. **Contract &amp; License Census Database**:
+   - Instant search across all enterprise customers by Company Name, Domain, or Contract ID (`DCL-CLUS-...`).
+   - Tracks committed nodes, deployed nodes, contract start/end dates, and billing channels (Stripe / AWS / GCP / PO).
+2. **Automated Overage &amp; Expansion Beacon Feed**:
+   - Receives anonymized beacon triggers when clusters run over quota:
+     &gt; 🔔 **Expansion Signal:** ACME Corp (Contract `DCL-CLUS-SM-ACME-8821B47C9`) has operated at **71 nodes** (+46 deficit) for 48 hours.  
+     &gt; **Recommended Action:** Upgrade to Cluster Medium.  
+     &gt; **ARR Growth:** +$24,000 / yr (Prorated immediate cash: $9,336.98).
+3. **One-Click Quote &amp; Private Offer Generator**:
+   - Generates AWS Marketplace Private Offer links or pre-co-termed Stripe checkout sessions with one click.
+4. **Discrete Cryptographic License Signer**:
+   - Encrypted in-memory Ed25519 signer generating tamper-evident `dcouplr.lic` bundles without exposing keys on public servers.
+
+### 5.2 Module B: 🎫 Support &amp; SRE Desk
+1. **Tier-Gated Incident Queue**:
+   - Automatically prioritizes tickets based on the customer’s contractual SLA:
+     - **P0 Disaster**: 15-Minute Guaranteed First Response Time (FRT).
+     - **P1 Critical**: 15m–2h FRT with automatic Slack war-room trigger.
+     - **P2 Major**: 1h–4h FRT.
+     - **P3/P4**: 4h–24h FRT.
+2. **SLA Penalty Breach Countdown Clocks**:
+   - Dynamic timers warning SREs before contractual service credit penalties apply (e.g., *10% invoice credit if unacknowledged in 12 minutes*).
+3. **In-VPC Emergency War-Room Launcher**:
+   - Spawns ephemeral WebRTC video and screen-share bridges directly inside customer perimeters (`support.html#bridges`) with zero external software accounts.
+4. **Transpiler AST Diagnostic Testbench**:
+   - Replays and validates customer rule parsing failures in a sandboxed, anonymized environment with zero customer metric exfiltration.
+
+---
+
+## 6. Implementation &amp; Rollout Roadmap
+
+```mermaid
+gantt
+    title Automated Contract Expansion &amp; Internal Ops Roadmap
+    dateFormat  YYYY-MM-DD
+    section Phase 1: Core Automation
+    Mathematical Parity &amp; Handoff Token API   :done, p1, 2026-10-27, 2d
+    Pre-filled Checkout &amp; Stripe/Marketplace  :active, p2, 2026-10-29, 3d
+    section Phase 2: Internal Ops Hub
+    Deploy ops.dcouplr.com behind CF Access    :p3, 2026-11-01, 2d
+    Sales Desk &amp; Overage Beacon Feed          :p4, 2026-11-03, 3d
+    Support Desk SLA Timers &amp; War-Room Bridge :p5, 2026-11-06, 2d
+    section Phase 3: GA Enterprise Hardening
+    AWS Secrets Manager / Vault Key Sync      :p6, 2026-11-08, 4d
+    Full E2E Audit &amp; Penetration Attestation :p7, 2026-11-12, 3d
+```
+
+1. **Step 1 (Immediate)**: Document the complete architecture in the Technical Documentation Hub (`/docs`) and register in `DOCUMENT_REGISTRY`.
+2. **Step 2**: Provision `ops.dcouplr.com` with Cloudflare Zero Trust Tunnel routing to our hardened `admin.html` and `support.html` core.
+3. **Step 3**: Connect the Dashboard Census &quot;Proceed to Upgrade&quot; button to the cryptographic token handoff URL to eliminate all customer login friction.
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

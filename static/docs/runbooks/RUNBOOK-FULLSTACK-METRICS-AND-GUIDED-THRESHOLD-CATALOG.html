@@ -1,0 +1,2453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-FULLSTACK-METRICS-AND-GUIDED-THRESHOLD-CATALOG.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-FULLSTACK-METRICS-AND-GUIDED-THRESHOLD-CATALOG.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-FULLSTACK-METRICS-AND-GUIDED-THRESHOLD-CATALOG.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="full-stack-suite-full-stack-metrics-guided-threshold-catalog"><dcouplr/> Full-Stack Suite: Full-Stack Metrics &amp; Guided Threshold Catalog</h1>
+<h2 id="sre-administrator-runbook-7-layer-monitoring-points-threshold-trade-off-analysis-and-enterprise-ticketing-architecture">SRE &amp; Administrator Runbook: 7-Layer Monitoring Points, Threshold Trade-Off Analysis, and Enterprise Ticketing Architecture</h2>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">Document ID:     RUN-FULLSTACK-METRICS-GUIDE-001
+Classification:  Enterprise Observability &amp; Zero-Egress In-VPC Operations
+Target Platform: <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Full-Stack Suite
+Integrations:    Enterprise Ticketing Systems (ServiceNow / Jira / Spool), NOC PulseCast, SRE SMTP, Syslog RFC-5424
+Egress Status:   0.00 WAN Packets / 100% In-VPC Guaranteed (Zero WAN Egress)
+</code></pre></div>
+<hr />
+<h2 id="1-executive-summary-core-architectural-tenets">1. Executive Summary &amp; Core Architectural Tenets</h2>
+<p>The <strong><dcouplr/> Full-Stack Suite</strong> provides turnkey, deep-packet, zero-egress monitoring across every layer of modern hybrid enterprise infrastructure.</p>
+<h3 id="the-zero-egress-invariant">The Zero-Egress Invariant</h3>
+<p>All collectors, ring buffers, threshold evaluations, and alert dispatchers run strictly <strong>in-perimeter</strong> (<code>100% In-VPC / On-Prem</code>). No metric readings, logs, traces, or security metadata ever leave your private network boundaries. All telemetry is stored in high-performance memory ring buffers and local WAL storage, guaranteeing <strong>$0.00 egress costs</strong> and eliminating third-party data exfiltration risks.</p>
+<h3 id="guiding-not-strict-the-engineering-threshold-philosophy">Guiding, Not Strict: The Engineering Threshold Philosophy</h3>
+<p>In high-velocity enterprise environments, rigid alerting thresholds cause two catastrophic failure modes:</p>
+<ol>
+<li><strong>Alert Fatigue (Thresholds Too Strict):</strong> On-call SREs receive dozens of actionable-looking notifications during routine batch processing, RMAN backups, or seasonal micro-bursts, leading to alarm desensitization.</li>
+<li><strong>Undetected Outages (Thresholds Too Permissive):</strong> Degraded database buffer pools or connection pool exhaustion goes unflagged until user-facing HTTP 5xx errors breach customer SLAs.</li>
+</ol>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> addresses this by providing <strong>guiding, not strict</strong> threshold configurations:</p>
+<ul>
+<li>Every metric has an independent <strong>Activation Toggle (<code>enabled: true/false</code>)</strong>, allowing engineering teams to disable irrelevant signals for specific host roles.</li>
+<li>Factory default thresholds are grounded in queuing theory (Erlang C), thermodynamics, and hardware tolerances.</li>
+<li>Engineers can adjust warning and critical thresholds dynamically; the system immediately provides <strong>Guiding Trade-off Feedback</strong> detailing the pros, cons, and operational risks of tightening versus relaxing each threshold.</li>
+</ul>
+<hr />
+<h2 id="2-notification-forwarding-in-perimeter-enterprise-ticketing-architecture">2. Notification Forwarding &amp; In-Perimeter Enterprise Ticketing Architecture</h2>
+<h3 id="in-perimeter-ticketing-local-spooling">In-Perimeter Ticketing &amp; Local Spooling</h3>
+<p>In enterprise cloud and on-premise deployments, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> integrates with your organization's <strong>enterprise ticketing tools</strong> (such as <strong>ServiceNow</strong>, <strong>Jira Service Management</strong>, or custom internal ticketing systems). Operating under a strict <strong>Zero-Egress Invariant (Zero WAN Egress)</strong>, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> dispatches alerts and incident records without requiring outbound internet access:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">Platform Architecture:   In-Perimeter Enterprise Ticketing &amp; Incident Dispatch
+Local Spool Directory:   ./data/incident_spool/
+Local Webhook Bridge:    http://127.0.0.1:9000/v1/support/receiver/ingest (Loopback / Private LAN)
+Target Incident Queues:  hw-ops-dc, network-ops, cloud-infra, k8s-platform, dba-team, sre-tier1, secops-threat
+Operating Mode:          100% In-Perimeter / Air-Gapped Autonomous Dispatch
+</code></pre></div>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">flowchart TD
+    subgraph Collectors[&quot;<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Full-Stack Suite Collectors (Layers 1-7)&quot;]
+        L1[&quot;L1: Physical DC &amp; Bare Metal&quot;]
+        L2[&quot;L2: Network &amp; Interconnects&quot;]
+        L3[&quot;L3: Cloud VPC &amp; Gateways&quot;]
+        L4[&quot;L4: Hypervisors &amp; K8s&quot;]
+        L5[&quot;L5: Oracle, MSSQL, PG, Kafka&quot;]
+        L6[&quot;L6: APM &amp; Runtimes&quot;]
+        L7[&quot;L7: Logs, IAM &amp; Security&quot;]
+    end
+
+    subgraph Eval[&quot;Threshold &amp; Guidance Engine&quot;]
+        Engine[&quot;In-Memory Evaluation &amp; Invariant Validation&quot;]
+    end
+
+    subgraph TicketingBridge[&quot;In-Perimeter Ticketing Dispatch &amp; Local Spool&quot;]
+        Spool[&quot;Atomic File Spool: ./data/incident_spool/&quot;]
+        IPC[&quot;Local Loopback API / Webhook Bridge&quot;]
+        Q_HW[&quot;Queue: hw-ops-dc (Tier 1)&quot;]
+        Q_NET[&quot;Queue: network-ops (Tier 2)&quot;]
+        Q_CLOUD[&quot;Queue: cloud-infra (Tier 3)&quot;]
+        Q_K8S[&quot;Queue: k8s-platform (Tier 4)&quot;]
+        Q_DBA[&quot;Queue: dba-team (Tier 5)&quot;]
+        Q_SRE[&quot;Queue: sre-tier1 (Tier 6)&quot;]
+        Q_SEC[&quot;Queue: secops-threat (Tier 7)&quot;]
+    end
+
+    subgraph ITSM[&quot;Enterprise Ticketing Tools&quot;]
+        SN[&quot;ServiceNow / Jira Service Management&quot;]
+        Console[&quot;Internal SRE Incident Console&quot;]
+        Paging[&quot;On-Call Paging &amp; War-Room Bridge&quot;]
+    end
+
+    Collectors --&gt; Eval
+    Eval --&gt;|Alert Triggered (Zero WAN)| Spool
+    Eval -.-&gt;|Direct Loopback Webhook| IPC
+    Spool --&gt; Q_HW &amp; Q_NET &amp; Q_CLOUD &amp; Q_K8S &amp; Q_DBA &amp; Q_SRE &amp; Q_SEC
+    IPC --&gt; ITSM
+    Spool -.-&gt;|Pickup Daemon| ITSM
+</code></pre></div>
+<h3 id="zero-egress-spool-mechanism">Zero-Egress Spool Mechanism</h3>
+<p>When any active metric breaches its threshold and has an enterprise ticketing route enabled:</p>
+<ol>
+<li><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> formats a structured, cryptographic ITIL incident ticket:<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;ticket_id&quot;: &quot;TICK-P1-1793289968-163FFD&quot;,
+  &quot;source&quot;: &quot;<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Full-Stack Suite&quot;,
+  &quot;severity&quot;: &quot;P1&quot;,
+  &quot;target_queue&quot;: &quot;dba-team&quot;,
+  &quot;component_id&quot;: &quot;databases_oracle&quot;,
+  &quot;metric&quot;: &quot;Oracle SGA Buffer Cache Hit Ratio&quot;,
+  &quot;current_value&quot;: 88.4,
+  &quot;unit&quot;: &quot;%&quot;,
+  &quot;threshold&quot;: 90.0,
+  &quot;title&quot;: &quot;[P1] DATABASES_ORACLE: Buffer Cache Hit Ratio Breached Critical Threshold&quot;,
+  &quot;remediation_runbook&quot;: &quot;/docs/runbooks/RUNBOOK-FULLSTACK-METRICS-AND-GUIDED-THRESHOLD-CATALOG.html#databases_oracle&quot;,
+  &quot;zero_egress_verified&quot;: true,
+  &quot;created_at&quot;: &quot;2026-10-29T16:06:08Z&quot;
+}
+</code></pre></div>
+</li>
+<li>The payload is written atomically to <code>./data/incident_spool/ticket-&lt;uuid&gt;.json</code>.</li>
+<li>If an internal ticketing receiver is active on local loopback port <code>9000</code>, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> immediately sends the ticket via loopback HTTP (<code>POST /v1/support/receiver/ingest</code>). If the receiver is offline, the ticket remains buffered in the local spool directory without data loss.</li>
+<li><strong>Zero WAN bytes are transmitted</strong>. The ticket is ingested, prioritized, and dispatched to on-call engineers via your internal ticketing tool or NOC wallboards.</li>
+</ol>
+<hr />
+<h2 id="3-threshold-tuning-profiles">3. Threshold Tuning Profiles</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Profile Name</th>
+<th style="text-align:left">Target Environment</th>
+<th style="text-align:left">Warning Philosophy</th>
+<th style="text-align:left">Critical Philosophy</th>
+<th style="text-align:left">SRE Trade-Off Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Profile A: Aggressive (Tier-0 Financial)</strong></td>
+<td style="text-align:left">Production Core Banking, Payment Gateways</td>
+<td style="text-align:left">Tight (e.g. CPU &gt; 70%, Pool &gt; 75%)</td>
+<td style="text-align:left">Strict (e.g. CPU &gt; 85%, Pool &gt; 85%)</td>
+<td style="text-align:left"><strong>Pros:</strong> Earliest detection, maximum lead time to intervene. <br><strong>Cons:</strong> Higher alert volume; requires dedicated 24x7 NOC triage.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Profile B: Balanced Production (Default)</strong></td>
+<td style="text-align:left">Standard Enterprise Production Services</td>
+<td style="text-align:left">Moderate (e.g. CPU &gt; 75%, Pool &gt; 80%)</td>
+<td style="text-align:left">Safe (e.g. CPU &gt; 90%, Pool &gt; 92%)</td>
+<td style="text-align:left"><strong>Pros:</strong> Factory optimized via Erlang C; filters transient micro-spikes. <br><strong>Cons:</strong> Requires response within 10–15 min of warning.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Profile C: Permissive (Staging &amp; Batch)</strong></td>
+<td style="text-align:left">Staging, Non-Prod, Heavy Batch Clusters</td>
+<td style="text-align:left">Relaxed (e.g. CPU &gt; 88%, Pool &gt; 90%)</td>
+<td style="text-align:left">Broad (e.g. CPU &gt; 96%, Pool &gt; 98%)</td>
+<td style="text-align:left"><strong>Pros:</strong> Zero false alarms during scheduled nightly bulk jobs. <br><strong>Cons:</strong> Leaves small buffer before resource exhaustion.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-comprehensive-layer-by-layer-metric-catalog-guidance">4. Comprehensive Layer-by-Layer Metric Catalog &amp; Guidance</h2>
+<h3 id="layer-1-physical-data-center-infrastructure-bare-metal-on-prem">Layer 1: Physical Data Center Infrastructure (Bare Metal &amp; On-Prem)</h3>
+<h4 id="11-compute-bare-metal-servers-computebaremetal">1.1 Compute / Bare Metal Servers (<code>compute_bare_metal</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> IPMI v2.0 RMCP+, Redfish REST API, Linux Node Exporter, <code>smartctl</code>, <code>edac-util</code>.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>hw-ops-dc</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons (Tightening vs Relaxing)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>cpu_utilization_pct</code></td>
+<td style="text-align:left">CPU Core Utilization (%)</td>
+<td style="text-align:left">75.0% / 90.0%</td>
+<td style="text-align:left">10.0% – 100.0%</td>
+<td style="text-align:left">Based on M/M/c queuing models; above 75% utilization, runqueue wait times increase non-linearly.</td>
+<td style="text-align:left"><strong>Tighten (e.g. 65%):</strong> Catches runaway threads earlier. May alert on routine compilation or cron tasks. <br><strong>Relax (e.g. 85%):</strong> Prevents alert spam on bursty batch nodes. Leaves narrow buffer before core saturation.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>memory_usage_pct</code></td>
+<td style="text-align:left">Physical RAM Utilization (%)</td>
+<td style="text-align:left">80.0% / 95.0%</td>
+<td style="text-align:left">20.0% – 100.0%</td>
+<td style="text-align:left">Linux buffer/cache can be evicted; 80% marks genuine anonymous application memory pressure.</td>
+<td style="text-align:left"><strong>Tighten (70%):</strong> Early notice for memory leak investigations. Low utilization alert noise. <br><strong>Relax (90%):</strong> Suitable for in-memory caches (Redis). Risk of invocation of Linux OOM Killer.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>memory_swap_pct</code></td>
+<td style="text-align:left">Swap Space Saturation (%)</td>
+<td style="text-align:left">40.0% / 70.0%</td>
+<td style="text-align:left">0.0% – 100.0%</td>
+<td style="text-align:left">Disk paging introduces order-of-magnitude latency spikes ($10\mu s \to 10ms$).</td>
+<td style="text-align:left"><strong>Tighten (20%):</strong> Strict zero-swap policy. Catches misconfigured JVMs early. <br><strong>Relax (60%):</strong> Tolerates OS paging of stale kernel pages. Risk of major latency degredation.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>disk_latency_ms</code></td>
+<td style="text-align:left">NVMe / SAS Service Time (ms)</td>
+<td style="text-align:left">5.0 ms / 15.0 ms</td>
+<td style="text-align:left">0.1 ms – 200.0 ms</td>
+<td style="text-align:left">Enterprise NVMe delivers sub-millisecond service times. Latency $&gt;5ms$ indicates I/O controller queuing.</td>
+<td style="text-align:left"><strong>Tighten (2.0 ms):</strong> Strict flash SLA. May trigger during database checkpoint flush. <br><strong>Relax (10.0 ms):</strong> Tolerates spinning disk SAN/NAS pools.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>system_temp_celsius</code></td>
+<td style="text-align:left">Chassis Exhaust Temperature (°C)</td>
+<td style="text-align:left">70.0°C / 85.0°C</td>
+<td style="text-align:left">30.0°C – 105.0°C</td>
+<td style="text-align:left">Intel/AMD thermal throttling begins at 85°C–90°C. 70°C warning prevents thermal trip cutoffs.</td>
+<td style="text-align:left"><strong>Tighten (60°C):</strong> Detects rack cooling failure early. May fire in unconditioned lab rooms. <br><strong>Relax (80°C):</strong> High temperature tolerance; risk of emergency CPU thermal shutdown.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>fan_speed_rpm</code></td>
+<td style="text-align:left">Chassis Fan Speed (RPM)</td>
+<td style="text-align:left">3000 / 1500 (Op: <code>&lt;</code>)</td>
+<td style="text-align:left">500 – 15000 RPM</td>
+<td style="text-align:left">Redundant cooling fans typically operate at 5,000–8,000 RPM. Speed $&lt;3,000$ indicates bearing failure.</td>
+<td style="text-align:left"><strong>Tighten (4000 RPM):</strong> Proactive fan replacement alert. <br><strong>Relax (2000 RPM):</strong> Accommodates low-noise server modes.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>smart_failing_disks</code></td>
+<td style="text-align:left">SMART Predicted Drive Failures</td>
+<td style="text-align:left">1 / 2 (Op: <code>&gt;=</code>)</td>
+<td style="text-align:left">0 – 32 disks</td>
+<td style="text-align:left">Modern drives reallocate bad sectors; 1 failing drive requires proactive hot-spare rebuilding.</td>
+<td style="text-align:left"><strong>Tighten (1 disk):</strong> Standard enterprise zero-unmapped-sector rule. <br><strong>Relax (2 disks):</strong> High risk of unrecoverable dual-parity RAID failure.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>ecc_memory_errors</code></td>
+<td style="text-align:left">Uncorrectable ECC Memory Errors</td>
+<td style="text-align:left">1 / 3 (Op: <code>&gt;=</code>)</td>
+<td style="text-align:left">0 – 100 errors</td>
+<td style="text-align:left">Multi-bit ECC errors cannot be corrected by hardware and risk silent memory corruption or kernel panic.</td>
+<td style="text-align:left"><strong>Tighten (1 error):</strong> Immediate server evacuation/drain. Recommended for all production.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="12-power-environment-dcimipmi-powerenvironmentdcim">1.2 Power &amp; Environment (DCIM/IPMI) (<code>power_environment_dcim</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> Modbus TCP (Port 502), SNMP v3 (<code>UPS-MIB</code>, <code>PDU-MIB</code>), CRAC/CRAH telemetry.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>hw-ops-dc</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>ups_battery_soc_pct</code></td>
+<td style="text-align:left">Battery State of Charge (%)</td>
+<td style="text-align:left">95.0% / 80.0% (Op: <code>&lt;</code>)</td>
+<td style="text-align:left">10.0% – 100.0%</td>
+<td style="text-align:left">UPS batteries must remain float-charged at $&gt;98%$. SoC $&lt;95%$ indicates utility mains loss.</td>
+<td style="text-align:left"><strong>Tighten (98%):</strong> Immediate notice upon utility power cut. <br><strong>Relax (85%):</strong> Avoids alerts during scheduled battery self-discharge calibration tests.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>ups_runtime_remaining_min</code></td>
+<td style="text-align:left">Battery Runtime Remaining (min)</td>
+<td style="text-align:left">25 min / 12 min (Op: <code>&lt;</code>)</td>
+<td style="text-align:left">5 – 120 min</td>
+<td style="text-align:left">Facility diesel generators require 2–5 minutes to synchronize. 25 min warning allows controlled shutdown.</td>
+<td style="text-align:left"><strong>Tighten (30 min):</strong> Ensures sufficient time to gracefully stop distributed databases.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>pdu_load_utilization_pct</code></td>
+<td style="text-align:left">PDU Branch Circuit Load (%)</td>
+<td style="text-align:left">75.0% / 85.0%</td>
+<td style="text-align:left">20.0% – 100.0%</td>
+<td style="text-align:left">National Electrical Code (NEC) continuous duty derating mandates breaker loads $\le 80%$.</td>
+<td style="text-align:left"><strong>Tighten (70%):</strong> Prevents branch breaker nuisance trips during server power-on surges.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>ambient_rack_temp_celsius</code></td>
+<td style="text-align:left">Cold-Aisle Temperature (°C)</td>
+<td style="text-align:left">25.0°C / 29.0°C</td>
+<td style="text-align:left">15.0°C – 45.0°C</td>
+<td style="text-align:left">ASHRAE TC 9.9 recommended envelope is 18°C–27°C. Above 27°C, server fan power consumption doubles.</td>
+<td style="text-align:left"><strong>Tighten (23°C):</strong> Maximizes hardware lifespan; requires higher chiller energy spend.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="13-storage-systems-sannas-storagesannas">1.3 Storage Systems (SAN/NAS) (<code>storage_san_nas</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> SMI-S (Port 5988/5989), Vendor REST APIs (NetApp ONTAP, Dell PowerStore, Pure Storage).</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>hw-ops-dc</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>volume_capacity_utilization_pct</code></td>
+<td style="text-align:left">Storage Pool Used (%)</td>
+<td style="text-align:left">80.0% / 90.0%</td>
+<td style="text-align:left">30.0% – 100.0%</td>
+<td style="text-align:left">Thin-provisioned storage pools can exhaust free blocks rapidly during snapshot creation.</td>
+<td style="text-align:left"><strong>Tighten (70%):</strong> Provides 2-4 weeks procurement runway. <br><strong>Relax (88%):</strong> Maximizes storage capital efficiency.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>storage_write_latency_ms</code></td>
+<td style="text-align:left">Storage Service Time (Write)</td>
+<td style="text-align:left">10.0 ms / 25.0 ms</td>
+<td style="text-align:left">0.5 ms – 100.0 ms</td>
+<td style="text-align:left">Synchronous database commits stall when storage write latency exceeds 10 ms.</td>
+<td style="text-align:left"><strong>Tighten (5.0 ms):</strong> Enforces all-flash latency tier. <br><strong>Relax (20.0 ms):</strong> Accommodates hybrid SSD/HDD tiers.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>raid_controller_degraded</code></td>
+<td style="text-align:left">Degraded RAID Groups</td>
+<td style="text-align:left">1 / 2 (Op: <code>&gt;=</code>)</td>
+<td style="text-align:left">0 – 16 arrays</td>
+<td style="text-align:left">A single degraded parity group leaves the storage pool vulnerable to catastrophic second-disk failure.</td>
+<td style="text-align:left"><strong>Non-negotiable:</strong> Must always alert on 1 degraded group to schedule drive replacement.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="layer-2-physical-virtual-networking">Layer 2: Physical &amp; Virtual Networking</h3>
+<h4 id="21-network-devices-networkdevices">2.1 Network Devices (<code>network_devices</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> SNMP v3 (<code>IF-MIB</code>, <code>ENTITY-MIB</code>), gNMI / OpenConfig, Switch Syslog.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>network-ops</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>switch_cpu_utilization_pct</code></td>
+<td style="text-align:left">Switch Control Plane CPU (%)</td>
+<td style="text-align:left">70.0% / 85.0%</td>
+<td style="text-align:left">10.0% – 100.0%</td>
+<td style="text-align:left">Control plane CPU handles BGP/OSPF keepalives and ARP resolution. High CPU causes protocol dropouts.</td>
+<td style="text-align:left"><strong>Tighten (60%):</strong> Detects control plane packet storms before BGP drops.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>packet_loss_pct</code></td>
+<td style="text-align:left">Interface Packet Drop Ratio (%)</td>
+<td style="text-align:left">0.05% / 0.50%</td>
+<td style="text-align:left">0.00% – 10.0%</td>
+<td style="text-align:left">Modern Ethernet switching in datacenters should have zero packet drops under line-rate conditions.</td>
+<td style="text-align:left"><strong>Tighten (0.01%):</strong> High-frequency trading standard. <br><strong>Relax (0.10%):</strong> Tolerates transient micro-burst buffer congestion.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>switch_asic_temp_celsius</code></td>
+<td style="text-align:left">Core Switching ASIC Temp (°C)</td>
+<td style="text-align:left">75.0°C / 90.0°C</td>
+<td style="text-align:left">30.0°C – 115.0°C</td>
+<td style="text-align:left">Broadcom/Cisco ASICs throttle packet forwarding pipelines at 95°C.</td>
+<td style="text-align:left"><strong>Tighten (70°C):</strong> Proactive switch fan replacement alert.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="22-connectivity-latency-networkconnectivitylatency">2.2 Connectivity &amp; Latency (<code>network_connectivity_latency</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> ICMP Echo, CoreDNS RFC-1035 UDP probes, BGP EVPN peering state.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>network-ops</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>inter_rack_latency_ms</code></td>
+<td style="text-align:left">Spine-Leaf RTT Latency (ms)</td>
+<td style="text-align:left">2.5 ms / 8.0 ms</td>
+<td style="text-align:left">0.1 ms – 50.0 ms</td>
+<td style="text-align:left">In-datacenter spine-leaf RTT is typically $&lt;1.0ms$. $&gt;2.5ms$ indicates link negotiation downshifts or routing loops.</td>
+<td style="text-align:left"><strong>Tighten (1.5 ms):</strong> Catches single-link CRC error downshifts early.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>network_jitter_ms</code></td>
+<td style="text-align:left">Packet Transit Jitter (ms)</td>
+<td style="text-align:left">1.0 ms / 3.5 ms</td>
+<td style="text-align:left">0.01 ms – 20.0 ms</td>
+<td style="text-align:left">High jitter causes TCP window collapse and distributed lock heartbeat timeouts in consensus clusters.</td>
+<td style="text-align:left"><strong>Tighten (0.5 ms):</strong> Enforces ultra-stable Raft quorum latency.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>bgp_peer_down_count</code></td>
+<td style="text-align:left">Unestablished BGP Peers</td>
+<td style="text-align:left">1 / 2 (Op: <code>&gt;=</code>)</td>
+<td style="text-align:left">0 – 32 peers</td>
+<td style="text-align:left">A down BGP peer indicates severed rack uplinks or route reflector failure.</td>
+<td style="text-align:left"><strong>Non-negotiable:</strong> Must alert immediately on 1 peer down.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="23-network-interconnects-networkinterconnects">2.3 Network Interconnects (<code>network_interconnects</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> Cloud Interconnect APIs (DirectConnect / ExpressRoute / Cloud Interconnect), IKE IPsec MIBs.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>network-ops</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>directconnect_bandwidth_util_pct</code></td>
+<td style="text-align:left">Cross-Connect Saturation (%)</td>
+<td style="text-align:left">75.0% / 90.0%</td>
+<td style="text-align:left">20.0% – 100.0%</td>
+<td style="text-align:left">Interconnect queuing causes packet drops and TCP head-of-line blocking for hybrid cloud replication.</td>
+<td style="text-align:left"><strong>Tighten (65%):</strong> Allows sufficient time to activate secondary LAG cross-connects.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>optical_rx_power_dbm</code></td>
+<td style="text-align:left">SFP28 Optical Rx Power (dBm)</td>
+<td style="text-align:left">-12.0 dBm / -15.0 dBm (Op: <code>&lt;</code>)</td>
+<td style="text-align:left">-30.0 – +5.0 dBm</td>
+<td style="text-align:left">Fiber attenuation below -14.4 dBm causes optical bit-error-rate (BER) spikes and link flap.</td>
+<td style="text-align:left"><strong>Tighten (-10.0 dBm):</strong> Proactive fiber cleaning / SFP transceiver replacement.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="layer-3-vpc-cloud-infrastructure">Layer 3: VPC &amp; Cloud Infrastructure</h3>
+<h4 id="31-vpc-flow-logs-vpcflowlogs">3.1 VPC Flow Logs (<code>vpc_flow_logs</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> Cloud Flow Logs, Kernel packet mirror, Kirchhoff Flux Invariant Evaluator.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>cloud-infra</code> / <code>secops-threat</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>kirchhoff_flow_imbalance_pct</code></td>
+<td style="text-align:left">Flow Volume Balance Delta (%)</td>
+<td style="text-align:left">0.05% / 0.15%</td>
+<td style="text-align:left">0.00% – 2.00%</td>
+<td style="text-align:left">Proves Theorem 2: Ingress equals Egress plus local consumption. Imbalance $&gt;0.05%$ flags covert tunneling or blackholed subnets.</td>
+<td style="text-align:left"><strong>Tighten (0.02%):</strong> Strict mathematical invariant proof. Catches asymmetric routing instantly.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>rejected_packet_ratio_pct</code></td>
+<td style="text-align:left">Security Group Rejections (%)</td>
+<td style="text-align:left">5.0% / 15.0%</td>
+<td style="text-align:left">0.5% – 50.0%</td>
+<td style="text-align:left">Normal background traffic has $&lt;1%$ drops. $&gt;5%$ indicates misconfigured security groups or active scanning.</td>
+<td style="text-align:left"><strong>Tighten (2.0%):</strong> Early indicator of network segmentation permission denial.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>external_wan_egress_bytes</code></td>
+<td style="text-align:left">External WAN Egress Bytes</td>
+<td style="text-align:left">0 / 1 (Op: <code>&gt;=</code>)</td>
+<td style="text-align:left">0 – 0 bytes</td>
+<td style="text-align:left"><strong>Core Invariant (Zero WAN Egress):</strong> In an air-gapped or zero-egress VPC, any external WAN packet is a critical security breach.</td>
+<td style="text-align:left"><strong>Zero-Tolerance:</strong> Must always remain 0 bytes.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="32-virtual-networks-subnets-virtualnetworkssubnets">3.2 Virtual Networks &amp; Subnets (<code>virtual_networks_subnets</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> Cloud Provider IPAM SDKs, DHCP lease tables.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>cloud-infra</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>subnet_ip_exhaustion_pct</code></td>
+<td style="text-align:left">Subnet CIDR IP Pool Used (%)</td>
+<td style="text-align:left">80.0% / 92.0%</td>
+<td style="text-align:left">20.0% – 100.0%</td>
+<td style="text-align:left">Running out of private IP addresses prevents Kubernetes pods or serverless instances from scaling up.</td>
+<td style="text-align:left"><strong>Tighten (70%):</strong> Gives network team time to allocate secondary CIDR blocks.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>nat_gw_snat_port_allocation_pct</code></td>
+<td style="text-align:left">NAT Gateway SNAT Ports (%)</td>
+<td style="text-align:left">75.0% / 90.0%</td>
+<td style="text-align:left">20.0% – 100.0%</td>
+<td style="text-align:left">SNAT port exhaustion (64k ports per IP) causes outgoing connection dropouts to partner APIs.</td>
+<td style="text-align:left"><strong>Tighten (65%):</strong> Prevents connection drops during outbound traffic spikes.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="33-firewalls-security-groups-firewallssecuritygroups">3.3 Firewalls &amp; Security Groups (<code>firewalls_security_groups</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> Netfilter conntrack netlink socket, CloudWatch firewall metrics.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>cloud-infra</code> / <code>secops-threat</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>conntrack_table_saturation_pct</code></td>
+<td style="text-align:left">Conntrack Table Saturation (%)</td>
+<td style="text-align:left">75.0% / 88.0%</td>
+<td style="text-align:left">20.0% – 100.0%</td>
+<td style="text-align:left">Netfilter conntrack table saturation causes kernel to drop all new incoming and outgoing TCP SYN packets.</td>
+<td style="text-align:left"><strong>Tighten (65%):</strong> Provides 15+ minutes lead time to increase <code>nf_conntrack_max</code>.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="34-load-balancers-loadbalancers">3.4 Load Balancers (<code>load_balancers</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> Envoy admin interface (<code>/stats/prometheus</code>), Cloud Load Balancer metrics.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>sre-tier1</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>target_response_time_p99_ms</code></td>
+<td style="text-align:left">Target Group P99 Latency (ms)</td>
+<td style="text-align:left">250 ms / 1000 ms</td>
+<td style="text-align:left">10 ms – 10000 ms</td>
+<td style="text-align:left">P99 latency $&gt;250ms$ indicates backend thread starvation or slow database locks.</td>
+<td style="text-align:left"><strong>Tighten (100 ms):</strong> Enforces sub-second user experience. <br><strong>Relax (500 ms):</strong> Tolerates complex database aggregation endpoints.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>http_5xx_rate_pct</code></td>
+<td style="text-align:left">HTTP 5xx Server Error Rate (%)</td>
+<td style="text-align:left">0.50% / 2.00%</td>
+<td style="text-align:left">0.05% – 20.0%</td>
+<td style="text-align:left">Google SRE standard: $&gt;0.5%$ error rate consumes error budget rapidly.</td>
+<td style="text-align:left"><strong>Tighten (0.10%):</strong> Critical for financial transactional endpoints.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>ssl_certificate_days_remaining</code></td>
+<td style="text-align:left">TLS Days to Expiration (days)</td>
+<td style="text-align:left">21 days / 7 days (Op: <code>&lt;</code>)</td>
+<td style="text-align:left">1 – 365 days</td>
+<td style="text-align:left">Expired certificates cause instant browser lockout and API failure.</td>
+<td style="text-align:left"><strong>Tighten (30 days):</strong> Allows sufficient time for manual certificate renewal if automated ACME fails.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="layer-4-virtualization-container-platforms">Layer 4: Virtualization &amp; Container Platforms</h3>
+<h4 id="41-hypervisors-hypervisors">4.1 Hypervisors (<code>hypervisors</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> VMware vSphere API (<code>pyVmomi</code>), libvirt daemon socket.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>k8s-platform</code> / <code>hw-ops-dc</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>cpu_ready_time_pct</code></td>
+<td style="text-align:left">Hypervisor CPU Ready (%)</td>
+<td style="text-align:left">3.0% / 7.0%</td>
+<td style="text-align:left">0.5% – 25.0%</td>
+<td style="text-align:left">CPU ready $&gt;3%$ indicates CPU overcommitment; virtual machines are waiting for physical CPU cores.</td>
+<td style="text-align:left"><strong>Tighten (2.0%):</strong> Essential for database VMs; ensures CPU scheduler never stalls queries.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>memory_overcommit_pct</code></td>
+<td style="text-align:left">Host RAM Overcommit (%)</td>
+<td style="text-align:left">110.0% / 135.0%</td>
+<td style="text-align:left">50.0% – 250.0%</td>
+<td style="text-align:left">Overcommit $&gt;110%$ triggers hypervisor memory ballooning and ESXi/KVM swap paging.</td>
+<td style="text-align:left"><strong>Tighten (100%):</strong> Guarantees zero memory ballooning. <br><strong>Relax (125%):</strong> Standard for stateless web VM clusters.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="42-container-orchestration-cluster-health-containerorchestrationcluster">4.2 Container Orchestration: Cluster Health (<code>container_orchestration_cluster</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> Kubernetes API Server (<code>/metrics</code>), ETCD client metrics, Prometheus Node Exporter.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>k8s-platform</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>etcd_disk_fsync_p99_ms</code></td>
+<td style="text-align:left">ETCD WAL Disk fsync P99 (ms)</td>
+<td style="text-align:left">10.0 ms / 25.0 ms</td>
+<td style="text-align:left">1.0 ms – 100.0 ms</td>
+<td style="text-align:left">ETCD requires fast disk commits to maintain Raft consensus. fsync $&gt;10ms$ causes Raft leader elections.</td>
+<td style="text-align:left"><strong>Tighten (5.0 ms):</strong> Ensures resilient Kubernetes control plane. Requires dedicated NVMe SSDs.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>api_server_latency_p99_ms</code></td>
+<td style="text-align:left">API Server P99 Latency (ms)</td>
+<td style="text-align:left">500 ms / 2000 ms</td>
+<td style="text-align:left">50 ms – 10000 ms</td>
+<td style="text-align:left">High API server latency causes Kubelet sync timeouts and pod admission bottlenecks.</td>
+<td style="text-align:left"><strong>Tighten (200 ms):</strong> Enforces snappy deployment reconciliation.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="43-container-orchestration-workloads-containerorchestrationworkloads">4.3 Container Orchestration: Workloads (<code>container_orchestration_workloads</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> Kube-state-metrics, cgroup v2 controller interface (<code>/sys/fs/cgroup</code>).</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>k8s-platform</code> / <code>sre-tier1</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>crashloopbackoff_count</code></td>
+<td style="text-align:left">Containers in CrashLoopBackOff</td>
+<td style="text-align:left">1 / 5 (Op: <code>&gt;=</code>)</td>
+<td style="text-align:left">0 – 50 containers</td>
+<td style="text-align:left">Indicates application crashes on startup (bad configuration, failed database connection).</td>
+<td style="text-align:left"><strong>Non-negotiable:</strong> Must alert immediately on 1 container failing in production.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>oom_killed_containers_hour</code></td>
+<td style="text-align:left">OOMKilled Terminations</td>
+<td style="text-align:left">1 / 3 (Op: <code>&gt;=</code>)</td>
+<td style="text-align:left">0 – 50 events/hr</td>
+<td style="text-align:left">Container exceeded its Kubernetes memory limit and was killed with SIGKILL (exit code 137).</td>
+<td style="text-align:left"><strong>Tighten (1 event):</strong> Proactively highlights pods needing memory limit increases.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="layer-5-middleware-databases-storage-layers">Layer 5: Middleware, Databases &amp; Storage Layers</h3>
+<h4 id="51-oracle-database-19c-21c-rac-databasesoracle">5.1 Oracle Database 19c / 21c RAC (<code>databases_oracle</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> Oracle Net TNS, <code>v$sysmetric</code>, <code>v$session</code>, <code>v$system_event</code>, AWR (Port 1521).</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>dba-team</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>sga_buffer_cache_hit_pct</code></td>
+<td style="text-align:left">SGA Buffer Cache Hit Ratio (%)</td>
+<td style="text-align:left">95.0% / 90.0% (Op: <code>&lt;</code>)</td>
+<td style="text-align:left">50.0% – 100.0%</td>
+<td style="text-align:left">In OLTP systems, $&gt;95%$ of block reads should resolve from memory buffer cache. Lower causes physical disk I/O bottlenecks.</td>
+<td style="text-align:left"><strong>Tighten (97%):</strong> Detects missing indexes or rogue full-table scans early. May fire during RMAN backups. <br><strong>Relax (88%):</strong> Suitable for Data Guard read-only reporting standby.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>pga_cache_hit_pct</code></td>
+<td style="text-align:left">PGA Workarea Hit Ratio (%)</td>
+<td style="text-align:left">90.0% / 80.0% (Op: <code>&lt;</code>)</td>
+<td style="text-align:left">40.0% – 100.0%</td>
+<td style="text-align:left">Measures percentage of workarea sorts and hash joins executed purely in memory without spilling to TEMP.</td>
+<td style="text-align:left"><strong>Tighten (93%):</strong> Ensures in-memory sorts; prevents disk I/O churn on temporary tablespaces.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>active_sessions_pct_processes</code></td>
+<td style="text-align:left">Active Sessions vs PROCESSES (%)</td>
+<td style="text-align:left">75.0% / 90.0%</td>
+<td style="text-align:left">10.0% – 100.0%</td>
+<td style="text-align:left">Prevents fatal <code>ORA-00018</code> (max sessions exceeded) and <code>ORA-00020</code> (max processes exceeded).</td>
+<td style="text-align:left"><strong>Tighten (65%):</strong> Gives DBAs 30+ min to kill idle/blocking sessions. <br><strong>Relax (85%):</strong> Leaves narrow margin during connection storms.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>redo_log_space_wait_ms</code></td>
+<td style="text-align:left">Redo Log Allocation Wait (ms)</td>
+<td style="text-align:left">10.0 ms / 50.0 ms</td>
+<td style="text-align:left">0.0 ms – 500.0 ms</td>
+<td style="text-align:left">'log buffer space' wait events block all DML commits across RAC instances.</td>
+<td style="text-align:left"><strong>Tighten (5.0 ms):</strong> Enforces sub-millisecond commit latency; requires high-speed NVMe redo logs.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>archiver_lag_minutes</code></td>
+<td style="text-align:left">Data Guard Standby Lag (min)</td>
+<td style="text-align:left">5.0 min / 15.0 min</td>
+<td style="text-align:left">0.0 min – 120.0 min</td>
+<td style="text-align:left">Data Guard synchronization lag represents potential data loss (RPO) in disaster failover.</td>
+<td style="text-align:left"><strong>Tighten (2.0 min):</strong> Enforces near-zero RPO SLA across primary and standby datacenters.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>tablespace_used_pct</code></td>
+<td style="text-align:left">Primary Tablespace Used (%)</td>
+<td style="text-align:left">85.0% / 95.0%</td>
+<td style="text-align:left">50.0% – 100.0%</td>
+<td style="text-align:left">Prevents <code>ORA-01653</code> (unable to extend table). 85% warning provides 3-5 days to allocate storage.</td>
+<td style="text-align:left"><strong>Tighten (80%):</strong> Proactive SAN provisioning notice. <br><strong>Relax (90%):</strong> Maximizes storage capital efficiency.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="52-microsoft-sql-server-2019-2022-databasesmssql">5.2 Microsoft SQL Server 2019 / 2022 (<code>databases_mssql</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> TDS, <code>sys.dm_os_wait_stats</code>, <code>sys.dm_os_performance_counters</code>, <code>dm_hadr</code> (Port 1433).</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>dba-team</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>buffer_cache_hit_ratio_pct</code></td>
+<td style="text-align:left">Buffer Cache Hit Ratio (%)</td>
+<td style="text-align:left">95.0% / 90.0% (Op: <code>&lt;</code>)</td>
+<td style="text-align:left">50.0% – 100.0%</td>
+<td style="text-align:left">Percentage of pages found in the buffer pool without needing to read from physical disk.</td>
+<td style="text-align:left"><strong>Tighten (97%):</strong> Alerts quickly if memory pressure forces cached pages out.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>page_life_expectancy_sec</code></td>
+<td style="text-align:left">Page Life Expectancy (PLE) (s)</td>
+<td style="text-align:left">300 s / 120 s (Op: <code>&lt;</code>)</td>
+<td style="text-align:left">30 s – 3600 s</td>
+<td style="text-align:left">Number of seconds a page stays in the buffer pool. Baseline rule of thumb: 300s per 4GB of buffer RAM.</td>
+<td style="text-align:left"><strong>Tighten (600 s):</strong> Catches internal SQL memory pressure early. <br><strong>Relax (180 s):</strong> Tolerates index maintenance jobs.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>user_connections_pct_max</code></td>
+<td style="text-align:left">Worker Connections % Max</td>
+<td style="text-align:left">80.0% / 92.0%</td>
+<td style="text-align:left">20.0% – 100.0%</td>
+<td style="text-align:left">Prevents thread pool exhaustion where new client connections fail with error 17809.</td>
+<td style="text-align:left"><strong>Tighten (70%):</strong> Provides lead time to adjust application connection pool max sizes.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>alwayson_redo_queue_kb</code></td>
+<td style="text-align:left">Always On AG Redo Queue (KB)</td>
+<td style="text-align:left">50,000 KB / 250,000 KB</td>
+<td style="text-align:left">0 – 1,000,000 KB</td>
+<td style="text-align:left">Volume of log records waiting to be redone on secondary replicas. High redo queue delays failover cutover.</td>
+<td style="text-align:left"><strong>Tighten (20,000 KB):</strong> Ensures instantaneous replica failover readiness.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>log_file_used_pct</code></td>
+<td style="text-align:left">Transaction Log Space Used (%)</td>
+<td style="text-align:left">80.0% / 92.0%</td>
+<td style="text-align:left">30.0% – 100.0%</td>
+<td style="text-align:left">A full transaction log (.ldf) halts all database write operations (error 9002).</td>
+<td style="text-align:left"><strong>Tighten (70%):</strong> Verifies log backup jobs or replication log readers are not stalling.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="53-relational-nosql-databases-databasesrelationalnosql">5.3 Relational &amp; NoSQL Databases (<code>databases_relational_nosql</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> PostgreSQL <code>pg_stat_activity</code>, MySQL <code>performance_schema</code>, TiDB PD API, Cassandra JMX.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>dba-team</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>conn_pool_saturation_pct</code></td>
+<td style="text-align:left">Connection Pool Saturation (%)</td>
+<td style="text-align:left">80.0% / 92.0%</td>
+<td style="text-align:left">20.0% – 100.0%</td>
+<td style="text-align:left">Above 80% saturation, connection acquisition latency exhibits exponential Erlang C delays.</td>
+<td style="text-align:left"><strong>Tighten (70%):</strong> Early warning for read replica offloading. <br><strong>Relax (88%):</strong> Tolerates brief spike traffic.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>deadlocks_per_hour</code></td>
+<td style="text-align:left">Transaction Deadlock Events</td>
+<td style="text-align:left">1 / 5 (Op: <code>&gt;=</code>)</td>
+<td style="text-align:left">0 – 50 events/hr</td>
+<td style="text-align:left">Deadlocks cause transactions to be rolled back with serialization errors.</td>
+<td style="text-align:left"><strong>Tighten (1 event):</strong> Proactively highlights problematic application transaction isolation levels.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>replication_lag_seconds</code></td>
+<td style="text-align:left">Replica Lag (seconds)</td>
+<td style="text-align:left">2.0 s / 10.0 s</td>
+<td style="text-align:left">0.01 s – 120.0 s</td>
+<td style="text-align:left">Follower replication lag leads to stale reads and prolonged failover RPO.</td>
+<td style="text-align:left"><strong>Tighten (1.0 s):</strong> Enforces strict read-your-writes consistency.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="54-messaging-queues-messagingqueues">5.4 Messaging &amp; Queues (<code>messaging_queues</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> Kafka AdminClient, RabbitMQ Management API, AWS SQS Attributes.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>dba-team</code> / <code>sre-tier1</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>consumer_lag_records</code></td>
+<td style="text-align:left">Kafka Consumer Group Lag</td>
+<td style="text-align:left">5,000 / 25,000</td>
+<td style="text-align:left">100 – 1,000,000</td>
+<td style="text-align:left">Growing consumer lag indicates consumers cannot keep pace with producer throughput.</td>
+<td style="text-align:left"><strong>Tighten (2,000):</strong> Catches consumer pod stalls early. <br><strong>Relax (50,000):</strong> Tolerates batch consumer schedules.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>under_replicated_partitions</code></td>
+<td style="text-align:left">Under-Replicated Partitions</td>
+<td style="text-align:left">1 / 2 (Op: <code>&gt;=</code>)</td>
+<td style="text-align:left">0 – 100 partitions</td>
+<td style="text-align:left">Indicates one or more Kafka broker replicas have fallen out of the In-Sync Replicas (ISR) set.</td>
+<td style="text-align:left"><strong>Non-negotiable:</strong> Must alert immediately on 1 URP to prevent data loss.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="55-in-memory-caches-caches">5.5 In-Memory Caches (<code>caches</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> Redis <code>INFO</code>, Memcached <code>stats</code>.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>sre-tier1</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>memory_fragmentation_ratio</code></td>
+<td style="text-align:left">Redis Memory Fragmentation</td>
+<td style="text-align:left">1.50 / 2.00</td>
+<td style="text-align:left">0.80 – 3.00</td>
+<td style="text-align:left">Ratio of RSS memory allocated by OS to memory used by Redis. $&gt;1.8$ indicates memory allocator fragmentation.</td>
+<td style="text-align:left"><strong>Tighten (1.40):</strong> Proactive trigger for jemalloc active defragmentation.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>evicted_keys_sec</code></td>
+<td style="text-align:left">Evicted Keys Velocity (keys/s)</td>
+<td style="text-align:left">50 / 250</td>
+<td style="text-align:left">0 – 5000 keys/s</td>
+<td style="text-align:left">Keys are being evicted due to <code>maxmemory</code> pressure, degrading cache hit efficiency.</td>
+<td style="text-align:left"><strong>Tighten (10 keys/s):</strong> Ensures cache size matches active dataset working set.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="layer-6-application-process-layer-apm-distributed-tracing">Layer 6: Application &amp; Process Layer (APM &amp; Distributed Tracing)</h3>
+<h4 id="61-application-performance-monitoring-applicationperformanceapm">6.1 Application Performance Monitoring (<code>application_performance_apm</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> OTLP gRPC (Port 4317), W3C TraceContext.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>sre-tier1</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>p99_latency_ms</code></td>
+<td style="text-align:left">P99 Tail Latency (ms)</td>
+<td style="text-align:left">50.0 ms / 150.0 ms</td>
+<td style="text-align:left">5.0 ms – 5000.0 ms</td>
+<td style="text-align:left">Measures the slowest 1% of transactions. Directly correlates with customer churn and SLA penalties.</td>
+<td style="text-align:left"><strong>Tighten (25.0 ms):</strong> Enforces ultra-snappy microservice latency. <br><strong>Relax (200.0 ms):</strong> Suitable for complex search/checkout endpoints.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>error_rate_pct</code></td>
+<td style="text-align:left">HTTP 5xx / Exception Rate (%)</td>
+<td style="text-align:left">1.00% / 5.00%</td>
+<td style="text-align:left">0.05% – 20.0%</td>
+<td style="text-align:left">Error rate $&gt;1.0%$ rapidly consumes 99.9% service SLA error budgets.</td>
+<td style="text-align:left"><strong>Tighten (0.25%):</strong> Immediate alert for zero-tolerance payment systems.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="62-runtime-metrics-runtimemetrics">6.2 Runtime Metrics (<code>runtime_metrics</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> JVM JMX, Go runtime metrics, Node.js event loop inspector.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>sre-tier1</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>jvm_gc_pause_duration_ms</code></td>
+<td style="text-align:left">JVM Stop-The-World GC Pause (ms)</td>
+<td style="text-align:left">250 ms / 1000 ms</td>
+<td style="text-align:left">10 ms – 5000 ms</td>
+<td style="text-align:left">Long GC pauses freeze all threads, causing health-check timeouts and microservice disconnects.</td>
+<td style="text-align:left"><strong>Tighten (100 ms):</strong> Enforces modern low-latency collectors (ZGC, Shenandoah).</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>node_event_loop_lag_ms</code></td>
+<td style="text-align:left">Node.js Event Loop Lag (ms)</td>
+<td style="text-align:left">20.0 ms / 100.0 ms</td>
+<td style="text-align:left">1.0 ms – 500.0 ms</td>
+<td style="text-align:left">Event loop lag $&gt;20ms$ indicates synchronous CPU-heavy work is blocking asynchronous I/O execution.</td>
+<td style="text-align:left"><strong>Tighten (10.0 ms):</strong> Prevents request queuing in Node.js services.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="layer-7-logs-events-security-siem-auditing">Layer 7: Logs, Events &amp; Security (SIEM / Auditing)</h3>
+<h4 id="71-centralized-logging-centralizedlogging">7.1 Centralized Logging (<code>centralized_logging</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> Vector / Fluentbit / Rsyslog forwarding, local regex indexer.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>secops-threat</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>critical_error_logs_sec</code></td>
+<td style="text-align:left">Panic / Fatal Error Velocity</td>
+<td style="text-align:left">5 / 25 (Op: <code>&gt;=</code>)</td>
+<td style="text-align:left">0 – 500 logs/s</td>
+<td style="text-align:left">Spike in panic or fatal logs indicates uncaught exception storm or service crash loop.</td>
+<td style="text-align:left"><strong>Tighten (1 log/s):</strong> Catches sporadic fatal errors immediately.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="72-audit-iam-monitoring-auditiammonitoring">7.2 Audit &amp; IAM Monitoring (<code>audit_iam_monitoring</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> Linux <code>auditd</code>, Windows Security Log (<code>EventID 4624/4625</code>), CloudTrail.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>secops-threat</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>failed_root_logins_min</code></td>
+<td style="text-align:left">Failed Root / Admin Logins</td>
+<td style="text-align:left">3 / 8 (Op: <code>&gt;=</code>)</td>
+<td style="text-align:left">0 – 50 attempts</td>
+<td style="text-align:left">Multiple failed logins within a minute indicate active brute-force or credential stuffing.</td>
+<td style="text-align:left"><strong>Tighten (1 attempt):</strong> Strict security policy for hardened bastion hosts.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>unauthorized_sudo_attempts</code></td>
+<td style="text-align:left">Privilege Escalation Attempts</td>
+<td style="text-align:left">1 / 3 (Op: <code>&gt;=</code>)</td>
+<td style="text-align:left">0 – 20 events</td>
+<td style="text-align:left">Indicates unauthorized users attempting sudo or exploiting setuid binaries.</td>
+<td style="text-align:left"><strong>Non-negotiable:</strong> Must alert immediately on 1 event.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="73-security-zero-egress-compliance-securitycompliance">7.3 Security &amp; Zero-Egress Compliance (<code>security_compliance</code>)</h4>
+<ul>
+<li><strong>Protocol:</strong> Local kernel eBPF socket filter, FIM SHA-256 hash table.</li>
+<li><strong>Primary Ticketing Queue:</strong> <code>secops-threat</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metric Key</th>
+<th style="text-align:left">Name &amp; Description</th>
+<th style="text-align:left">Default Warn / Crit</th>
+<th style="text-align:left">Validation Bounds</th>
+<th style="text-align:left">Rationale for Default</th>
+<th style="text-align:left">Guiding Pros &amp; Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>ebpf_blocked_wan_packets</code></td>
+<td style="text-align:left">Intercepted External WAN Packets</td>
+<td style="text-align:left">1 / 1 (Op: <code>&gt;=</code>)</td>
+<td style="text-align:left">0 – 0 packets</td>
+<td style="text-align:left"><strong>Theorem 2 Zero-Egress Guarantee:</strong> Any attempt by an in-VPC process to send packets to a public WAN IP is blocked by eBPF and must fire a P0 security incident.</td>
+<td style="text-align:left"><strong>Zero-Tolerance:</strong> Must always remain 0. Non-zero triggers immediate host isolation.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>fim_checksum_drift_files</code></td>
+<td style="text-align:left">Binary Checksum Drift Files</td>
+<td style="text-align:left">1 / 1 (Op: <code>&gt;=</code>)</td>
+<td style="text-align:left">0 – 0 files</td>
+<td style="text-align:left">Modifying files in <code>/bin</code>, <code>/sbin</code>, <code>/usr/bin</code> indicates malware, rootkits, or unauthorized binary tampering.</td>
+<td style="text-align:left"><strong>Zero-Tolerance:</strong> Immediate P0 security incident.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-collector-cli-usage-execution-guide">5. Collector CLI Usage &amp; Execution Guide</h2>
+<h3 id="single-command-sweeps">Single-Command Sweeps</h3>
+<p>Run the full 7-layer collector suite locally:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Sweep all 7 layers (Zero-Egress verified)
+python scripts/run_fullstack_collectors.py
+
+# Sweep only Layer 1 (Physical DC) and Layer 5 (Databases &amp; Middleware)
+python scripts/run_fullstack_collectors.py -l 1 -l 5
+
+# Export sweep telemetry to JSON without printing to stdout
+python scripts/run_fullstack_collectors.py -o /tmp/telemetry-sweep.json -q
+</code></pre></div>
+<h3 id="windows-powershell-launcher">Windows PowerShell Launcher</h3>
+<div class="code-box"><div class="code-box-header"><span>powershell</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-powershell"># Run all layers
+.\scripts\run_fullstack_collectors.ps1
+
+# Run specific layers (e.g. 1, 5)
+.\scripts\run_fullstack_collectors.ps1 -Layers &quot;1,5&quot;
+</code></pre></div>
+<h3 id="linux-shell-launcher">Linux Shell Launcher</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Run all layers
+./scripts/run_fullstack_collectors.sh
+
+# Run specific layers
+./scripts/run_fullstack_collectors.sh &quot;1,5,7&quot;
+</code></pre></div>
+<h3 id="live-rest-api-endpoint">Live REST API Endpoint</h3>
+<p>Trigger an on-demand sweep via HTTP within the VPC:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -X POST http://127.0.0.1:8000/v1/telemetry/collectors/sweep \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;layers&quot;: [1, 5], &quot;spool_to_ticketing&quot;: true}'
+</code></pre></div>
+<hr />
+<h2 id="6-document-history-approvals">6. Document History &amp; Approvals</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Version</th>
+<th style="text-align:left">Date</th>
+<th style="text-align:left">Author / Role</th>
+<th style="text-align:left">Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>v1.0.0</code></td>
+<td style="text-align:left">2026-10-29</td>
+<td style="text-align:left">Core SRE Architecture Team</td>
+<td style="text-align:left">Initial comprehensive 7-layer metrics catalog, Oracle &amp; MS SQL Server monitoring specifications, guiding threshold pros/cons analysis, and enterprise ticketing tool zero-egress spool integration.</td>
+</tr>
+</tbody>
+</table>
+</div>
+      <pre id="raw-view"><code># &lt;dcouplr/&gt; Full-Stack Suite: Full-Stack Metrics &amp; Guided Threshold Catalog
+## SRE &amp; Administrator Runbook: 7-Layer Monitoring Points, Threshold Trade-Off Analysis, and Enterprise Ticketing Architecture
+
+```
+Document ID:     RUN-FULLSTACK-METRICS-GUIDE-001
+Classification:  Enterprise Observability &amp; Zero-Egress In-VPC Operations
+Target Platform: &lt;dcouplr/&gt; Full-Stack Suite
+Integrations:    Enterprise Ticketing Systems (ServiceNow / Jira / Spool), NOC PulseCast, SRE SMTP, Syslog RFC-5424
+Egress Status:   0.00 WAN Packets / 100% In-VPC Guaranteed (Zero WAN Egress)
+```
+
+---
+
+## 1. Executive Summary &amp; Core Architectural Tenets
+
+The **&lt;dcouplr/&gt; Full-Stack Suite** provides turnkey, deep-packet, zero-egress monitoring across every layer of modern hybrid enterprise infrastructure.
+
+### The Zero-Egress Invariant
+All collectors, ring buffers, threshold evaluations, and alert dispatchers run strictly **in-perimeter** (`100% In-VPC / On-Prem`). No metric readings, logs, traces, or security metadata ever leave your private network boundaries. All telemetry is stored in high-performance memory ring buffers and local WAL storage, guaranteeing **$0.00 egress costs** and eliminating third-party data exfiltration risks.
+
+### Guiding, Not Strict: The Engineering Threshold Philosophy
+In high-velocity enterprise environments, rigid alerting thresholds cause two catastrophic failure modes:
+1. **Alert Fatigue (Thresholds Too Strict):** On-call SREs receive dozens of actionable-looking notifications during routine batch processing, RMAN backups, or seasonal micro-bursts, leading to alarm desensitization.
+2. **Undetected Outages (Thresholds Too Permissive):** Degraded database buffer pools or connection pool exhaustion goes unflagged until user-facing HTTP 5xx errors breach customer SLAs.
+
+`&lt;dcouplr/&gt;` addresses this by providing **guiding, not strict** threshold configurations:
+- Every metric has an independent **Activation Toggle (`enabled: true/false`)**, allowing engineering teams to disable irrelevant signals for specific host roles.
+- Factory default thresholds are grounded in queuing theory (Erlang C), thermodynamics, and hardware tolerances.
+- Engineers can adjust warning and critical thresholds dynamically; the system immediately provides **Guiding Trade-off Feedback** detailing the pros, cons, and operational risks of tightening versus relaxing each threshold.
+
+---
+
+## 2. Notification Forwarding &amp; In-Perimeter Enterprise Ticketing Architecture
+
+### In-Perimeter Ticketing &amp; Local Spooling
+In enterprise cloud and on-premise deployments, `&lt;dcouplr/&gt;` integrates with your organization&#x27;s **enterprise ticketing tools** (such as **ServiceNow**, **Jira Service Management**, or custom internal ticketing systems). Operating under a strict **Zero-Egress Invariant (Zero WAN Egress)**, `&lt;dcouplr/&gt;` dispatches alerts and incident records without requiring outbound internet access:
+
+```
+Platform Architecture:   In-Perimeter Enterprise Ticketing &amp; Incident Dispatch
+Local Spool Directory:   ./data/incident_spool/
+Local Webhook Bridge:    http://127.0.0.1:9000/v1/support/receiver/ingest (Loopback / Private LAN)
+Target Incident Queues:  hw-ops-dc, network-ops, cloud-infra, k8s-platform, dba-team, sre-tier1, secops-threat
+Operating Mode:          100% In-Perimeter / Air-Gapped Autonomous Dispatch
+```
+
+```mermaid
+flowchart TD
+    subgraph Collectors[&quot;&lt;dcouplr/&gt; Full-Stack Suite Collectors (Layers 1-7)&quot;]
+        L1[&quot;L1: Physical DC &amp; Bare Metal&quot;]
+        L2[&quot;L2: Network &amp; Interconnects&quot;]
+        L3[&quot;L3: Cloud VPC &amp; Gateways&quot;]
+        L4[&quot;L4: Hypervisors &amp; K8s&quot;]
+        L5[&quot;L5: Oracle, MSSQL, PG, Kafka&quot;]
+        L6[&quot;L6: APM &amp; Runtimes&quot;]
+        L7[&quot;L7: Logs, IAM &amp; Security&quot;]
+    end
+
+    subgraph Eval[&quot;Threshold &amp; Guidance Engine&quot;]
+        Engine[&quot;In-Memory Evaluation &amp; Invariant Validation&quot;]
+    end
+
+    subgraph TicketingBridge[&quot;In-Perimeter Ticketing Dispatch &amp; Local Spool&quot;]
+        Spool[&quot;Atomic File Spool: ./data/incident_spool/&quot;]
+        IPC[&quot;Local Loopback API / Webhook Bridge&quot;]
+        Q_HW[&quot;Queue: hw-ops-dc (Tier 1)&quot;]
+        Q_NET[&quot;Queue: network-ops (Tier 2)&quot;]
+        Q_CLOUD[&quot;Queue: cloud-infra (Tier 3)&quot;]
+        Q_K8S[&quot;Queue: k8s-platform (Tier 4)&quot;]
+        Q_DBA[&quot;Queue: dba-team (Tier 5)&quot;]
+        Q_SRE[&quot;Queue: sre-tier1 (Tier 6)&quot;]
+        Q_SEC[&quot;Queue: secops-threat (Tier 7)&quot;]
+    end
+
+    subgraph ITSM[&quot;Enterprise Ticketing Tools&quot;]
+        SN[&quot;ServiceNow / Jira Service Management&quot;]
+        Console[&quot;Internal SRE Incident Console&quot;]
+        Paging[&quot;On-Call Paging &amp; War-Room Bridge&quot;]
+    end
+
+    Collectors --&gt; Eval
+    Eval --&gt;|Alert Triggered (Zero WAN)| Spool
+    Eval -.-&gt;|Direct Loopback Webhook| IPC
+    Spool --&gt; Q_HW &amp; Q_NET &amp; Q_CLOUD &amp; Q_K8S &amp; Q_DBA &amp; Q_SRE &amp; Q_SEC
+    IPC --&gt; ITSM
+    Spool -.-&gt;|Pickup Daemon| ITSM
+```
+
+### Zero-Egress Spool Mechanism
+When any active metric breaches its threshold and has an enterprise ticketing route enabled:
+1. `&lt;dcouplr/&gt;` formats a structured, cryptographic ITIL incident ticket:
+   ```json
+   {
+     &quot;ticket_id&quot;: &quot;TICK-P1-1793289968-163FFD&quot;,
+     &quot;source&quot;: &quot;&lt;dcouplr/&gt; Full-Stack Suite&quot;,
+     &quot;severity&quot;: &quot;P1&quot;,
+     &quot;target_queue&quot;: &quot;dba-team&quot;,
+     &quot;component_id&quot;: &quot;databases_oracle&quot;,
+     &quot;metric&quot;: &quot;Oracle SGA Buffer Cache Hit Ratio&quot;,
+     &quot;current_value&quot;: 88.4,
+     &quot;unit&quot;: &quot;%&quot;,
+     &quot;threshold&quot;: 90.0,
+     &quot;title&quot;: &quot;[P1] DATABASES_ORACLE: Buffer Cache Hit Ratio Breached Critical Threshold&quot;,
+     &quot;remediation_runbook&quot;: &quot;/docs/runbooks/RUNBOOK-FULLSTACK-METRICS-AND-GUIDED-THRESHOLD-CATALOG.html#databases_oracle&quot;,
+     &quot;zero_egress_verified&quot;: true,
+     &quot;created_at&quot;: &quot;2026-10-29T16:06:08Z&quot;
+   }
+   ```
+2. The payload is written atomically to `./data/incident_spool/ticket-&lt;uuid&gt;.json`.
+3. If an internal ticketing receiver is active on local loopback port `9000`, `&lt;dcouplr/&gt;` immediately sends the ticket via loopback HTTP (`POST /v1/support/receiver/ingest`). If the receiver is offline, the ticket remains buffered in the local spool directory without data loss.
+4. **Zero WAN bytes are transmitted**. The ticket is ingested, prioritized, and dispatched to on-call engineers via your internal ticketing tool or NOC wallboards.
+
+---
+
+## 3. Threshold Tuning Profiles
+
+| Profile Name | Target Environment | Warning Philosophy | Critical Philosophy | SRE Trade-Off Summary |
+| :--- | :--- | :--- | :--- | :--- |
+| **Profile A: Aggressive (Tier-0 Financial)** | Production Core Banking, Payment Gateways | Tight (e.g. CPU &gt; 70%, Pool &gt; 75%) | Strict (e.g. CPU &gt; 85%, Pool &gt; 85%) | **Pros:** Earliest detection, maximum lead time to intervene. &lt;br&gt;**Cons:** Higher alert volume; requires dedicated 24x7 NOC triage. |
+| **Profile B: Balanced Production (Default)** | Standard Enterprise Production Services | Moderate (e.g. CPU &gt; 75%, Pool &gt; 80%) | Safe (e.g. CPU &gt; 90%, Pool &gt; 92%) | **Pros:** Factory optimized via Erlang C; filters transient micro-spikes. &lt;br&gt;**Cons:** Requires response within 10–15 min of warning. |
+| **Profile C: Permissive (Staging &amp; Batch)** | Staging, Non-Prod, Heavy Batch Clusters | Relaxed (e.g. CPU &gt; 88%, Pool &gt; 90%) | Broad (e.g. CPU &gt; 96%, Pool &gt; 98%) | **Pros:** Zero false alarms during scheduled nightly bulk jobs. &lt;br&gt;**Cons:** Leaves small buffer before resource exhaustion. |
+
+---
+
+## 4. Comprehensive Layer-by-Layer Metric Catalog &amp; Guidance
+
+### Layer 1: Physical Data Center Infrastructure (Bare Metal &amp; On-Prem)
+
+#### 1.1 Compute / Bare Metal Servers (`compute_bare_metal`)
+- **Protocol:** IPMI v2.0 RMCP+, Redfish REST API, Linux Node Exporter, `smartctl`, `edac-util`.
+- **Primary Ticketing Queue:** `hw-ops-dc`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons (Tightening vs Relaxing) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `cpu_utilization_pct` | CPU Core Utilization (%) | 75.0% / 90.0% | 10.0% – 100.0% | Based on M/M/c queuing models; above 75% utilization, runqueue wait times increase non-linearly. | **Tighten (e.g. 65%):** Catches runaway threads earlier. May alert on routine compilation or cron tasks. &lt;br&gt;**Relax (e.g. 85%):** Prevents alert spam on bursty batch nodes. Leaves narrow buffer before core saturation. |
+| `memory_usage_pct` | Physical RAM Utilization (%) | 80.0% / 95.0% | 20.0% – 100.0% | Linux buffer/cache can be evicted; 80% marks genuine anonymous application memory pressure. | **Tighten (70%):** Early notice for memory leak investigations. Low utilization alert noise. &lt;br&gt;**Relax (90%):** Suitable for in-memory caches (Redis). Risk of invocation of Linux OOM Killer. |
+| `memory_swap_pct` | Swap Space Saturation (%) | 40.0% / 70.0% | 0.0% – 100.0% | Disk paging introduces order-of-magnitude latency spikes ($10\mu s \to 10ms$). | **Tighten (20%):** Strict zero-swap policy. Catches misconfigured JVMs early. &lt;br&gt;**Relax (60%):** Tolerates OS paging of stale kernel pages. Risk of major latency degredation. |
+| `disk_latency_ms` | NVMe / SAS Service Time (ms) | 5.0 ms / 15.0 ms | 0.1 ms – 200.0 ms | Enterprise NVMe delivers sub-millisecond service times. Latency $&gt;5ms$ indicates I/O controller queuing. | **Tighten (2.0 ms):** Strict flash SLA. May trigger during database checkpoint flush. &lt;br&gt;**Relax (10.0 ms):** Tolerates spinning disk SAN/NAS pools. |
+| `system_temp_celsius` | Chassis Exhaust Temperature (°C) | 70.0°C / 85.0°C | 30.0°C – 105.0°C | Intel/AMD thermal throttling begins at 85°C–90°C. 70°C warning prevents thermal trip cutoffs. | **Tighten (60°C):** Detects rack cooling failure early. May fire in unconditioned lab rooms. &lt;br&gt;**Relax (80°C):** High temperature tolerance; risk of emergency CPU thermal shutdown. |
+| `fan_speed_rpm` | Chassis Fan Speed (RPM) | 3000 / 1500 (Op: `&lt;`) | 500 – 15000 RPM | Redundant cooling fans typically operate at 5,000–8,000 RPM. Speed $&lt;3,000$ indicates bearing failure. | **Tighten (4000 RPM):** Proactive fan replacement alert. &lt;br&gt;**Relax (2000 RPM):** Accommodates low-noise server modes. |
+| `smart_failing_disks` | SMART Predicted Drive Failures | 1 / 2 (Op: `&gt;=`) | 0 – 32 disks | Modern drives reallocate bad sectors; 1 failing drive requires proactive hot-spare rebuilding. | **Tighten (1 disk):** Standard enterprise zero-unmapped-sector rule. &lt;br&gt;**Relax (2 disks):** High risk of unrecoverable dual-parity RAID failure. |
+| `ecc_memory_errors` | Uncorrectable ECC Memory Errors | 1 / 3 (Op: `&gt;=`) | 0 – 100 errors | Multi-bit ECC errors cannot be corrected by hardware and risk silent memory corruption or kernel panic. | **Tighten (1 error):** Immediate server evacuation/drain. Recommended for all production. |
+
+#### 1.2 Power &amp; Environment (DCIM/IPMI) (`power_environment_dcim`)
+- **Protocol:** Modbus TCP (Port 502), SNMP v3 (`UPS-MIB`, `PDU-MIB`), CRAC/CRAH telemetry.
+- **Primary Ticketing Queue:** `hw-ops-dc`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `ups_battery_soc_pct` | Battery State of Charge (%) | 95.0% / 80.0% (Op: `&lt;`) | 10.0% – 100.0% | UPS batteries must remain float-charged at $&gt;98\%$. SoC $&lt;95\%$ indicates utility mains loss. | **Tighten (98%):** Immediate notice upon utility power cut. &lt;br&gt;**Relax (85%):** Avoids alerts during scheduled battery self-discharge calibration tests. |
+| `ups_runtime_remaining_min` | Battery Runtime Remaining (min) | 25 min / 12 min (Op: `&lt;`) | 5 – 120 min | Facility diesel generators require 2–5 minutes to synchronize. 25 min warning allows controlled shutdown. | **Tighten (30 min):** Ensures sufficient time to gracefully stop distributed databases. |
+| `pdu_load_utilization_pct` | PDU Branch Circuit Load (%) | 75.0% / 85.0% | 20.0% – 100.0% | National Electrical Code (NEC) continuous duty derating mandates breaker loads $\le 80\%$. | **Tighten (70%):** Prevents branch breaker nuisance trips during server power-on surges. |
+| `ambient_rack_temp_celsius` | Cold-Aisle Temperature (°C) | 25.0°C / 29.0°C | 15.0°C – 45.0°C | ASHRAE TC 9.9 recommended envelope is 18°C–27°C. Above 27°C, server fan power consumption doubles. | **Tighten (23°C):** Maximizes hardware lifespan; requires higher chiller energy spend. |
+
+#### 1.3 Storage Systems (SAN/NAS) (`storage_san_nas`)
+- **Protocol:** SMI-S (Port 5988/5989), Vendor REST APIs (NetApp ONTAP, Dell PowerStore, Pure Storage).
+- **Primary Ticketing Queue:** `hw-ops-dc`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `volume_capacity_utilization_pct` | Storage Pool Used (%) | 80.0% / 90.0% | 30.0% – 100.0% | Thin-provisioned storage pools can exhaust free blocks rapidly during snapshot creation. | **Tighten (70%):** Provides 2-4 weeks procurement runway. &lt;br&gt;**Relax (88%):** Maximizes storage capital efficiency. |
+| `storage_write_latency_ms` | Storage Service Time (Write) | 10.0 ms / 25.0 ms | 0.5 ms – 100.0 ms | Synchronous database commits stall when storage write latency exceeds 10 ms. | **Tighten (5.0 ms):** Enforces all-flash latency tier. &lt;br&gt;**Relax (20.0 ms):** Accommodates hybrid SSD/HDD tiers. |
+| `raid_controller_degraded` | Degraded RAID Groups | 1 / 2 (Op: `&gt;=`) | 0 – 16 arrays | A single degraded parity group leaves the storage pool vulnerable to catastrophic second-disk failure. | **Non-negotiable:** Must always alert on 1 degraded group to schedule drive replacement. |
+
+---
+
+### Layer 2: Physical &amp; Virtual Networking
+
+#### 2.1 Network Devices (`network_devices`)
+- **Protocol:** SNMP v3 (`IF-MIB`, `ENTITY-MIB`), gNMI / OpenConfig, Switch Syslog.
+- **Primary Ticketing Queue:** `network-ops`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `switch_cpu_utilization_pct` | Switch Control Plane CPU (%) | 70.0% / 85.0% | 10.0% – 100.0% | Control plane CPU handles BGP/OSPF keepalives and ARP resolution. High CPU causes protocol dropouts. | **Tighten (60%):** Detects control plane packet storms before BGP drops. |
+| `packet_loss_pct` | Interface Packet Drop Ratio (%) | 0.05% / 0.50% | 0.00% – 10.0% | Modern Ethernet switching in datacenters should have zero packet drops under line-rate conditions. | **Tighten (0.01%):** High-frequency trading standard. &lt;br&gt;**Relax (0.10%):** Tolerates transient micro-burst buffer congestion. |
+| `switch_asic_temp_celsius` | Core Switching ASIC Temp (°C) | 75.0°C / 90.0°C | 30.0°C – 115.0°C | Broadcom/Cisco ASICs throttle packet forwarding pipelines at 95°C. | **Tighten (70°C):** Proactive switch fan replacement alert. |
+
+#### 2.2 Connectivity &amp; Latency (`network_connectivity_latency`)
+- **Protocol:** ICMP Echo, CoreDNS RFC-1035 UDP probes, BGP EVPN peering state.
+- **Primary Ticketing Queue:** `network-ops`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `inter_rack_latency_ms` | Spine-Leaf RTT Latency (ms) | 2.5 ms / 8.0 ms | 0.1 ms – 50.0 ms | In-datacenter spine-leaf RTT is typically $&lt;1.0ms$. $&gt;2.5ms$ indicates link negotiation downshifts or routing loops. | **Tighten (1.5 ms):** Catches single-link CRC error downshifts early. |
+| `network_jitter_ms` | Packet Transit Jitter (ms) | 1.0 ms / 3.5 ms | 0.01 ms – 20.0 ms | High jitter causes TCP window collapse and distributed lock heartbeat timeouts in consensus clusters. | **Tighten (0.5 ms):** Enforces ultra-stable Raft quorum latency. |
+| `bgp_peer_down_count` | Unestablished BGP Peers | 1 / 2 (Op: `&gt;=`) | 0 – 32 peers | A down BGP peer indicates severed rack uplinks or route reflector failure. | **Non-negotiable:** Must alert immediately on 1 peer down. |
+
+#### 2.3 Network Interconnects (`network_interconnects`)
+- **Protocol:** Cloud Interconnect APIs (DirectConnect / ExpressRoute / Cloud Interconnect), IKE IPsec MIBs.
+- **Primary Ticketing Queue:** `network-ops`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `directconnect_bandwidth_util_pct` | Cross-Connect Saturation (%) | 75.0% / 90.0% | 20.0% – 100.0% | Interconnect queuing causes packet drops and TCP head-of-line blocking for hybrid cloud replication. | **Tighten (65%):** Allows sufficient time to activate secondary LAG cross-connects. |
+| `optical_rx_power_dbm` | SFP28 Optical Rx Power (dBm) | -12.0 dBm / -15.0 dBm (Op: `&lt;`) | -30.0 – +5.0 dBm | Fiber attenuation below -14.4 dBm causes optical bit-error-rate (BER) spikes and link flap. | **Tighten (-10.0 dBm):** Proactive fiber cleaning / SFP transceiver replacement. |
+
+---
+
+### Layer 3: VPC &amp; Cloud Infrastructure
+
+#### 3.1 VPC Flow Logs (`vpc_flow_logs`)
+- **Protocol:** Cloud Flow Logs, Kernel packet mirror, Kirchhoff Flux Invariant Evaluator.
+- **Primary Ticketing Queue:** `cloud-infra` / `secops-threat`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `kirchhoff_flow_imbalance_pct` | Flow Volume Balance Delta (%) | 0.05% / 0.15% | 0.00% – 2.00% | Proves Theorem 2: Ingress equals Egress plus local consumption. Imbalance $&gt;0.05\%$ flags covert tunneling or blackholed subnets. | **Tighten (0.02%):** Strict mathematical invariant proof. Catches asymmetric routing instantly. |
+| `rejected_packet_ratio_pct` | Security Group Rejections (%) | 5.0% / 15.0% | 0.5% – 50.0% | Normal background traffic has $&lt;1\%$ drops. $&gt;5\%$ indicates misconfigured security groups or active scanning. | **Tighten (2.0%):** Early indicator of network segmentation permission denial. |
+| `external_wan_egress_bytes` | External WAN Egress Bytes | 0 / 1 (Op: `&gt;=`) | 0 – 0 bytes | **Core Invariant (Zero WAN Egress):** In an air-gapped or zero-egress VPC, any external WAN packet is a critical security breach. | **Zero-Tolerance:** Must always remain 0 bytes. |
+
+#### 3.2 Virtual Networks &amp; Subnets (`virtual_networks_subnets`)
+- **Protocol:** Cloud Provider IPAM SDKs, DHCP lease tables.
+- **Primary Ticketing Queue:** `cloud-infra`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `subnet_ip_exhaustion_pct` | Subnet CIDR IP Pool Used (%) | 80.0% / 92.0% | 20.0% – 100.0% | Running out of private IP addresses prevents Kubernetes pods or serverless instances from scaling up. | **Tighten (70%):** Gives network team time to allocate secondary CIDR blocks. |
+| `nat_gw_snat_port_allocation_pct` | NAT Gateway SNAT Ports (%) | 75.0% / 90.0% | 20.0% – 100.0% | SNAT port exhaustion (64k ports per IP) causes outgoing connection dropouts to partner APIs. | **Tighten (65%):** Prevents connection drops during outbound traffic spikes. |
+
+#### 3.3 Firewalls &amp; Security Groups (`firewalls_security_groups`)
+- **Protocol:** Netfilter conntrack netlink socket, CloudWatch firewall metrics.
+- **Primary Ticketing Queue:** `cloud-infra` / `secops-threat`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `conntrack_table_saturation_pct` | Conntrack Table Saturation (%) | 75.0% / 88.0% | 20.0% – 100.0% | Netfilter conntrack table saturation causes kernel to drop all new incoming and outgoing TCP SYN packets. | **Tighten (65%):** Provides 15+ minutes lead time to increase `nf_conntrack_max`. |
+
+#### 3.4 Load Balancers (`load_balancers`)
+- **Protocol:** Envoy admin interface (`/stats/prometheus`), Cloud Load Balancer metrics.
+- **Primary Ticketing Queue:** `sre-tier1`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `target_response_time_p99_ms` | Target Group P99 Latency (ms) | 250 ms / 1000 ms | 10 ms – 10000 ms | P99 latency $&gt;250ms$ indicates backend thread starvation or slow database locks. | **Tighten (100 ms):** Enforces sub-second user experience. &lt;br&gt;**Relax (500 ms):** Tolerates complex database aggregation endpoints. |
+| `http_5xx_rate_pct` | HTTP 5xx Server Error Rate (%) | 0.50% / 2.00% | 0.05% – 20.0% | Google SRE standard: $&gt;0.5\%$ error rate consumes error budget rapidly. | **Tighten (0.10%):** Critical for financial transactional endpoints. |
+| `ssl_certificate_days_remaining` | TLS Days to Expiration (days) | 21 days / 7 days (Op: `&lt;`) | 1 – 365 days | Expired certificates cause instant browser lockout and API failure. | **Tighten (30 days):** Allows sufficient time for manual certificate renewal if automated ACME fails. |
+
+---
+
+### Layer 4: Virtualization &amp; Container Platforms
+
+#### 4.1 Hypervisors (`hypervisors`)
+- **Protocol:** VMware vSphere API (`pyVmomi`), libvirt daemon socket.
+- **Primary Ticketing Queue:** `k8s-platform` / `hw-ops-dc`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `cpu_ready_time_pct` | Hypervisor CPU Ready (%) | 3.0% / 7.0% | 0.5% – 25.0% | CPU ready $&gt;3\%$ indicates CPU overcommitment; virtual machines are waiting for physical CPU cores. | **Tighten (2.0%):** Essential for database VMs; ensures CPU scheduler never stalls queries. |
+| `memory_overcommit_pct` | Host RAM Overcommit (%) | 110.0% / 135.0% | 50.0% – 250.0% | Overcommit $&gt;110\%$ triggers hypervisor memory ballooning and ESXi/KVM swap paging. | **Tighten (100%):** Guarantees zero memory ballooning. &lt;br&gt;**Relax (125%):** Standard for stateless web VM clusters. |
+
+#### 4.2 Container Orchestration: Cluster Health (`container_orchestration_cluster`)
+- **Protocol:** Kubernetes API Server (`/metrics`), ETCD client metrics, Prometheus Node Exporter.
+- **Primary Ticketing Queue:** `k8s-platform`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `etcd_disk_fsync_p99_ms` | ETCD WAL Disk fsync P99 (ms) | 10.0 ms / 25.0 ms | 1.0 ms – 100.0 ms | ETCD requires fast disk commits to maintain Raft consensus. fsync $&gt;10ms$ causes Raft leader elections. | **Tighten (5.0 ms):** Ensures resilient Kubernetes control plane. Requires dedicated NVMe SSDs. |
+| `api_server_latency_p99_ms` | API Server P99 Latency (ms) | 500 ms / 2000 ms | 50 ms – 10000 ms | High API server latency causes Kubelet sync timeouts and pod admission bottlenecks. | **Tighten (200 ms):** Enforces snappy deployment reconciliation. |
+
+#### 4.3 Container Orchestration: Workloads (`container_orchestration_workloads`)
+- **Protocol:** Kube-state-metrics, cgroup v2 controller interface (`/sys/fs/cgroup`).
+- **Primary Ticketing Queue:** `k8s-platform` / `sre-tier1`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `crashloopbackoff_count` | Containers in CrashLoopBackOff | 1 / 5 (Op: `&gt;=`) | 0 – 50 containers | Indicates application crashes on startup (bad configuration, failed database connection). | **Non-negotiable:** Must alert immediately on 1 container failing in production. |
+| `oom_killed_containers_hour` | OOMKilled Terminations | 1 / 3 (Op: `&gt;=`) | 0 – 50 events/hr | Container exceeded its Kubernetes memory limit and was killed with SIGKILL (exit code 137). | **Tighten (1 event):** Proactively highlights pods needing memory limit increases. |
+
+---
+
+### Layer 5: Middleware, Databases &amp; Storage Layers
+
+#### 5.1 Oracle Database 19c / 21c RAC (`databases_oracle`)
+- **Protocol:** Oracle Net TNS, `v$sysmetric`, `v$session`, `v$system_event`, AWR (Port 1521).
+- **Primary Ticketing Queue:** `dba-team`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `sga_buffer_cache_hit_pct` | SGA Buffer Cache Hit Ratio (%) | 95.0% / 90.0% (Op: `&lt;`) | 50.0% – 100.0% | In OLTP systems, $&gt;95\%$ of block reads should resolve from memory buffer cache. Lower causes physical disk I/O bottlenecks. | **Tighten (97%):** Detects missing indexes or rogue full-table scans early. May fire during RMAN backups. &lt;br&gt;**Relax (88%):** Suitable for Data Guard read-only reporting standby. |
+| `pga_cache_hit_pct` | PGA Workarea Hit Ratio (%) | 90.0% / 80.0% (Op: `&lt;`) | 40.0% – 100.0% | Measures percentage of workarea sorts and hash joins executed purely in memory without spilling to TEMP. | **Tighten (93%):** Ensures in-memory sorts; prevents disk I/O churn on temporary tablespaces. |
+| `active_sessions_pct_processes` | Active Sessions vs PROCESSES (%) | 75.0% / 90.0% | 10.0% – 100.0% | Prevents fatal `ORA-00018` (max sessions exceeded) and `ORA-00020` (max processes exceeded). | **Tighten (65%):** Gives DBAs 30+ min to kill idle/blocking sessions. &lt;br&gt;**Relax (85%):** Leaves narrow margin during connection storms. |
+| `redo_log_space_wait_ms` | Redo Log Allocation Wait (ms) | 10.0 ms / 50.0 ms | 0.0 ms – 500.0 ms | &#x27;log buffer space&#x27; wait events block all DML commits across RAC instances. | **Tighten (5.0 ms):** Enforces sub-millisecond commit latency; requires high-speed NVMe redo logs. |
+| `archiver_lag_minutes` | Data Guard Standby Lag (min) | 5.0 min / 15.0 min | 0.0 min – 120.0 min | Data Guard synchronization lag represents potential data loss (RPO) in disaster failover. | **Tighten (2.0 min):** Enforces near-zero RPO SLA across primary and standby datacenters. |
+| `tablespace_used_pct` | Primary Tablespace Used (%) | 85.0% / 95.0% | 50.0% – 100.0% | Prevents `ORA-01653` (unable to extend table). 85% warning provides 3-5 days to allocate storage. | **Tighten (80%):** Proactive SAN provisioning notice. &lt;br&gt;**Relax (90%):** Maximizes storage capital efficiency. |
+
+#### 5.2 Microsoft SQL Server 2019 / 2022 (`databases_mssql`)
+- **Protocol:** TDS, `sys.dm_os_wait_stats`, `sys.dm_os_performance_counters`, `dm_hadr` (Port 1433).
+- **Primary Ticketing Queue:** `dba-team`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `buffer_cache_hit_ratio_pct` | Buffer Cache Hit Ratio (%) | 95.0% / 90.0% (Op: `&lt;`) | 50.0% – 100.0% | Percentage of pages found in the buffer pool without needing to read from physical disk. | **Tighten (97%):** Alerts quickly if memory pressure forces cached pages out. |
+| `page_life_expectancy_sec` | Page Life Expectancy (PLE) (s) | 300 s / 120 s (Op: `&lt;`) | 30 s – 3600 s | Number of seconds a page stays in the buffer pool. Baseline rule of thumb: 300s per 4GB of buffer RAM. | **Tighten (600 s):** Catches internal SQL memory pressure early. &lt;br&gt;**Relax (180 s):** Tolerates index maintenance jobs. |
+| `user_connections_pct_max` | Worker Connections % Max | 80.0% / 92.0% | 20.0% – 100.0% | Prevents thread pool exhaustion where new client connections fail with error 17809. | **Tighten (70%):** Provides lead time to adjust application connection pool max sizes. |
+| `alwayson_redo_queue_kb` | Always On AG Redo Queue (KB) | 50,000 KB / 250,000 KB | 0 – 1,000,000 KB | Volume of log records waiting to be redone on secondary replicas. High redo queue delays failover cutover. | **Tighten (20,000 KB):** Ensures instantaneous replica failover readiness. |
+| `log_file_used_pct` | Transaction Log Space Used (%) | 80.0% / 92.0% | 30.0% – 100.0% | A full transaction log (.ldf) halts all database write operations (error 9002). | **Tighten (70%):** Verifies log backup jobs or replication log readers are not stalling. |
+
+#### 5.3 Relational &amp; NoSQL Databases (`databases_relational_nosql`)
+- **Protocol:** PostgreSQL `pg_stat_activity`, MySQL `performance_schema`, TiDB PD API, Cassandra JMX.
+- **Primary Ticketing Queue:** `dba-team`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `conn_pool_saturation_pct` | Connection Pool Saturation (%) | 80.0% / 92.0% | 20.0% – 100.0% | Above 80% saturation, connection acquisition latency exhibits exponential Erlang C delays. | **Tighten (70%):** Early warning for read replica offloading. &lt;br&gt;**Relax (88%):** Tolerates brief spike traffic. |
+| `deadlocks_per_hour` | Transaction Deadlock Events | 1 / 5 (Op: `&gt;=`) | 0 – 50 events/hr | Deadlocks cause transactions to be rolled back with serialization errors. | **Tighten (1 event):** Proactively highlights problematic application transaction isolation levels. |
+| `replication_lag_seconds` | Replica Lag (seconds) | 2.0 s / 10.0 s | 0.01 s – 120.0 s | Follower replication lag leads to stale reads and prolonged failover RPO. | **Tighten (1.0 s):** Enforces strict read-your-writes consistency. |
+
+#### 5.4 Messaging &amp; Queues (`messaging_queues`)
+- **Protocol:** Kafka AdminClient, RabbitMQ Management API, AWS SQS Attributes.
+- **Primary Ticketing Queue:** `dba-team` / `sre-tier1`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `consumer_lag_records` | Kafka Consumer Group Lag | 5,000 / 25,000 | 100 – 1,000,000 | Growing consumer lag indicates consumers cannot keep pace with producer throughput. | **Tighten (2,000):** Catches consumer pod stalls early. &lt;br&gt;**Relax (50,000):** Tolerates batch consumer schedules. |
+| `under_replicated_partitions` | Under-Replicated Partitions | 1 / 2 (Op: `&gt;=`) | 0 – 100 partitions | Indicates one or more Kafka broker replicas have fallen out of the In-Sync Replicas (ISR) set. | **Non-negotiable:** Must alert immediately on 1 URP to prevent data loss. |
+
+#### 5.5 In-Memory Caches (`caches`)
+- **Protocol:** Redis `INFO`, Memcached `stats`.
+- **Primary Ticketing Queue:** `sre-tier1`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `memory_fragmentation_ratio` | Redis Memory Fragmentation | 1.50 / 2.00 | 0.80 – 3.00 | Ratio of RSS memory allocated by OS to memory used by Redis. $&gt;1.8$ indicates memory allocator fragmentation. | **Tighten (1.40):** Proactive trigger for jemalloc active defragmentation. |
+| `evicted_keys_sec` | Evicted Keys Velocity (keys/s) | 50 / 250 | 0 – 5000 keys/s | Keys are being evicted due to `maxmemory` pressure, degrading cache hit efficiency. | **Tighten (10 keys/s):** Ensures cache size matches active dataset working set. |
+
+---
+
+### Layer 6: Application &amp; Process Layer (APM &amp; Distributed Tracing)
+
+#### 6.1 Application Performance Monitoring (`application_performance_apm`)
+- **Protocol:** OTLP gRPC (Port 4317), W3C TraceContext.
+- **Primary Ticketing Queue:** `sre-tier1`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `p99_latency_ms` | P99 Tail Latency (ms) | 50.0 ms / 150.0 ms | 5.0 ms – 5000.0 ms | Measures the slowest 1% of transactions. Directly correlates with customer churn and SLA penalties. | **Tighten (25.0 ms):** Enforces ultra-snappy microservice latency. &lt;br&gt;**Relax (200.0 ms):** Suitable for complex search/checkout endpoints. |
+| `error_rate_pct` | HTTP 5xx / Exception Rate (%) | 1.00% / 5.00% | 0.05% – 20.0% | Error rate $&gt;1.0\%$ rapidly consumes 99.9% service SLA error budgets. | **Tighten (0.25%):** Immediate alert for zero-tolerance payment systems. |
+
+#### 6.2 Runtime Metrics (`runtime_metrics`)
+- **Protocol:** JVM JMX, Go runtime metrics, Node.js event loop inspector.
+- **Primary Ticketing Queue:** `sre-tier1`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `jvm_gc_pause_duration_ms` | JVM Stop-The-World GC Pause (ms) | 250 ms / 1000 ms | 10 ms – 5000 ms | Long GC pauses freeze all threads, causing health-check timeouts and microservice disconnects. | **Tighten (100 ms):** Enforces modern low-latency collectors (ZGC, Shenandoah). |
+| `node_event_loop_lag_ms` | Node.js Event Loop Lag (ms) | 20.0 ms / 100.0 ms | 1.0 ms – 500.0 ms | Event loop lag $&gt;20ms$ indicates synchronous CPU-heavy work is blocking asynchronous I/O execution. | **Tighten (10.0 ms):** Prevents request queuing in Node.js services. |
+
+---
+
+### Layer 7: Logs, Events &amp; Security (SIEM / Auditing)
+
+#### 7.1 Centralized Logging (`centralized_logging`)
+- **Protocol:** Vector / Fluentbit / Rsyslog forwarding, local regex indexer.
+- **Primary Ticketing Queue:** `secops-threat`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `critical_error_logs_sec` | Panic / Fatal Error Velocity | 5 / 25 (Op: `&gt;=`) | 0 – 500 logs/s | Spike in panic or fatal logs indicates uncaught exception storm or service crash loop. | **Tighten (1 log/s):** Catches sporadic fatal errors immediately. |
+
+#### 7.2 Audit &amp; IAM Monitoring (`audit_iam_monitoring`)
+- **Protocol:** Linux `auditd`, Windows Security Log (`EventID 4624/4625`), CloudTrail.
+- **Primary Ticketing Queue:** `secops-threat`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `failed_root_logins_min` | Failed Root / Admin Logins | 3 / 8 (Op: `&gt;=`) | 0 – 50 attempts | Multiple failed logins within a minute indicate active brute-force or credential stuffing. | **Tighten (1 attempt):** Strict security policy for hardened bastion hosts. |
+| `unauthorized_sudo_attempts` | Privilege Escalation Attempts | 1 / 3 (Op: `&gt;=`) | 0 – 20 events | Indicates unauthorized users attempting sudo or exploiting setuid binaries. | **Non-negotiable:** Must alert immediately on 1 event. |
+
+#### 7.3 Security &amp; Zero-Egress Compliance (`security_compliance`)
+- **Protocol:** Local kernel eBPF socket filter, FIM SHA-256 hash table.
+- **Primary Ticketing Queue:** `secops-threat`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `ebpf_blocked_wan_packets` | Intercepted External WAN Packets | 1 / 1 (Op: `&gt;=`) | 0 – 0 packets | **Theorem 2 Zero-Egress Guarantee:** Any attempt by an in-VPC process to send packets to a public WAN IP is blocked by eBPF and must fire a P0 security incident. | **Zero-Tolerance:** Must always remain 0. Non-zero triggers immediate host isolation. |
+| `fim_checksum_drift_files` | Binary Checksum Drift Files | 1 / 1 (Op: `&gt;=`) | 0 – 0 files | Modifying files in `/bin`, `/sbin`, `/usr/bin` indicates malware, rootkits, or unauthorized binary tampering. | **Zero-Tolerance:** Immediate P0 security incident. |
+
+---
+
+## 5. Collector CLI Usage &amp; Execution Guide
+
+### Single-Command Sweeps
+Run the full 7-layer collector suite locally:
+```bash
+# Sweep all 7 layers (Zero-Egress verified)
+python scripts/run_fullstack_collectors.py
+
+# Sweep only Layer 1 (Physical DC) and Layer 5 (Databases &amp; Middleware)
+python scripts/run_fullstack_collectors.py -l 1 -l 5
+
+# Export sweep telemetry to JSON without printing to stdout
+python scripts/run_fullstack_collectors.py -o /tmp/telemetry-sweep.json -q
+```
+
+### Windows PowerShell Launcher
+```powershell
+# Run all layers
+.\scripts\run_fullstack_collectors.ps1
+
+# Run specific layers (e.g. 1, 5)
+.\scripts\run_fullstack_collectors.ps1 -Layers &quot;1,5&quot;
+```
+
+### Linux Shell Launcher
+```bash
+# Run all layers
+./scripts/run_fullstack_collectors.sh
+
+# Run specific layers
+./scripts/run_fullstack_collectors.sh &quot;1,5,7&quot;
+```
+
+### Live REST API Endpoint
+Trigger an on-demand sweep via HTTP within the VPC:
+```bash
+curl -X POST http://127.0.0.1:8000/v1/telemetry/collectors/sweep \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;layers&quot;: [1, 5], &quot;spool_to_ticketing&quot;: true}&#x27;
+```
+
+---
+
+## 6. Document History &amp; Approvals
+
+| Version | Date | Author / Role | Changes |
+| :--- | :--- | :--- | :--- |
+| `v1.0.0` | 2026-10-29 | Core SRE Architecture Team | Initial comprehensive 7-layer metrics catalog, Oracle &amp; MS SQL Server monitoring specifications, guiding threshold pros/cons analysis, and enterprise ticketing tool zero-egress spool integration. |
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;dcouplr/&gt; Full-Stack Suite: Full-Stack Metrics &amp; Guided Threshold Catalog
+## SRE &amp; Administrator Runbook: 7-Layer Monitoring Points, Threshold Trade-Off Analysis, and Enterprise Ticketing Architecture
+
+```
+Document ID:     RUN-FULLSTACK-METRICS-GUIDE-001
+Classification:  Enterprise Observability &amp; Zero-Egress In-VPC Operations
+Target Platform: &lt;dcouplr/&gt; Full-Stack Suite
+Integrations:    Enterprise Ticketing Systems (ServiceNow / Jira / Spool), NOC PulseCast, SRE SMTP, Syslog RFC-5424
+Egress Status:   0.00 WAN Packets / 100% In-VPC Guaranteed (Zero WAN Egress)
+```
+
+---
+
+## 1. Executive Summary &amp; Core Architectural Tenets
+
+The **&lt;dcouplr/&gt; Full-Stack Suite** provides turnkey, deep-packet, zero-egress monitoring across every layer of modern hybrid enterprise infrastructure.
+
+### The Zero-Egress Invariant
+All collectors, ring buffers, threshold evaluations, and alert dispatchers run strictly **in-perimeter** (`100% In-VPC / On-Prem`). No metric readings, logs, traces, or security metadata ever leave your private network boundaries. All telemetry is stored in high-performance memory ring buffers and local WAL storage, guaranteeing **$0.00 egress costs** and eliminating third-party data exfiltration risks.
+
+### Guiding, Not Strict: The Engineering Threshold Philosophy
+In high-velocity enterprise environments, rigid alerting thresholds cause two catastrophic failure modes:
+1. **Alert Fatigue (Thresholds Too Strict):** On-call SREs receive dozens of actionable-looking notifications during routine batch processing, RMAN backups, or seasonal micro-bursts, leading to alarm desensitization.
+2. **Undetected Outages (Thresholds Too Permissive):** Degraded database buffer pools or connection pool exhaustion goes unflagged until user-facing HTTP 5xx errors breach customer SLAs.
+
+`&lt;dcouplr/&gt;` addresses this by providing **guiding, not strict** threshold configurations:
+- Every metric has an independent **Activation Toggle (`enabled: true/false`)**, allowing engineering teams to disable irrelevant signals for specific host roles.
+- Factory default thresholds are grounded in queuing theory (Erlang C), thermodynamics, and hardware tolerances.
+- Engineers can adjust warning and critical thresholds dynamically; the system immediately provides **Guiding Trade-off Feedback** detailing the pros, cons, and operational risks of tightening versus relaxing each threshold.
+
+---
+
+## 2. Notification Forwarding &amp; In-Perimeter Enterprise Ticketing Architecture
+
+### In-Perimeter Ticketing &amp; Local Spooling
+In enterprise cloud and on-premise deployments, `&lt;dcouplr/&gt;` integrates with your organization&#x27;s **enterprise ticketing tools** (such as **ServiceNow**, **Jira Service Management**, or custom internal ticketing systems). Operating under a strict **Zero-Egress Invariant (Zero WAN Egress)**, `&lt;dcouplr/&gt;` dispatches alerts and incident records without requiring outbound internet access:
+
+```
+Platform Architecture:   In-Perimeter Enterprise Ticketing &amp; Incident Dispatch
+Local Spool Directory:   ./data/incident_spool/
+Local Webhook Bridge:    http://127.0.0.1:9000/v1/support/receiver/ingest (Loopback / Private LAN)
+Target Incident Queues:  hw-ops-dc, network-ops, cloud-infra, k8s-platform, dba-team, sre-tier1, secops-threat
+Operating Mode:          100% In-Perimeter / Air-Gapped Autonomous Dispatch
+```
+
+```mermaid
+flowchart TD
+    subgraph Collectors[&quot;&lt;dcouplr/&gt; Full-Stack Suite Collectors (Layers 1-7)&quot;]
+        L1[&quot;L1: Physical DC &amp; Bare Metal&quot;]
+        L2[&quot;L2: Network &amp; Interconnects&quot;]
+        L3[&quot;L3: Cloud VPC &amp; Gateways&quot;]
+        L4[&quot;L4: Hypervisors &amp; K8s&quot;]
+        L5[&quot;L5: Oracle, MSSQL, PG, Kafka&quot;]
+        L6[&quot;L6: APM &amp; Runtimes&quot;]
+        L7[&quot;L7: Logs, IAM &amp; Security&quot;]
+    end
+
+    subgraph Eval[&quot;Threshold &amp; Guidance Engine&quot;]
+        Engine[&quot;In-Memory Evaluation &amp; Invariant Validation&quot;]
+    end
+
+    subgraph TicketingBridge[&quot;In-Perimeter Ticketing Dispatch &amp; Local Spool&quot;]
+        Spool[&quot;Atomic File Spool: ./data/incident_spool/&quot;]
+        IPC[&quot;Local Loopback API / Webhook Bridge&quot;]
+        Q_HW[&quot;Queue: hw-ops-dc (Tier 1)&quot;]
+        Q_NET[&quot;Queue: network-ops (Tier 2)&quot;]
+        Q_CLOUD[&quot;Queue: cloud-infra (Tier 3)&quot;]
+        Q_K8S[&quot;Queue: k8s-platform (Tier 4)&quot;]
+        Q_DBA[&quot;Queue: dba-team (Tier 5)&quot;]
+        Q_SRE[&quot;Queue: sre-tier1 (Tier 6)&quot;]
+        Q_SEC[&quot;Queue: secops-threat (Tier 7)&quot;]
+    end
+
+    subgraph ITSM[&quot;Enterprise Ticketing Tools&quot;]
+        SN[&quot;ServiceNow / Jira Service Management&quot;]
+        Console[&quot;Internal SRE Incident Console&quot;]
+        Paging[&quot;On-Call Paging &amp; War-Room Bridge&quot;]
+    end
+
+    Collectors --&gt; Eval
+    Eval --&gt;|Alert Triggered (Zero WAN)| Spool
+    Eval -.-&gt;|Direct Loopback Webhook| IPC
+    Spool --&gt; Q_HW &amp; Q_NET &amp; Q_CLOUD &amp; Q_K8S &amp; Q_DBA &amp; Q_SRE &amp; Q_SEC
+    IPC --&gt; ITSM
+    Spool -.-&gt;|Pickup Daemon| ITSM
+```
+
+### Zero-Egress Spool Mechanism
+When any active metric breaches its threshold and has an enterprise ticketing route enabled:
+1. `&lt;dcouplr/&gt;` formats a structured, cryptographic ITIL incident ticket:
+   ```json
+   {
+     &quot;ticket_id&quot;: &quot;TICK-P1-1793289968-163FFD&quot;,
+     &quot;source&quot;: &quot;&lt;dcouplr/&gt; Full-Stack Suite&quot;,
+     &quot;severity&quot;: &quot;P1&quot;,
+     &quot;target_queue&quot;: &quot;dba-team&quot;,
+     &quot;component_id&quot;: &quot;databases_oracle&quot;,
+     &quot;metric&quot;: &quot;Oracle SGA Buffer Cache Hit Ratio&quot;,
+     &quot;current_value&quot;: 88.4,
+     &quot;unit&quot;: &quot;%&quot;,
+     &quot;threshold&quot;: 90.0,
+     &quot;title&quot;: &quot;[P1] DATABASES_ORACLE: Buffer Cache Hit Ratio Breached Critical Threshold&quot;,
+     &quot;remediation_runbook&quot;: &quot;/docs/runbooks/RUNBOOK-FULLSTACK-METRICS-AND-GUIDED-THRESHOLD-CATALOG.html#databases_oracle&quot;,
+     &quot;zero_egress_verified&quot;: true,
+     &quot;created_at&quot;: &quot;2026-10-29T16:06:08Z&quot;
+   }
+   ```
+2. The payload is written atomically to `./data/incident_spool/ticket-&lt;uuid&gt;.json`.
+3. If an internal ticketing receiver is active on local loopback port `9000`, `&lt;dcouplr/&gt;` immediately sends the ticket via loopback HTTP (`POST /v1/support/receiver/ingest`). If the receiver is offline, the ticket remains buffered in the local spool directory without data loss.
+4. **Zero WAN bytes are transmitted**. The ticket is ingested, prioritized, and dispatched to on-call engineers via your internal ticketing tool or NOC wallboards.
+
+---
+
+## 3. Threshold Tuning Profiles
+
+| Profile Name | Target Environment | Warning Philosophy | Critical Philosophy | SRE Trade-Off Summary |
+| :--- | :--- | :--- | :--- | :--- |
+| **Profile A: Aggressive (Tier-0 Financial)** | Production Core Banking, Payment Gateways | Tight (e.g. CPU &gt; 70%, Pool &gt; 75%) | Strict (e.g. CPU &gt; 85%, Pool &gt; 85%) | **Pros:** Earliest detection, maximum lead time to intervene. &lt;br&gt;**Cons:** Higher alert volume; requires dedicated 24x7 NOC triage. |
+| **Profile B: Balanced Production (Default)** | Standard Enterprise Production Services | Moderate (e.g. CPU &gt; 75%, Pool &gt; 80%) | Safe (e.g. CPU &gt; 90%, Pool &gt; 92%) | **Pros:** Factory optimized via Erlang C; filters transient micro-spikes. &lt;br&gt;**Cons:** Requires response within 10–15 min of warning. |
+| **Profile C: Permissive (Staging &amp; Batch)** | Staging, Non-Prod, Heavy Batch Clusters | Relaxed (e.g. CPU &gt; 88%, Pool &gt; 90%) | Broad (e.g. CPU &gt; 96%, Pool &gt; 98%) | **Pros:** Zero false alarms during scheduled nightly bulk jobs. &lt;br&gt;**Cons:** Leaves small buffer before resource exhaustion. |
+
+---
+
+## 4. Comprehensive Layer-by-Layer Metric Catalog &amp; Guidance
+
+### Layer 1: Physical Data Center Infrastructure (Bare Metal &amp; On-Prem)
+
+#### 1.1 Compute / Bare Metal Servers (`compute_bare_metal`)
+- **Protocol:** IPMI v2.0 RMCP+, Redfish REST API, Linux Node Exporter, `smartctl`, `edac-util`.
+- **Primary Ticketing Queue:** `hw-ops-dc`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons (Tightening vs Relaxing) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `cpu_utilization_pct` | CPU Core Utilization (%) | 75.0% / 90.0% | 10.0% – 100.0% | Based on M/M/c queuing models; above 75% utilization, runqueue wait times increase non-linearly. | **Tighten (e.g. 65%):** Catches runaway threads earlier. May alert on routine compilation or cron tasks. &lt;br&gt;**Relax (e.g. 85%):** Prevents alert spam on bursty batch nodes. Leaves narrow buffer before core saturation. |
+| `memory_usage_pct` | Physical RAM Utilization (%) | 80.0% / 95.0% | 20.0% – 100.0% | Linux buffer/cache can be evicted; 80% marks genuine anonymous application memory pressure. | **Tighten (70%):** Early notice for memory leak investigations. Low utilization alert noise. &lt;br&gt;**Relax (90%):** Suitable for in-memory caches (Redis). Risk of invocation of Linux OOM Killer. |
+| `memory_swap_pct` | Swap Space Saturation (%) | 40.0% / 70.0% | 0.0% – 100.0% | Disk paging introduces order-of-magnitude latency spikes ($10\mu s \to 10ms$). | **Tighten (20%):** Strict zero-swap policy. Catches misconfigured JVMs early. &lt;br&gt;**Relax (60%):** Tolerates OS paging of stale kernel pages. Risk of major latency degredation. |
+| `disk_latency_ms` | NVMe / SAS Service Time (ms) | 5.0 ms / 15.0 ms | 0.1 ms – 200.0 ms | Enterprise NVMe delivers sub-millisecond service times. Latency $&gt;5ms$ indicates I/O controller queuing. | **Tighten (2.0 ms):** Strict flash SLA. May trigger during database checkpoint flush. &lt;br&gt;**Relax (10.0 ms):** Tolerates spinning disk SAN/NAS pools. |
+| `system_temp_celsius` | Chassis Exhaust Temperature (°C) | 70.0°C / 85.0°C | 30.0°C – 105.0°C | Intel/AMD thermal throttling begins at 85°C–90°C. 70°C warning prevents thermal trip cutoffs. | **Tighten (60°C):** Detects rack cooling failure early. May fire in unconditioned lab rooms. &lt;br&gt;**Relax (80°C):** High temperature tolerance; risk of emergency CPU thermal shutdown. |
+| `fan_speed_rpm` | Chassis Fan Speed (RPM) | 3000 / 1500 (Op: `&lt;`) | 500 – 15000 RPM | Redundant cooling fans typically operate at 5,000–8,000 RPM. Speed $&lt;3,000$ indicates bearing failure. | **Tighten (4000 RPM):** Proactive fan replacement alert. &lt;br&gt;**Relax (2000 RPM):** Accommodates low-noise server modes. |
+| `smart_failing_disks` | SMART Predicted Drive Failures | 1 / 2 (Op: `&gt;=`) | 0 – 32 disks | Modern drives reallocate bad sectors; 1 failing drive requires proactive hot-spare rebuilding. | **Tighten (1 disk):** Standard enterprise zero-unmapped-sector rule. &lt;br&gt;**Relax (2 disks):** High risk of unrecoverable dual-parity RAID failure. |
+| `ecc_memory_errors` | Uncorrectable ECC Memory Errors | 1 / 3 (Op: `&gt;=`) | 0 – 100 errors | Multi-bit ECC errors cannot be corrected by hardware and risk silent memory corruption or kernel panic. | **Tighten (1 error):** Immediate server evacuation/drain. Recommended for all production. |
+
+#### 1.2 Power &amp; Environment (DCIM/IPMI) (`power_environment_dcim`)
+- **Protocol:** Modbus TCP (Port 502), SNMP v3 (`UPS-MIB`, `PDU-MIB`), CRAC/CRAH telemetry.
+- **Primary Ticketing Queue:** `hw-ops-dc`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `ups_battery_soc_pct` | Battery State of Charge (%) | 95.0% / 80.0% (Op: `&lt;`) | 10.0% – 100.0% | UPS batteries must remain float-charged at $&gt;98\%$. SoC $&lt;95\%$ indicates utility mains loss. | **Tighten (98%):** Immediate notice upon utility power cut. &lt;br&gt;**Relax (85%):** Avoids alerts during scheduled battery self-discharge calibration tests. |
+| `ups_runtime_remaining_min` | Battery Runtime Remaining (min) | 25 min / 12 min (Op: `&lt;`) | 5 – 120 min | Facility diesel generators require 2–5 minutes to synchronize. 25 min warning allows controlled shutdown. | **Tighten (30 min):** Ensures sufficient time to gracefully stop distributed databases. |
+| `pdu_load_utilization_pct` | PDU Branch Circuit Load (%) | 75.0% / 85.0% | 20.0% – 100.0% | National Electrical Code (NEC) continuous duty derating mandates breaker loads $\le 80\%$. | **Tighten (70%):** Prevents branch breaker nuisance trips during server power-on surges. |
+| `ambient_rack_temp_celsius` | Cold-Aisle Temperature (°C) | 25.0°C / 29.0°C | 15.0°C – 45.0°C | ASHRAE TC 9.9 recommended envelope is 18°C–27°C. Above 27°C, server fan power consumption doubles. | **Tighten (23°C):** Maximizes hardware lifespan; requires higher chiller energy spend. |
+
+#### 1.3 Storage Systems (SAN/NAS) (`storage_san_nas`)
+- **Protocol:** SMI-S (Port 5988/5989), Vendor REST APIs (NetApp ONTAP, Dell PowerStore, Pure Storage).
+- **Primary Ticketing Queue:** `hw-ops-dc`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `volume_capacity_utilization_pct` | Storage Pool Used (%) | 80.0% / 90.0% | 30.0% – 100.0% | Thin-provisioned storage pools can exhaust free blocks rapidly during snapshot creation. | **Tighten (70%):** Provides 2-4 weeks procurement runway. &lt;br&gt;**Relax (88%):** Maximizes storage capital efficiency. |
+| `storage_write_latency_ms` | Storage Service Time (Write) | 10.0 ms / 25.0 ms | 0.5 ms – 100.0 ms | Synchronous database commits stall when storage write latency exceeds 10 ms. | **Tighten (5.0 ms):** Enforces all-flash latency tier. &lt;br&gt;**Relax (20.0 ms):** Accommodates hybrid SSD/HDD tiers. |
+| `raid_controller_degraded` | Degraded RAID Groups | 1 / 2 (Op: `&gt;=`) | 0 – 16 arrays | A single degraded parity group leaves the storage pool vulnerable to catastrophic second-disk failure. | **Non-negotiable:** Must always alert on 1 degraded group to schedule drive replacement. |
+
+---
+
+### Layer 2: Physical &amp; Virtual Networking
+
+#### 2.1 Network Devices (`network_devices`)
+- **Protocol:** SNMP v3 (`IF-MIB`, `ENTITY-MIB`), gNMI / OpenConfig, Switch Syslog.
+- **Primary Ticketing Queue:** `network-ops`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `switch_cpu_utilization_pct` | Switch Control Plane CPU (%) | 70.0% / 85.0% | 10.0% – 100.0% | Control plane CPU handles BGP/OSPF keepalives and ARP resolution. High CPU causes protocol dropouts. | **Tighten (60%):** Detects control plane packet storms before BGP drops. |
+| `packet_loss_pct` | Interface Packet Drop Ratio (%) | 0.05% / 0.50% | 0.00% – 10.0% | Modern Ethernet switching in datacenters should have zero packet drops under line-rate conditions. | **Tighten (0.01%):** High-frequency trading standard. &lt;br&gt;**Relax (0.10%):** Tolerates transient micro-burst buffer congestion. |
+| `switch_asic_temp_celsius` | Core Switching ASIC Temp (°C) | 75.0°C / 90.0°C | 30.0°C – 115.0°C | Broadcom/Cisco ASICs throttle packet forwarding pipelines at 95°C. | **Tighten (70°C):** Proactive switch fan replacement alert. |
+
+#### 2.2 Connectivity &amp; Latency (`network_connectivity_latency`)
+- **Protocol:** ICMP Echo, CoreDNS RFC-1035 UDP probes, BGP EVPN peering state.
+- **Primary Ticketing Queue:** `network-ops`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `inter_rack_latency_ms` | Spine-Leaf RTT Latency (ms) | 2.5 ms / 8.0 ms | 0.1 ms – 50.0 ms | In-datacenter spine-leaf RTT is typically $&lt;1.0ms$. $&gt;2.5ms$ indicates link negotiation downshifts or routing loops. | **Tighten (1.5 ms):** Catches single-link CRC error downshifts early. |
+| `network_jitter_ms` | Packet Transit Jitter (ms) | 1.0 ms / 3.5 ms | 0.01 ms – 20.0 ms | High jitter causes TCP window collapse and distributed lock heartbeat timeouts in consensus clusters. | **Tighten (0.5 ms):** Enforces ultra-stable Raft quorum latency. |
+| `bgp_peer_down_count` | Unestablished BGP Peers | 1 / 2 (Op: `&gt;=`) | 0 – 32 peers | A down BGP peer indicates severed rack uplinks or route reflector failure. | **Non-negotiable:** Must alert immediately on 1 peer down. |
+
+#### 2.3 Network Interconnects (`network_interconnects`)
+- **Protocol:** Cloud Interconnect APIs (DirectConnect / ExpressRoute / Cloud Interconnect), IKE IPsec MIBs.
+- **Primary Ticketing Queue:** `network-ops`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `directconnect_bandwidth_util_pct` | Cross-Connect Saturation (%) | 75.0% / 90.0% | 20.0% – 100.0% | Interconnect queuing causes packet drops and TCP head-of-line blocking for hybrid cloud replication. | **Tighten (65%):** Allows sufficient time to activate secondary LAG cross-connects. |
+| `optical_rx_power_dbm` | SFP28 Optical Rx Power (dBm) | -12.0 dBm / -15.0 dBm (Op: `&lt;`) | -30.0 – +5.0 dBm | Fiber attenuation below -14.4 dBm causes optical bit-error-rate (BER) spikes and link flap. | **Tighten (-10.0 dBm):** Proactive fiber cleaning / SFP transceiver replacement. |
+
+---
+
+### Layer 3: VPC &amp; Cloud Infrastructure
+
+#### 3.1 VPC Flow Logs (`vpc_flow_logs`)
+- **Protocol:** Cloud Flow Logs, Kernel packet mirror, Kirchhoff Flux Invariant Evaluator.
+- **Primary Ticketing Queue:** `cloud-infra` / `secops-threat`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `kirchhoff_flow_imbalance_pct` | Flow Volume Balance Delta (%) | 0.05% / 0.15% | 0.00% – 2.00% | Proves Theorem 2: Ingress equals Egress plus local consumption. Imbalance $&gt;0.05\%$ flags covert tunneling or blackholed subnets. | **Tighten (0.02%):** Strict mathematical invariant proof. Catches asymmetric routing instantly. |
+| `rejected_packet_ratio_pct` | Security Group Rejections (%) | 5.0% / 15.0% | 0.5% – 50.0% | Normal background traffic has $&lt;1\%$ drops. $&gt;5\%$ indicates misconfigured security groups or active scanning. | **Tighten (2.0%):** Early indicator of network segmentation permission denial. |
+| `external_wan_egress_bytes` | External WAN Egress Bytes | 0 / 1 (Op: `&gt;=`) | 0 – 0 bytes | **Core Invariant (Zero WAN Egress):** In an air-gapped or zero-egress VPC, any external WAN packet is a critical security breach. | **Zero-Tolerance:** Must always remain 0 bytes. |
+
+#### 3.2 Virtual Networks &amp; Subnets (`virtual_networks_subnets`)
+- **Protocol:** Cloud Provider IPAM SDKs, DHCP lease tables.
+- **Primary Ticketing Queue:** `cloud-infra`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `subnet_ip_exhaustion_pct` | Subnet CIDR IP Pool Used (%) | 80.0% / 92.0% | 20.0% – 100.0% | Running out of private IP addresses prevents Kubernetes pods or serverless instances from scaling up. | **Tighten (70%):** Gives network team time to allocate secondary CIDR blocks. |
+| `nat_gw_snat_port_allocation_pct` | NAT Gateway SNAT Ports (%) | 75.0% / 90.0% | 20.0% – 100.0% | SNAT port exhaustion (64k ports per IP) causes outgoing connection dropouts to partner APIs. | **Tighten (65%):** Prevents connection drops during outbound traffic spikes. |
+
+#### 3.3 Firewalls &amp; Security Groups (`firewalls_security_groups`)
+- **Protocol:** Netfilter conntrack netlink socket, CloudWatch firewall metrics.
+- **Primary Ticketing Queue:** `cloud-infra` / `secops-threat`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `conntrack_table_saturation_pct` | Conntrack Table Saturation (%) | 75.0% / 88.0% | 20.0% – 100.0% | Netfilter conntrack table saturation causes kernel to drop all new incoming and outgoing TCP SYN packets. | **Tighten (65%):** Provides 15+ minutes lead time to increase `nf_conntrack_max`. |
+
+#### 3.4 Load Balancers (`load_balancers`)
+- **Protocol:** Envoy admin interface (`/stats/prometheus`), Cloud Load Balancer metrics.
+- **Primary Ticketing Queue:** `sre-tier1`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `target_response_time_p99_ms` | Target Group P99 Latency (ms) | 250 ms / 1000 ms | 10 ms – 10000 ms | P99 latency $&gt;250ms$ indicates backend thread starvation or slow database locks. | **Tighten (100 ms):** Enforces sub-second user experience. &lt;br&gt;**Relax (500 ms):** Tolerates complex database aggregation endpoints. |
+| `http_5xx_rate_pct` | HTTP 5xx Server Error Rate (%) | 0.50% / 2.00% | 0.05% – 20.0% | Google SRE standard: $&gt;0.5\%$ error rate consumes error budget rapidly. | **Tighten (0.10%):** Critical for financial transactional endpoints. |
+| `ssl_certificate_days_remaining` | TLS Days to Expiration (days) | 21 days / 7 days (Op: `&lt;`) | 1 – 365 days | Expired certificates cause instant browser lockout and API failure. | **Tighten (30 days):** Allows sufficient time for manual certificate renewal if automated ACME fails. |
+
+---
+
+### Layer 4: Virtualization &amp; Container Platforms
+
+#### 4.1 Hypervisors (`hypervisors`)
+- **Protocol:** VMware vSphere API (`pyVmomi`), libvirt daemon socket.
+- **Primary Ticketing Queue:** `k8s-platform` / `hw-ops-dc`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `cpu_ready_time_pct` | Hypervisor CPU Ready (%) | 3.0% / 7.0% | 0.5% – 25.0% | CPU ready $&gt;3\%$ indicates CPU overcommitment; virtual machines are waiting for physical CPU cores. | **Tighten (2.0%):** Essential for database VMs; ensures CPU scheduler never stalls queries. |
+| `memory_overcommit_pct` | Host RAM Overcommit (%) | 110.0% / 135.0% | 50.0% – 250.0% | Overcommit $&gt;110\%$ triggers hypervisor memory ballooning and ESXi/KVM swap paging. | **Tighten (100%):** Guarantees zero memory ballooning. &lt;br&gt;**Relax (125%):** Standard for stateless web VM clusters. |
+
+#### 4.2 Container Orchestration: Cluster Health (`container_orchestration_cluster`)
+- **Protocol:** Kubernetes API Server (`/metrics`), ETCD client metrics, Prometheus Node Exporter.
+- **Primary Ticketing Queue:** `k8s-platform`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `etcd_disk_fsync_p99_ms` | ETCD WAL Disk fsync P99 (ms) | 10.0 ms / 25.0 ms | 1.0 ms – 100.0 ms | ETCD requires fast disk commits to maintain Raft consensus. fsync $&gt;10ms$ causes Raft leader elections. | **Tighten (5.0 ms):** Ensures resilient Kubernetes control plane. Requires dedicated NVMe SSDs. |
+| `api_server_latency_p99_ms` | API Server P99 Latency (ms) | 500 ms / 2000 ms | 50 ms – 10000 ms | High API server latency causes Kubelet sync timeouts and pod admission bottlenecks. | **Tighten (200 ms):** Enforces snappy deployment reconciliation. |
+
+#### 4.3 Container Orchestration: Workloads (`container_orchestration_workloads`)
+- **Protocol:** Kube-state-metrics, cgroup v2 controller interface (`/sys/fs/cgroup`).
+- **Primary Ticketing Queue:** `k8s-platform` / `sre-tier1`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `crashloopbackoff_count` | Containers in CrashLoopBackOff | 1 / 5 (Op: `&gt;=`) | 0 – 50 containers | Indicates application crashes on startup (bad configuration, failed database connection). | **Non-negotiable:** Must alert immediately on 1 container failing in production. |
+| `oom_killed_containers_hour` | OOMKilled Terminations | 1 / 3 (Op: `&gt;=`) | 0 – 50 events/hr | Container exceeded its Kubernetes memory limit and was killed with SIGKILL (exit code 137). | **Tighten (1 event):** Proactively highlights pods needing memory limit increases. |
+
+---
+
+### Layer 5: Middleware, Databases &amp; Storage Layers
+
+#### 5.1 Oracle Database 19c / 21c RAC (`databases_oracle`)
+- **Protocol:** Oracle Net TNS, `v$sysmetric`, `v$session`, `v$system_event`, AWR (Port 1521).
+- **Primary Ticketing Queue:** `dba-team`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `sga_buffer_cache_hit_pct` | SGA Buffer Cache Hit Ratio (%) | 95.0% / 90.0% (Op: `&lt;`) | 50.0% – 100.0% | In OLTP systems, $&gt;95\%$ of block reads should resolve from memory buffer cache. Lower causes physical disk I/O bottlenecks. | **Tighten (97%):** Detects missing indexes or rogue full-table scans early. May fire during RMAN backups. &lt;br&gt;**Relax (88%):** Suitable for Data Guard read-only reporting standby. |
+| `pga_cache_hit_pct` | PGA Workarea Hit Ratio (%) | 90.0% / 80.0% (Op: `&lt;`) | 40.0% – 100.0% | Measures percentage of workarea sorts and hash joins executed purely in memory without spilling to TEMP. | **Tighten (93%):** Ensures in-memory sorts; prevents disk I/O churn on temporary tablespaces. |
+| `active_sessions_pct_processes` | Active Sessions vs PROCESSES (%) | 75.0% / 90.0% | 10.0% – 100.0% | Prevents fatal `ORA-00018` (max sessions exceeded) and `ORA-00020` (max processes exceeded). | **Tighten (65%):** Gives DBAs 30+ min to kill idle/blocking sessions. &lt;br&gt;**Relax (85%):** Leaves narrow margin during connection storms. |
+| `redo_log_space_wait_ms` | Redo Log Allocation Wait (ms) | 10.0 ms / 50.0 ms | 0.0 ms – 500.0 ms | &#x27;log buffer space&#x27; wait events block all DML commits across RAC instances. | **Tighten (5.0 ms):** Enforces sub-millisecond commit latency; requires high-speed NVMe redo logs. |
+| `archiver_lag_minutes` | Data Guard Standby Lag (min) | 5.0 min / 15.0 min | 0.0 min – 120.0 min | Data Guard synchronization lag represents potential data loss (RPO) in disaster failover. | **Tighten (2.0 min):** Enforces near-zero RPO SLA across primary and standby datacenters. |
+| `tablespace_used_pct` | Primary Tablespace Used (%) | 85.0% / 95.0% | 50.0% – 100.0% | Prevents `ORA-01653` (unable to extend table). 85% warning provides 3-5 days to allocate storage. | **Tighten (80%):** Proactive SAN provisioning notice. &lt;br&gt;**Relax (90%):** Maximizes storage capital efficiency. |
+
+#### 5.2 Microsoft SQL Server 2019 / 2022 (`databases_mssql`)
+- **Protocol:** TDS, `sys.dm_os_wait_stats`, `sys.dm_os_performance_counters`, `dm_hadr` (Port 1433).
+- **Primary Ticketing Queue:** `dba-team`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `buffer_cache_hit_ratio_pct` | Buffer Cache Hit Ratio (%) | 95.0% / 90.0% (Op: `&lt;`) | 50.0% – 100.0% | Percentage of pages found in the buffer pool without needing to read from physical disk. | **Tighten (97%):** Alerts quickly if memory pressure forces cached pages out. |
+| `page_life_expectancy_sec` | Page Life Expectancy (PLE) (s) | 300 s / 120 s (Op: `&lt;`) | 30 s – 3600 s | Number of seconds a page stays in the buffer pool. Baseline rule of thumb: 300s per 4GB of buffer RAM. | **Tighten (600 s):** Catches internal SQL memory pressure early. &lt;br&gt;**Relax (180 s):** Tolerates index maintenance jobs. |
+| `user_connections_pct_max` | Worker Connections % Max | 80.0% / 92.0% | 20.0% – 100.0% | Prevents thread pool exhaustion where new client connections fail with error 17809. | **Tighten (70%):** Provides lead time to adjust application connection pool max sizes. |
+| `alwayson_redo_queue_kb` | Always On AG Redo Queue (KB) | 50,000 KB / 250,000 KB | 0 – 1,000,000 KB | Volume of log records waiting to be redone on secondary replicas. High redo queue delays failover cutover. | **Tighten (20,000 KB):** Ensures instantaneous replica failover readiness. |
+| `log_file_used_pct` | Transaction Log Space Used (%) | 80.0% / 92.0% | 30.0% – 100.0% | A full transaction log (.ldf) halts all database write operations (error 9002). | **Tighten (70%):** Verifies log backup jobs or replication log readers are not stalling. |
+
+#### 5.3 Relational &amp; NoSQL Databases (`databases_relational_nosql`)
+- **Protocol:** PostgreSQL `pg_stat_activity`, MySQL `performance_schema`, TiDB PD API, Cassandra JMX.
+- **Primary Ticketing Queue:** `dba-team`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `conn_pool_saturation_pct` | Connection Pool Saturation (%) | 80.0% / 92.0% | 20.0% – 100.0% | Above 80% saturation, connection acquisition latency exhibits exponential Erlang C delays. | **Tighten (70%):** Early warning for read replica offloading. &lt;br&gt;**Relax (88%):** Tolerates brief spike traffic. |
+| `deadlocks_per_hour` | Transaction Deadlock Events | 1 / 5 (Op: `&gt;=`) | 0 – 50 events/hr | Deadlocks cause transactions to be rolled back with serialization errors. | **Tighten (1 event):** Proactively highlights problematic application transaction isolation levels. |
+| `replication_lag_seconds` | Replica Lag (seconds) | 2.0 s / 10.0 s | 0.01 s – 120.0 s | Follower replication lag leads to stale reads and prolonged failover RPO. | **Tighten (1.0 s):** Enforces strict read-your-writes consistency. |
+
+#### 5.4 Messaging &amp; Queues (`messaging_queues`)
+- **Protocol:** Kafka AdminClient, RabbitMQ Management API, AWS SQS Attributes.
+- **Primary Ticketing Queue:** `dba-team` / `sre-tier1`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `consumer_lag_records` | Kafka Consumer Group Lag | 5,000 / 25,000 | 100 – 1,000,000 | Growing consumer lag indicates consumers cannot keep pace with producer throughput. | **Tighten (2,000):** Catches consumer pod stalls early. &lt;br&gt;**Relax (50,000):** Tolerates batch consumer schedules. |
+| `under_replicated_partitions` | Under-Replicated Partitions | 1 / 2 (Op: `&gt;=`) | 0 – 100 partitions | Indicates one or more Kafka broker replicas have fallen out of the In-Sync Replicas (ISR) set. | **Non-negotiable:** Must alert immediately on 1 URP to prevent data loss. |
+
+#### 5.5 In-Memory Caches (`caches`)
+- **Protocol:** Redis `INFO`, Memcached `stats`.
+- **Primary Ticketing Queue:** `sre-tier1`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `memory_fragmentation_ratio` | Redis Memory Fragmentation | 1.50 / 2.00 | 0.80 – 3.00 | Ratio of RSS memory allocated by OS to memory used by Redis. $&gt;1.8$ indicates memory allocator fragmentation. | **Tighten (1.40):** Proactive trigger for jemalloc active defragmentation. |
+| `evicted_keys_sec` | Evicted Keys Velocity (keys/s) | 50 / 250 | 0 – 5000 keys/s | Keys are being evicted due to `maxmemory` pressure, degrading cache hit efficiency. | **Tighten (10 keys/s):** Ensures cache size matches active dataset working set. |
+
+---
+
+### Layer 6: Application &amp; Process Layer (APM &amp; Distributed Tracing)
+
+#### 6.1 Application Performance Monitoring (`application_performance_apm`)
+- **Protocol:** OTLP gRPC (Port 4317), W3C TraceContext.
+- **Primary Ticketing Queue:** `sre-tier1`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `p99_latency_ms` | P99 Tail Latency (ms) | 50.0 ms / 150.0 ms | 5.0 ms – 5000.0 ms | Measures the slowest 1% of transactions. Directly correlates with customer churn and SLA penalties. | **Tighten (25.0 ms):** Enforces ultra-snappy microservice latency. &lt;br&gt;**Relax (200.0 ms):** Suitable for complex search/checkout endpoints. |
+| `error_rate_pct` | HTTP 5xx / Exception Rate (%) | 1.00% / 5.00% | 0.05% – 20.0% | Error rate $&gt;1.0\%$ rapidly consumes 99.9% service SLA error budgets. | **Tighten (0.25%):** Immediate alert for zero-tolerance payment systems. |
+
+#### 6.2 Runtime Metrics (`runtime_metrics`)
+- **Protocol:** JVM JMX, Go runtime metrics, Node.js event loop inspector.
+- **Primary Ticketing Queue:** `sre-tier1`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `jvm_gc_pause_duration_ms` | JVM Stop-The-World GC Pause (ms) | 250 ms / 1000 ms | 10 ms – 5000 ms | Long GC pauses freeze all threads, causing health-check timeouts and microservice disconnects. | **Tighten (100 ms):** Enforces modern low-latency collectors (ZGC, Shenandoah). |
+| `node_event_loop_lag_ms` | Node.js Event Loop Lag (ms) | 20.0 ms / 100.0 ms | 1.0 ms – 500.0 ms | Event loop lag $&gt;20ms$ indicates synchronous CPU-heavy work is blocking asynchronous I/O execution. | **Tighten (10.0 ms):** Prevents request queuing in Node.js services. |
+
+---
+
+### Layer 7: Logs, Events &amp; Security (SIEM / Auditing)
+
+#### 7.1 Centralized Logging (`centralized_logging`)
+- **Protocol:** Vector / Fluentbit / Rsyslog forwarding, local regex indexer.
+- **Primary Ticketing Queue:** `secops-threat`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `critical_error_logs_sec` | Panic / Fatal Error Velocity | 5 / 25 (Op: `&gt;=`) | 0 – 500 logs/s | Spike in panic or fatal logs indicates uncaught exception storm or service crash loop. | **Tighten (1 log/s):** Catches sporadic fatal errors immediately. |
+
+#### 7.2 Audit &amp; IAM Monitoring (`audit_iam_monitoring`)
+- **Protocol:** Linux `auditd`, Windows Security Log (`EventID 4624/4625`), CloudTrail.
+- **Primary Ticketing Queue:** `secops-threat`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `failed_root_logins_min` | Failed Root / Admin Logins | 3 / 8 (Op: `&gt;=`) | 0 – 50 attempts | Multiple failed logins within a minute indicate active brute-force or credential stuffing. | **Tighten (1 attempt):** Strict security policy for hardened bastion hosts. |
+| `unauthorized_sudo_attempts` | Privilege Escalation Attempts | 1 / 3 (Op: `&gt;=`) | 0 – 20 events | Indicates unauthorized users attempting sudo or exploiting setuid binaries. | **Non-negotiable:** Must alert immediately on 1 event. |
+
+#### 7.3 Security &amp; Zero-Egress Compliance (`security_compliance`)
+- **Protocol:** Local kernel eBPF socket filter, FIM SHA-256 hash table.
+- **Primary Ticketing Queue:** `secops-threat`
+
+| Metric Key | Name &amp; Description | Default Warn / Crit | Validation Bounds | Rationale for Default | Guiding Pros &amp; Cons |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `ebpf_blocked_wan_packets` | Intercepted External WAN Packets | 1 / 1 (Op: `&gt;=`) | 0 – 0 packets | **Theorem 2 Zero-Egress Guarantee:** Any attempt by an in-VPC process to send packets to a public WAN IP is blocked by eBPF and must fire a P0 security incident. | **Zero-Tolerance:** Must always remain 0. Non-zero triggers immediate host isolation. |
+| `fim_checksum_drift_files` | Binary Checksum Drift Files | 1 / 1 (Op: `&gt;=`) | 0 – 0 files | Modifying files in `/bin`, `/sbin`, `/usr/bin` indicates malware, rootkits, or unauthorized binary tampering. | **Zero-Tolerance:** Immediate P0 security incident. |
+
+---
+
+## 5. Collector CLI Usage &amp; Execution Guide
+
+### Single-Command Sweeps
+Run the full 7-layer collector suite locally:
+```bash
+# Sweep all 7 layers (Zero-Egress verified)
+python scripts/run_fullstack_collectors.py
+
+# Sweep only Layer 1 (Physical DC) and Layer 5 (Databases &amp; Middleware)
+python scripts/run_fullstack_collectors.py -l 1 -l 5
+
+# Export sweep telemetry to JSON without printing to stdout
+python scripts/run_fullstack_collectors.py -o /tmp/telemetry-sweep.json -q
+```
+
+### Windows PowerShell Launcher
+```powershell
+# Run all layers
+.\scripts\run_fullstack_collectors.ps1
+
+# Run specific layers (e.g. 1, 5)
+.\scripts\run_fullstack_collectors.ps1 -Layers &quot;1,5&quot;
+```
+
+### Linux Shell Launcher
+```bash
+# Run all layers
+./scripts/run_fullstack_collectors.sh
+
+# Run specific layers
+./scripts/run_fullstack_collectors.sh &quot;1,5,7&quot;
+```
+
+### Live REST API Endpoint
+Trigger an on-demand sweep via HTTP within the VPC:
+```bash
+curl -X POST http://127.0.0.1:8000/v1/telemetry/collectors/sweep \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;layers&quot;: [1, 5], &quot;spool_to_ticketing&quot;: true}&#x27;
+```
+
+---
+
+## 6. Document History &amp; Approvals
+
+| Version | Date | Author / Role | Changes |
+| :--- | :--- | :--- | :--- |
+| `v1.0.0` | 2026-10-29 | Core SRE Architecture Team | Initial comprehensive 7-layer metrics catalog, Oracle &amp; MS SQL Server monitoring specifications, guiding threshold pros/cons analysis, and enterprise ticketing tool zero-egress spool integration. |
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

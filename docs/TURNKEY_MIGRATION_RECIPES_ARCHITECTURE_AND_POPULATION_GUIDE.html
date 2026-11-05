@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - TURNKEY_MIGRATION_RECIPES_ARCHITECTURE_AND_POPULATION_GUIDE.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/TURNKEY_MIGRATION_RECIPES_ARCHITECTURE_AND_POPULATION_GUIDE.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="TURNKEY_MIGRATION_RECIPES_ARCHITECTURE_AND_POPULATION_GUIDE.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="turnkey-migration-recipes-architecture-population-engine-specification"><dcouplr/> Turnkey Migration Recipes: Architecture &amp; Population Engine Specification</h1>
+<p><strong>Document ID:</strong> <code>SPEC-TURNKEY-RECIPES-001</code><br />
+<strong>Classification:</strong> Core System Architecture &amp; Operational Guide<br />
+<strong>Product Generation:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Editions 1 &amp; 2<br />
+<strong>Target Audience:</strong> Cloud Platform Engineers, Enterprise SREs, Solution Architects, SecOps<br />
+<strong>Implementation References:</strong> <code>migration_tools/api/app.py</code>, <code>recipes/</code>, <code>migration_tools/api/static/compiler.js</code></p>
+<hr />
+<h2 id="1-executive-summary-what-are-recipes-in">1. Executive Summary: What Are Recipes in <dcouplr/>?</h2>
+<p>In the <strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code></strong> ecosystem, a <strong>Recipe</strong> (formally: <em>Turnkey Migration Recipe</em>) is a <strong>modular, self-contained, and deterministic modernization blueprint</strong>. It encapsulates the exact source parsing, intermediate graph transformation, and target cloud emission required to migrate proprietary monitoring rules, alerting definitions, network ingress, or infrastructure-as-code constructs into open cloud-native standards.</p>
+<h3 id="core-guarantees">Core Guarantees:</h3>
+<ol>
+<li><strong>100% Deterministic Parity ($\Phi(q) \equiv \Psi(\text{Target})$):</strong> No probabilistic or hallucinatory LLMs in the execution path. All transformations are verified against formal abstract syntax tree (AST) grammar rules.</li>
+<li><strong>Zero WAN Egress ($0.00 Cloud Bill):</strong> All transpilation runs in volatile memory locally or inside the private VPC perimeter. No data or telemetry ever leaves the customer boundary.</li>
+<li><strong>Turnkey Executability:</strong> Every recipe ships with verified sample input files, target output manifests, and standalone execution scripts.</li>
+</ol>
+<hr />
+<h2 id="2-standard-recipe-anatomy-on-disk-bundle">2. Standard Recipe Anatomy (On-Disk Bundle)</h2>
+<p>Every recipe is stored as an independent directory under the root <code>recipes/</code> folder:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">recipes/&lt;recipe_id&gt;/
+├── recipe.json                 # Machine-readable metadata &amp; capability manifest
+├── README.md                   # Human-readable engineering SOP &amp; CLI execution guide
+├── input_&lt;source_type&gt;.*       # Real-world sanitized input sample (JSON, HCL, YAML)
+├── output_&lt;target_type&gt;.*      # Mathematically proven target cloud manifest
+└── migrate.py                  # Standalone executable conversion script
+</code></pre></div>
+<h3 id="manifest-schema-recipejson">Manifest Schema (<code>recipe.json</code>):</h3>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;id&quot;: &quot;datadog_to_grafana11&quot;,
+  &quot;name&quot;: &quot;Datadog Monitors to Grafana 11 Unified Alerting&quot;,
+  &quot;source_vendor&quot;: &quot;datadog&quot;,
+  &quot;target_platform&quot;: &quot;grafana&quot;,
+  &quot;category&quot;: &quot;Observability Migration&quot;,
+  &quot;description&quot;: &quot;Transpiles Datadog metric alerts and dead-man switches into native Grafana 11 provisioning rules with mathematical parity.&quot;
+}
+</code></pre></div>
+<hr />
+<h2 id="3-how-are-recipes-populated-the-3-population-engines">3. How Are Recipes Populated? (The 3 Population Engines)</h2>
+<p>Recipes are dynamically populated, registered, and served across three distinct system layers:</p>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">flowchart TD
+    subgraph Disk[&quot;1. Disk Auto-Discovery Engine&quot;]
+        A[&quot;recipes/ Directory on Disk&quot;] --&gt;|Scans Folders| B[&quot;Reads recipe.json / README.md&quot;]
+        B --&gt;|Loads Samples| C[&quot;GET /v1/recipes Catalog API&quot;]
+    end
+
+    subgraph API[&quot;2. Dynamic Registration API&quot;]
+        D[&quot;POST /v1/recipes/register&quot;] --&gt;|Saves Manifest &amp; Code| A
+        D --&gt;|Persists Custom Recipes| E[&quot;recipes/{new_id}/&quot;]
+    end
+
+    subgraph UI[&quot;3. Frontend Execution &amp; UI Population&quot;]
+        C --&gt;|Fetches Catalog| F[&quot;Compiler Studio Modal (/compiler)&quot;]
+        F --&gt;|Click 'Load in Studio'| G[&quot;Populates Left Editor &amp; Runs Translation&quot;]
+        C --&gt;|Documentation Sync| H[&quot;Tech Docs Portal (/docs#recipe-datadog)&quot;]
+        C --&gt;|Governance Audit| I[&quot;Operations Portal (/configuration)&quot;]
+    end
+</code></pre></div>
+<h3 id="engine-1-disk-auto-discovery-engine-get-v1recipes">Engine 1: Disk Auto-Discovery Engine (<code>GET /v1/recipes</code>)</h3>
+<ul>
+<li><strong>Location:</strong> <code>migration_tools/api/app.py</code></li>
+<li><strong>Behavior:</strong>
+<ol>
+<li>On API startup or upon receipt of <code>GET /v1/recipes</code>, the engine scans the <code>recipes/</code> directory.</li>
+<li>For every folder, it inspects <code>recipe.json</code> or falls back to parsing the first heading in <code>README.md</code>.</li>
+<li>It auto-detects sample input files (<code>input_*.*</code>) and sample outputs (<code>output_*.*</code>).</li>
+<li>Returns the consolidated catalog with category tags, source vendors, target platforms, and execution scripts.</li>
+</ol>
+</li>
+</ul>
+<h3 id="engine-2-dynamic-custom-recipe-registration-api-post-v1recipesregister">Engine 2: Dynamic Custom Recipe Registration API (<code>POST /v1/recipes/register</code>)</h3>
+<ul>
+<li><strong>Endpoint:</strong> <code>POST /v1/recipes/register</code> (Tier 3 Admin / Developer API)</li>
+<li><strong>Payload:</strong><div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;id&quot;: &quot;datadog_apm_to_tempo&quot;,
+  &quot;name&quot;: &quot;Datadog APM Tracing to Grafana Tempo&quot;,
+  &quot;source_vendor&quot;: &quot;datadog&quot;,
+  &quot;target_platform&quot;: &quot;tempo&quot;,
+  &quot;category&quot;: &quot;APM Modernization&quot;,
+  &quot;description&quot;: &quot;Translates Datadog span filters into OpenTelemetry trace rules.&quot;,
+  &quot;sample_input&quot;: &quot;{\&quot;trace_filter\&quot;: \&quot;service:billing AND status:error\&quot;}&quot;,
+  &quot;sample_output&quot;: &quot;traces:\n  filter: service.name = 'billing' AND status.code = ERROR&quot;
+}
+</code></pre></div>
+</li>
+<li><strong>Persistence:</strong> The API writes a new subfolder under <code>recipes/</code> containing <code>recipe.json</code>, <code>input_sample.*</code>, <code>output_sample.*</code>, and <code>README.md</code>, making the new recipe immediately available across all tools.</li>
+</ul>
+<h3 id="engine-3-interactive-ui-studio-population-compilerjs">Engine 3: Interactive UI Studio Population (<code>compiler.js</code>)</h3>
+<ul>
+<li><strong>Location:</strong> <code>migration_tools/api/static/compiler.js</code></li>
+<li><strong>Behavior:</strong>
+<ol>
+<li>When an engineer clicks the <strong><code>Recipes</code></strong> button in the Compiler Studio toolbar, the modal triggers <code>refreshRecipesFromApi()</code>.</li>
+<li>Cards are dynamically rendered in <code>#recipes-grid-container</code>.</li>
+<li>Clicking <strong><code>Load in Studio →</code></strong>:
+<ul>
+<li>Sets the Source Language dropdown to the recipe's source (e.g., <code>datadog</code>).</li>
+<li>Sets the Target Platform dropdown (e.g., <code>grafana</code>).</li>
+<li>Injects the recipe's sample input into the left editor.</li>
+<li>Immediately triggers <code>runTranslation()</code>, rendering the compiled result on the right pane in $&lt; 15$ms.</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<hr />
+<h2 id="4-authoritative-built-in-recipe-catalog">4. Authoritative Built-In Recipe Catalog</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">#</th>
+<th style="text-align:left">Recipe ID</th>
+<th style="text-align:left">Source Vendor</th>
+<th style="text-align:left">Target Platform</th>
+<th style="text-align:left">Operational Category</th>
+<th style="text-align:left">Primary Benefit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><strong>1</strong></td>
+<td style="text-align:left"><code>datadog_to_grafana11</code></td>
+<td style="text-align:left">Datadog Monitor JSON</td>
+<td style="text-align:left">Grafana 11 Alerting YAML</td>
+<td style="text-align:left">Observability Migration</td>
+<td style="text-align:left">Saves $5–$23/host SaaS fee; compiles multi-window alerts.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>2</strong></td>
+<td style="text-align:left"><code>newrelic_to_prometheus</code></td>
+<td style="text-align:left">New Relic NRQL Alerts</td>
+<td style="text-align:left">Prometheus Alertmanager</td>
+<td style="text-align:left">Observability Migration</td>
+<td style="text-align:left">Translates NRQL <code>FACET</code> queries into PromQL rate vectors.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>3</strong></td>
+<td style="text-align:left"><code>cloudwatch_to_grafana11</code></td>
+<td style="text-align:left">AWS CloudWatch Alarms</td>
+<td style="text-align:left">OpenTelemetry / PromQL</td>
+<td style="text-align:left">Cloud Telemetry Re-Platforming</td>
+<td style="text-align:left">Converts EC2/RDS statistics into native Prometheus recording rules.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>4</strong></td>
+<td style="text-align:left"><code>azure_monitor_to_grafana11</code></td>
+<td style="text-align:left">Azure Monitor / KQL</td>
+<td style="text-align:left">Grafana 11 YAML</td>
+<td style="text-align:left">Observability Migration</td>
+<td style="text-align:left">Translates Azure metric conditions &amp; ISO 8601 evaluation windows.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>5</strong></td>
+<td style="text-align:left"><code>cloudformation_to_opentofu_gcp</code></td>
+<td style="text-align:left">AWS CloudFormation/TF</td>
+<td style="text-align:left">OpenTofu GCP Landing Zone</td>
+<td style="text-align:left">Infrastructure Modernization</td>
+<td style="text-align:left">Synthesizes non-overlapping VPC CIDRs, subnets, and routes.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>6</strong></td>
+<td style="text-align:left"><code>cloud_run_direct_vpc_egress</code></td>
+<td style="text-align:left">Serverless VPC Access</td>
+<td style="text-align:left">Cloud Run Direct VPC Egress</td>
+<td style="text-align:left">FinOps Cost Downscaling</td>
+<td style="text-align:left"><strong>Eliminates $30–$70/mo idle connector VMs</strong> and cuts latency.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>7</strong></td>
+<td style="text-align:left"><code>f5_and_aws_alb_to_gcp_load_balancer</code></td>
+<td style="text-align:left">F5 BIG-IP &amp; AWS ALB</td>
+<td style="text-align:left">GCP Anycast Global ALB</td>
+<td style="text-align:left">Edge Ingress Modernization</td>
+<td style="text-align:left">Compiles virtual servers and iRules into Anycast HTTP(S) load balancers.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>8</strong></td>
+<td style="text-align:left"><code>datadog_slo_to_prometheus_rules</code></td>
+<td style="text-align:left">Datadog Multi-Burn SLO</td>
+<td style="text-align:left">Prometheus Alert Rules</td>
+<td style="text-align:left">Reliability &amp; SRE Engineering</td>
+<td style="text-align:left">Implements Google SRE Chapter 5 multi-burn-rate alerting.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>9</strong></td>
+<td style="text-align:left"><code>promql_standardization_azure_arc_anthos</code></td>
+<td style="text-align:left">Disparate PromQL</td>
+<td style="text-align:left">Standardized PromQL</td>
+<td style="text-align:left">Cross-Cloud Governance</td>
+<td style="text-align:left">Normalizes syntax drift across hybrid-cloud footprints.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>10</strong></td>
+<td style="text-align:left"><code>prometheus_to_datadog</code></td>
+<td style="text-align:left">Prometheus Alert Rules</td>
+<td style="text-align:left">Datadog Monitors (JSON)</td>
+<td style="text-align:left">2-Way Reverse Portability</td>
+<td style="text-align:left">Enables bidirectional rollback protection.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-execution-methods">5. Execution Methods</h2>
+<h3 id="method-1-web-compiler-studio-zero-cli-setup">Method 1: Web Compiler Studio (Zero CLI Setup)</h3>
+<p>Navigate to <a href="http://localhost:8000/compiler"><strong><code>/compiler</code></strong></a> $\rightarrow$ click <strong><code>Recipes</code></strong> $\rightarrow$ click <strong><code>Load in Studio →</code></strong>.</p>
+<h3 id="method-2-python-command-line">Method 2: Python Command Line</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">python recipes/datadog_to_grafana11/migrate.py
+</code></pre></div>
+<h3 id="method-3-backend-api-runner">Method 3: Backend API Runner</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -X POST http://localhost:8000/v1/recipes/cloud_run_direct_vpc_egress/run \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+</code></pre></div>
+<p>Response:</p>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;status&quot;: &quot;success&quot;,
+  &quot;recipe_id&quot;: &quot;cloud_run_direct_vpc_egress&quot;,
+  &quot;duration_ms&quot;: 14.2,
+  &quot;artifact&quot;: &quot;// Synthesized OpenTofu Google Cloud Run Direct VPC Egress...&quot;
+}
+</code></pre></div>
+</div>
+      <pre id="raw-view"><code># &lt;dcouplr/&gt; Turnkey Migration Recipes: Architecture &amp; Population Engine Specification
+
+**Document ID:** `SPEC-TURNKEY-RECIPES-001`  
+**Classification:** Core System Architecture &amp; Operational Guide  
+**Product Generation:** `&lt;dcouplr/&gt;` Editions 1 &amp; 2  
+**Target Audience:** Cloud Platform Engineers, Enterprise SREs, Solution Architects, SecOps  
+**Implementation References:** ``migration_tools/api/app.py``, ``recipes/``, ``migration_tools/api/static/compiler.js``
+
+---
+
+## 1. Executive Summary: What Are Recipes in &lt;dcouplr/&gt;?
+
+In the **`&lt;dcouplr/&gt;`** ecosystem, a **Recipe** (formally: *Turnkey Migration Recipe*) is a **modular, self-contained, and deterministic modernization blueprint**. It encapsulates the exact source parsing, intermediate graph transformation, and target cloud emission required to migrate proprietary monitoring rules, alerting definitions, network ingress, or infrastructure-as-code constructs into open cloud-native standards.
+
+### Core Guarantees:
+1. **100% Deterministic Parity ($\Phi(q) \equiv \Psi(\text{Target})$):** No probabilistic or hallucinatory LLMs in the execution path. All transformations are verified against formal abstract syntax tree (AST) grammar rules.
+2. **Zero WAN Egress ($0.00 Cloud Bill):** All transpilation runs in volatile memory locally or inside the private VPC perimeter. No data or telemetry ever leaves the customer boundary.
+3. **Turnkey Executability:** Every recipe ships with verified sample input files, target output manifests, and standalone execution scripts.
+
+---
+
+## 2. Standard Recipe Anatomy (On-Disk Bundle)
+
+Every recipe is stored as an independent directory under the root `recipes/` folder:
+
+```
+recipes/&lt;recipe_id&gt;/
+├── recipe.json                 # Machine-readable metadata &amp; capability manifest
+├── README.md                   # Human-readable engineering SOP &amp; CLI execution guide
+├── input_&lt;source_type&gt;.*       # Real-world sanitized input sample (JSON, HCL, YAML)
+├── output_&lt;target_type&gt;.*      # Mathematically proven target cloud manifest
+└── migrate.py                  # Standalone executable conversion script
+```
+
+### Manifest Schema (`recipe.json`):
+```json
+{
+  &quot;id&quot;: &quot;datadog_to_grafana11&quot;,
+  &quot;name&quot;: &quot;Datadog Monitors to Grafana 11 Unified Alerting&quot;,
+  &quot;source_vendor&quot;: &quot;datadog&quot;,
+  &quot;target_platform&quot;: &quot;grafana&quot;,
+  &quot;category&quot;: &quot;Observability Migration&quot;,
+  &quot;description&quot;: &quot;Transpiles Datadog metric alerts and dead-man switches into native Grafana 11 provisioning rules with mathematical parity.&quot;
+}
+```
+
+---
+
+## 3. How Are Recipes Populated? (The 3 Population Engines)
+
+Recipes are dynamically populated, registered, and served across three distinct system layers:
+
+```mermaid
+flowchart TD
+    subgraph Disk[&quot;1. Disk Auto-Discovery Engine&quot;]
+        A[&quot;recipes/ Directory on Disk&quot;] --&gt;|Scans Folders| B[&quot;Reads recipe.json / README.md&quot;]
+        B --&gt;|Loads Samples| C[&quot;GET /v1/recipes Catalog API&quot;]
+    end
+
+    subgraph API[&quot;2. Dynamic Registration API&quot;]
+        D[&quot;POST /v1/recipes/register&quot;] --&gt;|Saves Manifest &amp; Code| A
+        D --&gt;|Persists Custom Recipes| E[&quot;recipes/{new_id}/&quot;]
+    end
+
+    subgraph UI[&quot;3. Frontend Execution &amp; UI Population&quot;]
+        C --&gt;|Fetches Catalog| F[&quot;Compiler Studio Modal (/compiler)&quot;]
+        F --&gt;|Click &#x27;Load in Studio&#x27;| G[&quot;Populates Left Editor &amp; Runs Translation&quot;]
+        C --&gt;|Documentation Sync| H[&quot;Tech Docs Portal (/docs#recipe-datadog)&quot;]
+        C --&gt;|Governance Audit| I[&quot;Operations Portal (/configuration)&quot;]
+    end
+```
+
+### Engine 1: Disk Auto-Discovery Engine (`GET /v1/recipes`)
+* **Location:** ``migration_tools/api/app.py``
+* **Behavior:**
+  1. On API startup or upon receipt of `GET /v1/recipes`, the engine scans the `recipes/` directory.
+  2. For every folder, it inspects `recipe.json` or falls back to parsing the first heading in `README.md`.
+  3. It auto-detects sample input files (`input_*.*`) and sample outputs (`output_*.*`).
+  4. Returns the consolidated catalog with category tags, source vendors, target platforms, and execution scripts.
+
+### Engine 2: Dynamic Custom Recipe Registration API (`POST /v1/recipes/register`)
+* **Endpoint:** `POST /v1/recipes/register` (Tier 3 Admin / Developer API)
+* **Payload:**
+  ```json
+  {
+    &quot;id&quot;: &quot;datadog_apm_to_tempo&quot;,
+    &quot;name&quot;: &quot;Datadog APM Tracing to Grafana Tempo&quot;,
+    &quot;source_vendor&quot;: &quot;datadog&quot;,
+    &quot;target_platform&quot;: &quot;tempo&quot;,
+    &quot;category&quot;: &quot;APM Modernization&quot;,
+    &quot;description&quot;: &quot;Translates Datadog span filters into OpenTelemetry trace rules.&quot;,
+    &quot;sample_input&quot;: &quot;{\&quot;trace_filter\&quot;: \&quot;service:billing AND status:error\&quot;}&quot;,
+    &quot;sample_output&quot;: &quot;traces:\n  filter: service.name = &#x27;billing&#x27; AND status.code = ERROR&quot;
+  }
+  ```
+* **Persistence:** The API writes a new subfolder under `recipes/` containing `recipe.json`, `input_sample.*`, `output_sample.*`, and `README.md`, making the new recipe immediately available across all tools.
+
+### Engine 3: Interactive UI Studio Population (`compiler.js`)
+* **Location:** ``migration_tools/api/static/compiler.js``
+* **Behavior:**
+  1. When an engineer clicks the **`Recipes`** button in the Compiler Studio toolbar, the modal triggers `refreshRecipesFromApi()`.
+  2. Cards are dynamically rendered in `#recipes-grid-container`.
+  3. Clicking **`Load in Studio →`**:
+     - Sets the Source Language dropdown to the recipe&#x27;s source (e.g., `datadog`).
+     - Sets the Target Platform dropdown (e.g., `grafana`).
+     - Injects the recipe&#x27;s sample input into the left editor.
+     - Immediately triggers `runTranslation()`, rendering the compiled result on the right pane in $&lt; 15$ms.
+
+---
+
+## 4. Authoritative Built-In Recipe Catalog
+
+| # | Recipe ID | Source Vendor | Target Platform | Operational Category | Primary Benefit |
+| :-: | :--- | :--- | :--- | :--- | :--- |
+| **1** | `datadog_to_grafana11` | Datadog Monitor JSON | Grafana 11 Alerting YAML | Observability Migration | Saves $5–$23/host SaaS fee; compiles multi-window alerts. |
+| **2** | `newrelic_to_prometheus` | New Relic NRQL Alerts | Prometheus Alertmanager | Observability Migration | Translates NRQL `FACET` queries into PromQL rate vectors. |
+| **3** | `cloudwatch_to_grafana11` | AWS CloudWatch Alarms | OpenTelemetry / PromQL | Cloud Telemetry Re-Platforming | Converts EC2/RDS statistics into native Prometheus recording rules. |
+| **4** | `azure_monitor_to_grafana11` | Azure Monitor / KQL | Grafana 11 YAML | Observability Migration | Translates Azure metric conditions &amp; ISO 8601 evaluation windows. |
+| **5** | `cloudformation_to_opentofu_gcp`| AWS CloudFormation/TF | OpenTofu GCP Landing Zone | Infrastructure Modernization | Synthesizes non-overlapping VPC CIDRs, subnets, and routes. |
+| **6** | `cloud_run_direct_vpc_egress` | Serverless VPC Access | Cloud Run Direct VPC Egress | FinOps Cost Downscaling | **Eliminates $30–$70/mo idle connector VMs** and cuts latency. |
+| **7** | `f5_and_aws_alb_to_gcp_load_balancer`| F5 BIG-IP &amp; AWS ALB | GCP Anycast Global ALB | Edge Ingress Modernization | Compiles virtual servers and iRules into Anycast HTTP(S) load balancers. |
+| **8** | `datadog_slo_to_prometheus_rules`| Datadog Multi-Burn SLO | Prometheus Alert Rules | Reliability &amp; SRE Engineering | Implements Google SRE Chapter 5 multi-burn-rate alerting. |
+| **9** | `promql_standardization_azure_arc_anthos`| Disparate PromQL | Standardized PromQL | Cross-Cloud Governance | Normalizes syntax drift across hybrid-cloud footprints. |
+| **10**| `prometheus_to_datadog` | Prometheus Alert Rules | Datadog Monitors (JSON) | 2-Way Reverse Portability | Enables bidirectional rollback protection. |
+
+---
+
+## 5. Execution Methods
+
+### Method 1: Web Compiler Studio (Zero CLI Setup)
+Navigate to [**`/compiler`**](http://localhost:8000/compiler) $\rightarrow$ click **`Recipes`** $\rightarrow$ click **`Load in Studio →`**.
+
+### Method 2: Python Command Line
+```bash
+python recipes/datadog_to_grafana11/migrate.py
+```
+
+### Method 3: Backend API Runner
+```bash
+curl -X POST http://localhost:8000/v1/recipes/cloud_run_direct_vpc_egress/run \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+```
+Response:
+```json
+{
+  &quot;status&quot;: &quot;success&quot;,
+  &quot;recipe_id&quot;: &quot;cloud_run_direct_vpc_egress&quot;,
+  &quot;duration_ms&quot;: 14.2,
+  &quot;artifact&quot;: &quot;// Synthesized OpenTofu Google Cloud Run Direct VPC Egress...&quot;
+}
+```
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;dcouplr/&gt; Turnkey Migration Recipes: Architecture &amp; Population Engine Specification
+
+**Document ID:** `SPEC-TURNKEY-RECIPES-001`  
+**Classification:** Core System Architecture &amp; Operational Guide  
+**Product Generation:** `&lt;dcouplr/&gt;` Editions 1 &amp; 2  
+**Target Audience:** Cloud Platform Engineers, Enterprise SREs, Solution Architects, SecOps  
+**Implementation References:** ``migration_tools/api/app.py``, ``recipes/``, ``migration_tools/api/static/compiler.js``
+
+---
+
+## 1. Executive Summary: What Are Recipes in &lt;dcouplr/&gt;?
+
+In the **`&lt;dcouplr/&gt;`** ecosystem, a **Recipe** (formally: *Turnkey Migration Recipe*) is a **modular, self-contained, and deterministic modernization blueprint**. It encapsulates the exact source parsing, intermediate graph transformation, and target cloud emission required to migrate proprietary monitoring rules, alerting definitions, network ingress, or infrastructure-as-code constructs into open cloud-native standards.
+
+### Core Guarantees:
+1. **100% Deterministic Parity ($\Phi(q) \equiv \Psi(\text{Target})$):** No probabilistic or hallucinatory LLMs in the execution path. All transformations are verified against formal abstract syntax tree (AST) grammar rules.
+2. **Zero WAN Egress ($0.00 Cloud Bill):** All transpilation runs in volatile memory locally or inside the private VPC perimeter. No data or telemetry ever leaves the customer boundary.
+3. **Turnkey Executability:** Every recipe ships with verified sample input files, target output manifests, and standalone execution scripts.
+
+---
+
+## 2. Standard Recipe Anatomy (On-Disk Bundle)
+
+Every recipe is stored as an independent directory under the root `recipes/` folder:
+
+```
+recipes/&lt;recipe_id&gt;/
+├── recipe.json                 # Machine-readable metadata &amp; capability manifest
+├── README.md                   # Human-readable engineering SOP &amp; CLI execution guide
+├── input_&lt;source_type&gt;.*       # Real-world sanitized input sample (JSON, HCL, YAML)
+├── output_&lt;target_type&gt;.*      # Mathematically proven target cloud manifest
+└── migrate.py                  # Standalone executable conversion script
+```
+
+### Manifest Schema (`recipe.json`):
+```json
+{
+  &quot;id&quot;: &quot;datadog_to_grafana11&quot;,
+  &quot;name&quot;: &quot;Datadog Monitors to Grafana 11 Unified Alerting&quot;,
+  &quot;source_vendor&quot;: &quot;datadog&quot;,
+  &quot;target_platform&quot;: &quot;grafana&quot;,
+  &quot;category&quot;: &quot;Observability Migration&quot;,
+  &quot;description&quot;: &quot;Transpiles Datadog metric alerts and dead-man switches into native Grafana 11 provisioning rules with mathematical parity.&quot;
+}
+```
+
+---
+
+## 3. How Are Recipes Populated? (The 3 Population Engines)
+
+Recipes are dynamically populated, registered, and served across three distinct system layers:
+
+```mermaid
+flowchart TD
+    subgraph Disk[&quot;1. Disk Auto-Discovery Engine&quot;]
+        A[&quot;recipes/ Directory on Disk&quot;] --&gt;|Scans Folders| B[&quot;Reads recipe.json / README.md&quot;]
+        B --&gt;|Loads Samples| C[&quot;GET /v1/recipes Catalog API&quot;]
+    end
+
+    subgraph API[&quot;2. Dynamic Registration API&quot;]
+        D[&quot;POST /v1/recipes/register&quot;] --&gt;|Saves Manifest &amp; Code| A
+        D --&gt;|Persists Custom Recipes| E[&quot;recipes/{new_id}/&quot;]
+    end
+
+    subgraph UI[&quot;3. Frontend Execution &amp; UI Population&quot;]
+        C --&gt;|Fetches Catalog| F[&quot;Compiler Studio Modal (/compiler)&quot;]
+        F --&gt;|Click &#x27;Load in Studio&#x27;| G[&quot;Populates Left Editor &amp; Runs Translation&quot;]
+        C --&gt;|Documentation Sync| H[&quot;Tech Docs Portal (/docs#recipe-datadog)&quot;]
+        C --&gt;|Governance Audit| I[&quot;Operations Portal (/configuration)&quot;]
+    end
+```
+
+### Engine 1: Disk Auto-Discovery Engine (`GET /v1/recipes`)
+* **Location:** ``migration_tools/api/app.py``
+* **Behavior:**
+  1. On API startup or upon receipt of `GET /v1/recipes`, the engine scans the `recipes/` directory.
+  2. For every folder, it inspects `recipe.json` or falls back to parsing the first heading in `README.md`.
+  3. It auto-detects sample input files (`input_*.*`) and sample outputs (`output_*.*`).
+  4. Returns the consolidated catalog with category tags, source vendors, target platforms, and execution scripts.
+
+### Engine 2: Dynamic Custom Recipe Registration API (`POST /v1/recipes/register`)
+* **Endpoint:** `POST /v1/recipes/register` (Tier 3 Admin / Developer API)
+* **Payload:**
+  ```json
+  {
+    &quot;id&quot;: &quot;datadog_apm_to_tempo&quot;,
+    &quot;name&quot;: &quot;Datadog APM Tracing to Grafana Tempo&quot;,
+    &quot;source_vendor&quot;: &quot;datadog&quot;,
+    &quot;target_platform&quot;: &quot;tempo&quot;,
+    &quot;category&quot;: &quot;APM Modernization&quot;,
+    &quot;description&quot;: &quot;Translates Datadog span filters into OpenTelemetry trace rules.&quot;,
+    &quot;sample_input&quot;: &quot;{\&quot;trace_filter\&quot;: \&quot;service:billing AND status:error\&quot;}&quot;,
+    &quot;sample_output&quot;: &quot;traces:\n  filter: service.name = &#x27;billing&#x27; AND status.code = ERROR&quot;
+  }
+  ```
+* **Persistence:** The API writes a new subfolder under `recipes/` containing `recipe.json`, `input_sample.*`, `output_sample.*`, and `README.md`, making the new recipe immediately available across all tools.
+
+### Engine 3: Interactive UI Studio Population (`compiler.js`)
+* **Location:** ``migration_tools/api/static/compiler.js``
+* **Behavior:**
+  1. When an engineer clicks the **`Recipes`** button in the Compiler Studio toolbar, the modal triggers `refreshRecipesFromApi()`.
+  2. Cards are dynamically rendered in `#recipes-grid-container`.
+  3. Clicking **`Load in Studio →`**:
+     - Sets the Source Language dropdown to the recipe&#x27;s source (e.g., `datadog`).
+     - Sets the Target Platform dropdown (e.g., `grafana`).
+     - Injects the recipe&#x27;s sample input into the left editor.
+     - Immediately triggers `runTranslation()`, rendering the compiled result on the right pane in $&lt; 15$ms.
+
+---
+
+## 4. Authoritative Built-In Recipe Catalog
+
+| # | Recipe ID | Source Vendor | Target Platform | Operational Category | Primary Benefit |
+| :-: | :--- | :--- | :--- | :--- | :--- |
+| **1** | `datadog_to_grafana11` | Datadog Monitor JSON | Grafana 11 Alerting YAML | Observability Migration | Saves $5–$23/host SaaS fee; compiles multi-window alerts. |
+| **2** | `newrelic_to_prometheus` | New Relic NRQL Alerts | Prometheus Alertmanager | Observability Migration | Translates NRQL `FACET` queries into PromQL rate vectors. |
+| **3** | `cloudwatch_to_grafana11` | AWS CloudWatch Alarms | OpenTelemetry / PromQL | Cloud Telemetry Re-Platforming | Converts EC2/RDS statistics into native Prometheus recording rules. |
+| **4** | `azure_monitor_to_grafana11` | Azure Monitor / KQL | Grafana 11 YAML | Observability Migration | Translates Azure metric conditions &amp; ISO 8601 evaluation windows. |
+| **5** | `cloudformation_to_opentofu_gcp`| AWS CloudFormation/TF | OpenTofu GCP Landing Zone | Infrastructure Modernization | Synthesizes non-overlapping VPC CIDRs, subnets, and routes. |
+| **6** | `cloud_run_direct_vpc_egress` | Serverless VPC Access | Cloud Run Direct VPC Egress | FinOps Cost Downscaling | **Eliminates $30–$70/mo idle connector VMs** and cuts latency. |
+| **7** | `f5_and_aws_alb_to_gcp_load_balancer`| F5 BIG-IP &amp; AWS ALB | GCP Anycast Global ALB | Edge Ingress Modernization | Compiles virtual servers and iRules into Anycast HTTP(S) load balancers. |
+| **8** | `datadog_slo_to_prometheus_rules`| Datadog Multi-Burn SLO | Prometheus Alert Rules | Reliability &amp; SRE Engineering | Implements Google SRE Chapter 5 multi-burn-rate alerting. |
+| **9** | `promql_standardization_azure_arc_anthos`| Disparate PromQL | Standardized PromQL | Cross-Cloud Governance | Normalizes syntax drift across hybrid-cloud footprints. |
+| **10**| `prometheus_to_datadog` | Prometheus Alert Rules | Datadog Monitors (JSON) | 2-Way Reverse Portability | Enables bidirectional rollback protection. |
+
+---
+
+## 5. Execution Methods
+
+### Method 1: Web Compiler Studio (Zero CLI Setup)
+Navigate to [**`/compiler`**](http://localhost:8000/compiler) $\rightarrow$ click **`Recipes`** $\rightarrow$ click **`Load in Studio →`**.
+
+### Method 2: Python Command Line
+```bash
+python recipes/datadog_to_grafana11/migrate.py
+```
+
+### Method 3: Backend API Runner
+```bash
+curl -X POST http://localhost:8000/v1/recipes/cloud_run_direct_vpc_egress/run \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+```
+Response:
+```json
+{
+  &quot;status&quot;: &quot;success&quot;,
+  &quot;recipe_id&quot;: &quot;cloud_run_direct_vpc_egress&quot;,
+  &quot;duration_ms&quot;: 14.2,
+  &quot;artifact&quot;: &quot;// Synthesized OpenTofu Google Cloud Run Direct VPC Egress...&quot;
+}
+```
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

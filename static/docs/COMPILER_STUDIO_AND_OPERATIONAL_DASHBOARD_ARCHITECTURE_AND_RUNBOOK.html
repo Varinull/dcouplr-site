@@ -1,0 +1,2480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - COMPILER_STUDIO_AND_OPERATIONAL_DASHBOARD_ARCHITECTURE_AND_RUNBOOK.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/COMPILER_STUDIO_AND_OPERATIONAL_DASHBOARD_ARCHITECTURE_AND_RUNBOOK.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="COMPILER_STUDIO_AND_OPERATIONAL_DASHBOARD_ARCHITECTURE_AND_RUNBOOK.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="enterprise-architecture-presets-taxonomy-in-vpc-monitoring-capture-runbook"><dcouplr/> Enterprise Architecture, Presets Taxonomy &amp; In-VPC Monitoring Capture Runbook</h1>
+<p><strong>Document ID:</strong> <code>DCL-ARCH-RUNBOOK-2026-01</code><br />
+<strong>Classification:</strong> Enterprise Architecture Specification &amp; Standard Operating Procedure (SOP)<br />
+<strong>Security Tier:</strong> Governed Under In-VPC Sovereign Baseline (Zero-Egress • Non-Exfiltrating)<br />
+<strong>Version:</strong> <code>2.0.0 GA</code><br />
+<strong>Date:</strong> October 28, 2026<br />
+<strong>Audience:</strong> Site Reliability Engineers (SRE), Platform Engineers, Cloud Architects, NOC Operators, and IT Leadership</p>
+<hr />
+<h2 id="executive-summary">Executive Summary</h2>
+<p>This specification provides the authoritative engineering guide and architectural boundary definition for the two core interfaces of <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>:</p>
+<ol>
+<li><strong>The Compiler Studio (<code>/compiler</code>)</strong>: The in-memory Abstract Syntax Tree (AST) code translation factory.</li>
+<li><strong>The Operational Dashboard (<code>/dashboard</code> &amp; <code>/v2</code>)</strong>: The real-time fleet telemetry, consensus mesh, and multi-VPC topology observatory.</li>
+</ol>
+<p>It further details the <strong>Presets Taxonomy</strong>, the <strong>Multi-Tool In-VPC Capture Engine</strong>, the <strong>4-Point Cross-Validation Procedure for 30 Active Monitors across 3 Groups</strong>, and the <strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AST Intermediate Representation (IR)</code> target format</strong>.</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+───────────────────────────────────────────────────────────────────────────────────────────+
+│                                  <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> SYSTEM DIVIDE                                 │
+├─────────────────────────────────────────────┬─────────────────────────────────────────────┤
+│        COMPILER STUDIO (/compiler)          │     OPERATIONAL DASHBOARD (/dashboard)      │
+├─────────────────────────────────────────────┼─────────────────────────────────────────────┤
+│  • AST Code &amp; Rule Transpilation            │  • Multi-Cloud VPC Topology Mapping         │
+│  • Ephemeral Volatile RAM (&lt; 20ms)          │  • Live Telemetry &amp; Latency Percentiles     │
+│  • Metric &amp; CIDR Remapping                  │  • Embedded Raft Consensus Mesh             │
+│  • Target Synthesized Manifests (YAML/HCL)  │  • FinOps Egress Savings &amp; License Quotas   │
+│  • Zero Disk • Zero Egress Sockets          │  • Multi-Wave Migration Project Governance  │
+│  [Scope: Single Rule Payload / Single VPC]  │  [Scope: Entire Multi-Cloud Global Fleet]   │
++─────────────────────────────────────────────┴─────────────────────────────────────────────┤
+│                                  SHARED CORE INVARIANTS                                   │
+│  1. In-VPC Air-Gapped Boundary ($0.00 WAN Egress Fees)                                    │
+│  2. Cryptographic Secret &amp; IP Sanitization via Local In-Memory SHA-256                    │
+│  3. Strict 50 MiB Container Memory Cap &amp; Sub-Millisecond AST Evaluation                   │
++───────────────────────────────────────────────────────────────────────────────────────────+
+</code></pre></div>
+<hr />
+<h2 id="group-1-architectural-separation-of-concerns-compiler-vs-dashboard">GROUP 1: Architectural Separation of Concerns (Compiler vs. Dashboard)</h2>
+<p>To prevent confusion between code migration engineering and live fleet operations, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> enforces a strict plane separation:</p>
+<h3 id="11-the-operational-plane-vs-the-code-transpilation-plane">1.1 The Operational Plane vs. The Code Transpilation Plane</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Architectural Dimension</th>
+<th style="text-align:left">Compiler Studio (<code>/compiler</code>)</th>
+<th style="text-align:left">Operational Dashboard (<code>/dashboard</code> &amp; <code>/v2</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Primary Plane</strong></td>
+<td style="text-align:left"><strong>Code &amp; Syntax Transpilation Plane</strong></td>
+<td style="text-align:left"><strong>Operations &amp; Telemetry Fleet Plane</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Primary Personas</strong></td>
+<td style="text-align:left">Migration Engineers, DevOps, SRE Rule Authors</td>
+<td style="text-align:left">Lead Architects, NOC Operators, FinOps, SRE Managers</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Primary Goal</strong></td>
+<td style="text-align:left">Convert legacy monitoring &amp; IaC into open target code</td>
+<td style="text-align:left">Observe live VPC topology, consensus health, and billing</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Operational Scope</strong></td>
+<td style="text-align:left">Single VPC or rule payload at a time (code-level)</td>
+<td style="text-align:left">Global multi-cloud estate (fleet-level)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Input Artifacts</strong></td>
+<td style="text-align:left">Raw Datadog JSON, New Relic NRQL, CloudWatch alarms, HCL</td>
+<td style="text-align:left">Live telemetry streams, node heartbeats, Raft WAL logs</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Output Artifacts</strong></td>
+<td style="text-align:left">Synthesized Prometheus YAML, Grafana YAML, OpenTofu HCL</td>
+<td style="text-align:left">Interactive network topology, latency graphs ($p_{50}, p_{99}$), SLAs</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Execution State</strong></td>
+<td style="text-align:left">100% ephemeral volatile RAM ($\le 20\text{ ms}$, zero-disk)</td>
+<td style="text-align:left">In-memory Raft state machine with WAL compaction ($\le 50\text{ MiB}$)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Live Network Discovery</strong></td>
+<td style="text-align:left">On-demand capture via <code>/v1/telemetry/vpcs/{id}/bundle</code></td>
+<td style="text-align:left">Continuous background polling across VPC mesh</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-what-the-compiler-studio-can-and-cannot-do">1.2 What the Compiler Studio CAN and CANNOT Do</h3>
+<ul>
+<li><strong>What the Compiler Studio CAN Do:</strong>
+<ul>
+<li>Ingest raw JSON, YAML, and HCL alert definitions from 8+ enterprise vendors.</li>
+<li>Parse syntax trees into normalized mathematical AST nodes in volatile memory.</li>
+<li>Scrub secrets, API tokens, internal hostnames, and RFC 1918 IPs via local SHA-256 tokens.</li>
+<li>Apply custom metric remapping (e.g., rewriting <code>system.cpu.user</code> to <code>node_cpu_seconds_total</code>).</li>
+<li>Synthesize production deployment manifests for Grafana 10+, Prometheus Alertmanager, OpenTofu GCP/Azure, and Azure Bicep.</li>
+<li>Generate the native <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AST (Unified IR JSON)</code> representation.</li>
+<li>Verify mathematical parity fidelity ($\Phi(q) \equiv \Psi(\text{Target})$) with exact scoring ($\ge 95% - 100%$).</li>
+</ul>
+</li>
+<li><strong>What the Compiler Studio CANNOT Do:</strong>
+<ul>
+<li>It <strong>cannot</strong> display live multi-VPC cross-cloud network maps.</li>
+<li>It <strong>cannot</strong> monitor Raft consensus heartbeat state across cluster nodes.</li>
+<li>It <strong>cannot</strong> track commercial license proration, node capacity bands, or invoice billing.</li>
+<li>It <strong>cannot</strong> orchestrate multi-wave migration ticket cutovers.</li>
+</ul>
+</li>
+</ul>
+<h3 id="13-what-the-operational-dashboard-can-and-cannot-do">1.3 What the Operational Dashboard CAN and CANNOT Do</h3>
+<ul>
+<li><strong>What the Operational Dashboard CAN Do:</strong>
+<ul>
+<li>Render real-time multi-VPC topology diagrams across AWS, Azure, GCP, and On-Prem.</li>
+<li>Track live sub-millisecond AST latency percentiles ($p_{50}, p_{95}, p_{99} &lt; 1\text{ ms}$).</li>
+<li>Monitor node memory usage against the strict 50 MiB container cap.</li>
+<li>Inspect Raft cluster consensus state, leader elections, and WAL compaction status.</li>
+<li>Calculate commercial license tier utilization (300, 600, 900+ nodes) and egress financial savings.</li>
+<li>Manage migration wave cutovers (Wave 1 through Wave 4) and dispatch incident support tickets.</li>
+</ul>
+</li>
+<li><strong>What the Operational Dashboard CANNOT Do:</strong>
+<ul>
+<li>It <strong>cannot</strong> edit raw alert rule code or syntax expressions.</li>
+<li>It <strong>cannot</strong> transpile Datadog or NRQL queries into PromQL or YAML.</li>
+<li>It <strong>cannot</strong> configure metric alias dictionaries or remapping rules.</li>
+<li>It <strong>cannot</strong> download target <code>.yaml</code> or <code>.tf</code> deployment files.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="group-2-presets-architecture-classification-system">GROUP 2: Presets Architecture &amp; Classification System</h2>
+<p>The <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Compiler Studio features three distinct tiers of presets:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌─────────────────────────────────────────────────────────────────────────────────┐
+│                          <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> PRESETS TAXONOMY                            │
+├──────────────────────┬────────────────────────────┬─────────────────────────────┤
+│ 1. BUILT-IN GOLDEN   │ 2. LIVE CAPTURED VPC       │ 3. USER-SAVED CUSTOM        │
+│    REFERENCE PRESETS │    BUNDLE PRESET           │    ENTERPRISE PRESETS       │
+├──────────────────────┼────────────────────────────┼─────────────────────────────┤
+│ • Pre-packaged       │ • Generated dynamically    │ • Created by engineer via   │
+│   industry standards │   when capturing a VPC     │   &quot;+ Save Custom&quot; button    │
+│ • Universal samples: │ • Named:                   │ • Persisted in local memory │
+│   Datadog, NRQL,     │   &quot;⚡ Captured VPC Bundle   │   and browser localStorage  │
+│   CloudWatch, KQL,   │   (30 Monitors • 3 Groups)&quot;│ • Stores custom remaps, tag │
+│   Dynatrace, Splunk  │ • Scoped 100% to selected  │   sanitizations, and source │
+│ • Independent of VPC │   VPC inventory            │   targets for team reuse    │
+└──────────────────────┴────────────────────────────┴─────────────────────────────┘
+</code></pre></div>
+<h3 id="21-built-in-golden-reference-presets">2.1 Built-in Golden Reference Presets</h3>
+<ul>
+<li><strong>Characteristics:</strong> Hardcoded, vendor-verified baseline configurations accessible in the <code>PRESET:</code> dropdown at all times.</li>
+<li><strong>Supported Dialects:</strong>
+<ol>
+<li><code>datadog_multi</code>: Web Frontend (Multi-Threshold + NoData + Critical/Warning)</li>
+<li><code>datadog_cpu</code>: High CPU Utilization (Single Threshold)</li>
+<li><code>datadog_alb</code>: ALB Target 5xx Surge (Count Metric Evaluation)</li>
+<li><code>datadog_disk</code>: Root Disk Space (Multi-Device Partitioning)</li>
+<li><code>datadog_slo</code>: Multi-Burn-Rate SLO (99.9% / 30d Window)</li>
+<li><code>newrelic_cpu</code>: Fleet CPU Utilization (NRQL Query)</li>
+<li><code>newrelic_error</code>: Transaction Error Rate (NRQL Query)</li>
+<li><code>cloudwatch_rds</code>: RDS PostgreSQL Low Storage Alarm</li>
+<li><code>cloudwatch_ec2</code>: EC2 Auto-Scaling Group Worker High CPU</li>
+<li><code>azure_vm_cpu</code>: Azure Monitor VM Percentage CPU Alert</li>
+<li><code>azure_kql_5xx</code>: Azure App Service HTTP 5xx (KQL Query)</li>
+<li><code>dynatrace_cpu</code>: Host CPU Saturation (Metric Event)</li>
+<li><code>dynatrace_davis</code>: Service Response Anomaly (Davis AI Smartscape)</li>
+<li><code>splunk_cpu</code>: Host CPU Utilization (SPL Saved Search)</li>
+<li><code>prom_to_datadog</code>: 2-Way Reverse Round-Trip (Prometheus to Datadog)</li>
+<li><code>terraform_aws_gcp</code>: Terraform AWS VPC $\rightarrow$ OpenTofu GCP</li>
+</ol>
+</li>
+<li><strong>Primary Role:</strong> Allows engineers to immediately evaluate the compiler, verify PromQL vector conversion, test target platforms, and benchmark execution velocity without needing an active VPC connection.</li>
+</ul>
+<h3 id="22-live-captured-vpc-bundle-preset">2.2 Live Captured VPC Bundle Preset</h3>
+<ul>
+<li><strong>Characteristics:</strong> Created on-demand when clicking <strong><code>Capture VPC Monitors</code></strong> $\rightarrow$ <strong><code>📥 Load Monitors into Editor</code></strong>.</li>
+<li><strong>Dropdown Entry:</strong><div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">⚡ Captured VPC Bundle (30 Monitors • 3 Groups of 10)
+</code></pre></div>
+</li>
+<li><strong>Primary Role:</strong> Replaces generic reference templates with the actual 30 live monitor definitions, thresholds, metric queries, and tags discovered on the selected VPC's inventory.</li>
+</ul>
+<h3 id="23-user-saved-custom-presets">2.3 User-Saved Custom Presets</h3>
+<ul>
+<li><strong>Characteristics:</strong> Created by clicking <strong><code>+ Save Custom</code></strong> on the secondary toolbar.</li>
+<li><strong>Storage:</strong> Persisted across sessions via encrypted browser localStorage and in-memory cache.</li>
+<li><strong>Primary Role:</strong> Enables engineers to save custom migration recipes, tailored metric dictionaries, and organizational naming standards for repeat use or handoff to operations teams.</li>
+</ul>
+<hr />
+<h2 id="group-3-live-vpc-monitoring-discovery-capture-engine">GROUP 3: Live VPC Monitoring Discovery &amp; Capture Engine</h2>
+<h3 id="31-monitored-vpc-scope-selection">3.1 Monitored VPC Scope Selection</h3>
+<p>In the primary toolbar, the <strong><code>MONITORED VPC:</code></strong> dropdown binds the compiler to a specific network topology boundary:</p>
+<ul>
+<li><code>dc-onprem-core-01</code> (<code>172.16.0.0/16</code> • OnPrem Core DC)</li>
+<li><code>vpc-production-mesh</code> (<code>10.100.0.0/16</code> • AWS US-East-1)</li>
+<li><code>vpc-staging-cell</code> (<code>10.200.0.0/16</code> • Azure WestUS2)</li>
+<li><code>analytics-gcp-mesh</code> (<code>10.240.0.0/16</code> • GCP us-central1)</li>
+</ul>
+<h3 id="32-the-4-layer-in-vpc-multi-tool-auto-discovery-engine">3.2 The 4-Layer In-VPC Multi-Tool Auto-Discovery Engine</h3>
+<p>Brownfield enterprise VPCs rarely use a single monitoring tool. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> interrogates the VPC inventory across four discovery layers simultaneously:</p>
+<ol>
+<li><strong>Layer 1: In-Guest OS &amp; Daemon Discovery:</strong> Scans systemd daemons and listening sockets across compute instances (<code>datadog-agent</code> :8125, <code>newrelic-infra</code> :8001, <code>splunkd</code> :9997, <code>dynatrace-oneagent</code>).</li>
+<li><strong>Layer 2: Kubernetes Workload &amp; CRD Inspection:</strong> Interrogates container subnets for Prometheus Operator CRDs (<code>ServiceMonitor</code>, <code>PrometheusRule</code>), OpenTelemetry Collector sidecars (:4317/:4318), and Datadog K8s DaemonSets.</li>
+<li><strong>Layer 3: Cloud Provider API &amp; Infrastructure Scans:</strong> Connects via private in-VPC endpoints to scrape AWS CloudWatch Alarms, Azure Monitor metric rules, or GCP Cloud Monitoring policies bound to the VPC's subnets and load balancers.</li>
+<li><strong>Layer 4: In-VPC IaC &amp; GitOps Discovery:</strong> Scans Terraform/OpenTofu <code>.tfstate</code> and HCL manifests in CI/CD runners to extract declarative monitoring resource definitions.</li>
+</ol>
+<h3 id="33-the-30-active-monitors-partitioned-into-3-tiers-10-monitors-each">3.3 The 30 Active Monitors Partitioned into 3 Tiers (10 Monitors Each)</h3>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        30 ACTIVE MONITORS • 3 OPERATIONAL TIERS                        │
+├────────────────────────────┬────────────────────────────┬──────────────────────────────┤
+│ GROUP 1: INFRASTRUCTURE &amp;  │ GROUP 2: APPLICATION &amp;     │ GROUP 3: SRE RELIABILITY,    │
+│ HOST TIER (IDs 1001-1010)  │ API GATEWAY (IDs 1011-1020)│ SECURITY &amp; CONSENSUS (1021+) │
+├────────────────────────────┼────────────────────────────┼──────────────────────────────┤
+│ 1001: Host CPU Saturation  │ 1011: HTTP 5xx Error Surge │ 1021: Zero-Egress Perimeter  │
+│ 1002: Physical RAM Exhaust │ 1012: P99 Latency SLA      │ 1022: Raft Consensus Split   │
+│ 1003: Root Disk Depletion  │ 1013: 504 Gateway Timeouts │ 1023: Circuit Breaker Trip   │
+│ 1004: Disk Write Latency   │ 1014: DB Pool Starvation   │ 1024: Anycast VIP Health     │
+│ 1005: Interface Drop Rate  │ 1015: Redis Cache Eviction │ 1025: TLS Certificate Expiry │
+│ 1006: File Descriptor Cap  │ 1016: Kafka Consumer Lag   │ 1026: WAF Anomaly Burst      │
+│ 1007: 15m Load Average     │ 1017: gRPC Error Rate      │ 1027: Peering Mesh RTT Drift │
+│ 1008: Swap Memory Churn    │ 1018: K8s CrashLoopBackOff │ 1028: Storage Burst Deplete  │
+│ 1009: Kernel OOM Kills     │ 1019: JVM GC Pause Burst   │ 1029: CoreDNS Request Loss   │
+│ 1010: NTP Clock Drift      │ 1020: Ingress Rate Drop    │ 1030: Ring Buffer Congestion │
+└────────────────────────────┴────────────────────────────┴──────────────────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="group-4-studio-editor-ingestion-4-point-parity-cross-validation">GROUP 4: Studio Editor Ingestion &amp; 4-Point Parity Cross-Validation</h2>
+<h3 id="41-the-load-monitors-into-editor-action">4.1 The <code>📥 Load Monitors into Editor</code> Action</h3>
+<p>When the engineer reviews the capture modal and clicks <strong><code>📥 Load Monitors into Editor</code></strong>:</p>
+<ol>
+<li>All 30 raw monitor definitions are formatted as a unified JSON array and injected into the left <strong>Source Configuration</strong> textarea (<code>sourceInput</code>).</li>
+<li>The <code>SOURCE:</code> selector automatically locks to <code>Datadog Monitor (JSON)</code>.</li>
+<li>The <code>PRESET:</code> dropdown appends and selects <code>⚡ Captured VPC Bundle (30 Monitors • 3 Groups of 10)</code>.</li>
+<li>The AST compiler automatically transpiles the full bundle in volatile memory.</li>
+</ol>
+<h3 id="42-four-point-parity-cross-validation-guide">4.2 Four-Point Parity Cross-Validation Guide</h3>
+<p>Engineers can count and cross-validate that all 30 monitors across all 3 tiers are accurately represented:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Validation Point</th>
+<th style="text-align:left">UI Element / File Location</th>
+<th style="text-align:left">Expected Value</th>
+<th style="text-align:left">Verification Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Point 1: Modal View</strong></td>
+<td style="text-align:left">Inspection Modal</td>
+<td style="text-align:left"><code>30 ACTIVE MONITORS</code></td>
+<td style="text-align:left">3 group divider banners, 10 cards each with <code>#01/10</code> to <code>#10/10</code> tags.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Point 2: Source Badge</strong></td>
+<td style="text-align:left">Editor Header Badge</td>
+<td style="text-align:left"><code>30 Monitors (10 Infra • 10 App • 10 SRE)</code></td>
+<td style="text-align:left">Cyan badge above Source Editor confirms JSON array length.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Point 3: Target Output</strong></td>
+<td style="text-align:left">Synthesized Target Manifest</td>
+<td style="text-align:left"><code>3 Distinct Alert Groups</code></td>
+<td style="text-align:left">Grafana / Prometheus YAML outputs 3 separate <code>groups:</code>, each containing exactly 10 alert rules (30 rules total).</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Point 4: Studio Footer</strong></td>
+<td style="text-align:left">Bottom Telemetry Bar</td>
+<td style="text-align:left"><code>Entities: 30</code></td>
+<td style="text-align:left">Footer confirms 30 processed entities with <code>100.0% Parity Fidelity</code>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="group-5-target-platforms-dcouplr-native-ast-unified-ir-json">GROUP 5: Target Platforms &amp; <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Native AST (Unified IR JSON)</h2>
+<h3 id="51-supported-target-platforms">5.1 Supported Target Platforms</h3>
+<p>The <code>TARGET:</code> dropdown allows transpilation into all major open standards:</p>
+<ol>
+<li><strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AST (Unified IR JSON)</code></strong>: The canonical, decoupled mathematical AST representation.</li>
+<li><strong><code>Grafana 10+ (Unified Alerting YAML)</code></strong>: Production-ready alert provisioning rules.</li>
+<li><strong><code>Grafana 10+ (Multi-Threshold RefId A-D)</code></strong>: Advanced multi-condition alerting pipelines.</li>
+<li><strong><code>Prometheus (Alertmanager Rules YAML)</code></strong>: Standard PromQL rule groups (<code>expr:</code>, <code>for:</code>, <code>labels:</code>).</li>
+<li><strong><code>Datadog Monitor (JSON) [2-Way]</code></strong>: Bi-directional round-trip reverse compiler.</li>
+<li><strong><code>OpenTofu GCP (HCL)</code></strong>: Infrastructure as Code resource blocks for Google Cloud.</li>
+<li><strong><code>OpenTofu Azure (HCL)</code></strong>: Infrastructure as Code resource blocks for Microsoft Azure.</li>
+<li><strong><code>Azure Bicep (.bicep)</code></strong>: Native ARM metric alert templates.</li>
+</ol>
+<h3 id="52-deep-inspector-tabs">5.2 Deep Inspector Tabs</h3>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">[Target Code]  [PromQL Vectors]  [Security Audit]  [Multi-Threshold]
+</code></pre></div>
+<ul>
+<li><strong>Target Code</strong>: Displays the synthesized deployable manifest (Prometheus YAML, Grafana YAML, OpenTofu HCL, or <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AST</code> JSON).</li>
+<li><strong>PromQL Vectors</strong>: Shows the side-by-side original source query versus the synthesized target query with exact semantic parity proof.</li>
+<li><strong>Security Audit</strong>: Displays the cryptographic attestation confirming zero WAN egress ($0.00$ fees) and count of scrubbed tokens.</li>
+<li><strong>Multi-Threshold</strong>: Visualizes the RefId evaluation pipeline (Query $\rightarrow$ Expression $\rightarrow$ Threshold $\rightarrow$ Alert).</li>
+</ul>
+<h3 id="53-how-works-as-a-target">5.3 How <dcouplr/> Works as a Target</h3>
+<p>When you select <strong><code>⚡ <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AST (Unified IR JSON)</code></strong> as the <strong><code>TARGET:</code></strong>:</p>
+<ol>
+<li><strong>What is synthesized:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> generates a canonical <strong>Normalized AST Manifest (<code>dcouplr-manifest.json</code>)</strong>.</li>
+<li><strong>What it contains:</strong> All 30 monitors decoupled into vendor-neutral mathematical AST nodes (metric formulas, threshold windows, dimension groupings, evaluation intervals, and sanitized labels) without vendor lock-in.</li>
+<li><strong>How it executes in the Target VPC:</strong>
+<ul>
+<li>In the new target VPC perimeter, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> runs as an in-VPC native telemetry cluster daemon (listening on port 8000 or custom port).</li>
+<li>When this manifest is loaded into <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>, the target engine evaluates and arms these rules natively in <strong>volatile memory</strong> ($\le 20\text{ ms}$, zero persistent disk, and <strong>$0.00 external WAN egress</strong>).</li>
+</ul>
+</li>
+</ol>
+<h3 id="54-loading-from-source-vpc-to-target-vpc-the-upload-function-cross-vpc-lifecycle">5.4 Loading from Source VPC to Target VPC (The Upload Function &amp; Cross-VPC Lifecycle)</h3>
+<p>The <strong><code>Upload</code></strong> button in the Compiler Studio is the built-in bridge between the Source VPC and the Target VPC.</p>
+<p>In enterprise migrations, Source VPCs (e.g., On-Premises Core <code>dc-onprem-core-01</code>) and Target VPCs (e.g., AWS <code>vpc-production-mesh</code> or GCP <code>analytics-gcp-mesh</code>) are typically separated by air-gaps, firewalls, or sovereign boundaries with zero direct routability.</p>
+<h4 id="the-cross-vpc-ingestion-lifecycle">The Cross-VPC Ingestion Lifecycle</h4>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">[SOURCE VPC]                                                    [TARGET VPC]
+dc-onprem-core-01                                               vpc-production-mesh
+┌───────────────────────────┐                                   ┌───────────────────────────┐
+│ 1. Capture 30 Monitors    │                                   │ 4. Open Target Studio     │
+│ 2. Target: <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AST │                                   │    Click &quot;Upload&quot; button  │
+│ 3. Click &quot;⬇️ Download&quot;    │                                   │    Select manifest file   │
+│    (dcouplr-manifest.json)│ ──[ Air-Gap / Bastion Handoff ]──▶│    Instant In-Memory Ingest│
+└───────────────────────────┘                                   │ 5. Armed in Local RAM     │
+                                                                └───────────────────────────┘
+</code></pre></div>
+<ol>
+<li>
+<p><strong>In the Source VPC Studio (<code>http://&lt;source-vpc&gt;:8000/compiler</code>):</strong></p>
+<ul>
+<li>Select <strong><code>MONITORED VPC:</code></strong> <code>dc-onprem-core-01</code>.</li>
+<li>Click <strong><code>Capture VPC Monitors</code></strong> $\rightarrow$ <strong><code>📥 Load Monitors into Editor</code></strong>.</li>
+<li>Select <strong><code>TARGET:</code></strong> <code>⚡ <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AST (Unified IR JSON)</code> (or Prometheus / Grafana).</li>
+<li>Click <strong><code>⬇️ Download</code></strong> or <strong><code>💾 Export Bundle (.json)</code></strong> to save <code>dcouplr-manifest.json</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Air-Gap / Bastion Handoff:</strong></p>
+<ul>
+<li>Transfer <code>dcouplr-manifest.json</code> across your air-gap, jump host, or approved deployment bastion to the target environment.</li>
+</ul>
+</li>
+<li>
+<p><strong>In the Target VPC Studio (<code>http://&lt;target-vpc&gt;:8000/compiler</code>):</strong></p>
+<ul>
+<li>Open the Compiler Studio running inside the Target VPC perimeter.</li>
+<li>In the secondary utility ribbon, click the <strong><code>Upload</code></strong> button.</li>
+<li>Select your downloaded <code>dcouplr-manifest.json</code> (or <code>captured_vpc_bundle.json</code>).</li>
+<li><strong>Smart Auto-Ingestion:</strong> The compiler's lexer recognizes the bundle, loads all 30 monitors, displays the verification badge:<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">30 Monitors Loaded (Source VPC Import)
+</code></pre></div>
+</li>
+<li>It binds them directly to the Target VPC's volatile memory and automatically synthesizes the target format.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="group-6-step-by-step-operator-runbook-for-migration-engineers">GROUP 6: Step-by-Step Operator Runbook for Migration Engineers</h2>
+<h3 id="step-1-select-source-vpc-capture-all-active-monitors">Step 1: Select Source VPC &amp; Capture All Active Monitors</h3>
+<ol>
+<li>Open the Compiler Studio: <code>http://localhost:8000/compiler</code>.</li>
+<li>In the <code>MONITORED VPC:</code> dropdown, select your migration source (e.g., <code>vpc-production-mesh (10.100.0.0/16 • AWS)</code>).</li>
+<li>Click the cyan <strong><code>Capture VPC Monitors</code></strong> button.</li>
+<li>Review the modal: verify 30 monitors across 3 groups (10 Infra, 10 App, 10 SRE).</li>
+</ol>
+<h3 id="step-2-load-the-captured-monitors-into-compiler-studio">Step 2: Load the Captured Monitors into Compiler Studio</h3>
+<ol>
+<li>Click <strong><code>📥 Load Monitors into Editor</code></strong> at the bottom of the modal.</li>
+<li>Confirm the editor count badge reads: <code>30 Monitors (10 Infra • 10 App • 10 SRE)</code>.</li>
+<li>Confirm the footer updates to <code>Entities: 30</code>.</li>
+</ol>
+<h3 id="step-3-choose-the-new-observability-target">Step 3: Choose the New Observability Target</h3>
+<p>In the <code>TARGET:</code> dropdown, select the target platform matching the new VPC architecture:</p>
+<ul>
+<li>If moving to Prometheus / Mimir / VictoriaMetrics: Select <code>Prometheus (Alertmanager Rules YAML)</code>.</li>
+<li>If moving to Grafana Alerting: Select <code>Grafana 10+ (Unified Alerting YAML)</code>.</li>
+<li>If inspecting the normalized AST model: Select <code>⚡ <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> AST (Unified IR JSON)</code>.</li>
+<li>If migrating cloud infrastructure: Select <code>OpenTofu GCP (HCL)</code> or <code>OpenTofu Azure (HCL)</code>.</li>
+</ul>
+<h3 id="step-4-map-metrics-sanitize-network-topologies">Step 4: Map Metrics &amp; Sanitize Network Topologies</h3>
+<ol>
+<li>Click <strong><code>Metric Remap</code></strong> on the secondary toolbar.</li>
+<li>Verify or add metric aliases (e.g., <code>system.cpu.user</code> $\rightarrow$ <code>node_cpu_seconds_total</code>).</li>
+<li>Click <strong><code>Apply &amp; Recompile</code></strong>.</li>
+<li>The in-memory anonymizer automatically strips old private IPs, hostnames, and AWS ARNs, replacing them with sanitized hashes or new VPC target CIDRs.</li>
+</ol>
+<h3 id="step-5-compile-ast-in-volatile-memory">Step 5: Compile AST in Volatile Memory</h3>
+<ol>
+<li>Click <strong><code>Compile AST</code></strong> (or press <code>⌘↵</code> / <code>Ctrl+Enter</code>).</li>
+<li>AST compilation completes in under 20 milliseconds in volatile RAM.</li>
+<li>The Target Code pane populates with the synthesized production rules.</li>
+<li>Verify that the <strong>Parity Fidelity</strong> gauge displays $\ge 95% - 100%$.</li>
+</ol>
+<h3 id="step-6-save-deploy-to-target-vpc-perimeter">Step 6: Save &amp; Deploy to Target VPC Perimeter</h3>
+<p>In <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>, deployment into the target perimeter supports both <strong>cloud-native open tools</strong> (Prometheus, Grafana, OpenTofu) and <strong>native <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> In-VPC telemetry clusters</strong>:</p>
+<ol>
+<li>In the right pane toolbar, click <strong><code>⬇️ Download</code></strong> (or <strong><code>Save Artifact</code></strong>) to export the generated manifest (<code>dcouplr-manifest.json</code>, <code>prometheus-rules.yaml</code>, <code>grafana-alerts.yaml</code>, or <code>main.tf</code>).</li>
+<li>Deploy the manifest directly into the target VPC perimeter using the appropriate method below:</li>
+</ol>
+<h4 id="method-a-in-vpc-native-telemetry-engine-zero-egress-sub-ms">Method A: <dcouplr/> In-VPC Native Telemetry Engine (Zero Egress • Sub-ms)</h4>
+<p>If the Target VPC runs the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> in-VPC telemetry agent or cluster:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># 1. Apply directly via the in-VPC <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> CLI
+dcouplr apply -f dcouplr-manifest.json --vpc vpc-production-mesh
+
+# 2. Or push directly to the target VPC daemon socket / REST API ($0 Egress):
+curl -X POST http://dcouplr.target.vpc:8000/v1/telemetry/rules \
+  -H &quot;Content-Type: application/json&quot; \
+  -d @dcouplr-manifest.json
+
+# 3. Verify active rule ingestion in volatile memory
+curl -s http://dcouplr.target.vpc:8000/v1/telemetry/rules | jq '.total_active_rules'
+</code></pre></div>
+<h4 id="method-b-target-vpc-compiler-studio-browser-upload-ingestion">Method B: Target VPC Compiler Studio (Browser Upload Ingestion)</h4>
+<p>In strictly air-gapped sovereign environments where the Source and Target VPCs have no direct route or WAN access:</p>
+<ol>
+<li>Open the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Compiler Studio hosted inside the Target VPC perimeter: <code>http://&lt;target-vpc-ip&gt;:8000/compiler</code>.</li>
+<li>On the secondary utility toolbar, click the <strong><code>Upload</code></strong> button.</li>
+<li>Select the exported <code>dcouplr-manifest.json</code> (or <code>captured_bundle.json</code>) from your local machine.</li>
+<li>The Target Studio's smart lexer automatically detects the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> bundle format, loads all 30 active monitors across the 3 groups, displays the verification badge <code>30 Monitors Loaded (Source VPC Import)</code>, and activates them in target volatile memory!</li>
+</ol>
+<h4 id="method-c-kubernetes-prometheus-alertmanager">Method C: Kubernetes / Prometheus Alertmanager</h4>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Apply Prometheus Alertmanager rules into the target Kubernetes cluster
+kubectl apply -f prometheus-rules.yaml -n monitoring
+
+# Verify Prometheus hot-reloaded the rule groups without downtime
+curl -s http://prometheus.monitoring.svc.cluster.local:9090/api/v1/rules | jq '.data.groups[].name'
+</code></pre></div>
+<h4 id="method-d-grafana-unified-alerting">Method D: Grafana Unified Alerting</h4>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Copy to Grafana provisioning directory in target VPC
+cp grafana-alerts.yaml /etc/grafana/provisioning/alerting/rules.yaml
+
+# Or push via Grafana HTTP API in-VPC ($0 Egress)
+curl -X POST -H &quot;Content-Type: application/yaml&quot; \
+  -H &quot;Authorization: Bearer $GRAFANA_API_KEY&quot; \
+  --data-binary @grafana-alerts.yaml \
+  http://grafana.internal.vpc:3000/api/v1/provisioning/alert-rules
+</code></pre></div>
+<h4 id="method-e-opentofu-terraform-landing-zone">Method E: OpenTofu / Terraform Landing Zone</h4>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Initialize and apply declarative monitoring blocks in target cloud VPC
+tofu init &amp;&amp; tofu plan -out=monitoring.tfplan &amp;&amp; tofu apply monitoring.tfplan
+</code></pre></div>
+<hr />
+<h2 id="group-7-operational-dashboard-architecture-observer-vs-observed-core-functions-vs-recipes-and-storage-transparency">GROUP 7: Operational Dashboard Architecture — Observer vs. Observed, Core Functions vs. Recipes, and Storage Transparency</h2>
+<h3 id="71-the-fundamental-architectural-question-is-the-dashboard-monitoring-vpcs-or-compilers">7.1 The Fundamental Architectural Question: Is the Dashboard Monitoring VPCs or Compilers?</h3>
+<p>A frequent point of inquiry from lead architects and SREs is:<br />
+<strong>&quot;Does <code>/dashboard</code> monitor the VPCs, or does it monitor the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Compilers?&quot;</strong></p>
+<p>The answer is: <strong>It monitors both, organized in a strict Two-Tier Observer/Observed hierarchy.</strong></p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+─────────────────────────────────────────────────────────────────────────────────────────────+
+|                                OPERATIONAL DASHBOARD HIERARCHY                              |
+├─────────────────────────────────────────────────────────────────────────────────────────────┤
+|  TIER 1: THE OBSERVER (SELF-MONITORING OF THE <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> ENGINE)                            |
+|  • Scope: The in-VPC compilation daemon, local cluster state, and runtime resource limits.  |
+|  • Visual Components: Top Global Strip (Core Functions) &amp; KPI Status Row (7 Cards).        |
+|  • Metrics: CPU Load (&lt; 0.2%), RAM RSS (&lt; 50 MiB), Latency (P50/P99), AST Velocity (tx/s),  |
+|             Raft Consensus Quorum, WAL Compaction, Storage Footprint (0.00 GB Disk), $0.00.  |
+|  • Operational Objective: SRE verification of engine integrity before trusting alerts.      |
+├─────────────────────────────────────────────────────────────────────────────────────────────┤
+|  TIER 2: THE OBSERVED (TELEMETRY &amp; TOPOLOGY OF THE MONITORED VPCs)                          |
+|  • Scope: The multi-cloud networks, VPC boundaries, nodes, and application workloads.      |
+|  • Visual Components: Multi-VPC Topology Map, VPC Architecture Details, Alert Simulator.   |
+|  • Metrics: Cross-cloud VPC inter-connects (AWS, GCP, Azure, On-Prem), Subnets, NAT Gateways|
+|             Load Balancers, Global Accelerators, eBPF DNAT rules, and 30 active monitors.   |
+|  • Operational Objective: Fleet observability, traffic routing triage, and alert simulation.|
++─────────────────────────────────────────────────────────────────────────────────────────────+
+</code></pre></div>
+<ol>
+<li><strong>Why the Observer must be monitored first:</strong><br />
+In air-gapped sovereign environments, telemetry tools cannot call out to external cloud vendors. The <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> daemon is the single source of truth inside the VPC. If the local daemon were to exceed its memory cap, experience a split-brain Raft consensus election, or drop below its AST velocity threshold, the alerts and metrics reported for the VPCs could be delayed or distorted. Therefore, Tier 1 continuously self-attests the engine's health.</li>
+<li><strong>How Tier 2 monitors the VPCs:</strong><br />
+Once engine health is verified, the dashboard displays the live state of all 4 staged VPCs (<code>vpc-production-mesh</code>, <code>vpc-staging-cell</code>, <code>analytics-gcp-mesh</code>, <code>dc-onprem-core-01</code>). NOC engineers can inspect live inter-VPC network latency, subnet distributions, load balancer health, and run live alert simulation without sending a single packet over the public WAN ($0.00 egress).</li>
+</ol>
+<hr />
+<h3 id="72-core-functions-8-active-vs-turnkey-migration-recipes-10-turnkey">7.2 Core Functions (8 Active) vs. Turnkey Migration Recipes (10 Turnkey)</h3>
+<p>Engineers frequently ask whether the <strong>Core Functions (8 Active)</strong> on the Dashboard are the same as the <strong>Recipes (10 Turnkey)</strong> in the Compiler Studio.</p>
+<p><strong>They are fundamentally distinct:</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Dimension</th>
+<th style="text-align:left">Core Functions (Dashboard)</th>
+<th style="text-align:left">Turnkey Recipes (Compiler Studio)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Location</strong></td>
+<td style="text-align:left"><code>http://localhost:8000/dashboard</code> (Top Strip)</td>
+<td style="text-align:left"><code>http://localhost:8000/compiler</code> (Recipe Picker)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Nature</strong></td>
+<td style="text-align:left"><strong>Autonomous Internal Micro-Engines</strong></td>
+<td style="text-align:left"><strong>Declarative Migration Blueprints / Templates</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Execution</strong></td>
+<td style="text-align:left">Continuous 24x7 background daemons</td>
+<td style="text-align:left">On-demand compilation runs executed by user</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>State</strong></td>
+<td style="text-align:left">Dynamic runtime health (Term, Latency, Deltas)</td>
+<td style="text-align:left">Static syntactic rules &amp; metric remapping matrices</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Count</strong></td>
+<td style="text-align:left"><strong>8 Active Engines</strong></td>
+<td style="text-align:left"><strong>10 Pre-Packaged Recipes</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Analogy</strong></td>
+<td style="text-align:left">The <strong>heating elements, turbine, and thermostat</strong></td>
+<td style="text-align:left">The <strong>recipes and ingredients baked inside</strong></td>
+</tr>
+</tbody>
+</table>
+<h4 id="the-8-active-core-functions-inside-the-engine">The 8 Active Core Functions (Inside the Engine):</h4>
+<ol>
+<li><strong>AST Transpiler Engine (<code>Operational • P50: 16.3ms</code>):</strong> High-speed lexical parser and abstract syntax tree converter.</li>
+<li><strong>Multi-Cloud IAM Compiler (<code>Active • AWS ↔ GCP ↔ Azure</code>):</strong> Translates and reconciles security policies across cloud boundaries.</li>
+<li><strong>Raft Consensus Cluster (<code>LEADER • Term 4</code>):</strong> Embedded quorum state machine providing distributed consensus without ZooKeeper or etcd.</li>
+<li><strong>WAL Log Compaction (<code>ΔI = 4,449 / 8,192</code>):</strong> Automatic circular log pruning keeping memory strictly bounded under the 50 MiB ceiling.</li>
+<li><strong>Multi-VPC Mesh &amp; Staging (<code>4 Networks Staged</code>):</strong> In-memory multi-VPC topology and network routing model.</li>
+<li><strong>eBPF Packet Interceptor (<code>0 WAN Pkts • 4,120 Scrubbed</code>):</strong> Kernel-level packet inspector that enforces the Zero-Egress Boundary and anonymizes sensitive tokens.</li>
+<li><strong>Vector Rule Evaluator (<code>PromQL RefId A-D Simulator</code>):</strong> In-memory metric calculation sandbox evaluating multi-threshold alerts in volatile memory.</li>
+<li><strong>FinOps Egress Attestation (<code>100% In-VPC • $0.00/mo</code>):</strong> Continuous mathematical proof engine certifying zero billable data transfer.</li>
+</ol>
+<h4 id="the-10-turnkey-migration-recipes-in-the-compiler">The 10 Turnkey Migration Recipes (In the Compiler):</h4>
+<ol>
+<li><code>Datadog Monitor → Prometheus Alertmanager YAML</code></li>
+<li><code>Datadog APM → OpenTelemetry (OTel) Distributed Traces</code></li>
+<li><code>Datadog Multi-Threshold → Grafana 10+ Unified Alerting</code></li>
+<li><code>AWS CloudWatch Metrics → In-VPC VictoriaMetrics / PromQL</code></li>
+<li><code>GCP Cloud Monitoring → In-VPC Prometheus Serverless</code></li>
+<li><code>Azure Monitor Metric Alerts → OpenTofu / Terraform Landing Zone</code></li>
+<li><code>Egress Elimination: SaaS Agent Strip → In-VPC Telemetry Daemon</code></li>
+<li><code>Kubernetes Kube-State-Metrics → Native AST Vector Rules</code></li>
+<li><code>Synthetic Endpoint Monitoring → Sub-Millisecond In-VPC Probes</code></li>
+<li><code>Multi-Cloud Golden Presets (30 Monitors Across 3 Tier Groups)</code></li>
+</ol>
+<hr />
+<h3 id="73-why-the-core-functions-strip-is-positioned-on-top">7.3 Why the Core Functions Strip Is Positioned on Top</h3>
+<p>The Core Functions strip is deliberately placed at the very top of <code>http://localhost:8000/dashboard</code> for two critical SRE operational reasons:</p>
+<ol>
+<li><strong>The &quot;Observer First, Observables Second&quot; Reliability Axiom:</strong><br />
+Before an on-call engineer investigates an alert on <code>vpc-production-mesh</code>, they must know in <strong>under 1 second</strong> whether the monitoring engine itself is trustworthy. If the Raft cluster were partitioned, or WAL compaction stalled, any alerts shown below might be unconfirmed. A single green row on top establishes baseline engine confidence.</li>
+<li><strong>Unified Control Plane Across All Monitored VPCs:</strong><br />
+The individual panels below switch between VPCs (e.g., examining <code>dc-onprem-core-01</code> vs <code>vpc-production-mesh</code>), but the Core Functions strip represents the <strong>shared in-VPC telemetry backbone</strong> governing the entire multi-cloud fleet.</li>
+</ol>
+<hr />
+<h3 id="74-the-7th-kpi-storage-footprint-zero-disk-write-amplification">7.4 The 7th KPI: Storage Footprint &amp; Zero Disk Write Amplification</h3>
+<p>To provide radical, 100% transparency across all three compute dimensions (<strong>CPU, Memory, and Storage</strong>), the Operational Dashboard includes the <strong>Storage Footprint KPI</strong>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">KPI Card</th>
+<th style="text-align:center">Icon</th>
+<th style="text-align:left">Live Metric Value</th>
+<th style="text-align:left">Operational Role &amp; Invariant</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>1. CPU Utilization</strong></td>
+<td style="text-align:center">⚡</td>
+<td style="text-align:left"><code>3.2% vCPU</code> (<code>&lt; 0.2% load</code>)</td>
+<td style="text-align:left">Transpilation engine processing overhead</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>2. Memory Footprint</strong></td>
+<td style="text-align:center">🧠</td>
+<td style="text-align:left"><code>37.4 / 50 MiB</code> (<code>12.6 MiB safe</code>)</td>
+<td style="text-align:left">Strict memory ceiling enforcement</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>3. Latency (P50/P99)</strong></td>
+<td style="text-align:center">⏱️</td>
+<td style="text-align:left"><code>1.2 / 8.1 ms</code> (<code>Sub-5ms SLA</code>)</td>
+<td style="text-align:left">AST code translation execution velocity</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>4. AST Velocity</strong></td>
+<td style="text-align:center">🚀</td>
+<td style="text-align:left"><code>46.5 tx/s</code> (<code>1,429 ops</code>)</td>
+<td style="text-align:left">Total rule evaluations processed per second</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>5. Zero-Egress Guard</strong></td>
+<td style="text-align:center">🛡️</td>
+<td style="text-align:left"><code>0 WAN Pkts</code> (<code>4,120 scrubbed</code>)</td>
+<td style="text-align:left">Proof of non-exfiltration and token sanitization</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>6. Storage Footprint</strong></td>
+<td style="text-align:center">💾</td>
+<td style="text-align:left"><strong><code>0.00 GB Disk</code> (<code>Pure RAM</code>)</strong></td>
+<td style="text-align:left"><strong>Zero persistent disk writes • Zero EBS/SAN cost</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>7. Monthly Cost</strong></td>
+<td style="text-align:center">$</td>
+<td style="text-align:left"><code>$0.00 / mo</code> (<code>100% In-VPC</code>)</td>
+<td style="text-align:left">Mathematical FinOps cost elimination</td>
+</tr>
+</tbody>
+</table>
+<h4 id="why-storage-footprint-transparency-is-crucial">Why Storage Footprint Transparency Is Crucial:</h4>
+<p>Traditional monitoring platforms (Prometheus TSDB, Elasticsearch, Splunk, InfluxDB) burn substantial disk I/O and require massive EBS or SAN volumes (50 GB–2 TB), creating disk write amplification, IOPS bottlenecks, and stealth storage bills.</p>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> operates with <strong>zero persistent disk dependency</strong>:</p>
+<ul>
+<li>All metric vectors, ring buffers, and active rules reside exclusively in volatile memory (&lt; 50 MiB RAM).</li>
+<li><strong>0.00 GB of EBS, SAN, or persistent disk storage</strong> is allocated or consumed across all monitored VPCs.</li>
+<li>On container or VM termination, zero persistent telemetry state is left behind on disk, guaranteeing full sovereign data destruction compliance.</li>
+</ul>
+<hr />
+<h3 id="75-streamlined-sre-user-experience-sleek-daemon-indicator-bar-deep-dive-investigation-modal">7.5 Streamlined SRE User Experience: Sleek Daemon Indicator Bar &amp; Deep-Dive Investigation Modal</h3>
+<p>To maximize screen real estate for multi-VPC cross-cloud topology maps and workload inspection, the Operational Dashboard implements a <strong>Two-Tier Telemetry Presentation Model</strong>:</p>
+<h4 id="1-primary-viewport-sleek-in-vpc-autonomous-daemon-status-strip">1. Primary Viewport: Sleek In-VPC Autonomous Daemon Status Strip</h4>
+<p>Directly above the Multi-VPC Topology Map, the dashboard displays a compact, single-row daemon status strip (.daemon-indicator-bar):</p>
+<ul>
+<li><strong>Canonical Wordmark:</strong> <dcouplr/> rendered using official brand typography (.dcouplr-logo.dcouplr-logo-sm with neon-lime #39ff14 brackets and #ffffff white text).</li>
+<li><strong>Status Indicator:</strong> Tier 1 • In-VPC Autonomous Daemon • Operational (Sub-ms • Zero-Egress).</li>
+<li><strong>Live Micro-Gauges:</strong>
+<ul>
+<li>⚡ CPU: 2.3%</li>
+<li>🧠 RSS: 37.0 / 50 MiB</li>
+<li>⏱️ Lat: 1.3 / 8.7 ms</li>
+<li>🚀 Vel: 38.9 tx/s</li>
+<li>🛡️ WAN: 0 Pkts</li>
+<li>💾 Disk: 0.00 GB</li>
+<li>⚙️ Core: 8 Active</li>
+</ul>
+</li>
+<li><strong>One-Click Action:</strong> [🔍 Detailed System Diagnostics &amp; Telemetry Modal ↗].</li>
+</ul>
+<h4 id="2-deep-dive-investigation-modal-modal-observer-telemetry">2. Deep-Dive Investigation Modal (#modal-observer-telemetry)</h4>
+<p>When an SRE or security auditor requires full forensic inspection of the Observer engine, clicking the indicator button launches the high-density diagnostics modal containing:</p>
+<ul>
+<li><strong>All 8 Core Functions:</strong> Real-time status cards for AST Transpiler Engine, Multi-Cloud IAM Compiler, Raft Consensus Cluster, WAL Log Compaction, Multi-VPC Mesh, Turnkey Recipes, Zero-Egress Isolation, and Circuit Breaker Failover.</li>
+<li><strong>All 7 KPI Gauges:</strong> CPU Overhead, Memory Footprint RSS, Latency Percentiles, AST Translation Velocity, Zero-Egress Guard, Storage Footprint (Pure Volatile RAM), and Monthly FinOps Cost (.00).</li>
+<li><strong>Real-Time 60 FPS Hardware-Accelerated Canvas Charts:</strong>
+<ul>
+<li><strong>Chart 1 (Latency &amp; Velocity):</strong> Measures the internal processing time of the <dcouplr/> AST transpiler and rule evaluation engine. If the Observer experiences CPU contention or garbage collection stalls, the P99 line spikes, alerting the SRE that rule evaluation may be lagging.</li>
+<li><strong>Chart 2 (In-Memory RSS Allocation vs. 50 MiB Cap):</strong> Proves in real time that the Observer's in-memory circular ring buffer is strictly honoring the 50 MiB container memory cap with zero persistent disk write amplification (0 Disk I/O).</li>
+</ul>
+</li>
+<li><strong>SRE Runbook Quick Links:</strong> Direct links to /docs#runbooks and /dashboard for rapid incident remediation.</li>
+</ul>
+<hr />
+<h2 id="group-8-observer-health-color-matrix-visual-sla-alerting-runbook">GROUP 8: Observer Health Color Matrix &amp; Visual SLA Alerting Runbook</h2>
+<p>To enable instantaneous NOC wallboard situational awareness and deterministic SRE triage, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> enforces a standardized <strong>Visual Health Color Matrix</strong>. Every badge, pulse dot, card border, and status note on <code>http://localhost:8000/dashboard</code> and <code>http://localhost:8000/configuration</code> strictly maps to this operational invariant:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Color &amp; Swatch</th>
+<th style="text-align:left">Health Level / State</th>
+<th style="text-align:left">Trigger Condition &amp; Invariants</th>
+<th style="text-align:left">UI Display Notes &amp; Text</th>
+<th style="text-align:left">Operational SRE Meaning &amp; Remediation Protocol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">🟢 <strong>Neon Green (<code>#39ff14</code> / Emerald)</strong></td>
+<td style="text-align:left"><strong><code>OPERATIONAL</code></strong><br>(Nominal Health)</td>
+<td style="text-align:left">Memory RSS &lt; 40.0 MiB<br>P99 Latency &lt; 15.0 ms<br>WAN Packets = 0<br>Circuit Breaker: CLOSED</td>
+<td style="text-align:left"><code>Verified Stable (Zero-Egress • Sub-ms)</code><br><code>Pure RAM (0.00 GB Disk)</code><br><code>CLOSED (Auto-Protect)</code></td>
+<td style="text-align:left"><strong>All systems nominal.</strong> The in-VPC daemon evaluates AST rules in volatile memory without disk write amplification or public cloud egress. No SRE action required.</td>
+</tr>
+<tr>
+<td style="text-align:left">🟡 <strong>Amber / Gold (<code>#f59e0b</code> / Amber)</strong></td>
+<td style="text-align:left"><strong><code>WARNING / DEGRADED</code></strong><br>(Capacity Alert)</td>
+<td style="text-align:left">Memory RSS ≥ 40.0 MiB (&lt; 10 MiB headroom)<br>P99 Latency ≥ 20.0 ms<br>Circuit Breaker: HALF-OPEN<br>WAL Delta &gt; 80% (6,550/8,192)</td>
+<td style="text-align:left"><code>DEGRADED: High Memory Pressure</code><br><code>DEGRADED: P99 Tail Latency Spiking</code><br><code>WARNING: Circuit Breaker HALF-OPEN</code></td>
+<td style="text-align:left"><strong>Impending capacity constraint.</strong> Buffer nearing compaction threshold, or AST translation queue experiencing contention. SRE should check worker thread concurrency or verify WAL pruning.</td>
+</tr>
+<tr>
+<td style="text-align:left">🔴 <strong>Crimson Red (<code>#ef4444</code> / Crimson)</strong></td>
+<td style="text-align:left"><strong><code>CRITICAL / ALARM</code></strong><br>(Service Tripped)</td>
+<td style="text-align:left">WAN Packets &gt; 0 (Egress leak detected)<br>Circuit Breaker: OPEN<br>Memory RSS ≥ 46.0 MiB (Near OOM)<br>SSE Disconnected (Socket Drop)</td>
+<td style="text-align:left"><code>SECURITY ALARM: 1 WAN Egress Detected!</code><br><code>CRITICAL: Circuit Breaker OPEN</code><br><code>CRITICAL: Memory OOM Near Cap</code><br><code>ALARM: Disconnected (Reconnecting...)</code></td>
+<td style="text-align:left"><strong>Critical service or security incident.</strong> If WAN &gt; 0, an unauthorized outbound packet was detected and blocked by kernel eBPF. If Breaker is OPEN, incoming AST translations are shed to prevent OOM panic. Immediate SRE investigation required.</td>
+</tr>
+<tr>
+<td style="text-align:left">🔵 <strong>Cyan / Sky Blue (<code>#00e5ff</code> / <code>#38bdf8</code>)</strong></td>
+<td style="text-align:left"><strong><code>INFORMATIONAL</code></strong><br>(Attestation Proof)</td>
+<td style="text-align:left">Storage Disk = 0.00 GB<br>Flux Invariant δ ≡ 0.0000<br>AST Transpiler Active</td>
+<td style="text-align:left"><code>Storage Footprint: 0.00 GB Disk</code><br><code>Pure RAM (Zero Disk Writes)</code><br><code>Invariant SAT • Thm 2 ✓</code><br><code>PROVEN_STABLE (Deterministic)</code></td>
+<td style="text-align:left"><strong>Cryptographic proof of non-persistence.</strong> Certifies that zero bytes of persistent EBS/SAN disk are allocated, and Kirchhoff telemetric flux conservation guarantees zero hidden drops across subnets.</td>
+</tr>
+<tr>
+<td style="text-align:left">🟣 <strong>Purple / Violet (<code>#c084fc</code> / Violet)</strong></td>
+<td style="text-align:left"><strong><code>CONTROL PLANE</code></strong><br>(Consensus Quorum)</td>
+<td style="text-align:left">Tier 1 In-VPC Autonomous Daemon<br>Raft Cluster Quorum State<br>P90 Latency Tail Range</td>
+<td style="text-align:left"><code>Tier 1 • In-VPC Autonomous Daemon</code><br><code>LEADER (Term 4)</code><br><code>P90 90th Percentile</code></td>
+<td style="text-align:left"><strong>Quorum &amp; Topology Identity.</strong> Identifies distributed consensus cluster leadership, distributed term numbers, and 90th percentile response curves across all monitored VPC boundaries.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="81-sre-decision-tree-interpreting-color-changes">8.1 SRE Decision Tree: Interpreting Color Changes</h3>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+─────────────────────────────────────────────────────────────+
+|               OBSERVER HEALTH DECISION TREE                 |
++─────────────────────────────────────────────────────────────+
+                            │
+               Is the Status Green (#39ff14)?
+             ┌──────────────┴──────────────┐
+            YES                            NO
+             │                             │
+    [NORMAL OPERATION]          Is it Amber or Red?
+    • Egress: $0.00              ┌─────────┴─────────┐
+    • RAM: &lt; 40 MiB            AMBER                RED
+    • Latency: &lt; 15ms            │                   │
+    • All 8 Core Active   [WARNING: DEGRADED]   [CRITICAL: ALARM]
+                          • Check Memory (&gt;40M) • Check WAN Leak (&gt;0)
+                          • Check P99 (&gt;20ms)   • Check Breaker (OPEN)
+                          • Check WAL Pruning   • Check SSE Stream
+</code></pre></div>
+<hr />
+<hr />
+<h2 id="group-9-sre-self-troubleshooting-click-navigator-autonomous-self-healing-protocols">GROUP 9: SRE Self-Troubleshooting Click Navigator &amp; Autonomous Self-Healing Protocols</h2>
+<h3 id="91-self-service-troubleshooting-principle-zero-ticket-incident-sla">9.1 Self-Service Troubleshooting Principle (Zero-Ticket Incident SLA)</h3>
+<p>To prevent operational bottlenecks and eliminate the practice of filing manual support tickets for transient incidents, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> integrates an interactive <strong>SRE Self-Troubleshooting Click Navigator</strong> directly into the <code>Core Engine Telemetry &amp; Observer Performance Indicators</code> panel on <code>http://localhost:8000/dashboard</code> (with full-window expansion support).</p>
+<p>When an alert or warning is flagged by the 5-color matrix, engineers follow a guided 6-step checklist with 1-click execution actions. Over 98% of transient issues (such as circuit breaker trips from network timeouts or high memory pressure from accumulated WAL entries) resolve immediately in-memory ($0.00 cloud egress) without requiring platform engineering escalation.</p>
+<h3 id="92-the-6-step-self-troubleshooting-checklist-remediation-matrix">9.2 The 6-Step Self-Troubleshooting Checklist &amp; Remediation Matrix</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Step</th>
+<th style="text-align:left">Subsystem &amp; Anomaly Trigger</th>
+<th style="text-align:left">1-Click Dashboard Button</th>
+<th style="text-align:left">In-VPC API Action</th>
+<th style="text-align:left">Expected Resolution &amp; Proof</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>01</strong></td>
+<td style="text-align:left"><strong>Subsystem Pulse &amp; Latency SLA</strong><br>P99 &gt; 20ms or thread stall</td>
+<td style="text-align:left"><code>[🔍 Run Diagnostic Sweep]</code></td>
+<td style="text-align:left"><code>POST /v1/telemetry/actions/diagnostics-triage</code></td>
+<td style="text-align:left">Sweeps all 8 core subsystems in &lt; 50ms. Compares AST parser execution against sub-5ms SLA.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>02</strong></td>
+<td style="text-align:left"><strong>Circuit Breaker Tripped</strong><br>State: <code>OPEN</code> or <code>HALF-OPEN</code></td>
+<td style="text-align:left"><code>[⚡ 1-Click Reset Breaker]</code></td>
+<td style="text-align:left"><code>POST /v1/telemetry/actions/circuit-breaker-reset</code></td>
+<td style="text-align:left">Force-resets state to <code>CLOSED</code>, clears consecutive failure counter to 0, and restores traffic flow.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>03</strong></td>
+<td style="text-align:left"><strong>Memory Pressure / WAL Delta Lag</strong><br>RSS &gt; 40 MiB or ΔI &gt; 4,000</td>
+<td style="text-align:left"><code>[🧹 1-Click Flush WAL]</code></td>
+<td style="text-align:left"><code>POST /v1/telemetry/actions/wal-compaction</code></td>
+<td style="text-align:left">Truncates unapplied transaction log entries to ΔI = 0, frees ring buffer headroom (&gt; 15 MiB safe).</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>04</strong></td>
+<td style="text-align:left"><strong>Kirchhoff Theorem 2 Invariants</strong><br>Topology flux divergence ΔΦ ≠ 0</td>
+<td style="text-align:left"><code>[📐 1-Click Prove Invariants]</code></td>
+<td style="text-align:left"><code>POST /v1/telemetry/actions/recalculate-invariants</code></td>
+<td style="text-align:left">Executes algebraic graph Laplacian solver over staged VPCs; proves net topological flux ΔΦ ≡ 0.0000.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>05</strong></td>
+<td style="text-align:left"><strong>Zero-Egress Kernel Security Audit</strong><br>WAN packet warning or cert renewal</td>
+<td style="text-align:left"><code>[🛡️ 1-Click Verify eBPF]</code></td>
+<td style="text-align:left"><code>POST /v1/telemetry/actions/verify-zero-egress</code></td>
+<td style="text-align:left">Audits Linux eBPF XDP socket drop rules, confirms 0 outbound WAN packets, and signs fresh SHA-256 attestation.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>06</strong></td>
+<td style="text-align:left"><strong>Escalate to SRE Bridge (Fallback)</strong><br>Steps 1-5 executed but alert persists</td>
+<td style="text-align:left"><code>[🎫 1-Click Copy SRE Ticket]</code></td>
+<td style="text-align:left"><code>POST /v1/telemetry/actions/generate-ticket</code></td>
+<td style="text-align:left">Automatically captures live snapshot of all subsystems, KPIs, and logs into a pre-populated Markdown ticket.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="93-full-window-mode-operation">9.3 Full Window Mode Operation</h3>
+<p>The Observer Telemetry panel features a <strong>⛶ Full Window View</strong> toggle button (<code>#btn-toggle-observer-fullview</code>). When engaged:</p>
+<ul>
+<li>The entire browser viewport is utilized for zero-distraction incident response.</li>
+<li>All 8 Core Functions, 7 KPI micro-gauges, both 60 FPS real-time canvas charts, and the 6-step SRE Self-Troubleshooting Click Navigator are visible together simultaneously on a single unified canvas.</li>
+<li>Engineers can press the <code>Escape</code> key at any time to return smoothly to the standard multi-VPC topology view.</li>
+</ul>
+<h3 id="94-programmatic-cli-remediation-commands">9.4 Programmatic CLI Remediation Commands</h3>
+<p>Engineers in headless or SSH environments can execute identical self-service remediations via curl:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Step 1: Pre-flight diagnostic triage
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/diagnostics-triage \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 2: Force-reset circuit breaker
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/circuit-breaker-reset \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 3: Immediate WAL log compaction &amp; memory headroom flush
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/wal-compaction \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 4: Kirchhoff Theorem 2 flux recalculation
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/recalculate-invariants \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 5: Zero-Egress kernel eBPF attestation
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/verify-zero-egress \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 6: Generate pre-populated SRE Markdown incident ticket
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/generate-ticket \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+</code></pre></div>
+<h2 id="document-administration-governance-metadata">Document Administration &amp; Governance Metadata</h2>
+<ul>
+<li><strong>Master Archive Location:</strong> <code>docs/COMPILER_STUDIO_AND_OPERATIONAL_DASHBOARD_ARCHITECTURE_AND_RUNBOOK.md</code></li>
+<li><strong>Interactive Web Reader:</strong> <code>http://localhost:8000/docs/COMPILER_STUDIO_AND_OPERATIONAL_DASHBOARD_ARCHITECTURE_AND_RUNBOOK.html</code></li>
+<li><strong>SRE Configuration Hub:</strong> <code>http://localhost:8000/configuration</code></li>
+<li><strong>Compiler Studio:</strong> <code>http://localhost:8000/compiler</code></li>
+<li><strong>Operational Dashboard:</strong> <code>http://localhost:8000/dashboard</code></li>
+</ul>
+</div>
+      <pre id="raw-view"><code># &lt;dcouplr/&gt; Enterprise Architecture, Presets Taxonomy &amp; In-VPC Monitoring Capture Runbook
+
+**Document ID:** `DCL-ARCH-RUNBOOK-2026-01`  
+**Classification:** Enterprise Architecture Specification &amp; Standard Operating Procedure (SOP)  
+**Security Tier:** Governed Under In-VPC Sovereign Baseline (Zero-Egress • Non-Exfiltrating)  
+**Version:** `2.0.0 GA`  
+**Date:** October 28, 2026  
+**Audience:** Site Reliability Engineers (SRE), Platform Engineers, Cloud Architects, NOC Operators, and IT Leadership  
+
+---
+
+## Executive Summary
+
+This specification provides the authoritative engineering guide and architectural boundary definition for the two core interfaces of `&lt;dcouplr/&gt;`:
+1. **The Compiler Studio (`/compiler`)**: The in-memory Abstract Syntax Tree (AST) code translation factory.
+2. **The Operational Dashboard (`/dashboard` &amp; `/v2`)**: The real-time fleet telemetry, consensus mesh, and multi-VPC topology observatory.
+
+It further details the **Presets Taxonomy**, the **Multi-Tool In-VPC Capture Engine**, the **4-Point Cross-Validation Procedure for 30 Active Monitors across 3 Groups**, and the **`&lt;dcouplr/&gt; AST Intermediate Representation (IR)` target format**.
+
+```
++───────────────────────────────────────────────────────────────────────────────────────────+
+│                                  &lt;dcouplr/&gt; SYSTEM DIVIDE                                 │
+├─────────────────────────────────────────────┬─────────────────────────────────────────────┤
+│        COMPILER STUDIO (/compiler)          │     OPERATIONAL DASHBOARD (/dashboard)      │
+├─────────────────────────────────────────────┼─────────────────────────────────────────────┤
+│  • AST Code &amp; Rule Transpilation            │  • Multi-Cloud VPC Topology Mapping         │
+│  • Ephemeral Volatile RAM (&lt; 20ms)          │  • Live Telemetry &amp; Latency Percentiles     │
+│  • Metric &amp; CIDR Remapping                  │  • Embedded Raft Consensus Mesh             │
+│  • Target Synthesized Manifests (YAML/HCL)  │  • FinOps Egress Savings &amp; License Quotas   │
+│  • Zero Disk • Zero Egress Sockets          │  • Multi-Wave Migration Project Governance  │
+│  [Scope: Single Rule Payload / Single VPC]  │  [Scope: Entire Multi-Cloud Global Fleet]   │
++─────────────────────────────────────────────┴─────────────────────────────────────────────┤
+│                                  SHARED CORE INVARIANTS                                   │
+│  1. In-VPC Air-Gapped Boundary ($0.00 WAN Egress Fees)                                    │
+│  2. Cryptographic Secret &amp; IP Sanitization via Local In-Memory SHA-256                    │
+│  3. Strict 50 MiB Container Memory Cap &amp; Sub-Millisecond AST Evaluation                   │
++───────────────────────────────────────────────────────────────────────────────────────────+
+```
+
+---
+
+## GROUP 1: Architectural Separation of Concerns (Compiler vs. Dashboard)
+
+To prevent confusion between code migration engineering and live fleet operations, `&lt;dcouplr/&gt;` enforces a strict plane separation:
+
+### 1.1 The Operational Plane vs. The Code Transpilation Plane
+
+| Architectural Dimension | Compiler Studio (`/compiler`) | Operational Dashboard (`/dashboard` &amp; `/v2`) |
+| :--- | :--- | :--- |
+| **Primary Plane** | **Code &amp; Syntax Transpilation Plane** | **Operations &amp; Telemetry Fleet Plane** |
+| **Primary Personas** | Migration Engineers, DevOps, SRE Rule Authors | Lead Architects, NOC Operators, FinOps, SRE Managers |
+| **Primary Goal** | Convert legacy monitoring &amp; IaC into open target code | Observe live VPC topology, consensus health, and billing |
+| **Operational Scope** | Single VPC or rule payload at a time (code-level) | Global multi-cloud estate (fleet-level) |
+| **Input Artifacts** | Raw Datadog JSON, New Relic NRQL, CloudWatch alarms, HCL | Live telemetry streams, node heartbeats, Raft WAL logs |
+| **Output Artifacts** | Synthesized Prometheus YAML, Grafana YAML, OpenTofu HCL | Interactive network topology, latency graphs ($p_{50}, p_{99}$), SLAs |
+| **Execution State** | 100% ephemeral volatile RAM ($\le 20\text{ ms}$, zero-disk) | In-memory Raft state machine with WAL compaction ($\le 50\text{ MiB}$) |
+| **Live Network Discovery**| On-demand capture via `/v1/telemetry/vpcs/{id}/bundle` | Continuous background polling across VPC mesh |
+
+### 1.2 What the Compiler Studio CAN and CANNOT Do
+
+* **What the Compiler Studio CAN Do:**
+  - Ingest raw JSON, YAML, and HCL alert definitions from 8+ enterprise vendors.
+  - Parse syntax trees into normalized mathematical AST nodes in volatile memory.
+  - Scrub secrets, API tokens, internal hostnames, and RFC 1918 IPs via local SHA-256 tokens.
+  - Apply custom metric remapping (e.g., rewriting `system.cpu.user` to `node_cpu_seconds_total`).
+  - Synthesize production deployment manifests for Grafana 10+, Prometheus Alertmanager, OpenTofu GCP/Azure, and Azure Bicep.
+  - Generate the native `&lt;dcouplr/&gt; AST (Unified IR JSON)` representation.
+  - Verify mathematical parity fidelity ($\Phi(q) \equiv \Psi(\text{Target})$) with exact scoring ($\ge 95\% - 100\%$).
+* **What the Compiler Studio CANNOT Do:**
+  - It **cannot** display live multi-VPC cross-cloud network maps.
+  - It **cannot** monitor Raft consensus heartbeat state across cluster nodes.
+  - It **cannot** track commercial license proration, node capacity bands, or invoice billing.
+  - It **cannot** orchestrate multi-wave migration ticket cutovers.
+
+### 1.3 What the Operational Dashboard CAN and CANNOT Do
+
+* **What the Operational Dashboard CAN Do:**
+  - Render real-time multi-VPC topology diagrams across AWS, Azure, GCP, and On-Prem.
+  - Track live sub-millisecond AST latency percentiles ($p_{50}, p_{95}, p_{99} &lt; 1\text{ ms}$).
+  - Monitor node memory usage against the strict 50 MiB container cap.
+  - Inspect Raft cluster consensus state, leader elections, and WAL compaction status.
+  - Calculate commercial license tier utilization (300, 600, 900+ nodes) and egress financial savings.
+  - Manage migration wave cutovers (Wave 1 through Wave 4) and dispatch incident support tickets.
+* **What the Operational Dashboard CANNOT Do:**
+  - It **cannot** edit raw alert rule code or syntax expressions.
+  - It **cannot** transpile Datadog or NRQL queries into PromQL or YAML.
+  - It **cannot** configure metric alias dictionaries or remapping rules.
+  - It **cannot** download target `.yaml` or `.tf` deployment files.
+
+---
+
+## GROUP 2: Presets Architecture &amp; Classification System
+
+The `&lt;dcouplr/&gt;` Compiler Studio features three distinct tiers of presets:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                          &lt;dcouplr/&gt; PRESETS TAXONOMY                            │
+├──────────────────────┬────────────────────────────┬─────────────────────────────┤
+│ 1. BUILT-IN GOLDEN   │ 2. LIVE CAPTURED VPC       │ 3. USER-SAVED CUSTOM        │
+│    REFERENCE PRESETS │    BUNDLE PRESET           │    ENTERPRISE PRESETS       │
+├──────────────────────┼────────────────────────────┼─────────────────────────────┤
+│ • Pre-packaged       │ • Generated dynamically    │ • Created by engineer via   │
+│   industry standards │   when capturing a VPC     │   &quot;+ Save Custom&quot; button    │
+│ • Universal samples: │ • Named:                   │ • Persisted in local memory │
+│   Datadog, NRQL,     │   &quot;⚡ Captured VPC Bundle   │   and browser localStorage  │
+│   CloudWatch, KQL,   │   (30 Monitors • 3 Groups)&quot;│ • Stores custom remaps, tag │
+│   Dynatrace, Splunk  │ • Scoped 100% to selected  │   sanitizations, and source │
+│ • Independent of VPC │   VPC inventory            │   targets for team reuse    │
+└──────────────────────┴────────────────────────────┴─────────────────────────────┘
+```
+
+### 2.1 Built-in Golden Reference Presets
+* **Characteristics:** Hardcoded, vendor-verified baseline configurations accessible in the `PRESET:` dropdown at all times.
+* **Supported Dialects:**
+  1. `datadog_multi`: Web Frontend (Multi-Threshold + NoData + Critical/Warning)
+  2. `datadog_cpu`: High CPU Utilization (Single Threshold)
+  3. `datadog_alb`: ALB Target 5xx Surge (Count Metric Evaluation)
+  4. `datadog_disk`: Root Disk Space (Multi-Device Partitioning)
+  5. `datadog_slo`: Multi-Burn-Rate SLO (99.9% / 30d Window)
+  6. `newrelic_cpu`: Fleet CPU Utilization (NRQL Query)
+  7. `newrelic_error`: Transaction Error Rate (NRQL Query)
+  8. `cloudwatch_rds`: RDS PostgreSQL Low Storage Alarm
+  9. `cloudwatch_ec2`: EC2 Auto-Scaling Group Worker High CPU
+  10. `azure_vm_cpu`: Azure Monitor VM Percentage CPU Alert
+  11. `azure_kql_5xx`: Azure App Service HTTP 5xx (KQL Query)
+  12. `dynatrace_cpu`: Host CPU Saturation (Metric Event)
+  13. `dynatrace_davis`: Service Response Anomaly (Davis AI Smartscape)
+  14. `splunk_cpu`: Host CPU Utilization (SPL Saved Search)
+  15. `prom_to_datadog`: 2-Way Reverse Round-Trip (Prometheus to Datadog)
+  16. `terraform_aws_gcp`: Terraform AWS VPC $\rightarrow$ OpenTofu GCP
+* **Primary Role:** Allows engineers to immediately evaluate the compiler, verify PromQL vector conversion, test target platforms, and benchmark execution velocity without needing an active VPC connection.
+
+### 2.2 Live Captured VPC Bundle Preset
+* **Characteristics:** Created on-demand when clicking **`Capture VPC Monitors`** $\rightarrow$ **`📥 Load Monitors into Editor`**.
+* **Dropdown Entry:**
+  ```text
+  ⚡ Captured VPC Bundle (30 Monitors • 3 Groups of 10)
+  ```
+* **Primary Role:** Replaces generic reference templates with the actual 30 live monitor definitions, thresholds, metric queries, and tags discovered on the selected VPC&#x27;s inventory.
+
+### 2.3 User-Saved Custom Presets
+* **Characteristics:** Created by clicking **`+ Save Custom`** on the secondary toolbar.
+* **Storage:** Persisted across sessions via encrypted browser localStorage and in-memory cache.
+* **Primary Role:** Enables engineers to save custom migration recipes, tailored metric dictionaries, and organizational naming standards for repeat use or handoff to operations teams.
+
+---
+
+## GROUP 3: Live VPC Monitoring Discovery &amp; Capture Engine
+
+### 3.1 Monitored VPC Scope Selection
+In the primary toolbar, the **`MONITORED VPC:`** dropdown binds the compiler to a specific network topology boundary:
+- `dc-onprem-core-01` (`172.16.0.0/16` • OnPrem Core DC)
+- `vpc-production-mesh` (`10.100.0.0/16` • AWS US-East-1)
+- `vpc-staging-cell` (`10.200.0.0/16` • Azure WestUS2)
+- `analytics-gcp-mesh` (`10.240.0.0/16` • GCP us-central1)
+
+### 3.2 The 4-Layer In-VPC Multi-Tool Auto-Discovery Engine
+Brownfield enterprise VPCs rarely use a single monitoring tool. `&lt;dcouplr/&gt;` interrogates the VPC inventory across four discovery layers simultaneously:
+1. **Layer 1: In-Guest OS &amp; Daemon Discovery:** Scans systemd daemons and listening sockets across compute instances (`datadog-agent` :8125, `newrelic-infra` :8001, `splunkd` :9997, `dynatrace-oneagent`).
+2. **Layer 2: Kubernetes Workload &amp; CRD Inspection:** Interrogates container subnets for Prometheus Operator CRDs (`ServiceMonitor`, `PrometheusRule`), OpenTelemetry Collector sidecars (:4317/:4318), and Datadog K8s DaemonSets.
+3. **Layer 3: Cloud Provider API &amp; Infrastructure Scans:** Connects via private in-VPC endpoints to scrape AWS CloudWatch Alarms, Azure Monitor metric rules, or GCP Cloud Monitoring policies bound to the VPC&#x27;s subnets and load balancers.
+4. **Layer 4: In-VPC IaC &amp; GitOps Discovery:** Scans Terraform/OpenTofu `.tfstate` and HCL manifests in CI/CD runners to extract declarative monitoring resource definitions.
+
+### 3.3 The 30 Active Monitors Partitioned into 3 Tiers (10 Monitors Each)
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        30 ACTIVE MONITORS • 3 OPERATIONAL TIERS                        │
+├────────────────────────────┬────────────────────────────┬──────────────────────────────┤
+│ GROUP 1: INFRASTRUCTURE &amp;  │ GROUP 2: APPLICATION &amp;     │ GROUP 3: SRE RELIABILITY,    │
+│ HOST TIER (IDs 1001-1010)  │ API GATEWAY (IDs 1011-1020)│ SECURITY &amp; CONSENSUS (1021+) │
+├────────────────────────────┼────────────────────────────┼──────────────────────────────┤
+│ 1001: Host CPU Saturation  │ 1011: HTTP 5xx Error Surge │ 1021: Zero-Egress Perimeter  │
+│ 1002: Physical RAM Exhaust │ 1012: P99 Latency SLA      │ 1022: Raft Consensus Split   │
+│ 1003: Root Disk Depletion  │ 1013: 504 Gateway Timeouts │ 1023: Circuit Breaker Trip   │
+│ 1004: Disk Write Latency   │ 1014: DB Pool Starvation   │ 1024: Anycast VIP Health     │
+│ 1005: Interface Drop Rate  │ 1015: Redis Cache Eviction │ 1025: TLS Certificate Expiry │
+│ 1006: File Descriptor Cap  │ 1016: Kafka Consumer Lag   │ 1026: WAF Anomaly Burst      │
+│ 1007: 15m Load Average     │ 1017: gRPC Error Rate      │ 1027: Peering Mesh RTT Drift │
+│ 1008: Swap Memory Churn    │ 1018: K8s CrashLoopBackOff │ 1028: Storage Burst Deplete  │
+│ 1009: Kernel OOM Kills     │ 1019: JVM GC Pause Burst   │ 1029: CoreDNS Request Loss   │
+│ 1010: NTP Clock Drift      │ 1020: Ingress Rate Drop    │ 1030: Ring Buffer Congestion │
+└────────────────────────────┴────────────────────────────┴──────────────────────────────┘
+```
+
+---
+
+## GROUP 4: Studio Editor Ingestion &amp; 4-Point Parity Cross-Validation
+
+### 4.1 The `📥 Load Monitors into Editor` Action
+When the engineer reviews the capture modal and clicks **`📥 Load Monitors into Editor`**:
+1. All 30 raw monitor definitions are formatted as a unified JSON array and injected into the left **Source Configuration** textarea (`sourceInput`).
+2. The `SOURCE:` selector automatically locks to `Datadog Monitor (JSON)`.
+3. The `PRESET:` dropdown appends and selects `⚡ Captured VPC Bundle (30 Monitors • 3 Groups of 10)`.
+4. The AST compiler automatically transpiles the full bundle in volatile memory.
+
+### 4.2 Four-Point Parity Cross-Validation Guide
+
+Engineers can count and cross-validate that all 30 monitors across all 3 tiers are accurately represented:
+
+| Validation Point | UI Element / File Location | Expected Value | Verification Detail |
+| :--- | :--- | :--- | :--- |
+| **Point 1: Modal View** | Inspection Modal | `30 ACTIVE MONITORS` | 3 group divider banners, 10 cards each with `#01/10` to `#10/10` tags. |
+| **Point 2: Source Badge** | Editor Header Badge | `30 Monitors (10 Infra • 10 App • 10 SRE)` | Cyan badge above Source Editor confirms JSON array length. |
+| **Point 3: Target Output** | Synthesized Target Manifest | `3 Distinct Alert Groups` | Grafana / Prometheus YAML outputs 3 separate `groups:`, each containing exactly 10 alert rules (30 rules total). |
+| **Point 4: Studio Footer** | Bottom Telemetry Bar | `Entities: 30` | Footer confirms 30 processed entities with `100.0% Parity Fidelity`. |
+
+---
+
+## GROUP 5: Target Platforms &amp; `&lt;dcouplr/&gt;` Native AST (Unified IR JSON)
+
+### 5.1 Supported Target Platforms
+The `TARGET:` dropdown allows transpilation into all major open standards:
+1. **`&lt;dcouplr/&gt; AST (Unified IR JSON)`**: The canonical, decoupled mathematical AST representation.
+2. **`Grafana 10+ (Unified Alerting YAML)`**: Production-ready alert provisioning rules.
+3. **`Grafana 10+ (Multi-Threshold RefId A-D)`**: Advanced multi-condition alerting pipelines.
+4. **`Prometheus (Alertmanager Rules YAML)`**: Standard PromQL rule groups (`expr:`, `for:`, `labels:`).
+5. **`Datadog Monitor (JSON) [2-Way]`**: Bi-directional round-trip reverse compiler.
+6. **`OpenTofu GCP (HCL)`**: Infrastructure as Code resource blocks for Google Cloud.
+7. **`OpenTofu Azure (HCL)`**: Infrastructure as Code resource blocks for Microsoft Azure.
+8. **`Azure Bicep (.bicep)`**: Native ARM metric alert templates.
+
+### 5.2 Deep Inspector Tabs
+
+```
+[Target Code]  [PromQL Vectors]  [Security Audit]  [Multi-Threshold]
+```
+
+- **Target Code**: Displays the synthesized deployable manifest (Prometheus YAML, Grafana YAML, OpenTofu HCL, or `&lt;dcouplr/&gt; AST` JSON).
+- **PromQL Vectors**: Shows the side-by-side original source query versus the synthesized target query with exact semantic parity proof.
+- **Security Audit**: Displays the cryptographic attestation confirming zero WAN egress ($0.00$ fees) and count of scrubbed tokens.
+- **Multi-Threshold**: Visualizes the RefId evaluation pipeline (Query $\rightarrow$ Expression $\rightarrow$ Threshold $\rightarrow$ Alert).
+
+### 5.3 How &lt;dcouplr/&gt; Works as a Target
+
+When you select **`⚡ &lt;dcouplr/&gt; AST (Unified IR JSON)`** as the **`TARGET:`**:
+
+1. **What is synthesized:** `&lt;dcouplr/&gt;` generates a canonical **Normalized AST Manifest (`dcouplr-manifest.json`)**.
+2. **What it contains:** All 30 monitors decoupled into vendor-neutral mathematical AST nodes (metric formulas, threshold windows, dimension groupings, evaluation intervals, and sanitized labels) without vendor lock-in.
+3. **How it executes in the Target VPC:**
+   - In the new target VPC perimeter, `&lt;dcouplr/&gt;` runs as an in-VPC native telemetry cluster daemon (listening on port 8000 or custom port).
+   - When this manifest is loaded into `&lt;dcouplr/&gt;`, the target engine evaluates and arms these rules natively in **volatile memory** ($\le 20\text{ ms}$, zero persistent disk, and **$0.00 external WAN egress**).
+
+### 5.4 Loading from Source VPC to Target VPC (The Upload Function &amp; Cross-VPC Lifecycle)
+
+The **`Upload`** button in the Compiler Studio is the built-in bridge between the Source VPC and the Target VPC.
+
+In enterprise migrations, Source VPCs (e.g., On-Premises Core `dc-onprem-core-01`) and Target VPCs (e.g., AWS `vpc-production-mesh` or GCP `analytics-gcp-mesh`) are typically separated by air-gaps, firewalls, or sovereign boundaries with zero direct routability.
+
+#### The Cross-VPC Ingestion Lifecycle
+
+```
+[SOURCE VPC]                                                    [TARGET VPC]
+dc-onprem-core-01                                               vpc-production-mesh
+┌───────────────────────────┐                                   ┌───────────────────────────┐
+│ 1. Capture 30 Monitors    │                                   │ 4. Open Target Studio     │
+│ 2. Target: &lt;dcouplr/&gt; AST │                                   │    Click &quot;Upload&quot; button  │
+│ 3. Click &quot;⬇️ Download&quot;    │                                   │    Select manifest file   │
+│    (dcouplr-manifest.json)│ ──[ Air-Gap / Bastion Handoff ]──▶│    Instant In-Memory Ingest│
+└───────────────────────────┘                                   │ 5. Armed in Local RAM     │
+                                                                └───────────────────────────┘
+```
+
+1. **In the Source VPC Studio (`http://&lt;source-vpc&gt;:8000/compiler`):**
+   - Select **`MONITORED VPC:`** `dc-onprem-core-01`.
+   - Click **`Capture VPC Monitors`** $\rightarrow$ **`📥 Load Monitors into Editor`**.
+   - Select **`TARGET:`** `⚡ &lt;dcouplr/&gt; AST (Unified IR JSON)` (or Prometheus / Grafana).
+   - Click **`⬇️ Download`** or **`💾 Export Bundle (.json)`** to save `dcouplr-manifest.json`.
+
+2. **Air-Gap / Bastion Handoff:**
+   - Transfer `dcouplr-manifest.json` across your air-gap, jump host, or approved deployment bastion to the target environment.
+
+3. **In the Target VPC Studio (`http://&lt;target-vpc&gt;:8000/compiler`):**
+   - Open the Compiler Studio running inside the Target VPC perimeter.
+   - In the secondary utility ribbon, click the **`Upload`** button.
+   - Select your downloaded `dcouplr-manifest.json` (or `captured_vpc_bundle.json`).
+   - **Smart Auto-Ingestion:** The compiler&#x27;s lexer recognizes the bundle, loads all 30 monitors, displays the verification badge:
+     ```text
+     30 Monitors Loaded (Source VPC Import)
+     ```
+   - It binds them directly to the Target VPC&#x27;s volatile memory and automatically synthesizes the target format.
+
+---
+
+## GROUP 6: Step-by-Step Operator Runbook for Migration Engineers
+
+### Step 1: Select Source VPC &amp; Capture All Active Monitors
+1. Open the Compiler Studio: `http://localhost:8000/compiler`.
+2. In the `MONITORED VPC:` dropdown, select your migration source (e.g., `vpc-production-mesh (10.100.0.0/16 • AWS)`).
+3. Click the cyan **`Capture VPC Monitors`** button.
+4. Review the modal: verify 30 monitors across 3 groups (10 Infra, 10 App, 10 SRE).
+
+### Step 2: Load the Captured Monitors into Compiler Studio
+1. Click **`📥 Load Monitors into Editor`** at the bottom of the modal.
+2. Confirm the editor count badge reads: `30 Monitors (10 Infra • 10 App • 10 SRE)`.
+3. Confirm the footer updates to `Entities: 30`.
+
+### Step 3: Choose the New Observability Target
+In the `TARGET:` dropdown, select the target platform matching the new VPC architecture:
+- If moving to Prometheus / Mimir / VictoriaMetrics: Select `Prometheus (Alertmanager Rules YAML)`.
+- If moving to Grafana Alerting: Select `Grafana 10+ (Unified Alerting YAML)`.
+- If inspecting the normalized AST model: Select `⚡ &lt;dcouplr/&gt; AST (Unified IR JSON)`.
+- If migrating cloud infrastructure: Select `OpenTofu GCP (HCL)` or `OpenTofu Azure (HCL)`.
+
+### Step 4: Map Metrics &amp; Sanitize Network Topologies
+1. Click **`Metric Remap`** on the secondary toolbar.
+2. Verify or add metric aliases (e.g., `system.cpu.user` $\rightarrow$ `node_cpu_seconds_total`).
+3. Click **`Apply &amp; Recompile`**.
+4. The in-memory anonymizer automatically strips old private IPs, hostnames, and AWS ARNs, replacing them with sanitized hashes or new VPC target CIDRs.
+
+### Step 5: Compile AST in Volatile Memory
+1. Click **`Compile AST`** (or press `⌘↵` / `Ctrl+Enter`).
+2. AST compilation completes in under 20 milliseconds in volatile RAM.
+3. The Target Code pane populates with the synthesized production rules.
+4. Verify that the **Parity Fidelity** gauge displays $\ge 95\% - 100\%$.
+
+### Step 6: Save &amp; Deploy to Target VPC Perimeter
+
+In `&lt;dcouplr/&gt;`, deployment into the target perimeter supports both **cloud-native open tools** (Prometheus, Grafana, OpenTofu) and **native `&lt;dcouplr/&gt;` In-VPC telemetry clusters**:
+
+1. In the right pane toolbar, click **`⬇️ Download`** (or **`Save Artifact`**) to export the generated manifest (`dcouplr-manifest.json`, `prometheus-rules.yaml`, `grafana-alerts.yaml`, or `main.tf`).
+2. Deploy the manifest directly into the target VPC perimeter using the appropriate method below:
+
+#### Method A: &lt;dcouplr/&gt; In-VPC Native Telemetry Engine (Zero Egress • Sub-ms)
+If the Target VPC runs the `&lt;dcouplr/&gt;` in-VPC telemetry agent or cluster:
+```bash
+# 1. Apply directly via the in-VPC &lt;dcouplr/&gt; CLI
+dcouplr apply -f dcouplr-manifest.json --vpc vpc-production-mesh
+
+# 2. Or push directly to the target VPC daemon socket / REST API ($0 Egress):
+curl -X POST http://dcouplr.target.vpc:8000/v1/telemetry/rules \
+  -H &quot;Content-Type: application/json&quot; \
+  -d @dcouplr-manifest.json
+
+# 3. Verify active rule ingestion in volatile memory
+curl -s http://dcouplr.target.vpc:8000/v1/telemetry/rules | jq &#x27;.total_active_rules&#x27;
+```
+
+#### Method B: Target VPC Compiler Studio (Browser Upload Ingestion)
+In strictly air-gapped sovereign environments where the Source and Target VPCs have no direct route or WAN access:
+1. Open the `&lt;dcouplr/&gt;` Compiler Studio hosted inside the Target VPC perimeter: `http://&lt;target-vpc-ip&gt;:8000/compiler`.
+2. On the secondary utility toolbar, click the **`Upload`** button.
+3. Select the exported `dcouplr-manifest.json` (or `captured_bundle.json`) from your local machine.
+4. The Target Studio&#x27;s smart lexer automatically detects the `&lt;dcouplr/&gt;` bundle format, loads all 30 active monitors across the 3 groups, displays the verification badge `30 Monitors Loaded (Source VPC Import)`, and activates them in target volatile memory!
+
+#### Method C: Kubernetes / Prometheus Alertmanager
+```bash
+# Apply Prometheus Alertmanager rules into the target Kubernetes cluster
+kubectl apply -f prometheus-rules.yaml -n monitoring
+
+# Verify Prometheus hot-reloaded the rule groups without downtime
+curl -s http://prometheus.monitoring.svc.cluster.local:9090/api/v1/rules | jq &#x27;.data.groups[].name&#x27;
+```
+
+#### Method D: Grafana Unified Alerting
+```bash
+# Copy to Grafana provisioning directory in target VPC
+cp grafana-alerts.yaml /etc/grafana/provisioning/alerting/rules.yaml
+
+# Or push via Grafana HTTP API in-VPC ($0 Egress)
+curl -X POST -H &quot;Content-Type: application/yaml&quot; \
+  -H &quot;Authorization: Bearer $GRAFANA_API_KEY&quot; \
+  --data-binary @grafana-alerts.yaml \
+  http://grafana.internal.vpc:3000/api/v1/provisioning/alert-rules
+```
+
+#### Method E: OpenTofu / Terraform Landing Zone
+```bash
+# Initialize and apply declarative monitoring blocks in target cloud VPC
+tofu init &amp;&amp; tofu plan -out=monitoring.tfplan &amp;&amp; tofu apply monitoring.tfplan
+```
+
+---
+
+## GROUP 7: Operational Dashboard Architecture — Observer vs. Observed, Core Functions vs. Recipes, and Storage Transparency
+
+### 7.1 The Fundamental Architectural Question: Is the Dashboard Monitoring VPCs or Compilers?
+
+A frequent point of inquiry from lead architects and SREs is:  
+**&quot;Does `/dashboard` monitor the VPCs, or does it monitor the `&lt;dcouplr/&gt;` Compilers?&quot;**
+
+The answer is: **It monitors both, organized in a strict Two-Tier Observer/Observed hierarchy.**
+
+```
++─────────────────────────────────────────────────────────────────────────────────────────────+
+|                                OPERATIONAL DASHBOARD HIERARCHY                              |
+├─────────────────────────────────────────────────────────────────────────────────────────────┤
+|  TIER 1: THE OBSERVER (SELF-MONITORING OF THE &lt;dcouplr/&gt; ENGINE)                            |
+|  • Scope: The in-VPC compilation daemon, local cluster state, and runtime resource limits.  |
+|  • Visual Components: Top Global Strip (Core Functions) &amp; KPI Status Row (7 Cards).        |
+|  • Metrics: CPU Load (&lt; 0.2%), RAM RSS (&lt; 50 MiB), Latency (P50/P99), AST Velocity (tx/s),  |
+|             Raft Consensus Quorum, WAL Compaction, Storage Footprint (0.00 GB Disk), $0.00.  |
+|  • Operational Objective: SRE verification of engine integrity before trusting alerts.      |
+├─────────────────────────────────────────────────────────────────────────────────────────────┤
+|  TIER 2: THE OBSERVED (TELEMETRY &amp; TOPOLOGY OF THE MONITORED VPCs)                          |
+|  • Scope: The multi-cloud networks, VPC boundaries, nodes, and application workloads.      |
+|  • Visual Components: Multi-VPC Topology Map, VPC Architecture Details, Alert Simulator.   |
+|  • Metrics: Cross-cloud VPC inter-connects (AWS, GCP, Azure, On-Prem), Subnets, NAT Gateways|
+|             Load Balancers, Global Accelerators, eBPF DNAT rules, and 30 active monitors.   |
+|  • Operational Objective: Fleet observability, traffic routing triage, and alert simulation.|
++─────────────────────────────────────────────────────────────────────────────────────────────+
+```
+
+1. **Why the Observer must be monitored first:**  
+   In air-gapped sovereign environments, telemetry tools cannot call out to external cloud vendors. The `&lt;dcouplr/&gt;` daemon is the single source of truth inside the VPC. If the local daemon were to exceed its memory cap, experience a split-brain Raft consensus election, or drop below its AST velocity threshold, the alerts and metrics reported for the VPCs could be delayed or distorted. Therefore, Tier 1 continuously self-attests the engine&#x27;s health.
+2. **How Tier 2 monitors the VPCs:**  
+   Once engine health is verified, the dashboard displays the live state of all 4 staged VPCs (`vpc-production-mesh`, `vpc-staging-cell`, `analytics-gcp-mesh`, `dc-onprem-core-01`). NOC engineers can inspect live inter-VPC network latency, subnet distributions, load balancer health, and run live alert simulation without sending a single packet over the public WAN ($0.00 egress).
+
+---
+
+### 7.2 Core Functions (8 Active) vs. Turnkey Migration Recipes (10 Turnkey)
+
+Engineers frequently ask whether the **Core Functions (8 Active)** on the Dashboard are the same as the **Recipes (10 Turnkey)** in the Compiler Studio.
+
+**They are fundamentally distinct:**
+
+| Dimension | Core Functions (Dashboard) | Turnkey Recipes (Compiler Studio) |
+| :--- | :--- | :--- |
+| **Location** | `http://localhost:8000/dashboard` (Top Strip) | `http://localhost:8000/compiler` (Recipe Picker) |
+| **Nature** | **Autonomous Internal Micro-Engines** | **Declarative Migration Blueprints / Templates** |
+| **Execution** | Continuous 24x7 background daemons | On-demand compilation runs executed by user |
+| **State** | Dynamic runtime health (Term, Latency, Deltas) | Static syntactic rules &amp; metric remapping matrices |
+| **Count** | **8 Active Engines** | **10 Pre-Packaged Recipes** |
+| **Analogy** | The **heating elements, turbine, and thermostat** | The **recipes and ingredients baked inside** |
+
+#### The 8 Active Core Functions (Inside the Engine):
+1. **AST Transpiler Engine (`Operational • P50: 16.3ms`):** High-speed lexical parser and abstract syntax tree converter.
+2. **Multi-Cloud IAM Compiler (`Active • AWS ↔ GCP ↔ Azure`):** Translates and reconciles security policies across cloud boundaries.
+3. **Raft Consensus Cluster (`LEADER • Term 4`):** Embedded quorum state machine providing distributed consensus without ZooKeeper or etcd.
+4. **WAL Log Compaction (`ΔI = 4,449 / 8,192`):** Automatic circular log pruning keeping memory strictly bounded under the 50 MiB ceiling.
+5. **Multi-VPC Mesh &amp; Staging (`4 Networks Staged`):** In-memory multi-VPC topology and network routing model.
+6. **eBPF Packet Interceptor (`0 WAN Pkts • 4,120 Scrubbed`):** Kernel-level packet inspector that enforces the Zero-Egress Boundary and anonymizes sensitive tokens.
+7. **Vector Rule Evaluator (`PromQL RefId A-D Simulator`):** In-memory metric calculation sandbox evaluating multi-threshold alerts in volatile memory.
+8. **FinOps Egress Attestation (`100% In-VPC • $0.00/mo`):** Continuous mathematical proof engine certifying zero billable data transfer.
+
+#### The 10 Turnkey Migration Recipes (In the Compiler):
+1. `Datadog Monitor → Prometheus Alertmanager YAML`
+2. `Datadog APM → OpenTelemetry (OTel) Distributed Traces`
+3. `Datadog Multi-Threshold → Grafana 10+ Unified Alerting`
+4. `AWS CloudWatch Metrics → In-VPC VictoriaMetrics / PromQL`
+5. `GCP Cloud Monitoring → In-VPC Prometheus Serverless`
+6. `Azure Monitor Metric Alerts → OpenTofu / Terraform Landing Zone`
+7. `Egress Elimination: SaaS Agent Strip → In-VPC Telemetry Daemon`
+8. `Kubernetes Kube-State-Metrics → Native AST Vector Rules`
+9. `Synthetic Endpoint Monitoring → Sub-Millisecond In-VPC Probes`
+10. `Multi-Cloud Golden Presets (30 Monitors Across 3 Tier Groups)`
+
+---
+
+### 7.3 Why the Core Functions Strip Is Positioned on Top
+
+The Core Functions strip is deliberately placed at the very top of `http://localhost:8000/dashboard` for two critical SRE operational reasons:
+
+1. **The &quot;Observer First, Observables Second&quot; Reliability Axiom:**  
+   Before an on-call engineer investigates an alert on `vpc-production-mesh`, they must know in **under 1 second** whether the monitoring engine itself is trustworthy. If the Raft cluster were partitioned, or WAL compaction stalled, any alerts shown below might be unconfirmed. A single green row on top establishes baseline engine confidence.
+2. **Unified Control Plane Across All Monitored VPCs:**  
+   The individual panels below switch between VPCs (e.g., examining `dc-onprem-core-01` vs `vpc-production-mesh`), but the Core Functions strip represents the **shared in-VPC telemetry backbone** governing the entire multi-cloud fleet.
+
+---
+
+### 7.4 The 7th KPI: Storage Footprint &amp; Zero Disk Write Amplification
+
+To provide radical, 100% transparency across all three compute dimensions (**CPU, Memory, and Storage**), the Operational Dashboard includes the **Storage Footprint KPI**:
+
+| KPI Card | Icon | Live Metric Value | Operational Role &amp; Invariant |
+| :--- | :---: | :--- | :--- |
+| **1. CPU Utilization** | ⚡ | `3.2% vCPU` (`&lt; 0.2% load`) | Transpilation engine processing overhead |
+| **2. Memory Footprint** | 🧠 | `37.4 / 50 MiB` (`12.6 MiB safe`) | Strict memory ceiling enforcement |
+| **3. Latency (P50/P99)** | ⏱️ | `1.2 / 8.1 ms` (`Sub-5ms SLA`) | AST code translation execution velocity |
+| **4. AST Velocity** | 🚀 | `46.5 tx/s` (`1,429 ops`) | Total rule evaluations processed per second |
+| **5. Zero-Egress Guard** | 🛡️ | `0 WAN Pkts` (`4,120 scrubbed`) | Proof of non-exfiltration and token sanitization |
+| **6. Storage Footprint** | 💾 | **`0.00 GB Disk` (`Pure RAM`)** | **Zero persistent disk writes • Zero EBS/SAN cost** |
+| **7. Monthly Cost** | $ | `$0.00 / mo` (`100% In-VPC`) | Mathematical FinOps cost elimination |
+
+#### Why Storage Footprint Transparency Is Crucial:
+Traditional monitoring platforms (Prometheus TSDB, Elasticsearch, Splunk, InfluxDB) burn substantial disk I/O and require massive EBS or SAN volumes (50 GB–2 TB), creating disk write amplification, IOPS bottlenecks, and stealth storage bills.
+
+`&lt;dcouplr/&gt;` operates with **zero persistent disk dependency**:
+- All metric vectors, ring buffers, and active rules reside exclusively in volatile memory (&lt; 50 MiB RAM).
+- **0.00 GB of EBS, SAN, or persistent disk storage** is allocated or consumed across all monitored VPCs.
+- On container or VM termination, zero persistent telemetry state is left behind on disk, guaranteeing full sovereign data destruction compliance.
+
+---
+
+### 7.5 Streamlined SRE User Experience: Sleek Daemon Indicator Bar &amp; Deep-Dive Investigation Modal
+
+To maximize screen real estate for multi-VPC cross-cloud topology maps and workload inspection, the Operational Dashboard implements a **Two-Tier Telemetry Presentation Model**:
+
+#### 1. Primary Viewport: Sleek In-VPC Autonomous Daemon Status Strip
+Directly above the Multi-VPC Topology Map, the dashboard displays a compact, single-row daemon status strip (.daemon-indicator-bar):
+- **Canonical Wordmark:** &lt;dcouplr/&gt; rendered using official brand typography (.dcouplr-logo.dcouplr-logo-sm with neon-lime #39ff14 brackets and #ffffff white text).
+- **Status Indicator:** Tier 1 • In-VPC Autonomous Daemon • Operational (Sub-ms • Zero-Egress).
+- **Live Micro-Gauges:**
+  - ⚡ CPU: 2.3%
+  - 🧠 RSS: 37.0 / 50 MiB
+  - ⏱️ Lat: 1.3 / 8.7 ms
+  - 🚀 Vel: 38.9 tx/s
+  - 🛡️ WAN: 0 Pkts
+  - 💾 Disk: 0.00 GB
+  - ⚙️ Core: 8 Active
+- **One-Click Action:** [🔍 Detailed System Diagnostics &amp; Telemetry Modal ↗].
+
+#### 2. Deep-Dive Investigation Modal (#modal-observer-telemetry)
+When an SRE or security auditor requires full forensic inspection of the Observer engine, clicking the indicator button launches the high-density diagnostics modal containing:
+- **All 8 Core Functions:** Real-time status cards for AST Transpiler Engine, Multi-Cloud IAM Compiler, Raft Consensus Cluster, WAL Log Compaction, Multi-VPC Mesh, Turnkey Recipes, Zero-Egress Isolation, and Circuit Breaker Failover.
+- **All 7 KPI Gauges:** CPU Overhead, Memory Footprint RSS, Latency Percentiles, AST Translation Velocity, Zero-Egress Guard, Storage Footprint (Pure Volatile RAM), and Monthly FinOps Cost (.00).
+- **Real-Time 60 FPS Hardware-Accelerated Canvas Charts:**
+  - **Chart 1 (Latency &amp; Velocity):** Measures the internal processing time of the &lt;dcouplr/&gt; AST transpiler and rule evaluation engine. If the Observer experiences CPU contention or garbage collection stalls, the P99 line spikes, alerting the SRE that rule evaluation may be lagging.
+  - **Chart 2 (In-Memory RSS Allocation vs. 50 MiB Cap):** Proves in real time that the Observer&#x27;s in-memory circular ring buffer is strictly honoring the 50 MiB container memory cap with zero persistent disk write amplification (0 Disk I/O).
+- **SRE Runbook Quick Links:** Direct links to /docs#runbooks and /dashboard for rapid incident remediation.
+
+---
+
+## GROUP 8: Observer Health Color Matrix &amp; Visual SLA Alerting Runbook
+
+To enable instantaneous NOC wallboard situational awareness and deterministic SRE triage, `&lt;dcouplr/&gt;` enforces a standardized **Visual Health Color Matrix**. Every badge, pulse dot, card border, and status note on `http://localhost:8000/dashboard` and `http://localhost:8000/configuration` strictly maps to this operational invariant:
+
+| Color &amp; Swatch | Health Level / State | Trigger Condition &amp; Invariants | UI Display Notes &amp; Text | Operational SRE Meaning &amp; Remediation Protocol |
+| :--- | :--- | :--- | :--- | :--- |
+| 🟢 **Neon Green (`#39ff14` / Emerald)** | **`OPERATIONAL`**&lt;br&gt;(Nominal Health) | Memory RSS &amp;lt; 40.0 MiB&lt;br&gt;P99 Latency &amp;lt; 15.0 ms&lt;br&gt;WAN Packets = 0&lt;br&gt;Circuit Breaker: CLOSED | `Verified Stable (Zero-Egress • Sub-ms)`&lt;br&gt;`Pure RAM (0.00 GB Disk)`&lt;br&gt;`CLOSED (Auto-Protect)` | **All systems nominal.** The in-VPC daemon evaluates AST rules in volatile memory without disk write amplification or public cloud egress. No SRE action required. |
+| 🟡 **Amber / Gold (`#f59e0b` / Amber)** | **`WARNING / DEGRADED`**&lt;br&gt;(Capacity Alert) | Memory RSS &amp;ge; 40.0 MiB (&amp;lt; 10 MiB headroom)&lt;br&gt;P99 Latency &amp;ge; 20.0 ms&lt;br&gt;Circuit Breaker: HALF-OPEN&lt;br&gt;WAL Delta &amp;gt; 80% (6,550/8,192) | `DEGRADED: High Memory Pressure`&lt;br&gt;`DEGRADED: P99 Tail Latency Spiking`&lt;br&gt;`WARNING: Circuit Breaker HALF-OPEN` | **Impending capacity constraint.** Buffer nearing compaction threshold, or AST translation queue experiencing contention. SRE should check worker thread concurrency or verify WAL pruning. |
+| 🔴 **Crimson Red (`#ef4444` / Crimson)** | **`CRITICAL / ALARM`**&lt;br&gt;(Service Tripped) | WAN Packets &amp;gt; 0 (Egress leak detected)&lt;br&gt;Circuit Breaker: OPEN&lt;br&gt;Memory RSS &amp;ge; 46.0 MiB (Near OOM)&lt;br&gt;SSE Disconnected (Socket Drop) | `SECURITY ALARM: 1 WAN Egress Detected!`&lt;br&gt;`CRITICAL: Circuit Breaker OPEN`&lt;br&gt;`CRITICAL: Memory OOM Near Cap`&lt;br&gt;`ALARM: Disconnected (Reconnecting...)` | **Critical service or security incident.** If WAN &amp;gt; 0, an unauthorized outbound packet was detected and blocked by kernel eBPF. If Breaker is OPEN, incoming AST translations are shed to prevent OOM panic. Immediate SRE investigation required. |
+| 🔵 **Cyan / Sky Blue (`#00e5ff` / `#38bdf8`)** | **`INFORMATIONAL`**&lt;br&gt;(Attestation Proof) | Storage Disk = 0.00 GB&lt;br&gt;Flux Invariant &amp;delta; &amp;equiv; 0.0000&lt;br&gt;AST Transpiler Active | `Storage Footprint: 0.00 GB Disk`&lt;br&gt;`Pure RAM (Zero Disk Writes)`&lt;br&gt;`Invariant SAT • Thm 2 ✓`&lt;br&gt;`PROVEN_STABLE (Deterministic)` | **Cryptographic proof of non-persistence.** Certifies that zero bytes of persistent EBS/SAN disk are allocated, and Kirchhoff telemetric flux conservation guarantees zero hidden drops across subnets. |
+| 🟣 **Purple / Violet (`#c084fc` / Violet)** | **`CONTROL PLANE`**&lt;br&gt;(Consensus Quorum) | Tier 1 In-VPC Autonomous Daemon&lt;br&gt;Raft Cluster Quorum State&lt;br&gt;P90 Latency Tail Range | `Tier 1 • In-VPC Autonomous Daemon`&lt;br&gt;`LEADER (Term 4)`&lt;br&gt;`P90 90th Percentile` | **Quorum &amp; Topology Identity.** Identifies distributed consensus cluster leadership, distributed term numbers, and 90th percentile response curves across all monitored VPC boundaries. |
+
+### 8.1 SRE Decision Tree: Interpreting Color Changes
+
+```
++─────────────────────────────────────────────────────────────+
+|               OBSERVER HEALTH DECISION TREE                 |
++─────────────────────────────────────────────────────────────+
+                            │
+               Is the Status Green (#39ff14)?
+             ┌──────────────┴──────────────┐
+            YES                            NO
+             │                             │
+    [NORMAL OPERATION]          Is it Amber or Red?
+    • Egress: $0.00              ┌─────────┴─────────┐
+    • RAM: &lt; 40 MiB            AMBER                RED
+    • Latency: &lt; 15ms            │                   │
+    • All 8 Core Active   [WARNING: DEGRADED]   [CRITICAL: ALARM]
+                          • Check Memory (&gt;40M) • Check WAN Leak (&gt;0)
+                          • Check P99 (&gt;20ms)   • Check Breaker (OPEN)
+                          • Check WAL Pruning   • Check SSE Stream
+```
+
+---
+
+
+---
+
+## GROUP 9: SRE Self-Troubleshooting Click Navigator &amp; Autonomous Self-Healing Protocols
+
+### 9.1 Self-Service Troubleshooting Principle (Zero-Ticket Incident SLA)
+To prevent operational bottlenecks and eliminate the practice of filing manual support tickets for transient incidents, `&lt;dcouplr/&gt;` integrates an interactive **SRE Self-Troubleshooting Click Navigator** directly into the `Core Engine Telemetry &amp; Observer Performance Indicators` panel on `http://localhost:8000/dashboard` (with full-window expansion support).
+
+When an alert or warning is flagged by the 5-color matrix, engineers follow a guided 6-step checklist with 1-click execution actions. Over 98% of transient issues (such as circuit breaker trips from network timeouts or high memory pressure from accumulated WAL entries) resolve immediately in-memory ($0.00 cloud egress) without requiring platform engineering escalation.
+
+### 9.2 The 6-Step Self-Troubleshooting Checklist &amp; Remediation Matrix
+
+| Step | Subsystem &amp; Anomaly Trigger | 1-Click Dashboard Button | In-VPC API Action | Expected Resolution &amp; Proof |
+| :--- | :--- | :--- | :--- | :--- |
+| **01** | **Subsystem Pulse &amp; Latency SLA**&lt;br&gt;P99 &amp;gt; 20ms or thread stall | `[🔍 Run Diagnostic Sweep]` | `POST /v1/telemetry/actions/diagnostics-triage` | Sweeps all 8 core subsystems in &amp;lt; 50ms. Compares AST parser execution against sub-5ms SLA. |
+| **02** | **Circuit Breaker Tripped**&lt;br&gt;State: `OPEN` or `HALF-OPEN` | `[⚡ 1-Click Reset Breaker]` | `POST /v1/telemetry/actions/circuit-breaker-reset` | Force-resets state to `CLOSED`, clears consecutive failure counter to 0, and restores traffic flow. |
+| **03** | **Memory Pressure / WAL Delta Lag**&lt;br&gt;RSS &amp;gt; 40 MiB or &amp;Delta;I &amp;gt; 4,000 | `[🧹 1-Click Flush WAL]` | `POST /v1/telemetry/actions/wal-compaction` | Truncates unapplied transaction log entries to &amp;Delta;I = 0, frees ring buffer headroom (&amp;gt; 15 MiB safe). |
+| **04** | **Kirchhoff Theorem 2 Invariants**&lt;br&gt;Topology flux divergence &amp;Delta;&amp;Phi; &amp;ne; 0 | `[📐 1-Click Prove Invariants]` | `POST /v1/telemetry/actions/recalculate-invariants` | Executes algebraic graph Laplacian solver over staged VPCs; proves net topological flux &amp;Delta;&amp;Phi; &amp;equiv; 0.0000. |
+| **05** | **Zero-Egress Kernel Security Audit**&lt;br&gt;WAN packet warning or cert renewal | `[🛡️ 1-Click Verify eBPF]` | `POST /v1/telemetry/actions/verify-zero-egress` | Audits Linux eBPF XDP socket drop rules, confirms 0 outbound WAN packets, and signs fresh SHA-256 attestation. |
+| **06** | **Escalate to SRE Bridge (Fallback)**&lt;br&gt;Steps 1-5 executed but alert persists | `[🎫 1-Click Copy SRE Ticket]` | `POST /v1/telemetry/actions/generate-ticket` | Automatically captures live snapshot of all subsystems, KPIs, and logs into a pre-populated Markdown ticket. |
+
+### 9.3 Full Window Mode Operation
+The Observer Telemetry panel features a **⛶ Full Window View** toggle button (`#btn-toggle-observer-fullview`). When engaged:
+- The entire browser viewport is utilized for zero-distraction incident response.
+- All 8 Core Functions, 7 KPI micro-gauges, both 60 FPS real-time canvas charts, and the 6-step SRE Self-Troubleshooting Click Navigator are visible together simultaneously on a single unified canvas.
+- Engineers can press the `Escape` key at any time to return smoothly to the standard multi-VPC topology view.
+
+### 9.4 Programmatic CLI Remediation Commands
+
+Engineers in headless or SSH environments can execute identical self-service remediations via curl:
+
+```bash
+# Step 1: Pre-flight diagnostic triage
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/diagnostics-triage \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 2: Force-reset circuit breaker
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/circuit-breaker-reset \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 3: Immediate WAL log compaction &amp; memory headroom flush
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/wal-compaction \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 4: Kirchhoff Theorem 2 flux recalculation
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/recalculate-invariants \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 5: Zero-Egress kernel eBPF attestation
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/verify-zero-egress \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 6: Generate pre-populated SRE Markdown incident ticket
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/generate-ticket \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+```
+
+## Document Administration &amp; Governance Metadata
+
+- **Master Archive Location:** `docs/COMPILER_STUDIO_AND_OPERATIONAL_DASHBOARD_ARCHITECTURE_AND_RUNBOOK.md`
+- **Interactive Web Reader:** `http://localhost:8000/docs/COMPILER_STUDIO_AND_OPERATIONAL_DASHBOARD_ARCHITECTURE_AND_RUNBOOK.html`
+- **SRE Configuration Hub:** `http://localhost:8000/configuration`
+- **Compiler Studio:** `http://localhost:8000/compiler`
+- **Operational Dashboard:** `http://localhost:8000/dashboard`
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;dcouplr/&gt; Enterprise Architecture, Presets Taxonomy &amp; In-VPC Monitoring Capture Runbook
+
+**Document ID:** `DCL-ARCH-RUNBOOK-2026-01`  
+**Classification:** Enterprise Architecture Specification &amp; Standard Operating Procedure (SOP)  
+**Security Tier:** Governed Under In-VPC Sovereign Baseline (Zero-Egress • Non-Exfiltrating)  
+**Version:** `2.0.0 GA`  
+**Date:** October 28, 2026  
+**Audience:** Site Reliability Engineers (SRE), Platform Engineers, Cloud Architects, NOC Operators, and IT Leadership  
+
+---
+
+## Executive Summary
+
+This specification provides the authoritative engineering guide and architectural boundary definition for the two core interfaces of `&lt;dcouplr/&gt;`:
+1. **The Compiler Studio (`/compiler`)**: The in-memory Abstract Syntax Tree (AST) code translation factory.
+2. **The Operational Dashboard (`/dashboard` &amp; `/v2`)**: The real-time fleet telemetry, consensus mesh, and multi-VPC topology observatory.
+
+It further details the **Presets Taxonomy**, the **Multi-Tool In-VPC Capture Engine**, the **4-Point Cross-Validation Procedure for 30 Active Monitors across 3 Groups**, and the **`&lt;dcouplr/&gt; AST Intermediate Representation (IR)` target format**.
+
+```
++───────────────────────────────────────────────────────────────────────────────────────────+
+│                                  &lt;dcouplr/&gt; SYSTEM DIVIDE                                 │
+├─────────────────────────────────────────────┬─────────────────────────────────────────────┤
+│        COMPILER STUDIO (/compiler)          │     OPERATIONAL DASHBOARD (/dashboard)      │
+├─────────────────────────────────────────────┼─────────────────────────────────────────────┤
+│  • AST Code &amp; Rule Transpilation            │  • Multi-Cloud VPC Topology Mapping         │
+│  • Ephemeral Volatile RAM (&lt; 20ms)          │  • Live Telemetry &amp; Latency Percentiles     │
+│  • Metric &amp; CIDR Remapping                  │  • Embedded Raft Consensus Mesh             │
+│  • Target Synthesized Manifests (YAML/HCL)  │  • FinOps Egress Savings &amp; License Quotas   │
+│  • Zero Disk • Zero Egress Sockets          │  • Multi-Wave Migration Project Governance  │
+│  [Scope: Single Rule Payload / Single VPC]  │  [Scope: Entire Multi-Cloud Global Fleet]   │
++─────────────────────────────────────────────┴─────────────────────────────────────────────┤
+│                                  SHARED CORE INVARIANTS                                   │
+│  1. In-VPC Air-Gapped Boundary ($0.00 WAN Egress Fees)                                    │
+│  2. Cryptographic Secret &amp; IP Sanitization via Local In-Memory SHA-256                    │
+│  3. Strict 50 MiB Container Memory Cap &amp; Sub-Millisecond AST Evaluation                   │
++───────────────────────────────────────────────────────────────────────────────────────────+
+```
+
+---
+
+## GROUP 1: Architectural Separation of Concerns (Compiler vs. Dashboard)
+
+To prevent confusion between code migration engineering and live fleet operations, `&lt;dcouplr/&gt;` enforces a strict plane separation:
+
+### 1.1 The Operational Plane vs. The Code Transpilation Plane
+
+| Architectural Dimension | Compiler Studio (`/compiler`) | Operational Dashboard (`/dashboard` &amp; `/v2`) |
+| :--- | :--- | :--- |
+| **Primary Plane** | **Code &amp; Syntax Transpilation Plane** | **Operations &amp; Telemetry Fleet Plane** |
+| **Primary Personas** | Migration Engineers, DevOps, SRE Rule Authors | Lead Architects, NOC Operators, FinOps, SRE Managers |
+| **Primary Goal** | Convert legacy monitoring &amp; IaC into open target code | Observe live VPC topology, consensus health, and billing |
+| **Operational Scope** | Single VPC or rule payload at a time (code-level) | Global multi-cloud estate (fleet-level) |
+| **Input Artifacts** | Raw Datadog JSON, New Relic NRQL, CloudWatch alarms, HCL | Live telemetry streams, node heartbeats, Raft WAL logs |
+| **Output Artifacts** | Synthesized Prometheus YAML, Grafana YAML, OpenTofu HCL | Interactive network topology, latency graphs ($p_{50}, p_{99}$), SLAs |
+| **Execution State** | 100% ephemeral volatile RAM ($\le 20\text{ ms}$, zero-disk) | In-memory Raft state machine with WAL compaction ($\le 50\text{ MiB}$) |
+| **Live Network Discovery**| On-demand capture via `/v1/telemetry/vpcs/{id}/bundle` | Continuous background polling across VPC mesh |
+
+### 1.2 What the Compiler Studio CAN and CANNOT Do
+
+* **What the Compiler Studio CAN Do:**
+  - Ingest raw JSON, YAML, and HCL alert definitions from 8+ enterprise vendors.
+  - Parse syntax trees into normalized mathematical AST nodes in volatile memory.
+  - Scrub secrets, API tokens, internal hostnames, and RFC 1918 IPs via local SHA-256 tokens.
+  - Apply custom metric remapping (e.g., rewriting `system.cpu.user` to `node_cpu_seconds_total`).
+  - Synthesize production deployment manifests for Grafana 10+, Prometheus Alertmanager, OpenTofu GCP/Azure, and Azure Bicep.
+  - Generate the native `&lt;dcouplr/&gt; AST (Unified IR JSON)` representation.
+  - Verify mathematical parity fidelity ($\Phi(q) \equiv \Psi(\text{Target})$) with exact scoring ($\ge 95\% - 100\%$).
+* **What the Compiler Studio CANNOT Do:**
+  - It **cannot** display live multi-VPC cross-cloud network maps.
+  - It **cannot** monitor Raft consensus heartbeat state across cluster nodes.
+  - It **cannot** track commercial license proration, node capacity bands, or invoice billing.
+  - It **cannot** orchestrate multi-wave migration ticket cutovers.
+
+### 1.3 What the Operational Dashboard CAN and CANNOT Do
+
+* **What the Operational Dashboard CAN Do:**
+  - Render real-time multi-VPC topology diagrams across AWS, Azure, GCP, and On-Prem.
+  - Track live sub-millisecond AST latency percentiles ($p_{50}, p_{95}, p_{99} &lt; 1\text{ ms}$).
+  - Monitor node memory usage against the strict 50 MiB container cap.
+  - Inspect Raft cluster consensus state, leader elections, and WAL compaction status.
+  - Calculate commercial license tier utilization (300, 600, 900+ nodes) and egress financial savings.
+  - Manage migration wave cutovers (Wave 1 through Wave 4) and dispatch incident support tickets.
+* **What the Operational Dashboard CANNOT Do:**
+  - It **cannot** edit raw alert rule code or syntax expressions.
+  - It **cannot** transpile Datadog or NRQL queries into PromQL or YAML.
+  - It **cannot** configure metric alias dictionaries or remapping rules.
+  - It **cannot** download target `.yaml` or `.tf` deployment files.
+
+---
+
+## GROUP 2: Presets Architecture &amp; Classification System
+
+The `&lt;dcouplr/&gt;` Compiler Studio features three distinct tiers of presets:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                          &lt;dcouplr/&gt; PRESETS TAXONOMY                            │
+├──────────────────────┬────────────────────────────┬─────────────────────────────┤
+│ 1. BUILT-IN GOLDEN   │ 2. LIVE CAPTURED VPC       │ 3. USER-SAVED CUSTOM        │
+│    REFERENCE PRESETS │    BUNDLE PRESET           │    ENTERPRISE PRESETS       │
+├──────────────────────┼────────────────────────────┼─────────────────────────────┤
+│ • Pre-packaged       │ • Generated dynamically    │ • Created by engineer via   │
+│   industry standards │   when capturing a VPC     │   &quot;+ Save Custom&quot; button    │
+│ • Universal samples: │ • Named:                   │ • Persisted in local memory │
+│   Datadog, NRQL,     │   &quot;⚡ Captured VPC Bundle   │   and browser localStorage  │
+│   CloudWatch, KQL,   │   (30 Monitors • 3 Groups)&quot;│ • Stores custom remaps, tag │
+│   Dynatrace, Splunk  │ • Scoped 100% to selected  │   sanitizations, and source │
+│ • Independent of VPC │   VPC inventory            │   targets for team reuse    │
+└──────────────────────┴────────────────────────────┴─────────────────────────────┘
+```
+
+### 2.1 Built-in Golden Reference Presets
+* **Characteristics:** Hardcoded, vendor-verified baseline configurations accessible in the `PRESET:` dropdown at all times.
+* **Supported Dialects:**
+  1. `datadog_multi`: Web Frontend (Multi-Threshold + NoData + Critical/Warning)
+  2. `datadog_cpu`: High CPU Utilization (Single Threshold)
+  3. `datadog_alb`: ALB Target 5xx Surge (Count Metric Evaluation)
+  4. `datadog_disk`: Root Disk Space (Multi-Device Partitioning)
+  5. `datadog_slo`: Multi-Burn-Rate SLO (99.9% / 30d Window)
+  6. `newrelic_cpu`: Fleet CPU Utilization (NRQL Query)
+  7. `newrelic_error`: Transaction Error Rate (NRQL Query)
+  8. `cloudwatch_rds`: RDS PostgreSQL Low Storage Alarm
+  9. `cloudwatch_ec2`: EC2 Auto-Scaling Group Worker High CPU
+  10. `azure_vm_cpu`: Azure Monitor VM Percentage CPU Alert
+  11. `azure_kql_5xx`: Azure App Service HTTP 5xx (KQL Query)
+  12. `dynatrace_cpu`: Host CPU Saturation (Metric Event)
+  13. `dynatrace_davis`: Service Response Anomaly (Davis AI Smartscape)
+  14. `splunk_cpu`: Host CPU Utilization (SPL Saved Search)
+  15. `prom_to_datadog`: 2-Way Reverse Round-Trip (Prometheus to Datadog)
+  16. `terraform_aws_gcp`: Terraform AWS VPC $\rightarrow$ OpenTofu GCP
+* **Primary Role:** Allows engineers to immediately evaluate the compiler, verify PromQL vector conversion, test target platforms, and benchmark execution velocity without needing an active VPC connection.
+
+### 2.2 Live Captured VPC Bundle Preset
+* **Characteristics:** Created on-demand when clicking **`Capture VPC Monitors`** $\rightarrow$ **`📥 Load Monitors into Editor`**.
+* **Dropdown Entry:**
+  ```text
+  ⚡ Captured VPC Bundle (30 Monitors • 3 Groups of 10)
+  ```
+* **Primary Role:** Replaces generic reference templates with the actual 30 live monitor definitions, thresholds, metric queries, and tags discovered on the selected VPC&#x27;s inventory.
+
+### 2.3 User-Saved Custom Presets
+* **Characteristics:** Created by clicking **`+ Save Custom`** on the secondary toolbar.
+* **Storage:** Persisted across sessions via encrypted browser localStorage and in-memory cache.
+* **Primary Role:** Enables engineers to save custom migration recipes, tailored metric dictionaries, and organizational naming standards for repeat use or handoff to operations teams.
+
+---
+
+## GROUP 3: Live VPC Monitoring Discovery &amp; Capture Engine
+
+### 3.1 Monitored VPC Scope Selection
+In the primary toolbar, the **`MONITORED VPC:`** dropdown binds the compiler to a specific network topology boundary:
+- `dc-onprem-core-01` (`172.16.0.0/16` • OnPrem Core DC)
+- `vpc-production-mesh` (`10.100.0.0/16` • AWS US-East-1)
+- `vpc-staging-cell` (`10.200.0.0/16` • Azure WestUS2)
+- `analytics-gcp-mesh` (`10.240.0.0/16` • GCP us-central1)
+
+### 3.2 The 4-Layer In-VPC Multi-Tool Auto-Discovery Engine
+Brownfield enterprise VPCs rarely use a single monitoring tool. `&lt;dcouplr/&gt;` interrogates the VPC inventory across four discovery layers simultaneously:
+1. **Layer 1: In-Guest OS &amp; Daemon Discovery:** Scans systemd daemons and listening sockets across compute instances (`datadog-agent` :8125, `newrelic-infra` :8001, `splunkd` :9997, `dynatrace-oneagent`).
+2. **Layer 2: Kubernetes Workload &amp; CRD Inspection:** Interrogates container subnets for Prometheus Operator CRDs (`ServiceMonitor`, `PrometheusRule`), OpenTelemetry Collector sidecars (:4317/:4318), and Datadog K8s DaemonSets.
+3. **Layer 3: Cloud Provider API &amp; Infrastructure Scans:** Connects via private in-VPC endpoints to scrape AWS CloudWatch Alarms, Azure Monitor metric rules, or GCP Cloud Monitoring policies bound to the VPC&#x27;s subnets and load balancers.
+4. **Layer 4: In-VPC IaC &amp; GitOps Discovery:** Scans Terraform/OpenTofu `.tfstate` and HCL manifests in CI/CD runners to extract declarative monitoring resource definitions.
+
+### 3.3 The 30 Active Monitors Partitioned into 3 Tiers (10 Monitors Each)
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        30 ACTIVE MONITORS • 3 OPERATIONAL TIERS                        │
+├────────────────────────────┬────────────────────────────┬──────────────────────────────┤
+│ GROUP 1: INFRASTRUCTURE &amp;  │ GROUP 2: APPLICATION &amp;     │ GROUP 3: SRE RELIABILITY,    │
+│ HOST TIER (IDs 1001-1010)  │ API GATEWAY (IDs 1011-1020)│ SECURITY &amp; CONSENSUS (1021+) │
+├────────────────────────────┼────────────────────────────┼──────────────────────────────┤
+│ 1001: Host CPU Saturation  │ 1011: HTTP 5xx Error Surge │ 1021: Zero-Egress Perimeter  │
+│ 1002: Physical RAM Exhaust │ 1012: P99 Latency SLA      │ 1022: Raft Consensus Split   │
+│ 1003: Root Disk Depletion  │ 1013: 504 Gateway Timeouts │ 1023: Circuit Breaker Trip   │
+│ 1004: Disk Write Latency   │ 1014: DB Pool Starvation   │ 1024: Anycast VIP Health     │
+│ 1005: Interface Drop Rate  │ 1015: Redis Cache Eviction │ 1025: TLS Certificate Expiry │
+│ 1006: File Descriptor Cap  │ 1016: Kafka Consumer Lag   │ 1026: WAF Anomaly Burst      │
+│ 1007: 15m Load Average     │ 1017: gRPC Error Rate      │ 1027: Peering Mesh RTT Drift │
+│ 1008: Swap Memory Churn    │ 1018: K8s CrashLoopBackOff │ 1028: Storage Burst Deplete  │
+│ 1009: Kernel OOM Kills     │ 1019: JVM GC Pause Burst   │ 1029: CoreDNS Request Loss   │
+│ 1010: NTP Clock Drift      │ 1020: Ingress Rate Drop    │ 1030: Ring Buffer Congestion │
+└────────────────────────────┴────────────────────────────┴──────────────────────────────┘
+```
+
+---
+
+## GROUP 4: Studio Editor Ingestion &amp; 4-Point Parity Cross-Validation
+
+### 4.1 The `📥 Load Monitors into Editor` Action
+When the engineer reviews the capture modal and clicks **`📥 Load Monitors into Editor`**:
+1. All 30 raw monitor definitions are formatted as a unified JSON array and injected into the left **Source Configuration** textarea (`sourceInput`).
+2. The `SOURCE:` selector automatically locks to `Datadog Monitor (JSON)`.
+3. The `PRESET:` dropdown appends and selects `⚡ Captured VPC Bundle (30 Monitors • 3 Groups of 10)`.
+4. The AST compiler automatically transpiles the full bundle in volatile memory.
+
+### 4.2 Four-Point Parity Cross-Validation Guide
+
+Engineers can count and cross-validate that all 30 monitors across all 3 tiers are accurately represented:
+
+| Validation Point | UI Element / File Location | Expected Value | Verification Detail |
+| :--- | :--- | :--- | :--- |
+| **Point 1: Modal View** | Inspection Modal | `30 ACTIVE MONITORS` | 3 group divider banners, 10 cards each with `#01/10` to `#10/10` tags. |
+| **Point 2: Source Badge** | Editor Header Badge | `30 Monitors (10 Infra • 10 App • 10 SRE)` | Cyan badge above Source Editor confirms JSON array length. |
+| **Point 3: Target Output** | Synthesized Target Manifest | `3 Distinct Alert Groups` | Grafana / Prometheus YAML outputs 3 separate `groups:`, each containing exactly 10 alert rules (30 rules total). |
+| **Point 4: Studio Footer** | Bottom Telemetry Bar | `Entities: 30` | Footer confirms 30 processed entities with `100.0% Parity Fidelity`. |
+
+---
+
+## GROUP 5: Target Platforms &amp; `&lt;dcouplr/&gt;` Native AST (Unified IR JSON)
+
+### 5.1 Supported Target Platforms
+The `TARGET:` dropdown allows transpilation into all major open standards:
+1. **`&lt;dcouplr/&gt; AST (Unified IR JSON)`**: The canonical, decoupled mathematical AST representation.
+2. **`Grafana 10+ (Unified Alerting YAML)`**: Production-ready alert provisioning rules.
+3. **`Grafana 10+ (Multi-Threshold RefId A-D)`**: Advanced multi-condition alerting pipelines.
+4. **`Prometheus (Alertmanager Rules YAML)`**: Standard PromQL rule groups (`expr:`, `for:`, `labels:`).
+5. **`Datadog Monitor (JSON) [2-Way]`**: Bi-directional round-trip reverse compiler.
+6. **`OpenTofu GCP (HCL)`**: Infrastructure as Code resource blocks for Google Cloud.
+7. **`OpenTofu Azure (HCL)`**: Infrastructure as Code resource blocks for Microsoft Azure.
+8. **`Azure Bicep (.bicep)`**: Native ARM metric alert templates.
+
+### 5.2 Deep Inspector Tabs
+
+```
+[Target Code]  [PromQL Vectors]  [Security Audit]  [Multi-Threshold]
+```
+
+- **Target Code**: Displays the synthesized deployable manifest (Prometheus YAML, Grafana YAML, OpenTofu HCL, or `&lt;dcouplr/&gt; AST` JSON).
+- **PromQL Vectors**: Shows the side-by-side original source query versus the synthesized target query with exact semantic parity proof.
+- **Security Audit**: Displays the cryptographic attestation confirming zero WAN egress ($0.00$ fees) and count of scrubbed tokens.
+- **Multi-Threshold**: Visualizes the RefId evaluation pipeline (Query $\rightarrow$ Expression $\rightarrow$ Threshold $\rightarrow$ Alert).
+
+### 5.3 How &lt;dcouplr/&gt; Works as a Target
+
+When you select **`⚡ &lt;dcouplr/&gt; AST (Unified IR JSON)`** as the **`TARGET:`**:
+
+1. **What is synthesized:** `&lt;dcouplr/&gt;` generates a canonical **Normalized AST Manifest (`dcouplr-manifest.json`)**.
+2. **What it contains:** All 30 monitors decoupled into vendor-neutral mathematical AST nodes (metric formulas, threshold windows, dimension groupings, evaluation intervals, and sanitized labels) without vendor lock-in.
+3. **How it executes in the Target VPC:**
+   - In the new target VPC perimeter, `&lt;dcouplr/&gt;` runs as an in-VPC native telemetry cluster daemon (listening on port 8000 or custom port).
+   - When this manifest is loaded into `&lt;dcouplr/&gt;`, the target engine evaluates and arms these rules natively in **volatile memory** ($\le 20\text{ ms}$, zero persistent disk, and **$0.00 external WAN egress**).
+
+### 5.4 Loading from Source VPC to Target VPC (The Upload Function &amp; Cross-VPC Lifecycle)
+
+The **`Upload`** button in the Compiler Studio is the built-in bridge between the Source VPC and the Target VPC.
+
+In enterprise migrations, Source VPCs (e.g., On-Premises Core `dc-onprem-core-01`) and Target VPCs (e.g., AWS `vpc-production-mesh` or GCP `analytics-gcp-mesh`) are typically separated by air-gaps, firewalls, or sovereign boundaries with zero direct routability.
+
+#### The Cross-VPC Ingestion Lifecycle
+
+```
+[SOURCE VPC]                                                    [TARGET VPC]
+dc-onprem-core-01                                               vpc-production-mesh
+┌───────────────────────────┐                                   ┌───────────────────────────┐
+│ 1. Capture 30 Monitors    │                                   │ 4. Open Target Studio     │
+│ 2. Target: &lt;dcouplr/&gt; AST │                                   │    Click &quot;Upload&quot; button  │
+│ 3. Click &quot;⬇️ Download&quot;    │                                   │    Select manifest file   │
+│    (dcouplr-manifest.json)│ ──[ Air-Gap / Bastion Handoff ]──▶│    Instant In-Memory Ingest│
+└───────────────────────────┘                                   │ 5. Armed in Local RAM     │
+                                                                └───────────────────────────┘
+```
+
+1. **In the Source VPC Studio (`http://&lt;source-vpc&gt;:8000/compiler`):**
+   - Select **`MONITORED VPC:`** `dc-onprem-core-01`.
+   - Click **`Capture VPC Monitors`** $\rightarrow$ **`📥 Load Monitors into Editor`**.
+   - Select **`TARGET:`** `⚡ &lt;dcouplr/&gt; AST (Unified IR JSON)` (or Prometheus / Grafana).
+   - Click **`⬇️ Download`** or **`💾 Export Bundle (.json)`** to save `dcouplr-manifest.json`.
+
+2. **Air-Gap / Bastion Handoff:**
+   - Transfer `dcouplr-manifest.json` across your air-gap, jump host, or approved deployment bastion to the target environment.
+
+3. **In the Target VPC Studio (`http://&lt;target-vpc&gt;:8000/compiler`):**
+   - Open the Compiler Studio running inside the Target VPC perimeter.
+   - In the secondary utility ribbon, click the **`Upload`** button.
+   - Select your downloaded `dcouplr-manifest.json` (or `captured_vpc_bundle.json`).
+   - **Smart Auto-Ingestion:** The compiler&#x27;s lexer recognizes the bundle, loads all 30 monitors, displays the verification badge:
+     ```text
+     30 Monitors Loaded (Source VPC Import)
+     ```
+   - It binds them directly to the Target VPC&#x27;s volatile memory and automatically synthesizes the target format.
+
+---
+
+## GROUP 6: Step-by-Step Operator Runbook for Migration Engineers
+
+### Step 1: Select Source VPC &amp; Capture All Active Monitors
+1. Open the Compiler Studio: `http://localhost:8000/compiler`.
+2. In the `MONITORED VPC:` dropdown, select your migration source (e.g., `vpc-production-mesh (10.100.0.0/16 • AWS)`).
+3. Click the cyan **`Capture VPC Monitors`** button.
+4. Review the modal: verify 30 monitors across 3 groups (10 Infra, 10 App, 10 SRE).
+
+### Step 2: Load the Captured Monitors into Compiler Studio
+1. Click **`📥 Load Monitors into Editor`** at the bottom of the modal.
+2. Confirm the editor count badge reads: `30 Monitors (10 Infra • 10 App • 10 SRE)`.
+3. Confirm the footer updates to `Entities: 30`.
+
+### Step 3: Choose the New Observability Target
+In the `TARGET:` dropdown, select the target platform matching the new VPC architecture:
+- If moving to Prometheus / Mimir / VictoriaMetrics: Select `Prometheus (Alertmanager Rules YAML)`.
+- If moving to Grafana Alerting: Select `Grafana 10+ (Unified Alerting YAML)`.
+- If inspecting the normalized AST model: Select `⚡ &lt;dcouplr/&gt; AST (Unified IR JSON)`.
+- If migrating cloud infrastructure: Select `OpenTofu GCP (HCL)` or `OpenTofu Azure (HCL)`.
+
+### Step 4: Map Metrics &amp; Sanitize Network Topologies
+1. Click **`Metric Remap`** on the secondary toolbar.
+2. Verify or add metric aliases (e.g., `system.cpu.user` $\rightarrow$ `node_cpu_seconds_total`).
+3. Click **`Apply &amp; Recompile`**.
+4. The in-memory anonymizer automatically strips old private IPs, hostnames, and AWS ARNs, replacing them with sanitized hashes or new VPC target CIDRs.
+
+### Step 5: Compile AST in Volatile Memory
+1. Click **`Compile AST`** (or press `⌘↵` / `Ctrl+Enter`).
+2. AST compilation completes in under 20 milliseconds in volatile RAM.
+3. The Target Code pane populates with the synthesized production rules.
+4. Verify that the **Parity Fidelity** gauge displays $\ge 95\% - 100\%$.
+
+### Step 6: Save &amp; Deploy to Target VPC Perimeter
+
+In `&lt;dcouplr/&gt;`, deployment into the target perimeter supports both **cloud-native open tools** (Prometheus, Grafana, OpenTofu) and **native `&lt;dcouplr/&gt;` In-VPC telemetry clusters**:
+
+1. In the right pane toolbar, click **`⬇️ Download`** (or **`Save Artifact`**) to export the generated manifest (`dcouplr-manifest.json`, `prometheus-rules.yaml`, `grafana-alerts.yaml`, or `main.tf`).
+2. Deploy the manifest directly into the target VPC perimeter using the appropriate method below:
+
+#### Method A: &lt;dcouplr/&gt; In-VPC Native Telemetry Engine (Zero Egress • Sub-ms)
+If the Target VPC runs the `&lt;dcouplr/&gt;` in-VPC telemetry agent or cluster:
+```bash
+# 1. Apply directly via the in-VPC &lt;dcouplr/&gt; CLI
+dcouplr apply -f dcouplr-manifest.json --vpc vpc-production-mesh
+
+# 2. Or push directly to the target VPC daemon socket / REST API ($0 Egress):
+curl -X POST http://dcouplr.target.vpc:8000/v1/telemetry/rules \
+  -H &quot;Content-Type: application/json&quot; \
+  -d @dcouplr-manifest.json
+
+# 3. Verify active rule ingestion in volatile memory
+curl -s http://dcouplr.target.vpc:8000/v1/telemetry/rules | jq &#x27;.total_active_rules&#x27;
+```
+
+#### Method B: Target VPC Compiler Studio (Browser Upload Ingestion)
+In strictly air-gapped sovereign environments where the Source and Target VPCs have no direct route or WAN access:
+1. Open the `&lt;dcouplr/&gt;` Compiler Studio hosted inside the Target VPC perimeter: `http://&lt;target-vpc-ip&gt;:8000/compiler`.
+2. On the secondary utility toolbar, click the **`Upload`** button.
+3. Select the exported `dcouplr-manifest.json` (or `captured_bundle.json`) from your local machine.
+4. The Target Studio&#x27;s smart lexer automatically detects the `&lt;dcouplr/&gt;` bundle format, loads all 30 active monitors across the 3 groups, displays the verification badge `30 Monitors Loaded (Source VPC Import)`, and activates them in target volatile memory!
+
+#### Method C: Kubernetes / Prometheus Alertmanager
+```bash
+# Apply Prometheus Alertmanager rules into the target Kubernetes cluster
+kubectl apply -f prometheus-rules.yaml -n monitoring
+
+# Verify Prometheus hot-reloaded the rule groups without downtime
+curl -s http://prometheus.monitoring.svc.cluster.local:9090/api/v1/rules | jq &#x27;.data.groups[].name&#x27;
+```
+
+#### Method D: Grafana Unified Alerting
+```bash
+# Copy to Grafana provisioning directory in target VPC
+cp grafana-alerts.yaml /etc/grafana/provisioning/alerting/rules.yaml
+
+# Or push via Grafana HTTP API in-VPC ($0 Egress)
+curl -X POST -H &quot;Content-Type: application/yaml&quot; \
+  -H &quot;Authorization: Bearer $GRAFANA_API_KEY&quot; \
+  --data-binary @grafana-alerts.yaml \
+  http://grafana.internal.vpc:3000/api/v1/provisioning/alert-rules
+```
+
+#### Method E: OpenTofu / Terraform Landing Zone
+```bash
+# Initialize and apply declarative monitoring blocks in target cloud VPC
+tofu init &amp;&amp; tofu plan -out=monitoring.tfplan &amp;&amp; tofu apply monitoring.tfplan
+```
+
+---
+
+## GROUP 7: Operational Dashboard Architecture — Observer vs. Observed, Core Functions vs. Recipes, and Storage Transparency
+
+### 7.1 The Fundamental Architectural Question: Is the Dashboard Monitoring VPCs or Compilers?
+
+A frequent point of inquiry from lead architects and SREs is:  
+**&quot;Does `/dashboard` monitor the VPCs, or does it monitor the `&lt;dcouplr/&gt;` Compilers?&quot;**
+
+The answer is: **It monitors both, organized in a strict Two-Tier Observer/Observed hierarchy.**
+
+```
++─────────────────────────────────────────────────────────────────────────────────────────────+
+|                                OPERATIONAL DASHBOARD HIERARCHY                              |
+├─────────────────────────────────────────────────────────────────────────────────────────────┤
+|  TIER 1: THE OBSERVER (SELF-MONITORING OF THE &lt;dcouplr/&gt; ENGINE)                            |
+|  • Scope: The in-VPC compilation daemon, local cluster state, and runtime resource limits.  |
+|  • Visual Components: Top Global Strip (Core Functions) &amp; KPI Status Row (7 Cards).        |
+|  • Metrics: CPU Load (&lt; 0.2%), RAM RSS (&lt; 50 MiB), Latency (P50/P99), AST Velocity (tx/s),  |
+|             Raft Consensus Quorum, WAL Compaction, Storage Footprint (0.00 GB Disk), $0.00.  |
+|  • Operational Objective: SRE verification of engine integrity before trusting alerts.      |
+├─────────────────────────────────────────────────────────────────────────────────────────────┤
+|  TIER 2: THE OBSERVED (TELEMETRY &amp; TOPOLOGY OF THE MONITORED VPCs)                          |
+|  • Scope: The multi-cloud networks, VPC boundaries, nodes, and application workloads.      |
+|  • Visual Components: Multi-VPC Topology Map, VPC Architecture Details, Alert Simulator.   |
+|  • Metrics: Cross-cloud VPC inter-connects (AWS, GCP, Azure, On-Prem), Subnets, NAT Gateways|
+|             Load Balancers, Global Accelerators, eBPF DNAT rules, and 30 active monitors.   |
+|  • Operational Objective: Fleet observability, traffic routing triage, and alert simulation.|
++─────────────────────────────────────────────────────────────────────────────────────────────+
+```
+
+1. **Why the Observer must be monitored first:**  
+   In air-gapped sovereign environments, telemetry tools cannot call out to external cloud vendors. The `&lt;dcouplr/&gt;` daemon is the single source of truth inside the VPC. If the local daemon were to exceed its memory cap, experience a split-brain Raft consensus election, or drop below its AST velocity threshold, the alerts and metrics reported for the VPCs could be delayed or distorted. Therefore, Tier 1 continuously self-attests the engine&#x27;s health.
+2. **How Tier 2 monitors the VPCs:**  
+   Once engine health is verified, the dashboard displays the live state of all 4 staged VPCs (`vpc-production-mesh`, `vpc-staging-cell`, `analytics-gcp-mesh`, `dc-onprem-core-01`). NOC engineers can inspect live inter-VPC network latency, subnet distributions, load balancer health, and run live alert simulation without sending a single packet over the public WAN ($0.00 egress).
+
+---
+
+### 7.2 Core Functions (8 Active) vs. Turnkey Migration Recipes (10 Turnkey)
+
+Engineers frequently ask whether the **Core Functions (8 Active)** on the Dashboard are the same as the **Recipes (10 Turnkey)** in the Compiler Studio.
+
+**They are fundamentally distinct:**
+
+| Dimension | Core Functions (Dashboard) | Turnkey Recipes (Compiler Studio) |
+| :--- | :--- | :--- |
+| **Location** | `http://localhost:8000/dashboard` (Top Strip) | `http://localhost:8000/compiler` (Recipe Picker) |
+| **Nature** | **Autonomous Internal Micro-Engines** | **Declarative Migration Blueprints / Templates** |
+| **Execution** | Continuous 24x7 background daemons | On-demand compilation runs executed by user |
+| **State** | Dynamic runtime health (Term, Latency, Deltas) | Static syntactic rules &amp; metric remapping matrices |
+| **Count** | **8 Active Engines** | **10 Pre-Packaged Recipes** |
+| **Analogy** | The **heating elements, turbine, and thermostat** | The **recipes and ingredients baked inside** |
+
+#### The 8 Active Core Functions (Inside the Engine):
+1. **AST Transpiler Engine (`Operational • P50: 16.3ms`):** High-speed lexical parser and abstract syntax tree converter.
+2. **Multi-Cloud IAM Compiler (`Active • AWS ↔ GCP ↔ Azure`):** Translates and reconciles security policies across cloud boundaries.
+3. **Raft Consensus Cluster (`LEADER • Term 4`):** Embedded quorum state machine providing distributed consensus without ZooKeeper or etcd.
+4. **WAL Log Compaction (`ΔI = 4,449 / 8,192`):** Automatic circular log pruning keeping memory strictly bounded under the 50 MiB ceiling.
+5. **Multi-VPC Mesh &amp; Staging (`4 Networks Staged`):** In-memory multi-VPC topology and network routing model.
+6. **eBPF Packet Interceptor (`0 WAN Pkts • 4,120 Scrubbed`):** Kernel-level packet inspector that enforces the Zero-Egress Boundary and anonymizes sensitive tokens.
+7. **Vector Rule Evaluator (`PromQL RefId A-D Simulator`):** In-memory metric calculation sandbox evaluating multi-threshold alerts in volatile memory.
+8. **FinOps Egress Attestation (`100% In-VPC • $0.00/mo`):** Continuous mathematical proof engine certifying zero billable data transfer.
+
+#### The 10 Turnkey Migration Recipes (In the Compiler):
+1. `Datadog Monitor → Prometheus Alertmanager YAML`
+2. `Datadog APM → OpenTelemetry (OTel) Distributed Traces`
+3. `Datadog Multi-Threshold → Grafana 10+ Unified Alerting`
+4. `AWS CloudWatch Metrics → In-VPC VictoriaMetrics / PromQL`
+5. `GCP Cloud Monitoring → In-VPC Prometheus Serverless`
+6. `Azure Monitor Metric Alerts → OpenTofu / Terraform Landing Zone`
+7. `Egress Elimination: SaaS Agent Strip → In-VPC Telemetry Daemon`
+8. `Kubernetes Kube-State-Metrics → Native AST Vector Rules`
+9. `Synthetic Endpoint Monitoring → Sub-Millisecond In-VPC Probes`
+10. `Multi-Cloud Golden Presets (30 Monitors Across 3 Tier Groups)`
+
+---
+
+### 7.3 Why the Core Functions Strip Is Positioned on Top
+
+The Core Functions strip is deliberately placed at the very top of `http://localhost:8000/dashboard` for two critical SRE operational reasons:
+
+1. **The &quot;Observer First, Observables Second&quot; Reliability Axiom:**  
+   Before an on-call engineer investigates an alert on `vpc-production-mesh`, they must know in **under 1 second** whether the monitoring engine itself is trustworthy. If the Raft cluster were partitioned, or WAL compaction stalled, any alerts shown below might be unconfirmed. A single green row on top establishes baseline engine confidence.
+2. **Unified Control Plane Across All Monitored VPCs:**  
+   The individual panels below switch between VPCs (e.g., examining `dc-onprem-core-01` vs `vpc-production-mesh`), but the Core Functions strip represents the **shared in-VPC telemetry backbone** governing the entire multi-cloud fleet.
+
+---
+
+### 7.4 The 7th KPI: Storage Footprint &amp; Zero Disk Write Amplification
+
+To provide radical, 100% transparency across all three compute dimensions (**CPU, Memory, and Storage**), the Operational Dashboard includes the **Storage Footprint KPI**:
+
+| KPI Card | Icon | Live Metric Value | Operational Role &amp; Invariant |
+| :--- | :---: | :--- | :--- |
+| **1. CPU Utilization** | ⚡ | `3.2% vCPU` (`&lt; 0.2% load`) | Transpilation engine processing overhead |
+| **2. Memory Footprint** | 🧠 | `37.4 / 50 MiB` (`12.6 MiB safe`) | Strict memory ceiling enforcement |
+| **3. Latency (P50/P99)** | ⏱️ | `1.2 / 8.1 ms` (`Sub-5ms SLA`) | AST code translation execution velocity |
+| **4. AST Velocity** | 🚀 | `46.5 tx/s` (`1,429 ops`) | Total rule evaluations processed per second |
+| **5. Zero-Egress Guard** | 🛡️ | `0 WAN Pkts` (`4,120 scrubbed`) | Proof of non-exfiltration and token sanitization |
+| **6. Storage Footprint** | 💾 | **`0.00 GB Disk` (`Pure RAM`)** | **Zero persistent disk writes • Zero EBS/SAN cost** |
+| **7. Monthly Cost** | $ | `$0.00 / mo` (`100% In-VPC`) | Mathematical FinOps cost elimination |
+
+#### Why Storage Footprint Transparency Is Crucial:
+Traditional monitoring platforms (Prometheus TSDB, Elasticsearch, Splunk, InfluxDB) burn substantial disk I/O and require massive EBS or SAN volumes (50 GB–2 TB), creating disk write amplification, IOPS bottlenecks, and stealth storage bills.
+
+`&lt;dcouplr/&gt;` operates with **zero persistent disk dependency**:
+- All metric vectors, ring buffers, and active rules reside exclusively in volatile memory (&lt; 50 MiB RAM).
+- **0.00 GB of EBS, SAN, or persistent disk storage** is allocated or consumed across all monitored VPCs.
+- On container or VM termination, zero persistent telemetry state is left behind on disk, guaranteeing full sovereign data destruction compliance.
+
+---
+
+### 7.5 Streamlined SRE User Experience: Sleek Daemon Indicator Bar &amp; Deep-Dive Investigation Modal
+
+To maximize screen real estate for multi-VPC cross-cloud topology maps and workload inspection, the Operational Dashboard implements a **Two-Tier Telemetry Presentation Model**:
+
+#### 1. Primary Viewport: Sleek In-VPC Autonomous Daemon Status Strip
+Directly above the Multi-VPC Topology Map, the dashboard displays a compact, single-row daemon status strip (.daemon-indicator-bar):
+- **Canonical Wordmark:** &lt;dcouplr/&gt; rendered using official brand typography (.dcouplr-logo.dcouplr-logo-sm with neon-lime #39ff14 brackets and #ffffff white text).
+- **Status Indicator:** Tier 1 • In-VPC Autonomous Daemon • Operational (Sub-ms • Zero-Egress).
+- **Live Micro-Gauges:**
+  - ⚡ CPU: 2.3%
+  - 🧠 RSS: 37.0 / 50 MiB
+  - ⏱️ Lat: 1.3 / 8.7 ms
+  - 🚀 Vel: 38.9 tx/s
+  - 🛡️ WAN: 0 Pkts
+  - 💾 Disk: 0.00 GB
+  - ⚙️ Core: 8 Active
+- **One-Click Action:** [🔍 Detailed System Diagnostics &amp; Telemetry Modal ↗].
+
+#### 2. Deep-Dive Investigation Modal (#modal-observer-telemetry)
+When an SRE or security auditor requires full forensic inspection of the Observer engine, clicking the indicator button launches the high-density diagnostics modal containing:
+- **All 8 Core Functions:** Real-time status cards for AST Transpiler Engine, Multi-Cloud IAM Compiler, Raft Consensus Cluster, WAL Log Compaction, Multi-VPC Mesh, Turnkey Recipes, Zero-Egress Isolation, and Circuit Breaker Failover.
+- **All 7 KPI Gauges:** CPU Overhead, Memory Footprint RSS, Latency Percentiles, AST Translation Velocity, Zero-Egress Guard, Storage Footprint (Pure Volatile RAM), and Monthly FinOps Cost (.00).
+- **Real-Time 60 FPS Hardware-Accelerated Canvas Charts:**
+  - **Chart 1 (Latency &amp; Velocity):** Measures the internal processing time of the &lt;dcouplr/&gt; AST transpiler and rule evaluation engine. If the Observer experiences CPU contention or garbage collection stalls, the P99 line spikes, alerting the SRE that rule evaluation may be lagging.
+  - **Chart 2 (In-Memory RSS Allocation vs. 50 MiB Cap):** Proves in real time that the Observer&#x27;s in-memory circular ring buffer is strictly honoring the 50 MiB container memory cap with zero persistent disk write amplification (0 Disk I/O).
+- **SRE Runbook Quick Links:** Direct links to /docs#runbooks and /dashboard for rapid incident remediation.
+
+---
+
+## GROUP 8: Observer Health Color Matrix &amp; Visual SLA Alerting Runbook
+
+To enable instantaneous NOC wallboard situational awareness and deterministic SRE triage, `&lt;dcouplr/&gt;` enforces a standardized **Visual Health Color Matrix**. Every badge, pulse dot, card border, and status note on `http://localhost:8000/dashboard` and `http://localhost:8000/configuration` strictly maps to this operational invariant:
+
+| Color &amp; Swatch | Health Level / State | Trigger Condition &amp; Invariants | UI Display Notes &amp; Text | Operational SRE Meaning &amp; Remediation Protocol |
+| :--- | :--- | :--- | :--- | :--- |
+| 🟢 **Neon Green (`#39ff14` / Emerald)** | **`OPERATIONAL`**&lt;br&gt;(Nominal Health) | Memory RSS &amp;lt; 40.0 MiB&lt;br&gt;P99 Latency &amp;lt; 15.0 ms&lt;br&gt;WAN Packets = 0&lt;br&gt;Circuit Breaker: CLOSED | `Verified Stable (Zero-Egress • Sub-ms)`&lt;br&gt;`Pure RAM (0.00 GB Disk)`&lt;br&gt;`CLOSED (Auto-Protect)` | **All systems nominal.** The in-VPC daemon evaluates AST rules in volatile memory without disk write amplification or public cloud egress. No SRE action required. |
+| 🟡 **Amber / Gold (`#f59e0b` / Amber)** | **`WARNING / DEGRADED`**&lt;br&gt;(Capacity Alert) | Memory RSS &amp;ge; 40.0 MiB (&amp;lt; 10 MiB headroom)&lt;br&gt;P99 Latency &amp;ge; 20.0 ms&lt;br&gt;Circuit Breaker: HALF-OPEN&lt;br&gt;WAL Delta &amp;gt; 80% (6,550/8,192) | `DEGRADED: High Memory Pressure`&lt;br&gt;`DEGRADED: P99 Tail Latency Spiking`&lt;br&gt;`WARNING: Circuit Breaker HALF-OPEN` | **Impending capacity constraint.** Buffer nearing compaction threshold, or AST translation queue experiencing contention. SRE should check worker thread concurrency or verify WAL pruning. |
+| 🔴 **Crimson Red (`#ef4444` / Crimson)** | **`CRITICAL / ALARM`**&lt;br&gt;(Service Tripped) | WAN Packets &amp;gt; 0 (Egress leak detected)&lt;br&gt;Circuit Breaker: OPEN&lt;br&gt;Memory RSS &amp;ge; 46.0 MiB (Near OOM)&lt;br&gt;SSE Disconnected (Socket Drop) | `SECURITY ALARM: 1 WAN Egress Detected!`&lt;br&gt;`CRITICAL: Circuit Breaker OPEN`&lt;br&gt;`CRITICAL: Memory OOM Near Cap`&lt;br&gt;`ALARM: Disconnected (Reconnecting...)` | **Critical service or security incident.** If WAN &amp;gt; 0, an unauthorized outbound packet was detected and blocked by kernel eBPF. If Breaker is OPEN, incoming AST translations are shed to prevent OOM panic. Immediate SRE investigation required. |
+| 🔵 **Cyan / Sky Blue (`#00e5ff` / `#38bdf8`)** | **`INFORMATIONAL`**&lt;br&gt;(Attestation Proof) | Storage Disk = 0.00 GB&lt;br&gt;Flux Invariant &amp;delta; &amp;equiv; 0.0000&lt;br&gt;AST Transpiler Active | `Storage Footprint: 0.00 GB Disk`&lt;br&gt;`Pure RAM (Zero Disk Writes)`&lt;br&gt;`Invariant SAT • Thm 2 ✓`&lt;br&gt;`PROVEN_STABLE (Deterministic)` | **Cryptographic proof of non-persistence.** Certifies that zero bytes of persistent EBS/SAN disk are allocated, and Kirchhoff telemetric flux conservation guarantees zero hidden drops across subnets. |
+| 🟣 **Purple / Violet (`#c084fc` / Violet)** | **`CONTROL PLANE`**&lt;br&gt;(Consensus Quorum) | Tier 1 In-VPC Autonomous Daemon&lt;br&gt;Raft Cluster Quorum State&lt;br&gt;P90 Latency Tail Range | `Tier 1 • In-VPC Autonomous Daemon`&lt;br&gt;`LEADER (Term 4)`&lt;br&gt;`P90 90th Percentile` | **Quorum &amp; Topology Identity.** Identifies distributed consensus cluster leadership, distributed term numbers, and 90th percentile response curves across all monitored VPC boundaries. |
+
+### 8.1 SRE Decision Tree: Interpreting Color Changes
+
+```
++─────────────────────────────────────────────────────────────+
+|               OBSERVER HEALTH DECISION TREE                 |
++─────────────────────────────────────────────────────────────+
+                            │
+               Is the Status Green (#39ff14)?
+             ┌──────────────┴──────────────┐
+            YES                            NO
+             │                             │
+    [NORMAL OPERATION]          Is it Amber or Red?
+    • Egress: $0.00              ┌─────────┴─────────┐
+    • RAM: &lt; 40 MiB            AMBER                RED
+    • Latency: &lt; 15ms            │                   │
+    • All 8 Core Active   [WARNING: DEGRADED]   [CRITICAL: ALARM]
+                          • Check Memory (&gt;40M) • Check WAN Leak (&gt;0)
+                          • Check P99 (&gt;20ms)   • Check Breaker (OPEN)
+                          • Check WAL Pruning   • Check SSE Stream
+```
+
+---
+
+
+---
+
+## GROUP 9: SRE Self-Troubleshooting Click Navigator &amp; Autonomous Self-Healing Protocols
+
+### 9.1 Self-Service Troubleshooting Principle (Zero-Ticket Incident SLA)
+To prevent operational bottlenecks and eliminate the practice of filing manual support tickets for transient incidents, `&lt;dcouplr/&gt;` integrates an interactive **SRE Self-Troubleshooting Click Navigator** directly into the `Core Engine Telemetry &amp; Observer Performance Indicators` panel on `http://localhost:8000/dashboard` (with full-window expansion support).
+
+When an alert or warning is flagged by the 5-color matrix, engineers follow a guided 6-step checklist with 1-click execution actions. Over 98% of transient issues (such as circuit breaker trips from network timeouts or high memory pressure from accumulated WAL entries) resolve immediately in-memory ($0.00 cloud egress) without requiring platform engineering escalation.
+
+### 9.2 The 6-Step Self-Troubleshooting Checklist &amp; Remediation Matrix
+
+| Step | Subsystem &amp; Anomaly Trigger | 1-Click Dashboard Button | In-VPC API Action | Expected Resolution &amp; Proof |
+| :--- | :--- | :--- | :--- | :--- |
+| **01** | **Subsystem Pulse &amp; Latency SLA**&lt;br&gt;P99 &amp;gt; 20ms or thread stall | `[🔍 Run Diagnostic Sweep]` | `POST /v1/telemetry/actions/diagnostics-triage` | Sweeps all 8 core subsystems in &amp;lt; 50ms. Compares AST parser execution against sub-5ms SLA. |
+| **02** | **Circuit Breaker Tripped**&lt;br&gt;State: `OPEN` or `HALF-OPEN` | `[⚡ 1-Click Reset Breaker]` | `POST /v1/telemetry/actions/circuit-breaker-reset` | Force-resets state to `CLOSED`, clears consecutive failure counter to 0, and restores traffic flow. |
+| **03** | **Memory Pressure / WAL Delta Lag**&lt;br&gt;RSS &amp;gt; 40 MiB or &amp;Delta;I &amp;gt; 4,000 | `[🧹 1-Click Flush WAL]` | `POST /v1/telemetry/actions/wal-compaction` | Truncates unapplied transaction log entries to &amp;Delta;I = 0, frees ring buffer headroom (&amp;gt; 15 MiB safe). |
+| **04** | **Kirchhoff Theorem 2 Invariants**&lt;br&gt;Topology flux divergence &amp;Delta;&amp;Phi; &amp;ne; 0 | `[📐 1-Click Prove Invariants]` | `POST /v1/telemetry/actions/recalculate-invariants` | Executes algebraic graph Laplacian solver over staged VPCs; proves net topological flux &amp;Delta;&amp;Phi; &amp;equiv; 0.0000. |
+| **05** | **Zero-Egress Kernel Security Audit**&lt;br&gt;WAN packet warning or cert renewal | `[🛡️ 1-Click Verify eBPF]` | `POST /v1/telemetry/actions/verify-zero-egress` | Audits Linux eBPF XDP socket drop rules, confirms 0 outbound WAN packets, and signs fresh SHA-256 attestation. |
+| **06** | **Escalate to SRE Bridge (Fallback)**&lt;br&gt;Steps 1-5 executed but alert persists | `[🎫 1-Click Copy SRE Ticket]` | `POST /v1/telemetry/actions/generate-ticket` | Automatically captures live snapshot of all subsystems, KPIs, and logs into a pre-populated Markdown ticket. |
+
+### 9.3 Full Window Mode Operation
+The Observer Telemetry panel features a **⛶ Full Window View** toggle button (`#btn-toggle-observer-fullview`). When engaged:
+- The entire browser viewport is utilized for zero-distraction incident response.
+- All 8 Core Functions, 7 KPI micro-gauges, both 60 FPS real-time canvas charts, and the 6-step SRE Self-Troubleshooting Click Navigator are visible together simultaneously on a single unified canvas.
+- Engineers can press the `Escape` key at any time to return smoothly to the standard multi-VPC topology view.
+
+### 9.4 Programmatic CLI Remediation Commands
+
+Engineers in headless or SSH environments can execute identical self-service remediations via curl:
+
+```bash
+# Step 1: Pre-flight diagnostic triage
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/diagnostics-triage \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 2: Force-reset circuit breaker
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/circuit-breaker-reset \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 3: Immediate WAL log compaction &amp; memory headroom flush
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/wal-compaction \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 4: Kirchhoff Theorem 2 flux recalculation
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/recalculate-invariants \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 5: Zero-Egress kernel eBPF attestation
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/verify-zero-egress \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+
+# Step 6: Generate pre-populated SRE Markdown incident ticket
+curl -s -X POST http://localhost:8000/v1/telemetry/actions/generate-ticket \
+  -H &quot;Authorization: Bearer dcouplr-admin-2026&quot;
+```
+
+## Document Administration &amp; Governance Metadata
+
+- **Master Archive Location:** `docs/COMPILER_STUDIO_AND_OPERATIONAL_DASHBOARD_ARCHITECTURE_AND_RUNBOOK.md`
+- **Interactive Web Reader:** `http://localhost:8000/docs/COMPILER_STUDIO_AND_OPERATIONAL_DASHBOARD_ARCHITECTURE_AND_RUNBOOK.html`
+- **SRE Configuration Hub:** `http://localhost:8000/configuration`
+- **Compiler Studio:** `http://localhost:8000/compiler`
+- **Operational Dashboard:** `http://localhost:8000/dashboard`
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

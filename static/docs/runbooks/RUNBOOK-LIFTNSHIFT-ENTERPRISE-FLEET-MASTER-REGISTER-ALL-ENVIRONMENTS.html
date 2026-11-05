@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-LIFTNSHIFT-ENTERPRISE-FLEET-MASTER-REGISTER-ALL-ENVIRONMENTS.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-LIFTNSHIFT-ENTERPRISE-FLEET-MASTER-REGISTER-ALL-ENVIRONMENTS.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-LIFTNSHIFT-ENTERPRISE-FLEET-MASTER-REGISTER-ALL-ENVIRONMENTS.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="master-enterprise-fleet-migration-register-consolidated-handover-runbook">🌐 Master Enterprise Fleet Migration Register &amp; Consolidated Handover Runbook</h1>
+<h2 id="all-configured-source-to-destination-environments-full-stack-suite">All Configured Source-to-Destination Environments · Full-Stack Suite</h2>
+<p><strong>Document ID:</strong> <code>VA-RUNBOOK-ENTERPRISE-FLEET-MASTER-001</code><br />
+<strong>Classification:</strong> Enterprise Architecture Governance &amp; Multi-Cloud Fleet Directory<br />
+<strong>Originating Activity:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Multi-Environment Lift &amp; Shift Migration Platform<br />
+<strong>Generation Timestamp:</strong> 2026-11-03T14:30:00Z<br />
+<strong>Compliance Standard:</strong> ISO/IEC 27001 · SOC 2 Type II · ITIL v4 Service Operation<br />
+<strong>Total Fleet Scope:</strong> 5 Enterprise Environments · 75 Nodes · 5 Database Clusters · $0.00 WAN Egress</p>
+<hr />
+<blockquote>
+<p>[!IMPORTANT]
+<strong>FLEET-WIDE ZERO CONFUSION ARCHITECTURE</strong><br />
+This Master Runbook provides the global consolidation of all configured enterprise environments, while referencing individual, dedicated runbooks for each migration.</p>
+<p>SREs, auditors, and engineering leadership can inspect the holistic fleet progress below or click directly into each environment's dedicated 1:1 runbook for step-by-step technical procedures.</p>
+</blockquote>
+<hr />
+<h2 id="1-enterprise-multi-environment-fleet-register">1. Enterprise Multi-Environment Fleet Register</h2>
+<p>| <strong>dc-onprem-core-01</strong> | On-Premises (On-Prem DC1 (Chicago)) | <code>10.10.0.0/16</code> | 16 Nodes | <strong>vpc-gcp-prod-01</strong> | Google Cloud Platform (GCP) | <code>10.200.0.0/16</code> | <a href="/docs/runbooks/RUNBOOK-LIFTNSHIFT-DC-ONPREM-CORE-01-TO-GCP-US-CENTRAL1.html">View 1:1 Runbook</a> |
+| <strong>vpc-aws-prod-01</strong> | Amazon Web Services (AWS) (AWS us-east-1 (N. Virginia)) | <code>10.100.0.0/16</code> | 24 Nodes | <strong>vpc-gcp-prod-01</strong> | Google Cloud Platform (GCP) | <code>10.200.0.0/16</code> | <a href="/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-AWS-PROD-01-TO-GCP-US-CENTRAL1.html">View 1:1 Runbook</a> |
+| <strong>vnet-azure-core-01</strong> | Microsoft Azure (Azure eastus2 (Virginia)) | <code>10.150.0.0/16</code> | 18 Nodes | <strong>vpc-gcp-prod-01</strong> | Google Cloud Platform (GCP) | <code>10.200.0.0/16</code> | <a href="/docs/runbooks/RUNBOOK-LIFTNSHIFT-VNET-AZURE-CORE-01-TO-GCP-US-CENTRAL1.html">View 1:1 Runbook</a> |
+| <strong>vpc-gcp-analytics-03</strong> | Google Cloud Platform (GCP) (GCP us-central1 (Iowa)) | <code>10.200.0.0/16</code> | 12 Nodes | <strong>vpc-aws-prod-01</strong> | Amazon Web Services (AWS) | <code>10.100.0.0/16</code> | <a href="/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-GCP-ANALYTICS-03-TO-AWS-US-EAST1.html">View 1:1 Runbook</a> |
+| <strong>vpc-aws-stage-02</strong> | Amazon Web Services (AWS) (AWS us-west-2 (Oregon)) | <code>10.101.0.0/16</code> | 5 Nodes | <strong>vpc-gcp-stage-01</strong> | Google Cloud Platform (GCP) | <code>10.200.0.0/16</code> | <a href="/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-AWS-STAGE-02-TO-GCP-US-CENTRAL1.html">View 1:1 Runbook</a> |</p>
+<hr />
+<h2 id="2-environment-specific-runbook-catalog">2. Environment-Specific Runbook Catalog</h2>
+<p>Every environment migration maintains its own dedicated, authoritative operational manual titled with the exact source-to-destination envelope:</p>
+<ol>
+<li>
+<p>🏢 <strong>On-Premises Datacenter 1 ➔ GCP</strong>:</p>
+<ul>
+<li><strong>Runbook:</strong> <a href="/docs/runbooks/RUNBOOK-LIFTNSHIFT-DC-ONPREM-CORE-01-TO-GCP-US-CENTRAL1.html"><code>RUNBOOK-LIFTNSHIFT-DC-ONPREM-CORE-01-TO-GCP-US-CENTRAL1.md</code></a></li>
+<li><strong>Scope:</strong> 16 Bare-metal servers, PostgreSQL 15.4 NVMe SAN, Dual Xeon CPUs ➔ GCP <code>vpc-gcp-prod-01</code> (<code>10.200.0.0/16</code>).</li>
+<li><strong>Replication:</strong> Google Cloud Migrate to Virtual Machines (M4CE).</li>
+</ul>
+</li>
+<li>
+<p>☁️ <strong>AWS Production us-east-1 ➔ GCP</strong>:</p>
+<ul>
+<li><strong>Runbook:</strong> <a href="/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-AWS-PROD-01-TO-GCP-US-CENTRAL1.html"><code>RUNBOOK-LIFTNSHIFT-VPC-AWS-PROD-01-TO-GCP-US-CENTRAL1.md</code></a></li>
+<li><strong>Scope:</strong> 24 EC2 <code>m5.4xlarge</code> nodes, Aurora PostgreSQL Multi-AZ ➔ GCP <code>vpc-gcp-prod-01</code> (<code>10.200.0.0/16</code>).</li>
+<li><strong>Replication:</strong> GCP M4CE cross-cloud replication.</li>
+</ul>
+</li>
+<li>
+<p>☁️ <strong>Microsoft Azure Core eastus2 ➔ GCP</strong>:</p>
+<ul>
+<li><strong>Runbook:</strong> <a href="/docs/runbooks/RUNBOOK-LIFTNSHIFT-VNET-AZURE-CORE-01-TO-GCP-US-CENTRAL1.html"><code>RUNBOOK-LIFTNSHIFT-VNET-AZURE-CORE-01-TO-GCP-US-CENTRAL1.md</code></a></li>
+<li><strong>Scope:</strong> 18 Azure VMs, Azure PostgreSQL Flexible Server ZRS ➔ GCP <code>vpc-gcp-prod-01</code> (<code>10.200.0.0/16</code>).</li>
+<li><strong>Replication:</strong> GCP M4CE.</li>
+</ul>
+</li>
+<li>
+<p>🌐 <strong>GCP Analytics us-central1 ➔ AWS</strong>:</p>
+<ul>
+<li><strong>Runbook:</strong> <a href="/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-GCP-ANALYTICS-03-TO-AWS-US-EAST1.html"><code>RUNBOOK-LIFTNSHIFT-VPC-GCP-ANALYTICS-03-TO-AWS-US-EAST1.md</code></a></li>
+<li><strong>Scope:</strong> 12 GCP GKE/compute nodes, Cloud SQL HA ➔ AWS <code>vpc-aws-prod-01</code> (<code>10.100.0.0/16</code>).</li>
+<li><strong>Replication:</strong> AWS Application Migration Service (MGN).</li>
+</ul>
+</li>
+<li>
+<p>☁️ <strong>AWS Staging us-west-2 ➔ GCP</strong>:</p>
+<ul>
+<li><strong>Runbook:</strong> <a href="/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-AWS-STAGE-02-TO-GCP-US-CENTRAL1.html"><code>RUNBOOK-LIFTNSHIFT-VPC-AWS-STAGE-02-TO-GCP-US-CENTRAL1.md</code></a></li>
+<li><strong>Scope:</strong> 5 AWS staging nodes, RDS PG 14 ➔ GCP <code>vpc-gcp-stage-01</code> (<code>10.200.0.0/16</code>).</li>
+<li><strong>Replication:</strong> GCP M4CE.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="3-fleet-wide-pre-cutover-readiness-gates">3. Fleet-Wide Pre-Cutover Readiness Gates</h2>
+<p>Before executing traffic swing on ANY environment, the 5 universal cutover gates must be verified:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">[GATE 1] CDC Lag &lt;= 0.00s: Continuous block mirroring verified with zero backlog bytes.
+[GATE 2] Quorum Health Probes: In-VPC /healthz probes return HTTP 200 with P99 &lt; 15ms.
+[GATE 3] Queue Drainage: 0 pending un-replicated write transactions in memory buffers.
+[GATE 4] Network Isolation: Ephemeral JIT management ports armed for instantaneous teardown.
+[GATE 5] Rollback Armed: 4-step emergency reverse rollback script verified and pre-staged.
+</code></pre></div>
+<hr />
+<h2 id="4-consolidated-finops-savings-rollup">4. Consolidated FinOps Savings Rollup</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Environment</th>
+<th style="text-align:left">Source Spend Baseline</th>
+<th style="text-align:left">Target Run-Rate</th>
+<th style="text-align:left">Monthly Compute Savings</th>
+<th style="text-align:left">Monthly WAN Egress Savings</th>
+<th style="text-align:left">Net Annualized Savings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>dc-onprem-core-01</code></td>
+<td style="text-align:left">$8,400 / mo</td>
+<td style="text-align:left">$3,120 / mo</td>
+<td style="text-align:left">$5,280 / mo (63%)</td>
+<td style="text-align:left">$0.00 (Private MPLS)</td>
+<td style="text-align:left"><strong>$63,360 / yr</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>vpc-aws-prod-01</code></td>
+<td style="text-align:left">$14,200 / mo</td>
+<td style="text-align:left">$4,850 / mo</td>
+<td style="text-align:left">$9,350 / mo (66%)</td>
+<td style="text-align:left">$240.00 / mo</td>
+<td style="text-align:left"><strong>$115,080 / yr</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>vnet-azure-core-01</code></td>
+<td style="text-align:left">$9,800 / mo</td>
+<td style="text-align:left">$3,450 / mo</td>
+<td style="text-align:left">$6,350 / mo (65%)</td>
+<td style="text-align:left">$142.50 / mo</td>
+<td style="text-align:left"><strong>$77,910 / yr</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>vpc-gcp-analytics-03</code></td>
+<td style="text-align:left">$6,100 / mo</td>
+<td style="text-align:left">$2,600 / mo</td>
+<td style="text-align:left">$3,500 / mo (57%)</td>
+<td style="text-align:left">$110.00 / mo</td>
+<td style="text-align:left"><strong>$43,320 / yr</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>vpc-aws-stage-02</code></td>
+<td style="text-align:left">$1,950 / mo</td>
+<td style="text-align:left">$780 / mo</td>
+<td style="text-align:left">$1,170 / mo (60%)</td>
+<td style="text-align:left">$45.00 / mo</td>
+<td style="text-align:left"><strong>$14,580 / yr</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>TOTAL FLEET</strong></td>
+<td style="text-align:left"><strong>$40,450 / mo</strong></td>
+<td style="text-align:left"><strong>$14,800 / mo</strong></td>
+<td style="text-align:left"><strong>$25,650 / mo (63.4%)</strong></td>
+<td style="text-align:left"><strong>$537.50 / mo</strong></td>
+<td style="text-align:left"><strong>$314,250 / yr</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-unified-emergency-rollback-sop">5. Unified Emergency Rollback SOP</h2>
+<p>All environments adhere to the universal 4-step emergency rollback paradigm:</p>
+<ol>
+<li><strong>Sever Target Ingress</strong>: Invalidate Target Load Balancer VIP forwarding rules.</li>
+<li><strong>Revert DNS Mesh</strong>: Atomically roll back Route 53 / Cloud DNS A/AAAA records with 1-second TTL.</li>
+<li><strong>Unfreeze Source Database</strong>: Execute <code>ALTER SYSTEM SET default_transaction_read_only = 'off'</code>.</li>
+<li><strong>Audit CDC Integrity</strong>: Inspect reverse replication journals for zero loss.</li>
+</ol>
+</div>
+      <pre id="raw-view"><code># 🌐 Master Enterprise Fleet Migration Register &amp; Consolidated Handover Runbook
+## All Configured Source-to-Destination Environments · Full-Stack Suite
+
+**Document ID:** `VA-RUNBOOK-ENTERPRISE-FLEET-MASTER-001`  
+**Classification:** Enterprise Architecture Governance &amp; Multi-Cloud Fleet Directory  
+**Originating Activity:** `&lt;dcouplr/&gt;` Multi-Environment Lift &amp; Shift Migration Platform  
+**Generation Timestamp:** 2026-11-03T14:30:00Z  
+**Compliance Standard:** ISO/IEC 27001 · SOC 2 Type II · ITIL v4 Service Operation  
+**Total Fleet Scope:** 5 Enterprise Environments · 75 Nodes · 5 Database Clusters · $0.00 WAN Egress  
+
+---
+
+&gt; [!IMPORTANT]
+&gt; **FLEET-WIDE ZERO CONFUSION ARCHITECTURE**  
+&gt; This Master Runbook provides the global consolidation of all configured enterprise environments, while referencing individual, dedicated runbooks for each migration.
+&gt; 
+&gt; SREs, auditors, and engineering leadership can inspect the holistic fleet progress below or click directly into each environment&#x27;s dedicated 1:1 runbook for step-by-step technical procedures.
+
+---
+
+## 1. Enterprise Multi-Environment Fleet Register
+
+| **dc-onprem-core-01** | On-Premises (On-Prem DC1 (Chicago)) | `10.10.0.0/16` | 16 Nodes | **vpc-gcp-prod-01** | Google Cloud Platform (GCP) | `10.200.0.0/16` | [View 1:1 Runbook](/docs/runbooks/RUNBOOK-LIFTNSHIFT-DC-ONPREM-CORE-01-TO-GCP-US-CENTRAL1.html) |
+| **vpc-aws-prod-01** | Amazon Web Services (AWS) (AWS us-east-1 (N. Virginia)) | `10.100.0.0/16` | 24 Nodes | **vpc-gcp-prod-01** | Google Cloud Platform (GCP) | `10.200.0.0/16` | [View 1:1 Runbook](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-AWS-PROD-01-TO-GCP-US-CENTRAL1.html) |
+| **vnet-azure-core-01** | Microsoft Azure (Azure eastus2 (Virginia)) | `10.150.0.0/16` | 18 Nodes | **vpc-gcp-prod-01** | Google Cloud Platform (GCP) | `10.200.0.0/16` | [View 1:1 Runbook](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VNET-AZURE-CORE-01-TO-GCP-US-CENTRAL1.html) |
+| **vpc-gcp-analytics-03** | Google Cloud Platform (GCP) (GCP us-central1 (Iowa)) | `10.200.0.0/16` | 12 Nodes | **vpc-aws-prod-01** | Amazon Web Services (AWS) | `10.100.0.0/16` | [View 1:1 Runbook](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-GCP-ANALYTICS-03-TO-AWS-US-EAST1.html) |
+| **vpc-aws-stage-02** | Amazon Web Services (AWS) (AWS us-west-2 (Oregon)) | `10.101.0.0/16` | 5 Nodes | **vpc-gcp-stage-01** | Google Cloud Platform (GCP) | `10.200.0.0/16` | [View 1:1 Runbook](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-AWS-STAGE-02-TO-GCP-US-CENTRAL1.html) |
+
+
+---
+
+## 2. Environment-Specific Runbook Catalog
+
+Every environment migration maintains its own dedicated, authoritative operational manual titled with the exact source-to-destination envelope:
+
+1. 🏢 **On-Premises Datacenter 1 ➔ GCP**:
+   * **Runbook:** [`RUNBOOK-LIFTNSHIFT-DC-ONPREM-CORE-01-TO-GCP-US-CENTRAL1.md`](/docs/runbooks/RUNBOOK-LIFTNSHIFT-DC-ONPREM-CORE-01-TO-GCP-US-CENTRAL1.html)
+   * **Scope:** 16 Bare-metal servers, PostgreSQL 15.4 NVMe SAN, Dual Xeon CPUs ➔ GCP `vpc-gcp-prod-01` (`10.200.0.0/16`).
+   * **Replication:** Google Cloud Migrate to Virtual Machines (M4CE).
+
+2. ☁️ **AWS Production us-east-1 ➔ GCP**:
+   * **Runbook:** [`RUNBOOK-LIFTNSHIFT-VPC-AWS-PROD-01-TO-GCP-US-CENTRAL1.md`](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-AWS-PROD-01-TO-GCP-US-CENTRAL1.html)
+   * **Scope:** 24 EC2 `m5.4xlarge` nodes, Aurora PostgreSQL Multi-AZ ➔ GCP `vpc-gcp-prod-01` (`10.200.0.0/16`).
+   * **Replication:** GCP M4CE cross-cloud replication.
+
+3. ☁️ **Microsoft Azure Core eastus2 ➔ GCP**:
+   * **Runbook:** [`RUNBOOK-LIFTNSHIFT-VNET-AZURE-CORE-01-TO-GCP-US-CENTRAL1.md`](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VNET-AZURE-CORE-01-TO-GCP-US-CENTRAL1.html)
+   * **Scope:** 18 Azure VMs, Azure PostgreSQL Flexible Server ZRS ➔ GCP `vpc-gcp-prod-01` (`10.200.0.0/16`).
+   * **Replication:** GCP M4CE.
+
+4. 🌐 **GCP Analytics us-central1 ➔ AWS**:
+   * **Runbook:** [`RUNBOOK-LIFTNSHIFT-VPC-GCP-ANALYTICS-03-TO-AWS-US-EAST1.md`](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-GCP-ANALYTICS-03-TO-AWS-US-EAST1.html)
+   * **Scope:** 12 GCP GKE/compute nodes, Cloud SQL HA ➔ AWS `vpc-aws-prod-01` (`10.100.0.0/16`).
+   * **Replication:** AWS Application Migration Service (MGN).
+
+5. ☁️ **AWS Staging us-west-2 ➔ GCP**:
+   * **Runbook:** [`RUNBOOK-LIFTNSHIFT-VPC-AWS-STAGE-02-TO-GCP-US-CENTRAL1.md`](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-AWS-STAGE-02-TO-GCP-US-CENTRAL1.html)
+   * **Scope:** 5 AWS staging nodes, RDS PG 14 ➔ GCP `vpc-gcp-stage-01` (`10.200.0.0/16`).
+   * **Replication:** GCP M4CE.
+
+---
+
+## 3. Fleet-Wide Pre-Cutover Readiness Gates
+
+Before executing traffic swing on ANY environment, the 5 universal cutover gates must be verified:
+
+```text
+[GATE 1] CDC Lag &lt;= 0.00s: Continuous block mirroring verified with zero backlog bytes.
+[GATE 2] Quorum Health Probes: In-VPC /healthz probes return HTTP 200 with P99 &lt; 15ms.
+[GATE 3] Queue Drainage: 0 pending un-replicated write transactions in memory buffers.
+[GATE 4] Network Isolation: Ephemeral JIT management ports armed for instantaneous teardown.
+[GATE 5] Rollback Armed: 4-step emergency reverse rollback script verified and pre-staged.
+```
+
+---
+
+## 4. Consolidated FinOps Savings Rollup
+
+| Environment | Source Spend Baseline | Target Run-Rate | Monthly Compute Savings | Monthly WAN Egress Savings | Net Annualized Savings |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `dc-onprem-core-01` | $8,400 / mo | $3,120 / mo | $5,280 / mo (63%) | $0.00 (Private MPLS) | **$63,360 / yr** |
+| `vpc-aws-prod-01` | $14,200 / mo | $4,850 / mo | $9,350 / mo (66%) | $240.00 / mo | **$115,080 / yr** |
+| `vnet-azure-core-01` | $9,800 / mo | $3,450 / mo | $6,350 / mo (65%) | $142.50 / mo | **$77,910 / yr** |
+| `vpc-gcp-analytics-03` | $6,100 / mo | $2,600 / mo | $3,500 / mo (57%) | $110.00 / mo | **$43,320 / yr** |
+| `vpc-aws-stage-02` | $1,950 / mo | $780 / mo | $1,170 / mo (60%) | $45.00 / mo | **$14,580 / yr** |
+| **TOTAL FLEET** | **$40,450 / mo** | **$14,800 / mo** | **$25,650 / mo (63.4%)** | **$537.50 / mo** | **$314,250 / yr** |
+
+---
+
+## 5. Unified Emergency Rollback SOP
+
+All environments adhere to the universal 4-step emergency rollback paradigm:
+1. **Sever Target Ingress**: Invalidate Target Load Balancer VIP forwarding rules.
+2. **Revert DNS Mesh**: Atomically roll back Route 53 / Cloud DNS A/AAAA records with 1-second TTL.
+3. **Unfreeze Source Database**: Execute `ALTER SYSTEM SET default_transaction_read_only = &#x27;off&#x27;`.
+4. **Audit CDC Integrity**: Inspect reverse replication journals for zero loss.
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># 🌐 Master Enterprise Fleet Migration Register &amp; Consolidated Handover Runbook
+## All Configured Source-to-Destination Environments · Full-Stack Suite
+
+**Document ID:** `VA-RUNBOOK-ENTERPRISE-FLEET-MASTER-001`  
+**Classification:** Enterprise Architecture Governance &amp; Multi-Cloud Fleet Directory  
+**Originating Activity:** `&lt;dcouplr/&gt;` Multi-Environment Lift &amp; Shift Migration Platform  
+**Generation Timestamp:** 2026-11-03T14:30:00Z  
+**Compliance Standard:** ISO/IEC 27001 · SOC 2 Type II · ITIL v4 Service Operation  
+**Total Fleet Scope:** 5 Enterprise Environments · 75 Nodes · 5 Database Clusters · $0.00 WAN Egress  
+
+---
+
+&gt; [!IMPORTANT]
+&gt; **FLEET-WIDE ZERO CONFUSION ARCHITECTURE**  
+&gt; This Master Runbook provides the global consolidation of all configured enterprise environments, while referencing individual, dedicated runbooks for each migration.
+&gt; 
+&gt; SREs, auditors, and engineering leadership can inspect the holistic fleet progress below or click directly into each environment&#x27;s dedicated 1:1 runbook for step-by-step technical procedures.
+
+---
+
+## 1. Enterprise Multi-Environment Fleet Register
+
+| **dc-onprem-core-01** | On-Premises (On-Prem DC1 (Chicago)) | `10.10.0.0/16` | 16 Nodes | **vpc-gcp-prod-01** | Google Cloud Platform (GCP) | `10.200.0.0/16` | [View 1:1 Runbook](/docs/runbooks/RUNBOOK-LIFTNSHIFT-DC-ONPREM-CORE-01-TO-GCP-US-CENTRAL1.html) |
+| **vpc-aws-prod-01** | Amazon Web Services (AWS) (AWS us-east-1 (N. Virginia)) | `10.100.0.0/16` | 24 Nodes | **vpc-gcp-prod-01** | Google Cloud Platform (GCP) | `10.200.0.0/16` | [View 1:1 Runbook](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-AWS-PROD-01-TO-GCP-US-CENTRAL1.html) |
+| **vnet-azure-core-01** | Microsoft Azure (Azure eastus2 (Virginia)) | `10.150.0.0/16` | 18 Nodes | **vpc-gcp-prod-01** | Google Cloud Platform (GCP) | `10.200.0.0/16` | [View 1:1 Runbook](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VNET-AZURE-CORE-01-TO-GCP-US-CENTRAL1.html) |
+| **vpc-gcp-analytics-03** | Google Cloud Platform (GCP) (GCP us-central1 (Iowa)) | `10.200.0.0/16` | 12 Nodes | **vpc-aws-prod-01** | Amazon Web Services (AWS) | `10.100.0.0/16` | [View 1:1 Runbook](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-GCP-ANALYTICS-03-TO-AWS-US-EAST1.html) |
+| **vpc-aws-stage-02** | Amazon Web Services (AWS) (AWS us-west-2 (Oregon)) | `10.101.0.0/16` | 5 Nodes | **vpc-gcp-stage-01** | Google Cloud Platform (GCP) | `10.200.0.0/16` | [View 1:1 Runbook](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-AWS-STAGE-02-TO-GCP-US-CENTRAL1.html) |
+
+
+---
+
+## 2. Environment-Specific Runbook Catalog
+
+Every environment migration maintains its own dedicated, authoritative operational manual titled with the exact source-to-destination envelope:
+
+1. 🏢 **On-Premises Datacenter 1 ➔ GCP**:
+   * **Runbook:** [`RUNBOOK-LIFTNSHIFT-DC-ONPREM-CORE-01-TO-GCP-US-CENTRAL1.md`](/docs/runbooks/RUNBOOK-LIFTNSHIFT-DC-ONPREM-CORE-01-TO-GCP-US-CENTRAL1.html)
+   * **Scope:** 16 Bare-metal servers, PostgreSQL 15.4 NVMe SAN, Dual Xeon CPUs ➔ GCP `vpc-gcp-prod-01` (`10.200.0.0/16`).
+   * **Replication:** Google Cloud Migrate to Virtual Machines (M4CE).
+
+2. ☁️ **AWS Production us-east-1 ➔ GCP**:
+   * **Runbook:** [`RUNBOOK-LIFTNSHIFT-VPC-AWS-PROD-01-TO-GCP-US-CENTRAL1.md`](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-AWS-PROD-01-TO-GCP-US-CENTRAL1.html)
+   * **Scope:** 24 EC2 `m5.4xlarge` nodes, Aurora PostgreSQL Multi-AZ ➔ GCP `vpc-gcp-prod-01` (`10.200.0.0/16`).
+   * **Replication:** GCP M4CE cross-cloud replication.
+
+3. ☁️ **Microsoft Azure Core eastus2 ➔ GCP**:
+   * **Runbook:** [`RUNBOOK-LIFTNSHIFT-VNET-AZURE-CORE-01-TO-GCP-US-CENTRAL1.md`](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VNET-AZURE-CORE-01-TO-GCP-US-CENTRAL1.html)
+   * **Scope:** 18 Azure VMs, Azure PostgreSQL Flexible Server ZRS ➔ GCP `vpc-gcp-prod-01` (`10.200.0.0/16`).
+   * **Replication:** GCP M4CE.
+
+4. 🌐 **GCP Analytics us-central1 ➔ AWS**:
+   * **Runbook:** [`RUNBOOK-LIFTNSHIFT-VPC-GCP-ANALYTICS-03-TO-AWS-US-EAST1.md`](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-GCP-ANALYTICS-03-TO-AWS-US-EAST1.html)
+   * **Scope:** 12 GCP GKE/compute nodes, Cloud SQL HA ➔ AWS `vpc-aws-prod-01` (`10.100.0.0/16`).
+   * **Replication:** AWS Application Migration Service (MGN).
+
+5. ☁️ **AWS Staging us-west-2 ➔ GCP**:
+   * **Runbook:** [`RUNBOOK-LIFTNSHIFT-VPC-AWS-STAGE-02-TO-GCP-US-CENTRAL1.md`](/docs/runbooks/RUNBOOK-LIFTNSHIFT-VPC-AWS-STAGE-02-TO-GCP-US-CENTRAL1.html)
+   * **Scope:** 5 AWS staging nodes, RDS PG 14 ➔ GCP `vpc-gcp-stage-01` (`10.200.0.0/16`).
+   * **Replication:** GCP M4CE.
+
+---
+
+## 3. Fleet-Wide Pre-Cutover Readiness Gates
+
+Before executing traffic swing on ANY environment, the 5 universal cutover gates must be verified:
+
+```text
+[GATE 1] CDC Lag &lt;= 0.00s: Continuous block mirroring verified with zero backlog bytes.
+[GATE 2] Quorum Health Probes: In-VPC /healthz probes return HTTP 200 with P99 &lt; 15ms.
+[GATE 3] Queue Drainage: 0 pending un-replicated write transactions in memory buffers.
+[GATE 4] Network Isolation: Ephemeral JIT management ports armed for instantaneous teardown.
+[GATE 5] Rollback Armed: 4-step emergency reverse rollback script verified and pre-staged.
+```
+
+---
+
+## 4. Consolidated FinOps Savings Rollup
+
+| Environment | Source Spend Baseline | Target Run-Rate | Monthly Compute Savings | Monthly WAN Egress Savings | Net Annualized Savings |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `dc-onprem-core-01` | $8,400 / mo | $3,120 / mo | $5,280 / mo (63%) | $0.00 (Private MPLS) | **$63,360 / yr** |
+| `vpc-aws-prod-01` | $14,200 / mo | $4,850 / mo | $9,350 / mo (66%) | $240.00 / mo | **$115,080 / yr** |
+| `vnet-azure-core-01` | $9,800 / mo | $3,450 / mo | $6,350 / mo (65%) | $142.50 / mo | **$77,910 / yr** |
+| `vpc-gcp-analytics-03` | $6,100 / mo | $2,600 / mo | $3,500 / mo (57%) | $110.00 / mo | **$43,320 / yr** |
+| `vpc-aws-stage-02` | $1,950 / mo | $780 / mo | $1,170 / mo (60%) | $45.00 / mo | **$14,580 / yr** |
+| **TOTAL FLEET** | **$40,450 / mo** | **$14,800 / mo** | **$25,650 / mo (63.4%)** | **$537.50 / mo** | **$314,250 / yr** |
+
+---
+
+## 5. Unified Emergency Rollback SOP
+
+All environments adhere to the universal 4-step emergency rollback paradigm:
+1. **Sever Target Ingress**: Invalidate Target Load Balancer VIP forwarding rules.
+2. **Revert DNS Mesh**: Atomically roll back Route 53 / Cloud DNS A/AAAA records with 1-second TTL.
+3. **Unfreeze Source Database**: Execute `ALTER SYSTEM SET default_transaction_read_only = &#x27;off&#x27;`.
+4. **Audit CDC Integrity**: Inspect reverse replication journals for zero loss.
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-ENTERPRISE-SECURITY-AND-COMPLIANCE-ARCHITECTURE.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-ENTERPRISE-SECURITY-AND-COMPLIANCE-ARCHITECTURE.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-ENTERPRISE-SECURITY-AND-COMPLIANCE-ARCHITECTURE.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="operational-runbook-enterprise-security-iam-compliance-architecture"><dcouplr/> Operational Runbook: Enterprise Security, IAM &amp; Compliance Architecture</h1>
+<p><strong>Document Classification:</strong> Cleared Customer Public • Operational Security Runbook<br />
+<strong>Runbook Code:</strong> <code>RUN-SECURITY-COMPLIANCE-001 Verified</code><br />
+<strong>Governing Standard:</strong> ITIL Information Security Management &amp; CIS Controls v8<br />
+<strong>Applicability:</strong> All <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> In-Perimeter Deployments (AWS VPC, Azure VNet, GCP VPC, On-Premises Kubernetes, Air-Gapped Enclaves)<br />
+<strong>Target Roles:</strong> Cloud Security Engineers, Information Security Officers (CISO / SecOps), Platform SRE Leads<br />
+<strong>Version:</strong> 4.2.0-PROD • Approved for Customer Operations</p>
+<hr />
+<h2 id="executive-overview-in-perimeter-security-baseline">Executive Overview: In-Perimeter Security Baseline</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> provides enterprise observability designed from the ground up for zero-trust environments. Unlike traditional SaaS platforms that stream your telemetry across the public Internet, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> operates entirely inside your sovereign network boundary.</p>
+<p>This runbook provides actionable, step-by-step procedures for:</p>
+<ol>
+<li><strong>Verifying In-Perimeter Sovereignty ($0.00 WAN Egress).</strong></li>
+<li><strong>Configuring Enterprise IdP Federation (Okta &amp; Microsoft Entra ID).</strong></li>
+<li><strong>Provisioning and Managing the 6 Canonical RBAC Roles.</strong></li>
+<li><strong>Enforcing Team-Level Scoping (ABAC).</strong></li>
+<li><strong>Issuing, Rotating, and Revoking Ingestion Tokens &amp; User API Keys.</strong></li>
+<li><strong>Configuring Sensitive Data Scrubbing (PCI-DSS &amp; PII Masking).</strong></li>
+<li><strong>Streaming Immutable Audit Logs to Corporate SIEMs.</strong></li>
+</ol>
+<hr />
+<h2 id="1-verifying-in-perimeter-sovereignty-000-wan-egress">1. Verifying In-Perimeter Sovereignty ($0.00 WAN Egress)</h2>
+<p>Before approving production workloads, security teams must verify that no customer telemetry leaves the VPC.</p>
+<h3 id="step-11-verify-local-database-isolation">Step 1.1: Verify Local Database Isolation</h3>
+<p>Ensure all node metrics, traces, and logs are written exclusively to the local SQLite WAL database:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Verify active SQLite WAL database
+curl -s http://localhost:8000/v1/vpc-database | jq .
+</code></pre></div>
+<p>Expected output:</p>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;database_type&quot;: &quot;SQLite 3 (Embedded Sovereign)&quot;,
+  &quot;storage_path&quot;: &quot;data/vpc_telemetry.db&quot;,
+  &quot;concurrency_mode&quot;: &quot;WAL&quot;,
+  &quot;egress_cost_usd&quot;: 0.00,
+  &quot;sovereignty_status&quot;: &quot;IN_PERIMETER_ENCLOSED&quot;
+}
+</code></pre></div>
+<h3 id="step-12-inspect-outbound-gateway-firewall-rules">Step 1.2: Inspect Outbound Gateway Firewall Rules</h3>
+<p>Review your cloud provider egress logs (e.g., AWS VPC Flow Logs or Azure NSG Flow Logs):</p>
+<ul>
+<li><strong>Allowed Outbound:</strong> DNS (Port 53 UDP) and outbound TLS 1.3 / QUIC to Cloudflare Edge (if Outside-VPC Hubs are enabled).</li>
+<li><strong>Prohibited Outbound:</strong> Any connections to public SaaS observability endpoints (e.g., <code>*.datadoghq.com</code>, <code>*.newrelic.com</code>). Egress counter must remain <strong>0 Bytes</strong>.</li>
+</ul>
+<hr />
+<h2 id="2-configuring-enterprise-idp-federation-okta-entra-id">2. Configuring Enterprise IdP Federation (Okta &amp; Entra ID)</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> supports SAML 2.0 and OpenID Connect (OIDC) with automated group-to-role assignment.</p>
+<h3 id="step-21-okta-saml-20-integration">Step 2.1: Okta SAML 2.0 Integration</h3>
+<ol>
+<li>Log in to the Okta Admin Console.</li>
+<li>Navigate to <strong>Applications</strong> &gt; <strong>Create App Integration</strong> &gt; <strong>SAML 2.0</strong>.</li>
+<li>Set <strong>Single Sign-On URL</strong>: <code>https://&lt;YOUR-OBS-HOST&gt;/v1/auth/sso/callback/okta</code>.</li>
+<li>Set <strong>Audience URI (SP Entity ID)</strong>: <code>https://&lt;YOUR-OBS-HOST&gt;/v1/auth/sso/metadata</code>.</li>
+<li>Under <strong>Attribute Statements (Group Claims)</strong>:
+<ul>
+<li>Name: <code>groups</code></li>
+<li>Filter: <code>Matches regex</code> → <code>.*Obs-.*</code></li>
+</ul>
+</li>
+<li>Save and export the IdP Metadata XML.</li>
+<li>Configure in <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>:<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -X POST http://localhost:8000/v1/auth/sso/providers \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;provider_id&quot;: &quot;okta_corp&quot;,
+    &quot;protocol&quot;: &quot;SAML2&quot;,
+    &quot;metadata_url&quot;: &quot;https://company.okta.com/app/exk.../sso/saml/metadata&quot;
+  }'
+</code></pre></div>
+</li>
+</ol>
+<h3 id="step-22-microsoft-entra-id-azure-ad-oidc-integration">Step 2.2: Microsoft Entra ID (Azure AD) OIDC Integration</h3>
+<ol>
+<li>Navigate to <strong>Azure Portal</strong> &gt; <strong>Microsoft Entra ID</strong> &gt; <strong>App Registrations</strong>.</li>
+<li>Register an app with Redirect URI: <code>https://&lt;YOUR-OBS-HOST&gt;/v1/auth/sso/callback/azure</code>.</li>
+<li>Under <strong>Token Configuration</strong>, add the <code>groups</code> claim.</li>
+<li>Copy Client ID and Tenant ID into <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> environment variables:<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">export SSO_OIDC_CLIENT_ID=&quot;&lt;YOUR_CLIENT_ID&gt;&quot;
+export SSO_OIDC_CLIENT_SECRET=&quot;&lt;YOUR_SECRET&gt;&quot;
+export SSO_OIDC_TENANT_ID=&quot;&lt;YOUR_TENANT_ID&gt;&quot;
+</code></pre></div>
+</li>
+</ol>
+<hr />
+<h2 id="3-provisioning-managing-rbac-roles">3. Provisioning &amp; Managing RBAC Roles</h2>
+<p>Access is governed by 6 standard roles following the Principle of Least Privilege:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Role Name</th>
+<th style="text-align:left">Intended Audience</th>
+<th style="text-align:left">Permitted Actions</th>
+<th style="text-align:left">Prohibited Actions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong><code>Obs-Admins</code></strong></td>
+<td style="text-align:left">Platform SRE Leads, CloudOps Admins</td>
+<td style="text-align:left">Full user management, SSO configuration, billing controls, emergency key revocation.</td>
+<td style="text-align:left">Direct raw ingestion streaming without service key.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>Obs-Platform-Engineers</code></strong></td>
+<td style="text-align:left">DevOps Engineers, SREs</td>
+<td style="text-align:left">Ingestion pipeline tuning, collector key creation, shared alerts and dashboard templates.</td>
+<td style="text-align:left">Billing modifications, user provisioning, audit log clearance.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>Obs-Dev-[Team]</code></strong></td>
+<td style="text-align:left">Software Engineers, QA</td>
+<td style="text-align:left">Querying service metrics, APM traces, and logs scoped to their team.</td>
+<td style="text-align:left">Cross-team querying, global alert editing, billing visibility.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>Obs-Security-Analyst</code></strong></td>
+<td style="text-align:left">SOC Analysts, Incident Responders</td>
+<td style="text-align:left">Full read-only audit log inspection, forensic unmasked payload access (role-gated).</td>
+<td style="text-align:left">Modifying alerts, configuring ingestion, user management.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>Obs-Executive-Viewers</code></strong></td>
+<td style="text-align:left">Engineering Directors, VPs, CTO</td>
+<td style="text-align:left">Read-only high-level dashboards, SLA/SLO compliance reports, billing summaries.</td>
+<td style="text-align:left">Deep trace inspection, creating alerts, editing dashboards.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>Obs-Service-Accounts</code></strong></td>
+<td style="text-align:left">CI/CD Pipelines, Kubernetes Daemons</td>
+<td style="text-align:left">Automated ingestion token transmission (<code>dcp_ing_...</code>).</td>
+<td style="text-align:left">User interface login, querying metrics, reading audit logs.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-31-provision-a-new-user-identity">Step 3.1: Provision a New User Identity</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -X POST http://localhost:8000/v1/security/users \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot; \
+  -d '{
+    &quot;username&quot;: &quot;sarah.chen&quot;,
+    &quot;display_name&quot;: &quot;Sarah Chen (FinOps Lead)&quot;,
+    &quot;email&quot;: &quot;sarah.chen@enterprise.com&quot;,
+    &quot;role&quot;: &quot;Obs-Executive-Viewers&quot;,
+    &quot;team_scope&quot;: &quot;*&quot;
+  }'
+</code></pre></div>
+<hr />
+<h2 id="4-enforcing-attribute-based-access-control-abac">4. Enforcing Attribute-Based Access Control (ABAC)</h2>
+<p>To isolate sensitive microservices (e.g., payment gateways, fraud detection, authentication), assign an explicit team scope:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -X PUT http://localhost:8000/v1/security/users/usr_sarah_chen/role \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot; \
+  -d '{
+    &quot;role&quot;: &quot;Obs-Dev&quot;,
+    &quot;team_scope&quot;: &quot;payments&quot;
+  }'
+</code></pre></div>
+<blockquote>
+<p>[!NOTE]
+Once scoped, the query execution engine will automatically rewrite all user queries to filter on <code>team:payments</code> or <code>namespace:payments-prod</code>. Queries targeting unauthorized services return <code>403 Forbidden</code>.</p>
+</blockquote>
+<hr />
+<h2 id="5-token-governance-ingestion-tokens-vs-user-api-keys">5. Token Governance: Ingestion Tokens vs User API Keys</h2>
+<p>Never use human user credentials for automated ingestion agents.</p>
+<h3 id="step-51-create-a-scoped-collector-ingestion-token">Step 5.1: Create a Scoped Collector Ingestion Token</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -X POST http://localhost:8000/v1/security/api-keys \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot; \
+  -d '{
+    &quot;name&quot;: &quot;otel-k8s-us-west-collector&quot;,
+    &quot;key_type&quot;: &quot;INGESTION_ONLY&quot;,
+    &quot;role&quot;: &quot;Obs-Service-Accounts&quot;,
+    &quot;team_scope&quot;: &quot;*&quot;,
+    &quot;expires_days&quot;: 180
+  }'
+</code></pre></div>
+<p>Save the returned token (<code>dcp_ing_...</code>) immediately; plaintext is never stored in the database.</p>
+<h3 id="step-52-emergency-key-revocation">Step 5.2: Emergency Key Revocation</h3>
+<p>If a collector token or user credential is compromised:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -X DELETE http://localhost:8000/v1/security/api-keys/key_1a2b3c4d \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot;
+</code></pre></div>
+<p>The key is immediately invalidated in memory and marked <code>REVOKED</code> in SQLite SSOT.</p>
+<hr />
+<h2 id="6-configuring-sensitive-data-masking-pii-redaction">6. Configuring Sensitive Data Masking &amp; PII Redaction</h2>
+<p>Ensure in-perimeter regex scrubbing is active for compliance with PCI-DSS and HIPAA:</p>
+<ol>
+<li>Open the <code>/configuration</code> portal → <strong>🛡️ RBAC &amp; Identity Vault</strong>.</li>
+<li>Verify that the <strong>Sensitive Data Scrubbing Filter</strong> is enabled for:
+<ul>
+<li>Primary Account Numbers (Credit Cards)</li>
+<li>Social Security Numbers / National Tax IDs</li>
+<li>HTTP Authorization Bearer Tokens</li>
+<li>Database Connection Strings (<code>postgresql://user:pass@host/db</code>)</li>
+</ul>
+</li>
+<li>Test a synthetic log line:<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -X POST http://localhost:8000/v1/logs/sanitize-test \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;message&quot;: &quot;User failed payment with card 4111222233334444 and token Bearer eyJhbGciOi...&quot;}'
+</code></pre></div>
+Verified Output:
+<code>&quot;User failed payment with card [CARD-REDACTED-XXXX] and token Bearer [TOKEN-REDACTED]&quot;</code></li>
+</ol>
+<hr />
+<h2 id="7-streaming-immutable-audit-logs-to-corporate-siem">7. Streaming Immutable Audit Logs to Corporate SIEM</h2>
+<p>All administrative actions and security events are recorded in <code>rbac_audit_logs</code>.</p>
+<h3 id="step-71-query-local-audit-logs">Step 7.1: Query Local Audit Logs</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -s &quot;http://localhost:8000/v1/security/audit-logs?limit=25&quot; \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot; | jq .
+</code></pre></div>
+<h3 id="step-72-stream-to-splunk-elastic-sentinel">Step 7.2: Stream to Splunk / Elastic / Sentinel</h3>
+<p>Configure the in-perimeter log forwarder daemon (<code>syslog-ng</code> or <code>FluentBit</code>) to ingest <code>/var/log/dcouplr/audit.log</code> and forward via TLS:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text"># /etc/fluent-bit/fluent-bit.conf
+[INPUT]
+    Name        tail
+    Path        data/audit_events.jsonl
+    Tag         dcouplr.audit
+
+[OUTPUT]
+    Name        splunk
+    Match       dcouplr.audit
+    Host        splunk-hec.corp.internal
+    Port        8088
+    Splunk_Token xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    TLS         On
+</code></pre></div>
+<hr />
+<h2 id="8-sre-operational-verification-checklist">8. SRE Operational Verification Checklist</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Phase</th>
+<th style="text-align:left">Verification Item</th>
+<th style="text-align:left">Action / URL</th>
+<th style="text-align:left">Target Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><strong>1</strong></td>
+<td style="text-align:left">Verify In-Perimeter Database</td>
+<td style="text-align:left"><code>/config</code></td>
+<td style="text-align:left">Backed by <code>data/vpc_telemetry.db</code> in WAL mode.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>2</strong></td>
+<td style="text-align:left">Test RBAC Least Privilege</td>
+<td style="text-align:left"><code>/configuration</code> → Persona Simulator</td>
+<td style="text-align:left">Verify <code>Obs-Dev</code> cannot see billing or audit logs.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>3</strong></td>
+<td style="text-align:left">Test ABAC Team Scoping</td>
+<td style="text-align:left">Query <code>team:fraud</code> with <code>Obs-Dev-Payments</code></td>
+<td style="text-align:left">Result empty or <code>403 Forbidden</code>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>4</strong></td>
+<td style="text-align:left">Verify Token Security</td>
+<td style="text-align:left">Inspect <code>SELECT key_hash FROM rbac_api_keys</code></td>
+<td style="text-align:left">Plaintext secrets absent; SHA-256 only.</td>
+</tr>
+<tr>
+<td style="text-align:center"><strong>5</strong></td>
+<td style="text-align:left">Verify Zero-WAN Egress</td>
+<td style="text-align:left">Cloud VPC Flow Logs</td>
+<td style="text-align:left">0 Bytes egress to external monitoring clouds.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Authorized by <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Cloud Engineering &amp; Customer Trust • Approved for Enterprise Production Operations.</em></p>
+</div>
+      <pre id="raw-view"><code># &lt;dcouplr/&gt; Operational Runbook: Enterprise Security, IAM &amp; Compliance Architecture
+**Document Classification:** Cleared Customer Public • Operational Security Runbook  
+**Runbook Code:** `RUN-SECURITY-COMPLIANCE-001 Verified`  
+**Governing Standard:** ITIL Information Security Management &amp; CIS Controls v8  
+**Applicability:** All `&lt;dcouplr/&gt;` In-Perimeter Deployments (AWS VPC, Azure VNet, GCP VPC, On-Premises Kubernetes, Air-Gapped Enclaves)  
+**Target Roles:** Cloud Security Engineers, Information Security Officers (CISO / SecOps), Platform SRE Leads  
+**Version:** 4.2.0-PROD • Approved for Customer Operations
+
+---
+
+## Executive Overview: In-Perimeter Security Baseline
+
+`&lt;dcouplr/&gt;` provides enterprise observability designed from the ground up for zero-trust environments. Unlike traditional SaaS platforms that stream your telemetry across the public Internet, `&lt;dcouplr/&gt;` operates entirely inside your sovereign network boundary. 
+
+This runbook provides actionable, step-by-step procedures for:
+1. **Verifying In-Perimeter Sovereignty ($0.00 WAN Egress).**
+2. **Configuring Enterprise IdP Federation (Okta &amp; Microsoft Entra ID).**
+3. **Provisioning and Managing the 6 Canonical RBAC Roles.**
+4. **Enforcing Team-Level Scoping (ABAC).**
+5. **Issuing, Rotating, and Revoking Ingestion Tokens &amp; User API Keys.**
+6. **Configuring Sensitive Data Scrubbing (PCI-DSS &amp; PII Masking).**
+7. **Streaming Immutable Audit Logs to Corporate SIEMs.**
+
+---
+
+## 1. Verifying In-Perimeter Sovereignty ($0.00 WAN Egress)
+
+Before approving production workloads, security teams must verify that no customer telemetry leaves the VPC.
+
+### Step 1.1: Verify Local Database Isolation
+Ensure all node metrics, traces, and logs are written exclusively to the local SQLite WAL database:
+```bash
+# Verify active SQLite WAL database
+curl -s http://localhost:8000/v1/vpc-database | jq .
+```
+Expected output:
+```json
+{
+  &quot;database_type&quot;: &quot;SQLite 3 (Embedded Sovereign)&quot;,
+  &quot;storage_path&quot;: &quot;data/vpc_telemetry.db&quot;,
+  &quot;concurrency_mode&quot;: &quot;WAL&quot;,
+  &quot;egress_cost_usd&quot;: 0.00,
+  &quot;sovereignty_status&quot;: &quot;IN_PERIMETER_ENCLOSED&quot;
+}
+```
+
+### Step 1.2: Inspect Outbound Gateway Firewall Rules
+Review your cloud provider egress logs (e.g., AWS VPC Flow Logs or Azure NSG Flow Logs):
+- **Allowed Outbound:** DNS (Port 53 UDP) and outbound TLS 1.3 / QUIC to Cloudflare Edge (if Outside-VPC Hubs are enabled).
+- **Prohibited Outbound:** Any connections to public SaaS observability endpoints (e.g., `*.datadoghq.com`, `*.newrelic.com`). Egress counter must remain **0 Bytes**.
+
+---
+
+## 2. Configuring Enterprise IdP Federation (Okta &amp; Entra ID)
+
+`&lt;dcouplr/&gt;` supports SAML 2.0 and OpenID Connect (OIDC) with automated group-to-role assignment.
+
+### Step 2.1: Okta SAML 2.0 Integration
+1. Log in to the Okta Admin Console.
+2. Navigate to **Applications** &gt; **Create App Integration** &gt; **SAML 2.0**.
+3. Set **Single Sign-On URL**: `https://&lt;YOUR-OBS-HOST&gt;/v1/auth/sso/callback/okta`.
+4. Set **Audience URI (SP Entity ID)**: `https://&lt;YOUR-OBS-HOST&gt;/v1/auth/sso/metadata`.
+5. Under **Attribute Statements (Group Claims)**:
+   - Name: `groups`
+   - Filter: `Matches regex` &amp;rarr; `.*Obs-.*`
+6. Save and export the IdP Metadata XML.
+7. Configure in `&lt;dcouplr/&gt;`:
+   ```bash
+   curl -X POST http://localhost:8000/v1/auth/sso/providers \
+     -H &quot;Content-Type: application/json&quot; \
+     -d &#x27;{
+       &quot;provider_id&quot;: &quot;okta_corp&quot;,
+       &quot;protocol&quot;: &quot;SAML2&quot;,
+       &quot;metadata_url&quot;: &quot;https://company.okta.com/app/exk.../sso/saml/metadata&quot;
+     }&#x27;
+   ```
+
+### Step 2.2: Microsoft Entra ID (Azure AD) OIDC Integration
+1. Navigate to **Azure Portal** &gt; **Microsoft Entra ID** &gt; **App Registrations**.
+2. Register an app with Redirect URI: `https://&lt;YOUR-OBS-HOST&gt;/v1/auth/sso/callback/azure`.
+3. Under **Token Configuration**, add the `groups` claim.
+4. Copy Client ID and Tenant ID into `&lt;dcouplr/&gt;` environment variables:
+   ```bash
+   export SSO_OIDC_CLIENT_ID=&quot;&lt;YOUR_CLIENT_ID&gt;&quot;
+   export SSO_OIDC_CLIENT_SECRET=&quot;&lt;YOUR_SECRET&gt;&quot;
+   export SSO_OIDC_TENANT_ID=&quot;&lt;YOUR_TENANT_ID&gt;&quot;
+   ```
+
+---
+
+## 3. Provisioning &amp; Managing RBAC Roles
+
+Access is governed by 6 standard roles following the Principle of Least Privilege:
+
+| Role Name | Intended Audience | Permitted Actions | Prohibited Actions |
+| :--- | :--- | :--- | :--- |
+| **`Obs-Admins`** | Platform SRE Leads, CloudOps Admins | Full user management, SSO configuration, billing controls, emergency key revocation. | Direct raw ingestion streaming without service key. |
+| **`Obs-Platform-Engineers`** | DevOps Engineers, SREs | Ingestion pipeline tuning, collector key creation, shared alerts and dashboard templates. | Billing modifications, user provisioning, audit log clearance. |
+| **`Obs-Dev-[Team]`** | Software Engineers, QA | Querying service metrics, APM traces, and logs scoped to their team. | Cross-team querying, global alert editing, billing visibility. |
+| **`Obs-Security-Analyst`** | SOC Analysts, Incident Responders | Full read-only audit log inspection, forensic unmasked payload access (role-gated). | Modifying alerts, configuring ingestion, user management. |
+| **`Obs-Executive-Viewers`** | Engineering Directors, VPs, CTO | Read-only high-level dashboards, SLA/SLO compliance reports, billing summaries. | Deep trace inspection, creating alerts, editing dashboards. |
+| **`Obs-Service-Accounts`** | CI/CD Pipelines, Kubernetes Daemons | Automated ingestion token transmission (`dcp_ing_...`). | User interface login, querying metrics, reading audit logs. |
+
+### Step 3.1: Provision a New User Identity
+```bash
+curl -X POST http://localhost:8000/v1/security/users \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot; \
+  -d &#x27;{
+    &quot;username&quot;: &quot;sarah.chen&quot;,
+    &quot;display_name&quot;: &quot;Sarah Chen (FinOps Lead)&quot;,
+    &quot;email&quot;: &quot;sarah.chen@enterprise.com&quot;,
+    &quot;role&quot;: &quot;Obs-Executive-Viewers&quot;,
+    &quot;team_scope&quot;: &quot;*&quot;
+  }&#x27;
+```
+
+---
+
+## 4. Enforcing Attribute-Based Access Control (ABAC)
+
+To isolate sensitive microservices (e.g., payment gateways, fraud detection, authentication), assign an explicit team scope:
+
+```bash
+curl -X PUT http://localhost:8000/v1/security/users/usr_sarah_chen/role \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot; \
+  -d &#x27;{
+    &quot;role&quot;: &quot;Obs-Dev&quot;,
+    &quot;team_scope&quot;: &quot;payments&quot;
+  }&#x27;
+```
+&gt; [!NOTE]
+&gt; Once scoped, the query execution engine will automatically rewrite all user queries to filter on `team:payments` or `namespace:payments-prod`. Queries targeting unauthorized services return `403 Forbidden`.
+
+---
+
+## 5. Token Governance: Ingestion Tokens vs User API Keys
+
+Never use human user credentials for automated ingestion agents.
+
+### Step 5.1: Create a Scoped Collector Ingestion Token
+```bash
+curl -X POST http://localhost:8000/v1/security/api-keys \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot; \
+  -d &#x27;{
+    &quot;name&quot;: &quot;otel-k8s-us-west-collector&quot;,
+    &quot;key_type&quot;: &quot;INGESTION_ONLY&quot;,
+    &quot;role&quot;: &quot;Obs-Service-Accounts&quot;,
+    &quot;team_scope&quot;: &quot;*&quot;,
+    &quot;expires_days&quot;: 180
+  }&#x27;
+```
+Save the returned token (`dcp_ing_...`) immediately; plaintext is never stored in the database.
+
+### Step 5.2: Emergency Key Revocation
+If a collector token or user credential is compromised:
+```bash
+curl -X DELETE http://localhost:8000/v1/security/api-keys/key_1a2b3c4d \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot;
+```
+The key is immediately invalidated in memory and marked `REVOKED` in SQLite SSOT.
+
+---
+
+## 6. Configuring Sensitive Data Masking &amp; PII Redaction
+
+Ensure in-perimeter regex scrubbing is active for compliance with PCI-DSS and HIPAA:
+1. Open the `/configuration` portal &amp;rarr; **🛡️ RBAC &amp; Identity Vault**.
+2. Verify that the **Sensitive Data Scrubbing Filter** is enabled for:
+   - Primary Account Numbers (Credit Cards)
+   - Social Security Numbers / National Tax IDs
+   - HTTP Authorization Bearer Tokens
+   - Database Connection Strings (`postgresql://user:pass@host/db`)
+3. Test a synthetic log line:
+   ```bash
+   curl -X POST http://localhost:8000/v1/logs/sanitize-test \
+     -H &quot;Content-Type: application/json&quot; \
+     -d &#x27;{&quot;message&quot;: &quot;User failed payment with card 4111222233334444 and token Bearer eyJhbGciOi...&quot;}&#x27;
+   ```
+   Verified Output:
+   `&quot;User failed payment with card [CARD-REDACTED-XXXX] and token Bearer [TOKEN-REDACTED]&quot;`
+
+---
+
+## 7. Streaming Immutable Audit Logs to Corporate SIEM
+
+All administrative actions and security events are recorded in `rbac_audit_logs`.
+
+### Step 7.1: Query Local Audit Logs
+```bash
+curl -s &quot;http://localhost:8000/v1/security/audit-logs?limit=25&quot; \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot; | jq .
+```
+
+### Step 7.2: Stream to Splunk / Elastic / Sentinel
+Configure the in-perimeter log forwarder daemon (`syslog-ng` or `FluentBit`) to ingest `/var/log/dcouplr/audit.log` and forward via TLS:
+```
+# /etc/fluent-bit/fluent-bit.conf
+[INPUT]
+    Name        tail
+    Path        data/audit_events.jsonl
+    Tag         dcouplr.audit
+
+[OUTPUT]
+    Name        splunk
+    Match       dcouplr.audit
+    Host        splunk-hec.corp.internal
+    Port        8088
+    Splunk_Token xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    TLS         On
+```
+
+---
+
+## 8. SRE Operational Verification Checklist
+
+| Phase | Verification Item | Action / URL | Target Result |
+| :---: | :--- | :--- | :--- |
+| **1** | Verify In-Perimeter Database | `/config` | Backed by `data/vpc_telemetry.db` in WAL mode. |
+| **2** | Test RBAC Least Privilege | `/configuration` &amp;rarr; Persona Simulator | Verify `Obs-Dev` cannot see billing or audit logs. |
+| **3** | Test ABAC Team Scoping | Query `team:fraud` with `Obs-Dev-Payments` | Result empty or `403 Forbidden`. |
+| **4** | Verify Token Security | Inspect `SELECT key_hash FROM rbac_api_keys` | Plaintext secrets absent; SHA-256 only. |
+| **5** | Verify Zero-WAN Egress | Cloud VPC Flow Logs | 0 Bytes egress to external monitoring clouds. |
+
+---
+*Authorized by `&lt;dcouplr/&gt;` Cloud Engineering &amp; Customer Trust • Approved for Enterprise Production Operations.*
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;dcouplr/&gt; Operational Runbook: Enterprise Security, IAM &amp; Compliance Architecture
+**Document Classification:** Cleared Customer Public • Operational Security Runbook  
+**Runbook Code:** `RUN-SECURITY-COMPLIANCE-001 Verified`  
+**Governing Standard:** ITIL Information Security Management &amp; CIS Controls v8  
+**Applicability:** All `&lt;dcouplr/&gt;` In-Perimeter Deployments (AWS VPC, Azure VNet, GCP VPC, On-Premises Kubernetes, Air-Gapped Enclaves)  
+**Target Roles:** Cloud Security Engineers, Information Security Officers (CISO / SecOps), Platform SRE Leads  
+**Version:** 4.2.0-PROD • Approved for Customer Operations
+
+---
+
+## Executive Overview: In-Perimeter Security Baseline
+
+`&lt;dcouplr/&gt;` provides enterprise observability designed from the ground up for zero-trust environments. Unlike traditional SaaS platforms that stream your telemetry across the public Internet, `&lt;dcouplr/&gt;` operates entirely inside your sovereign network boundary. 
+
+This runbook provides actionable, step-by-step procedures for:
+1. **Verifying In-Perimeter Sovereignty ($0.00 WAN Egress).**
+2. **Configuring Enterprise IdP Federation (Okta &amp; Microsoft Entra ID).**
+3. **Provisioning and Managing the 6 Canonical RBAC Roles.**
+4. **Enforcing Team-Level Scoping (ABAC).**
+5. **Issuing, Rotating, and Revoking Ingestion Tokens &amp; User API Keys.**
+6. **Configuring Sensitive Data Scrubbing (PCI-DSS &amp; PII Masking).**
+7. **Streaming Immutable Audit Logs to Corporate SIEMs.**
+
+---
+
+## 1. Verifying In-Perimeter Sovereignty ($0.00 WAN Egress)
+
+Before approving production workloads, security teams must verify that no customer telemetry leaves the VPC.
+
+### Step 1.1: Verify Local Database Isolation
+Ensure all node metrics, traces, and logs are written exclusively to the local SQLite WAL database:
+```bash
+# Verify active SQLite WAL database
+curl -s http://localhost:8000/v1/vpc-database | jq .
+```
+Expected output:
+```json
+{
+  &quot;database_type&quot;: &quot;SQLite 3 (Embedded Sovereign)&quot;,
+  &quot;storage_path&quot;: &quot;data/vpc_telemetry.db&quot;,
+  &quot;concurrency_mode&quot;: &quot;WAL&quot;,
+  &quot;egress_cost_usd&quot;: 0.00,
+  &quot;sovereignty_status&quot;: &quot;IN_PERIMETER_ENCLOSED&quot;
+}
+```
+
+### Step 1.2: Inspect Outbound Gateway Firewall Rules
+Review your cloud provider egress logs (e.g., AWS VPC Flow Logs or Azure NSG Flow Logs):
+- **Allowed Outbound:** DNS (Port 53 UDP) and outbound TLS 1.3 / QUIC to Cloudflare Edge (if Outside-VPC Hubs are enabled).
+- **Prohibited Outbound:** Any connections to public SaaS observability endpoints (e.g., `*.datadoghq.com`, `*.newrelic.com`). Egress counter must remain **0 Bytes**.
+
+---
+
+## 2. Configuring Enterprise IdP Federation (Okta &amp; Entra ID)
+
+`&lt;dcouplr/&gt;` supports SAML 2.0 and OpenID Connect (OIDC) with automated group-to-role assignment.
+
+### Step 2.1: Okta SAML 2.0 Integration
+1. Log in to the Okta Admin Console.
+2. Navigate to **Applications** &gt; **Create App Integration** &gt; **SAML 2.0**.
+3. Set **Single Sign-On URL**: `https://&lt;YOUR-OBS-HOST&gt;/v1/auth/sso/callback/okta`.
+4. Set **Audience URI (SP Entity ID)**: `https://&lt;YOUR-OBS-HOST&gt;/v1/auth/sso/metadata`.
+5. Under **Attribute Statements (Group Claims)**:
+   - Name: `groups`
+   - Filter: `Matches regex` &amp;rarr; `.*Obs-.*`
+6. Save and export the IdP Metadata XML.
+7. Configure in `&lt;dcouplr/&gt;`:
+   ```bash
+   curl -X POST http://localhost:8000/v1/auth/sso/providers \
+     -H &quot;Content-Type: application/json&quot; \
+     -d &#x27;{
+       &quot;provider_id&quot;: &quot;okta_corp&quot;,
+       &quot;protocol&quot;: &quot;SAML2&quot;,
+       &quot;metadata_url&quot;: &quot;https://company.okta.com/app/exk.../sso/saml/metadata&quot;
+     }&#x27;
+   ```
+
+### Step 2.2: Microsoft Entra ID (Azure AD) OIDC Integration
+1. Navigate to **Azure Portal** &gt; **Microsoft Entra ID** &gt; **App Registrations**.
+2. Register an app with Redirect URI: `https://&lt;YOUR-OBS-HOST&gt;/v1/auth/sso/callback/azure`.
+3. Under **Token Configuration**, add the `groups` claim.
+4. Copy Client ID and Tenant ID into `&lt;dcouplr/&gt;` environment variables:
+   ```bash
+   export SSO_OIDC_CLIENT_ID=&quot;&lt;YOUR_CLIENT_ID&gt;&quot;
+   export SSO_OIDC_CLIENT_SECRET=&quot;&lt;YOUR_SECRET&gt;&quot;
+   export SSO_OIDC_TENANT_ID=&quot;&lt;YOUR_TENANT_ID&gt;&quot;
+   ```
+
+---
+
+## 3. Provisioning &amp; Managing RBAC Roles
+
+Access is governed by 6 standard roles following the Principle of Least Privilege:
+
+| Role Name | Intended Audience | Permitted Actions | Prohibited Actions |
+| :--- | :--- | :--- | :--- |
+| **`Obs-Admins`** | Platform SRE Leads, CloudOps Admins | Full user management, SSO configuration, billing controls, emergency key revocation. | Direct raw ingestion streaming without service key. |
+| **`Obs-Platform-Engineers`** | DevOps Engineers, SREs | Ingestion pipeline tuning, collector key creation, shared alerts and dashboard templates. | Billing modifications, user provisioning, audit log clearance. |
+| **`Obs-Dev-[Team]`** | Software Engineers, QA | Querying service metrics, APM traces, and logs scoped to their team. | Cross-team querying, global alert editing, billing visibility. |
+| **`Obs-Security-Analyst`** | SOC Analysts, Incident Responders | Full read-only audit log inspection, forensic unmasked payload access (role-gated). | Modifying alerts, configuring ingestion, user management. |
+| **`Obs-Executive-Viewers`** | Engineering Directors, VPs, CTO | Read-only high-level dashboards, SLA/SLO compliance reports, billing summaries. | Deep trace inspection, creating alerts, editing dashboards. |
+| **`Obs-Service-Accounts`** | CI/CD Pipelines, Kubernetes Daemons | Automated ingestion token transmission (`dcp_ing_...`). | User interface login, querying metrics, reading audit logs. |
+
+### Step 3.1: Provision a New User Identity
+```bash
+curl -X POST http://localhost:8000/v1/security/users \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot; \
+  -d &#x27;{
+    &quot;username&quot;: &quot;sarah.chen&quot;,
+    &quot;display_name&quot;: &quot;Sarah Chen (FinOps Lead)&quot;,
+    &quot;email&quot;: &quot;sarah.chen@enterprise.com&quot;,
+    &quot;role&quot;: &quot;Obs-Executive-Viewers&quot;,
+    &quot;team_scope&quot;: &quot;*&quot;
+  }&#x27;
+```
+
+---
+
+## 4. Enforcing Attribute-Based Access Control (ABAC)
+
+To isolate sensitive microservices (e.g., payment gateways, fraud detection, authentication), assign an explicit team scope:
+
+```bash
+curl -X PUT http://localhost:8000/v1/security/users/usr_sarah_chen/role \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot; \
+  -d &#x27;{
+    &quot;role&quot;: &quot;Obs-Dev&quot;,
+    &quot;team_scope&quot;: &quot;payments&quot;
+  }&#x27;
+```
+&gt; [!NOTE]
+&gt; Once scoped, the query execution engine will automatically rewrite all user queries to filter on `team:payments` or `namespace:payments-prod`. Queries targeting unauthorized services return `403 Forbidden`.
+
+---
+
+## 5. Token Governance: Ingestion Tokens vs User API Keys
+
+Never use human user credentials for automated ingestion agents.
+
+### Step 5.1: Create a Scoped Collector Ingestion Token
+```bash
+curl -X POST http://localhost:8000/v1/security/api-keys \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot; \
+  -d &#x27;{
+    &quot;name&quot;: &quot;otel-k8s-us-west-collector&quot;,
+    &quot;key_type&quot;: &quot;INGESTION_ONLY&quot;,
+    &quot;role&quot;: &quot;Obs-Service-Accounts&quot;,
+    &quot;team_scope&quot;: &quot;*&quot;,
+    &quot;expires_days&quot;: 180
+  }&#x27;
+```
+Save the returned token (`dcp_ing_...`) immediately; plaintext is never stored in the database.
+
+### Step 5.2: Emergency Key Revocation
+If a collector token or user credential is compromised:
+```bash
+curl -X DELETE http://localhost:8000/v1/security/api-keys/key_1a2b3c4d \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot;
+```
+The key is immediately invalidated in memory and marked `REVOKED` in SQLite SSOT.
+
+---
+
+## 6. Configuring Sensitive Data Masking &amp; PII Redaction
+
+Ensure in-perimeter regex scrubbing is active for compliance with PCI-DSS and HIPAA:
+1. Open the `/configuration` portal &amp;rarr; **🛡️ RBAC &amp; Identity Vault**.
+2. Verify that the **Sensitive Data Scrubbing Filter** is enabled for:
+   - Primary Account Numbers (Credit Cards)
+   - Social Security Numbers / National Tax IDs
+   - HTTP Authorization Bearer Tokens
+   - Database Connection Strings (`postgresql://user:pass@host/db`)
+3. Test a synthetic log line:
+   ```bash
+   curl -X POST http://localhost:8000/v1/logs/sanitize-test \
+     -H &quot;Content-Type: application/json&quot; \
+     -d &#x27;{&quot;message&quot;: &quot;User failed payment with card 4111222233334444 and token Bearer eyJhbGciOi...&quot;}&#x27;
+   ```
+   Verified Output:
+   `&quot;User failed payment with card [CARD-REDACTED-XXXX] and token Bearer [TOKEN-REDACTED]&quot;`
+
+---
+
+## 7. Streaming Immutable Audit Logs to Corporate SIEM
+
+All administrative actions and security events are recorded in `rbac_audit_logs`.
+
+### Step 7.1: Query Local Audit Logs
+```bash
+curl -s &quot;http://localhost:8000/v1/security/audit-logs?limit=25&quot; \
+  -H &quot;Authorization: Bearer &lt;ADMIN_KEY&gt;&quot; | jq .
+```
+
+### Step 7.2: Stream to Splunk / Elastic / Sentinel
+Configure the in-perimeter log forwarder daemon (`syslog-ng` or `FluentBit`) to ingest `/var/log/dcouplr/audit.log` and forward via TLS:
+```
+# /etc/fluent-bit/fluent-bit.conf
+[INPUT]
+    Name        tail
+    Path        data/audit_events.jsonl
+    Tag         dcouplr.audit
+
+[OUTPUT]
+    Name        splunk
+    Match       dcouplr.audit
+    Host        splunk-hec.corp.internal
+    Port        8088
+    Splunk_Token xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    TLS         On
+```
+
+---
+
+## 8. SRE Operational Verification Checklist
+
+| Phase | Verification Item | Action / URL | Target Result |
+| :---: | :--- | :--- | :--- |
+| **1** | Verify In-Perimeter Database | `/config` | Backed by `data/vpc_telemetry.db` in WAL mode. |
+| **2** | Test RBAC Least Privilege | `/configuration` &amp;rarr; Persona Simulator | Verify `Obs-Dev` cannot see billing or audit logs. |
+| **3** | Test ABAC Team Scoping | Query `team:fraud` with `Obs-Dev-Payments` | Result empty or `403 Forbidden`. |
+| **4** | Verify Token Security | Inspect `SELECT key_hash FROM rbac_api_keys` | Plaintext secrets absent; SHA-256 only. |
+| **5** | Verify Zero-WAN Egress | Cloud VPC Flow Logs | 0 Bytes egress to external monitoring clouds. |
+
+---
+*Authorized by `&lt;dcouplr/&gt;` Cloud Engineering &amp; Customer Trust • Approved for Enterprise Production Operations.*
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

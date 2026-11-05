@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-DATABASE-ADMINISTRATOR-DBA-DESK-INSPECTION-AND-GUARDRAILS.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-DATABASE-ADMINISTRATOR-DBA-DESK-INSPECTION-AND-GUARDRAILS.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-DATABASE-ADMINISTRATOR-DBA-DESK-INSPECTION-AND-GUARDRAILS.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="operational-runbook-database-administrator-dba-desk-inspection-studio-guardrails-management"><dcouplr/> Operational Runbook: Database Administrator (DBA) Desk, Inspection Studio &amp; Guardrails Management</h1>
+<p><strong>Document ID:</strong> <code>RUN-DBA-DESK-001</code><br />
+<strong>Classification:</strong> Enterprise Observability &amp; Sovereign In-VPC Data Governance<br />
+<strong>Authoritative Scope:</strong> Dual-Perimeter Database Administration, In-VPC vs. Outside-VPC Hub, Active Directory (AD) Company Access Gate, SQLCipher Encryption &amp; Safety Guardrails<br />
+<strong>Audience:</strong> Database Administrators (<code>Observability-DBA</code>), Platform Administrators (<code>Observability-Admins</code>), Lead SREs</p>
+<hr />
+<h2 id="1-overview-architectural-boundaries">1. Overview &amp; Architectural Boundaries</h2>
+<p>The <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> enterprise telemetry platform utilizes a dual-database architecture anchored by an in-perimeter, sovereign SQLite 3 Single Source of Truth (SSOT) operating in Write-Ahead Logging (<code>WAL</code>) mode with transparent SQLCipher AES-256-CBC disk encryption.</p>
+<p>To balance non-blocking real-time observability with absolute protection against catastrophic data loss or rogue DDL/DML mutations, the platform enforces a strict dual-perimeter operational boundary:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">                                  IN-VPC SOVEREIGNTY BOUNDARY
+                               +----------------------------------+
+                               |                                  |
+                               |    In-VPC Telemetry Mesh         |
+                               |    - Permanent Strict Read-Only  |
+                               |    - $0.00 WAN Egress Guarantee  |
+                               |    - Guardrail Toggle Prohibited |
+                               |      (HTTP 403 Forbidden)        |
+                               |    - Route: /DBADesk             |
+                               |      (http://localhost:8000)     |
+                               |                                  |
+                               +-----------------+----------------+
+                                                 |
+                                                 | SQLite SSOT
+                                                 | (SQLCipher 4.x)
+                                                 v
++-------------------------------+      +---------+---------+
+| Corporate DBA Operator        |      |                   |
+| via Outside-VPC Hub           |-----&gt;| In-VPC SQLite     |
+| (https://                     |      | SSOT Database     |
+|  dba_dcouplr.yourcompany.com) |      | (AES-256-CBC)     |
+|                               |      +-------------------+
+| 1. Default: Strict Read-Only  |
+| 2. AD Corporate Login         |
+| 3. DBA Group Claim Verified   |
+|    (databaseadmin / Obs-DBA)  |
+| 4. Unlock &amp; Disable Guardrail |
+| 5. Execute DDL/DML Mutations  |
+| 6. Re-Enable Read-Only Mode   |
++-------------------------------+
+</code></pre></div>
+<hr />
+<h2 id="2-in-vpc-vs-outside-vpc-channels">2. In-VPC vs. Outside-VPC Channels</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Parameter</th>
+<th style="text-align:left">In-VPC Console (<code>/DBADesk</code>)</th>
+<th style="text-align:left">Outside-VPC Hub (<code>dba_dcouplr.yourcompany.com</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Primary URL</strong></td>
+<td style="text-align:left"><code>http://localhost:8000/DBADesk</code></td>
+<td style="text-align:left"><code>https://dba_dcouplr.yourcompany.com</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Network Perimeter</strong></td>
+<td style="text-align:left">Internal VPC Mesh / Private Subnet</td>
+<td style="text-align:left">Cloudflare Zero Trust / Argo Ingress Tunnel</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Default Mode</strong></td>
+<td style="text-align:left"><code>STRICT_READONLY</code> (Permanent)</td>
+<td style="text-align:left"><code>STRICT_READONLY</code> (Default)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Guardrail Toggle</strong></td>
+<td style="text-align:left">❌ <strong>PROHIBITED (HTTP 403 Forbidden)</strong></td>
+<td style="text-align:left">✅ <strong>PERMITTED (Requires AD Authentication)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Authentication Gate</strong></td>
+<td style="text-align:left">Local In-VPC Session / SSO Token</td>
+<td style="text-align:left">Corporate Active Directory (AD) Company Access</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>WAN Egress Cost</strong></td>
+<td style="text-align:left"><strong>$0.00 Egress Guarantee</strong></td>
+<td style="text-align:left">Zero Inbound Open Ports (Outbound Tunnel Only)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Primary Use Cases</strong></td>
+<td style="text-align:left">24x7 local telemetry, automated health probes</td>
+<td style="text-align:left">Schema migrations, index rebuilds, VACUUM, break-glass DDL/DML</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-active-directory-ad-authentication-role-verification">3. Active Directory (AD) Authentication &amp; Role Verification</h2>
+<h3 id="supported-identity-formats">Supported Identity Formats</h3>
+<p>The Outside-VPC Hub accepts corporate Active Directory (AD) / Azure AD credentials in any standard enterprise format:</p>
+<ul>
+<li><strong>Standard Username:</strong> <code>alex.turner</code></li>
+<li><strong>Domain Prefixed:</strong> <code>YOURCOMPANY\alex.turner</code></li>
+<li><strong>User Principal Name (UPN):</strong> <code>alex.turner@yourcompany.com</code></li>
+</ul>
+<h3 id="authorized-groups-roles">Authorized Groups &amp; Roles</h3>
+<p>To unlock the guardrail, the user record or IdP SAML/OIDC claim token MUST belong to one of the authorized DBA groups:</p>
+<ul>
+<li><code>databaseadmin</code></li>
+<li><code>Database Administrators</code></li>
+<li><code>Database-Administrators</code></li>
+<li><code>Observability-DBA</code> (or <code>Obs-DBA</code>)</li>
+<li><code>Observability-Admins</code> (Platform Administrators)</li>
+</ul>
+<p>Non-DBA employees (e.g. application developers or general analysts) attempting to authenticate at <code>/v1/dba/auth</code> or toggle guardrails will receive:</p>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;detail&quot;: &quot;Access Denied: User 'marcus.vance' is not a member of the DBA group (databaseadmin / Observability-DBA). Disabling the Read-Only Guardrail is authoritatively prohibited.&quot;
+}
+</code></pre></div>
+<hr />
+<h2 id="4-break-glass-procedure-disabling-read-only-guardrail">4. Break-Glass Procedure: Disabling Read-Only Guardrail</h2>
+<p>When an authorized DBA operator must perform emergency schema migrations, index optimizations, or manual corrections:</p>
+<ol>
+<li><strong>Access Outside-VPC Hub:</strong> Navigate to <code>https://dba_dcouplr.yourcompany.com</code>.</li>
+<li><strong>Authenticate Company Access:</strong> Click <strong>&quot;Login AD Corporate Account to Unlock Guardrail&quot;</strong> and submit AD credentials.</li>
+<li><strong>Trigger Break-Glass Modal:</strong> Click <strong>&quot;Disable Read-Only Guardrail&quot;</strong>.</li>
+<li><strong>Provide Operational Rationale:</strong> Enter a clear justification (e.g. <code>Emergency index rebuild on metrics_hyper_table per ticket INC-84920</code>).</li>
+<li><strong>Execute Statements:</strong> Run required DDL/DML in the SQL Scratchpad.</li>
+<li><strong>Re-Enforce Guardrail Immediately:</strong> Click <strong>&quot;Re-Enable Read-Only Guardrail&quot;</strong> to return the database to safety.</li>
+</ol>
+<h3 id="prohibited-keywords-under-guardrail-enforcement">Prohibited Keywords Under Guardrail Enforcement</h3>
+<p>When the guardrail is <code>ENFORCED</code> (the default state), any query containing the following mutation keywords is blocked with <code>HTTP 403 Forbidden</code>:</p>
+<ul>
+<li><code>DROP</code></li>
+<li><code>DELETE</code></li>
+<li><code>UPDATE</code></li>
+<li><code>INSERT</code></li>
+<li><code>ALTER</code></li>
+<li><code>TRUNCATE</code></li>
+<li><code>REPLACE</code></li>
+<li><code>CREATE</code></li>
+<li><code>ATTACH</code></li>
+<li><code>DETACH</code></li>
+<li><code>PRAGMA WRITABLE_SCHEMA</code></li>
+<li><code>VACUUM</code></li>
+<li><code>REINDEX</code></li>
+</ul>
+<hr />
+<h2 id="5-company-admin-configuration">5. Company Admin Configuration</h2>
+<p>The Company Administrator manages DBA permissions via <code>/companyadmin</code>:</p>
+<ol>
+<li>
+<p><strong>Tab 7 (DBA Database Console):</strong></p>
+<ul>
+<li>Houses the <strong>In-VPC Single Source of Truth (SSOT) Sovereign Database</strong> engine card.</li>
+<li>Displays live census counters: <strong>5 VPCs • 75 Nodes • 87 Stacks</strong>.</li>
+<li>Houses the <strong>🔄 Verify SSOT Engine Integrity</strong> button for on-demand schema and WAL integrity verification.</li>
+<li>Provides direct launchers to both the In-VPC Desk and Outside-VPC Hub.</li>
+</ul>
+</li>
+<li>
+<p><strong>Tab 8 (Customer Enterprise Employees • Sovereign In-VPC Access Command):</strong></p>
+<ul>
+<li><strong>Persona Simulator:</strong> Includes <strong><code>🗄️ Observability-DBA (Database Administrators)</code></strong> button to test capability states.</li>
+<li><strong>IdP Claim Rules:</strong> Subtab 4 maps IdP groups <code>databaseadmin, Database Administrators, Observability-DBA, Database-Administrators</code> to role <code>Observability-DBA</code>.</li>
+<li><strong>Permissions Matrix:</strong> Subtab 2 displays the dedicated <code>Observability-DBA</code> column granting <code>Full</code> for <code>inspect_database_ssot</code> and <code>manage_database_guardrails</code>.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="6-audit-logging-verification">6. Audit Logging &amp; Verification</h2>
+<p>Every guardrail toggle and mutation executed by a DBA operator is immutably recorded in the SSOT database <code>audit_logs</code> table:</p>
+<div class="code-box"><div class="code-box-header"><span>sql</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-sql">SELECT timestamp, actor, action, resource_type, details 
+FROM audit_logs 
+WHERE action LIKE 'DBA_%' 
+ORDER BY id DESC LIMIT 10;
+</code></pre></div>
+<p>Recorded action types:</p>
+<ul>
+<li><code>DBA_GUARDRAIL_DISABLED</code>: Captured with operator identity, IP, channel, and rationale.</li>
+<li><code>DBA_MUTATION_EXECUTED</code>: Captured with query snippet, affected row count, and execution latency.</li>
+<li><code>DBA_GUARDRAIL_ENABLED</code>: Captured when safety mode is restored.</li>
+</ul>
+<hr />
+<h2 id="7-associated-files-specifications">7. Associated Files &amp; Specifications</h2>
+<ul>
+<li><strong>Master Architectural Dossier:</strong> <code>DBA-IN-VPC-READONLY-VS-OUTSIDE-VPC-COMPANY-ACCESS-GUARDRAIL.md</code></li>
+<li><strong>DBA Desk Interface:</strong> <code>migration_tools/api/static/dba_desk.html</code></li>
+<li><strong>Company Admin Console:</strong> <code>migration_tools/api/static/company_admin.html</code></li>
+<li><strong>Security &amp; RBAC Enforcement:</strong> <code>migration_tools/api/security.py</code></li>
+<li><strong>API Endpoints:</strong> <code>migration_tools/api/app.py</code></li>
+<li><strong>Automated Test Suite:</strong> <code>tests/test_dba_desk_page_and_guardrails.py</code> (143 passed tests)</li>
+</ul>
+</div>
+      <pre id="raw-view"><code># &lt;dcouplr/&gt; Operational Runbook: Database Administrator (DBA) Desk, Inspection Studio &amp; Guardrails Management
+
+**Document ID:** `RUN-DBA-DESK-001`  
+**Classification:** Enterprise Observability &amp; Sovereign In-VPC Data Governance  
+**Authoritative Scope:** Dual-Perimeter Database Administration, In-VPC vs. Outside-VPC Hub, Active Directory (AD) Company Access Gate, SQLCipher Encryption &amp; Safety Guardrails  
+**Audience:** Database Administrators (`Observability-DBA`), Platform Administrators (`Observability-Admins`), Lead SREs  
+
+---
+
+## 1. Overview &amp; Architectural Boundaries
+
+The `&lt;dcouplr/&gt;` enterprise telemetry platform utilizes a dual-database architecture anchored by an in-perimeter, sovereign SQLite 3 Single Source of Truth (SSOT) operating in Write-Ahead Logging (`WAL`) mode with transparent SQLCipher AES-256-CBC disk encryption.
+
+To balance non-blocking real-time observability with absolute protection against catastrophic data loss or rogue DDL/DML mutations, the platform enforces a strict dual-perimeter operational boundary:
+
+```
+                                  IN-VPC SOVEREIGNTY BOUNDARY
+                               +----------------------------------+
+                               |                                  |
+                               |    In-VPC Telemetry Mesh         |
+                               |    - Permanent Strict Read-Only  |
+                               |    - $0.00 WAN Egress Guarantee  |
+                               |    - Guardrail Toggle Prohibited |
+                               |      (HTTP 403 Forbidden)        |
+                               |    - Route: /DBADesk             |
+                               |      (http://localhost:8000)     |
+                               |                                  |
+                               +-----------------+----------------+
+                                                 |
+                                                 | SQLite SSOT
+                                                 | (SQLCipher 4.x)
+                                                 v
++-------------------------------+      +---------+---------+
+| Corporate DBA Operator        |      |                   |
+| via Outside-VPC Hub           |-----&gt;| In-VPC SQLite     |
+| (https://                     |      | SSOT Database     |
+|  dba_dcouplr.yourcompany.com) |      | (AES-256-CBC)     |
+|                               |      +-------------------+
+| 1. Default: Strict Read-Only  |
+| 2. AD Corporate Login         |
+| 3. DBA Group Claim Verified   |
+|    (databaseadmin / Obs-DBA)  |
+| 4. Unlock &amp; Disable Guardrail |
+| 5. Execute DDL/DML Mutations  |
+| 6. Re-Enable Read-Only Mode   |
++-------------------------------+
+```
+
+---
+
+## 2. In-VPC vs. Outside-VPC Channels
+
+| Parameter | In-VPC Console (`/DBADesk`) | Outside-VPC Hub (`dba_dcouplr.yourcompany.com`) |
+| :--- | :--- | :--- |
+| **Primary URL** | `http://localhost:8000/DBADesk` | `https://dba_dcouplr.yourcompany.com` |
+| **Network Perimeter** | Internal VPC Mesh / Private Subnet | Cloudflare Zero Trust / Argo Ingress Tunnel |
+| **Default Mode** | `STRICT_READONLY` (Permanent) | `STRICT_READONLY` (Default) |
+| **Guardrail Toggle** | ❌ **PROHIBITED (HTTP 403 Forbidden)** | ✅ **PERMITTED (Requires AD Authentication)** |
+| **Authentication Gate** | Local In-VPC Session / SSO Token | Corporate Active Directory (AD) Company Access |
+| **WAN Egress Cost** | **$0.00 Egress Guarantee** | Zero Inbound Open Ports (Outbound Tunnel Only) |
+| **Primary Use Cases** | 24x7 local telemetry, automated health probes | Schema migrations, index rebuilds, VACUUM, break-glass DDL/DML |
+
+---
+
+## 3. Active Directory (AD) Authentication &amp; Role Verification
+
+### Supported Identity Formats
+The Outside-VPC Hub accepts corporate Active Directory (AD) / Azure AD credentials in any standard enterprise format:
+- **Standard Username:** `alex.turner`
+- **Domain Prefixed:** `YOURCOMPANY\alex.turner`
+- **User Principal Name (UPN):** `alex.turner@yourcompany.com`
+
+### Authorized Groups &amp; Roles
+To unlock the guardrail, the user record or IdP SAML/OIDC claim token MUST belong to one of the authorized DBA groups:
+- `databaseadmin`
+- `Database Administrators`
+- `Database-Administrators`
+- `Observability-DBA` (or `Obs-DBA`)
+- `Observability-Admins` (Platform Administrators)
+
+Non-DBA employees (e.g. application developers or general analysts) attempting to authenticate at `/v1/dba/auth` or toggle guardrails will receive:
+```json
+{
+  &quot;detail&quot;: &quot;Access Denied: User &#x27;marcus.vance&#x27; is not a member of the DBA group (databaseadmin / Observability-DBA). Disabling the Read-Only Guardrail is authoritatively prohibited.&quot;
+}
+```
+
+---
+
+## 4. Break-Glass Procedure: Disabling Read-Only Guardrail
+
+When an authorized DBA operator must perform emergency schema migrations, index optimizations, or manual corrections:
+
+1. **Access Outside-VPC Hub:** Navigate to `https://dba_dcouplr.yourcompany.com`.
+2. **Authenticate Company Access:** Click **&quot;Login AD Corporate Account to Unlock Guardrail&quot;** and submit AD credentials.
+3. **Trigger Break-Glass Modal:** Click **&quot;Disable Read-Only Guardrail&quot;**.
+4. **Provide Operational Rationale:** Enter a clear justification (e.g. `Emergency index rebuild on metrics_hyper_table per ticket INC-84920`).
+5. **Execute Statements:** Run required DDL/DML in the SQL Scratchpad.
+6. **Re-Enforce Guardrail Immediately:** Click **&quot;Re-Enable Read-Only Guardrail&quot;** to return the database to safety.
+
+### Prohibited Keywords Under Guardrail Enforcement
+When the guardrail is `ENFORCED` (the default state), any query containing the following mutation keywords is blocked with `HTTP 403 Forbidden`:
+- `DROP`
+- `DELETE`
+- `UPDATE`
+- `INSERT`
+- `ALTER`
+- `TRUNCATE`
+- `REPLACE`
+- `CREATE`
+- `ATTACH`
+- `DETACH`
+- `PRAGMA WRITABLE_SCHEMA`
+- `VACUUM`
+- `REINDEX`
+
+---
+
+## 5. Company Admin Configuration
+
+The Company Administrator manages DBA permissions via `/companyadmin`:
+
+1. **Tab 7 (DBA Database Console):**
+   - Houses the **In-VPC Single Source of Truth (SSOT) Sovereign Database** engine card.
+   - Displays live census counters: **5 VPCs • 75 Nodes • 87 Stacks**.
+   - Houses the **🔄 Verify SSOT Engine Integrity** button for on-demand schema and WAL integrity verification.
+   - Provides direct launchers to both the In-VPC Desk and Outside-VPC Hub.
+
+2. **Tab 8 (Customer Enterprise Employees • Sovereign In-VPC Access Command):**
+   - **Persona Simulator:** Includes **`🗄️ Observability-DBA (Database Administrators)`** button to test capability states.
+   - **IdP Claim Rules:** Subtab 4 maps IdP groups `databaseadmin, Database Administrators, Observability-DBA, Database-Administrators` to role `Observability-DBA`.
+   - **Permissions Matrix:** Subtab 2 displays the dedicated `Observability-DBA` column granting `Full` for `inspect_database_ssot` and `manage_database_guardrails`.
+
+---
+
+## 6. Audit Logging &amp; Verification
+
+Every guardrail toggle and mutation executed by a DBA operator is immutably recorded in the SSOT database `audit_logs` table:
+
+```sql
+SELECT timestamp, actor, action, resource_type, details 
+FROM audit_logs 
+WHERE action LIKE &#x27;DBA_%&#x27; 
+ORDER BY id DESC LIMIT 10;
+```
+
+Recorded action types:
+- `DBA_GUARDRAIL_DISABLED`: Captured with operator identity, IP, channel, and rationale.
+- `DBA_MUTATION_EXECUTED`: Captured with query snippet, affected row count, and execution latency.
+- `DBA_GUARDRAIL_ENABLED`: Captured when safety mode is restored.
+
+---
+
+## 7. Associated Files &amp; Specifications
+
+- **Master Architectural Dossier:** `DBA-IN-VPC-READONLY-VS-OUTSIDE-VPC-COMPANY-ACCESS-GUARDRAIL.md`
+- **DBA Desk Interface:** `migration_tools/api/static/dba_desk.html`
+- **Company Admin Console:** `migration_tools/api/static/company_admin.html`
+- **Security &amp; RBAC Enforcement:** `migration_tools/api/security.py`
+- **API Endpoints:** `migration_tools/api/app.py`
+- **Automated Test Suite:** `tests/test_dba_desk_page_and_guardrails.py` (143 passed tests)
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;dcouplr/&gt; Operational Runbook: Database Administrator (DBA) Desk, Inspection Studio &amp; Guardrails Management
+
+**Document ID:** `RUN-DBA-DESK-001`  
+**Classification:** Enterprise Observability &amp; Sovereign In-VPC Data Governance  
+**Authoritative Scope:** Dual-Perimeter Database Administration, In-VPC vs. Outside-VPC Hub, Active Directory (AD) Company Access Gate, SQLCipher Encryption &amp; Safety Guardrails  
+**Audience:** Database Administrators (`Observability-DBA`), Platform Administrators (`Observability-Admins`), Lead SREs  
+
+---
+
+## 1. Overview &amp; Architectural Boundaries
+
+The `&lt;dcouplr/&gt;` enterprise telemetry platform utilizes a dual-database architecture anchored by an in-perimeter, sovereign SQLite 3 Single Source of Truth (SSOT) operating in Write-Ahead Logging (`WAL`) mode with transparent SQLCipher AES-256-CBC disk encryption.
+
+To balance non-blocking real-time observability with absolute protection against catastrophic data loss or rogue DDL/DML mutations, the platform enforces a strict dual-perimeter operational boundary:
+
+```
+                                  IN-VPC SOVEREIGNTY BOUNDARY
+                               +----------------------------------+
+                               |                                  |
+                               |    In-VPC Telemetry Mesh         |
+                               |    - Permanent Strict Read-Only  |
+                               |    - $0.00 WAN Egress Guarantee  |
+                               |    - Guardrail Toggle Prohibited |
+                               |      (HTTP 403 Forbidden)        |
+                               |    - Route: /DBADesk             |
+                               |      (http://localhost:8000)     |
+                               |                                  |
+                               +-----------------+----------------+
+                                                 |
+                                                 | SQLite SSOT
+                                                 | (SQLCipher 4.x)
+                                                 v
++-------------------------------+      +---------+---------+
+| Corporate DBA Operator        |      |                   |
+| via Outside-VPC Hub           |-----&gt;| In-VPC SQLite     |
+| (https://                     |      | SSOT Database     |
+|  dba_dcouplr.yourcompany.com) |      | (AES-256-CBC)     |
+|                               |      +-------------------+
+| 1. Default: Strict Read-Only  |
+| 2. AD Corporate Login         |
+| 3. DBA Group Claim Verified   |
+|    (databaseadmin / Obs-DBA)  |
+| 4. Unlock &amp; Disable Guardrail |
+| 5. Execute DDL/DML Mutations  |
+| 6. Re-Enable Read-Only Mode   |
++-------------------------------+
+```
+
+---
+
+## 2. In-VPC vs. Outside-VPC Channels
+
+| Parameter | In-VPC Console (`/DBADesk`) | Outside-VPC Hub (`dba_dcouplr.yourcompany.com`) |
+| :--- | :--- | :--- |
+| **Primary URL** | `http://localhost:8000/DBADesk` | `https://dba_dcouplr.yourcompany.com` |
+| **Network Perimeter** | Internal VPC Mesh / Private Subnet | Cloudflare Zero Trust / Argo Ingress Tunnel |
+| **Default Mode** | `STRICT_READONLY` (Permanent) | `STRICT_READONLY` (Default) |
+| **Guardrail Toggle** | ❌ **PROHIBITED (HTTP 403 Forbidden)** | ✅ **PERMITTED (Requires AD Authentication)** |
+| **Authentication Gate** | Local In-VPC Session / SSO Token | Corporate Active Directory (AD) Company Access |
+| **WAN Egress Cost** | **$0.00 Egress Guarantee** | Zero Inbound Open Ports (Outbound Tunnel Only) |
+| **Primary Use Cases** | 24x7 local telemetry, automated health probes | Schema migrations, index rebuilds, VACUUM, break-glass DDL/DML |
+
+---
+
+## 3. Active Directory (AD) Authentication &amp; Role Verification
+
+### Supported Identity Formats
+The Outside-VPC Hub accepts corporate Active Directory (AD) / Azure AD credentials in any standard enterprise format:
+- **Standard Username:** `alex.turner`
+- **Domain Prefixed:** `YOURCOMPANY\alex.turner`
+- **User Principal Name (UPN):** `alex.turner@yourcompany.com`
+
+### Authorized Groups &amp; Roles
+To unlock the guardrail, the user record or IdP SAML/OIDC claim token MUST belong to one of the authorized DBA groups:
+- `databaseadmin`
+- `Database Administrators`
+- `Database-Administrators`
+- `Observability-DBA` (or `Obs-DBA`)
+- `Observability-Admins` (Platform Administrators)
+
+Non-DBA employees (e.g. application developers or general analysts) attempting to authenticate at `/v1/dba/auth` or toggle guardrails will receive:
+```json
+{
+  &quot;detail&quot;: &quot;Access Denied: User &#x27;marcus.vance&#x27; is not a member of the DBA group (databaseadmin / Observability-DBA). Disabling the Read-Only Guardrail is authoritatively prohibited.&quot;
+}
+```
+
+---
+
+## 4. Break-Glass Procedure: Disabling Read-Only Guardrail
+
+When an authorized DBA operator must perform emergency schema migrations, index optimizations, or manual corrections:
+
+1. **Access Outside-VPC Hub:** Navigate to `https://dba_dcouplr.yourcompany.com`.
+2. **Authenticate Company Access:** Click **&quot;Login AD Corporate Account to Unlock Guardrail&quot;** and submit AD credentials.
+3. **Trigger Break-Glass Modal:** Click **&quot;Disable Read-Only Guardrail&quot;**.
+4. **Provide Operational Rationale:** Enter a clear justification (e.g. `Emergency index rebuild on metrics_hyper_table per ticket INC-84920`).
+5. **Execute Statements:** Run required DDL/DML in the SQL Scratchpad.
+6. **Re-Enforce Guardrail Immediately:** Click **&quot;Re-Enable Read-Only Guardrail&quot;** to return the database to safety.
+
+### Prohibited Keywords Under Guardrail Enforcement
+When the guardrail is `ENFORCED` (the default state), any query containing the following mutation keywords is blocked with `HTTP 403 Forbidden`:
+- `DROP`
+- `DELETE`
+- `UPDATE`
+- `INSERT`
+- `ALTER`
+- `TRUNCATE`
+- `REPLACE`
+- `CREATE`
+- `ATTACH`
+- `DETACH`
+- `PRAGMA WRITABLE_SCHEMA`
+- `VACUUM`
+- `REINDEX`
+
+---
+
+## 5. Company Admin Configuration
+
+The Company Administrator manages DBA permissions via `/companyadmin`:
+
+1. **Tab 7 (DBA Database Console):**
+   - Houses the **In-VPC Single Source of Truth (SSOT) Sovereign Database** engine card.
+   - Displays live census counters: **5 VPCs • 75 Nodes • 87 Stacks**.
+   - Houses the **🔄 Verify SSOT Engine Integrity** button for on-demand schema and WAL integrity verification.
+   - Provides direct launchers to both the In-VPC Desk and Outside-VPC Hub.
+
+2. **Tab 8 (Customer Enterprise Employees • Sovereign In-VPC Access Command):**
+   - **Persona Simulator:** Includes **`🗄️ Observability-DBA (Database Administrators)`** button to test capability states.
+   - **IdP Claim Rules:** Subtab 4 maps IdP groups `databaseadmin, Database Administrators, Observability-DBA, Database-Administrators` to role `Observability-DBA`.
+   - **Permissions Matrix:** Subtab 2 displays the dedicated `Observability-DBA` column granting `Full` for `inspect_database_ssot` and `manage_database_guardrails`.
+
+---
+
+## 6. Audit Logging &amp; Verification
+
+Every guardrail toggle and mutation executed by a DBA operator is immutably recorded in the SSOT database `audit_logs` table:
+
+```sql
+SELECT timestamp, actor, action, resource_type, details 
+FROM audit_logs 
+WHERE action LIKE &#x27;DBA_%&#x27; 
+ORDER BY id DESC LIMIT 10;
+```
+
+Recorded action types:
+- `DBA_GUARDRAIL_DISABLED`: Captured with operator identity, IP, channel, and rationale.
+- `DBA_MUTATION_EXECUTED`: Captured with query snippet, affected row count, and execution latency.
+- `DBA_GUARDRAIL_ENABLED`: Captured when safety mode is restored.
+
+---
+
+## 7. Associated Files &amp; Specifications
+
+- **Master Architectural Dossier:** `DBA-IN-VPC-READONLY-VS-OUTSIDE-VPC-COMPANY-ACCESS-GUARDRAIL.md`
+- **DBA Desk Interface:** `migration_tools/api/static/dba_desk.html`
+- **Company Admin Console:** `migration_tools/api/static/company_admin.html`
+- **Security &amp; RBAC Enforcement:** `migration_tools/api/security.py`
+- **API Endpoints:** `migration_tools/api/app.py`
+- **Automated Test Suite:** `tests/test_dba_desk_page_and_guardrails.py` (143 passed tests)
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

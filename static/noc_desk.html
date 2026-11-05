@@ -1,0 +1,2472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt;: NOC Desk Console • Outside-VPC Operations Center</title>
+  <meta name="description" content="Native zero-egress real-time telemetry dashboard for &lt;dcouplr/&gt;. Sub-millisecond latency percentiles, multi-VPC topology mapping, Raft consensus health, and PromQL alert simulator in volatile memory.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/dashboard.css?v=20261027_v15">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <style>
+    .brand-badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 800;
+      background: rgba(139, 92, 246, 0.18);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.45);
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+    }
+    .brand-badge.two-way {
+      background: rgba(56, 189, 248, 0.18);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.45);
+    }
+</style>
+</head>
+<body class="dashboard-body">
+
+  <!-- =========================================================================
+       Top Global Header
+       ========================================================================= -->
+  <header class="dash-header">
+    <!-- Brand & Workspace -->
+    <div class="header-brand-group">
+      <a href="/" class="logo-brand" aria-label="Return to <dcouplr/> Home">
+        <div class="dcouplr-logo" title="<dcouplr/>">
+          <span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span>
+        </div>
+      </a>
+      <span class="brand-badge two-way">NOC DESK CONSOLE</span>
+      <span style="font-size: 0.7rem; color: #6ee7b7; font-family: var(--font-mono); font-weight: 700;">$0.00 WAN Egress</span>
+      
+      <!-- 2-Way Topology Simulation & Outage Alarm Toolbar -->
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <select id="select-topology-sim-scenario" style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; padding: 4px 8px; border-radius: 6px; font-size: 0.72rem;">
+          <option value="HEALTHY">Reset to Nominal (Healthy)</option>
+          <option value="P1_CRITICAL">P1_CRITICAL (AWS DB Lock Contention)</option>
+          <option value="P2_WARNING">P2_WARNING (Datacenter Ingress Drop)</option>
+        </select>
+        <button type="button" id="btn-toggle-topology-alarm" onclick="dispatchNocSimulation()" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; padding: 4px 10px; border-radius: 6px; font-size: 0.72rem; cursor: pointer; font-weight: 600;">🚨 Trigger Outage Simulation</button>
+      </div>
+
+      <button type="button" id="btn-refresh-nocdesk" class="btn-refresh-dash" onclick="this.querySelector('.refresh-svg-icon')?.classList.add('spinning'); setTimeout(function(){ window.location.reload(); }, 120);" title="Refresh NOC Desk Console" aria-label="Refresh NOC Desk">
+        <svg class="refresh-svg-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Navigation Switcher -->
+    <nav class="nav-links" aria-label="Global Navigation">
+      <a href="/traces" class="nav-link" id="nav-traces" title="In-VPC Distributed APM Tracing">Traces</a>
+      <a href="/logs" class="nav-link" id="nav-logs" title="In-VPC High-Throughput Log Search">Logs</a>
+      <a href="/wallboard" class="nav-link nav-link-hub" id="nav-wallboard" title="Outside VPC Hubs 24x7 Wallboard">
+        <span>Outside VPC Hubs</span>
+        <span class="nav-pill-badge">24x7 Wallboard</span>
+      </a>
+      <a href="/docs" class="nav-link" id="nav-docs" title="Technical Documentation &amp; TechDocs">TechDocs</a>
+    </nav>
+
+    <!-- Header Status & Telemetry Dock -->
+    <div class="header-status-area">
+      <div class="header-status-dock">
+        <button type="button" id="status-license-quota" class="compact-license-pill healthy btn-census-modal-trigger" title="Commercial Active • Cluster Medium: 71/75 Nodes Monitored (4 Available). Click to inspect active node census or manage license." aria-label="License and Node Census Status">
+          <span class="pulse-dot"></span>
+          <span id="header-license-text">Medium • 0/75 Nodes</span>
+          <span class="compact-license-arrow" aria-hidden="true">&nearr;</span>
+        </button>
+        <span class="dock-separator" aria-hidden="true"></span>
+        <button type="button" id="btn-invariant-proof" class="status-pill healthy" title="In-Perimeter Security Verified: 0 WAN Packets, 100% In-VPC, $0.00 Egress Cost. Click to view security attestation.">
+          <span class="pulse-dot" style="background: #39ff14;"></span>
+          <span>🛡️ 0 WAN Pkts &nearr;</span>
+        </button>
+        <span class="dock-separator" aria-hidden="true"></span>
+        <div id="status-stream" class="status-pill healthy" title="Server-Sent Events 1-second persistent push stream">
+          <span class="pulse-dot"></span>
+          <span id="stream-text">SSE Live (1s)</span>
+        </div>
+      </div>
+      <a href="/dcouplrSREDispatch" id="btn-open-ticket-dash" class="btn-open-ticket-dash" style="text-decoration: none; display: inline-flex; align-items: center; gap: 5px;" title="Go to Customer Support Portal &amp; Live Ticket Tracker">
+        <span>🎫 Open Ticket↗</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       Main Viewport Content
+       ========================================================================= -->
+  <main class="dash-main">
+
+    <!-- Unified Cluster Simulation & Telemetry Incident Banner -->
+    <div id="dashboard-incident-banner" style="display: none; margin: 0 0 1.25rem 0; padding: 12px 18px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.82rem; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+      <div id="dashboard-incident-text" style="display: flex; align-items: center; gap: 10px; font-weight: 700; flex-wrap: wrap;"></div>
+      <div id="dashboard-incident-actions" style="display: flex; gap: 8px; align-items: center;">
+        <a href="/matrix" target="_blank" class="btn-sm-action" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 5px 12px; border-radius: 5px; text-decoration: none; font-size: 0.74rem; font-weight: 700;">
+          🛡️ View in 7-Tier Matrix ↗
+        </a>
+        
+      </div>
+    </div>
+
+
+
+    <!-- =========================================================================
+         Tier 1: <dcouplr/> Core Engine Telemetry & Observer Performance Indicators
+         ========================================================================= -->
+    <section class="observer-telemetry-panel" id="observer-telemetry-panel" aria-label="<dcouplr/> Core Engine Telemetry & Observer Performance Indicators">
+      <div class="observer-panel-header">
+        <div class="observer-header-title">
+          <div class="dcouplr-logo dcouplr-logo-sm" title="<dcouplr/>">
+            <span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span>
+          </div>
+          <span class="observer-title-text">Core Engine Telemetry &amp; Observer Performance Indicators</span>
+          <span class="observer-tier-badge">Tier 1 &bull; In-VPC Autonomous Daemon</span>
+        </div>
+        <div class="observer-header-right">
+          <div class="observer-header-meta" id="observer-header-meta">
+            <span class="observer-pulse-dot" id="observer-pulse-dot"></span>
+            <span class="observer-meta-label">Control Plane:</span>
+            <strong class="observer-meta-val" id="observer-meta-val">Verified Stable (Sub-ms SLA &bull; Quorum)</strong>
+          </div>
+          <div class="observer-header-controls">
+            <button class="btn-observer-ctrl" id="btn-toggle-sre-nav" type="button" title="Jump to SRE Self-Troubleshooting Click Navigator">
+              <span>🛠️ Self-Troubleshoot</span>
+            </button>
+            <button class="btn-observer-ctrl btn-fullwindow-toggle" id="btn-toggle-observer-fullview" type="button" title="Toggle Full Window Expansion (Esc to exit)">
+              <span id="btn-fullview-icon">⛶</span>
+              <span id="btn-fullview-text">Full Window View</span>
+            </button>
+            <div class="observer-header-time-badge" id="observer-header-time-badge" title="Autonomous Telemetry Reconciliation Timestamp">
+              <span class="pulse-dot" style="background: #39ff14; box-shadow: 0 0 6px #39ff14; width: 6px; height: 6px;"></span>
+              <span id="observer-reconcile-time" style="color: #39ff14; font-family: var(--font-mono); font-weight: 700; font-size: 0.76rem; letter-spacing: 0.03em;">Ready</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="observer-panel-body">
+        <!-- Autonomously Evaluated Core Functions: Single 1-Row in Normal View, Expands to High-Clarity Grid in Full Window -->
+        <section class="dynamic-core-functions-strip" aria-label="Dynamic Core Engine Status">
+          <div class="core-functions-title-pill">
+            <div class="core-title-left">
+              <span class="pulse-dot" style="background: var(--cyan); width: 6px; height: 6px;"></span>
+              <span class="core-title-text">Core Functions</span>
+              <span class="core-title-count" id="core-functions-active-count">8 Active</span>
+            </div>
+            <div class="core-title-meta" id="core-functions-reconcile-time">
+              Reconciled: Autonomous &bull; In-VPC
+            </div>
+          </div>
+          <div class="core-functions-grid" id="core-functions-grid">
+            <!-- Dynamically populated via dashboard.js -->
+          </div>
+        </section>
+
+        <!-- Row 1: KPI Metrics Ribbon (7 Micro-Gauges) -->
+        <section class="kpi-grid" aria-label="Key Performance Indicators">
+          <!-- CPU Overhead -->
+          <article class="kpi-card" id="card-cpu" title="CPU Utilization Overhead • Target: < 0.2% daemon load">
+            <div class="kpi-header">
+              <span class="kpi-title">CPU Utilization</span>
+              <span class="kpi-icon" style="color: var(--cyan);">⚡</span>
+            </div>
+            <div class="kpi-value-row">
+              <div class="kpi-num-group">
+                <span class="kpi-value" id="kpi-cpu-val">2.3</span>
+                <span class="kpi-unit">% vCPU</span>
+              </div>
+              <span class="kpi-subtext" style="margin-left: auto;">&lt; 0.2% load</span>
+            </div>
+            <div class="kpi-bar">
+              <div class="kpi-bar-fill" id="kpi-cpu-bar" style="width: 4.6%;"></div>
+            </div>
+          </article>
+
+          <!-- Memory RSS (vs 50 MiB cap) -->
+          <article class="kpi-card" id="card-memory" title="Memory Footprint RSS vs Strict 50 MiB Container Cap">
+            <div class="kpi-header">
+              <span class="kpi-title">Memory Footprint</span>
+              <span class="kpi-icon" style="color: #69f0ae;">🧠</span>
+            </div>
+            <div class="kpi-value-row">
+              <div class="kpi-num-group">
+                <span class="kpi-value" id="kpi-mem-val">37.0</span>
+                <span class="kpi-unit">/ 50 MiB</span>
+              </div>
+              <span class="kpi-subtext" id="kpi-mem-headroom" style="margin-left: auto;">13.0 MiB safe</span>
+            </div>
+            <div class="kpi-bar">
+              <div class="kpi-bar-fill" id="kpi-mem-bar" style="width: 74%;"></div>
+            </div>
+          </article>
+
+          <!-- Latency P99 -->
+          <article class="kpi-card" id="card-latency" title="Sub-Millisecond Engine Latency • P50 / P99 Percentiles">
+            <div class="kpi-header">
+              <span class="kpi-title">Latency (P50/P99)</span>
+              <span class="kpi-icon" style="color: #b388ff;">⏱️</span>
+            </div>
+            <div class="kpi-value-row">
+              <div class="kpi-num-group">
+                <span class="kpi-value" id="kpi-lat-val">1.3 / 8.7</span>
+                <span class="kpi-unit">ms</span>
+              </div>
+              <span class="kpi-subtext" style="margin-left: auto;">Sub-5ms SLA</span>
+            </div>
+            <div class="kpi-bar">
+              <div class="kpi-bar-fill" id="kpi-lat-bar" style="width: 17%;"></div>
+            </div>
+          </article>
+
+          <!-- AST Translation Velocity -->
+          <article class="kpi-card" id="card-throughput" title="AST Translation Velocity &amp; Transpilation Throughput">
+            <div class="kpi-header">
+              <span class="kpi-title">AST Velocity</span>
+              <span class="kpi-icon" style="color: #ffd740;">🚀</span>
+            </div>
+            <div class="kpi-value-row">
+              <div class="kpi-num-group">
+                <span class="kpi-value" id="kpi-tp-val">38.9</span>
+                <span class="kpi-unit">tx/s</span>
+              </div>
+              <span class="kpi-subtext" id="kpi-tp-total" style="margin-left: auto;">Total: 1,420 operations</span>
+            </div>
+            <div class="kpi-bar">
+              <div class="kpi-bar-fill" id="kpi-tp-bar" style="width: 48%;"></div>
+            </div>
+          </article>
+
+          <!-- Zero-Egress Security -->
+          <article class="kpi-card" id="card-security" title="Zero-Egress In-VPC Guard: 0 External WAN Packets">
+            <div class="kpi-header">
+              <span class="kpi-title">Zero-Egress Guard</span>
+              <span class="kpi-icon" style="color: var(--emerald);">🛡️</span>
+            </div>
+            <div class="kpi-value-row">
+              <div class="kpi-num-group">
+                <span class="kpi-value" style="color: var(--emerald);">0</span>
+                <span class="kpi-unit">WAN Pkts</span>
+              </div>
+              <span class="kpi-subtext" id="kpi-tokens-scrubbed" style="margin-left: auto; color: #34d399;">4,120 tokens scrubbed</span>
+            </div>
+            <div class="kpi-bar">
+              <div class="kpi-bar-fill" style="width: 100%; background: var(--emerald);"></div>
+            </div>
+          </article>
+
+          <!-- Storage Footprint (Zero Disk / Pure Volatile RAM) -->
+          <article class="kpi-card" id="card-storage" title="Storage Footprint: 100% Volatile RAM &amp; Zero Persistent Disk Write Amplification across all Monitored VPCs">
+            <div class="kpi-header">
+              <span class="kpi-title">Storage Footprint</span>
+              <span class="kpi-icon" style="color: #38bdf8;">💾</span>
+            </div>
+            <div class="kpi-value-row">
+              <div class="kpi-num-group">
+                <span class="kpi-value" id="kpi-storage-val" style="color: #38bdf8;">0.00</span>
+                <span class="kpi-unit">GB Disk</span>
+              </div>
+              <span class="kpi-subtext" id="kpi-storage-subtext" style="margin-left: auto; color: #38bdf8;">Pure RAM</span>
+            </div>
+            <div class="kpi-bar">
+              <div class="kpi-bar-fill" id="kpi-storage-bar" style="width: 100%; background: #38bdf8;"></div>
+            </div>
+          </article>
+
+          <!-- In-VPC Financial Cost -->
+          <article class="kpi-card" id="card-cost" style="cursor: pointer; transition: transform 0.15s ease, border-color 0.15s ease;" title="Click to view In-VPC Financial Cost Breakdown &amp; Bandwidth Calculator">
+            <div class="kpi-header">
+              <span class="kpi-title" style="display: inline-flex; align-items: center; gap: 4px;">Monthly Cost <span style="font-size: 0.72rem; color: var(--emerald); opacity: 0.85;">&nearr;</span></span>
+              <span class="kpi-icon" style="color: var(--emerald);">$</span>
+            </div>
+            <div class="kpi-value-row">
+              <div class="kpi-num-group">
+                <span class="kpi-value" style="color: var(--emerald);">$0.00</span>
+                <span class="kpi-unit">/ mo</span>
+              </div>
+              <span class="kpi-subtext" style="margin-left: auto; color: var(--emerald);">100% In-VPC</span>
+            </div>
+            <div class="kpi-bar">
+              <div class="kpi-bar-fill" style="width: 100%; background: var(--emerald);"></div>
+            </div>
+          </article>
+        </section>
+
+        <!-- Row 2: Live 60 FPS Hardware-Accelerated Telemetry Waveform Charts -->
+        <section class="observer-charts-section" aria-label="Observer Real-Time Telemetry Waveforms">
+          <!-- Chart 1: Latency & Translation Velocity -->
+          <article class="observer-chart-card" id="chart-card-latency">
+            <div class="chart-header">
+              <div class="chart-title-area">
+                <span class="chart-title">Sub-Millisecond Latency &amp; Translation Velocity</span>
+                <span class="chart-badge">60 FPS Hardware-Accelerated</span>
+              </div>
+            </div>
+            <div class="chart-canvas-box">
+              <canvas id="canvas-latency" class="telemetry-canvas" height="135"></canvas>
+            </div>
+            <div class="chart-legend-row">
+              <div class="legend-chip"><span class="legend-dot" style="background: var(--cyan);"></span> P50 Median</div>
+              <div class="legend-chip"><span class="legend-dot" style="background: #b388ff;"></span> P90 90th Pct</div>
+              <div class="legend-chip"><span class="legend-dot" style="background: #ff5252;"></span> P99 Worst-Case</div>
+              <div class="legend-chip"><span class="legend-dot" style="background: #ffd740;"></span> Velocity (tx/s)</div>
+            </div>
+          </article>
+
+          <!-- Chart 2: Memory Ceiling vs 50 MiB Container Cap -->
+          <article class="observer-chart-card" id="chart-card-memory">
+            <div class="chart-header">
+              <div class="chart-title-area">
+                <span class="chart-title">In-Memory RSS Allocation vs. Strict 50 MiB Container Cap</span>
+                <span class="chart-badge safe">Volatile Memory: 0 Disk I/O</span>
+              </div>
+            </div>
+            <div class="chart-canvas-box">
+              <canvas id="canvas-memory" class="telemetry-canvas" height="135"></canvas>
+            </div>
+            <div class="chart-legend-row">
+              <div class="legend-chip"><span class="legend-dot" style="background: var(--emerald);"></span> Memory RSS (MiB)</div>
+              <div class="legend-chip"><span class="legend-dot" style="background: #ff5252; border-radius: 0;"></span> Hard Container Ceiling (50.0 MiB)</div>
+            </div>
+          </article>
+        </section>
+
+        <!-- Row 3: SRE Self-Troubleshooting Click Navigator -->
+        <section class="sre-troubleshoot-navigator" id="sre-troubleshoot-navigator" aria-label="SRE Self-Troubleshooting Click Navigator">
+          <div class="sre-nav-header">
+            <div class="sre-header-info">
+              <div class="sre-title-wrap">
+                <span class="sre-icon">🛠️</span>
+                <h3 class="sre-title">SRE Self-Troubleshooting Click Navigator</h3>
+                <span class="sre-badge-subtext">Autonomous In-VPC Diagnostic &amp; Self-Healing Engine</span>
+              </div>
+              <p class="sre-desc">
+                Resolve alerts autonomously before opening support tickets. Execute guided pre-flight diagnostic scans and 1-click in-perimeter remediations below.
+              </p>
+            </div>
+            <div class="sre-header-actions">
+              <div class="sre-master-pill" id="sre-master-status">
+                <span class="sre-pulse-dot"></span>
+                <span id="sre-master-status-text">All 8 Subsystems Nominal</span>
+              </div>
+              <button class="btn-sre-master-scan" id="btn-sre-master-scan" type="button" title="Run instant pre-flight diagnostic scan across all 8 subsystems (< 50ms)">
+                <span>⚡ Run 1-Click Diagnostic Scan</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step-by-Step Interactive Checklist Grid (6 Steps) -->
+          <div class="sre-steps-grid">
+            <!-- Step 1: Subsystem Pulse & SLA Latency -->
+            <article class="sre-step-card" id="sre-card-step1">
+              <div class="sre-step-top">
+                <span class="sre-step-num">STEP 01</span>
+                <span class="sre-step-tag healthy" id="sre-step1-tag">SLA Latency Met</span>
+              </div>
+              <h4 class="sre-step-title">Subsystem Latency &amp; Engine Pulse Check</h4>
+              <p class="sre-step-text">
+                Evaluates internal AST transpiler execution latency and checks for thread contention or GC stalls against sub-5ms SLA.
+              </p>
+              <div class="sre-step-action-row">
+                <button class="btn-sre-action" id="btn-sre-step-1" type="button">
+                  <span>🔍 Run Diagnostic Sweep</span>
+                </button>
+                <div class="sre-step-feedback" id="sre-feedback-1">
+                  Ready to evaluate P50/P99 latency SLA.
+                </div>
+              </div>
+            </article>
+
+            <!-- Step 2: Circuit Breaker Reset -->
+            <article class="sre-step-card" id="sre-card-step2">
+              <div class="sre-step-top">
+                <span class="sre-step-num">STEP 02</span>
+                <span class="sre-step-tag healthy" id="sre-step2-tag">Breaker CLOSED</span>
+              </div>
+              <h4 class="sre-step-title">Circuit Breaker Reset &amp; Failover Recovery</h4>
+              <p class="sre-step-text">
+                If asymmetric network latency or transient connection faults trip the circuit breaker to OPEN or HALF-OPEN, force-reset to CLOSED.
+              </p>
+              <div class="sre-step-action-row">
+                <button class="btn-sre-action" id="btn-sre-step-2" type="button">
+                  <span>⚡ 1-Click Reset Breaker</span>
+                </button>
+                <div class="sre-step-feedback" id="sre-feedback-2">
+                  State: CLOSED • Error counts nominal.
+                </div>
+              </div>
+            </article>
+
+            <!-- Step 3: WAL Log Compaction -->
+            <article class="sre-step-card" id="sre-card-step3">
+              <div class="sre-step-top">
+                <span class="sre-step-num">STEP 03</span>
+                <span class="sre-step-tag healthy" id="sre-step3-tag">ΔI &lt; 8,192 Safe</span>
+              </div>
+              <h4 class="sre-step-title">WAL Log Compaction &amp; Memory Headroom Flush</h4>
+              <p class="sre-step-text">
+                If Memory RSS exceeds 40 MiB or uncompacted log delta ΔI approaches 8,192, trigger immediate in-memory compaction to free headroom.
+              </p>
+              <div class="sre-step-action-row">
+                <button class="btn-sre-action" id="btn-sre-step-3" type="button">
+                  <span>🧹 1-Click Flush WAL</span>
+                </button>
+                <div class="sre-step-feedback" id="sre-feedback-3">
+                  ΔI &lt; 8,192 • Volatile RAM headroom safe.
+                </div>
+              </div>
+            </article>
+
+            <!-- Step 4: Network Route & Boundary Verification -->
+            <article class="sre-step-card" id="sre-card-step4">
+              <div class="sre-step-top">
+                <span class="sre-step-num">STEP 04</span>
+                <span class="sre-step-tag healthy" id="sre-step4-tag">Boundaries Verified</span>
+              </div>
+              <h4 class="sre-step-title">Network Route &amp; Boundary Verification</h4>
+              <p class="sre-step-text">
+                If CIDR allocations or multi-VPC routes diverge, verify network boundaries to ensure complete isolation and zero routing leaks between VPCs.
+              </p>
+              <div class="sre-step-action-row">
+                <button class="btn-sre-action" id="btn-sre-step-4" type="button">
+                  <span>🛡️ 1-Click Verify Boundaries</span>
+                </button>
+                <div class="sre-step-feedback" id="sre-feedback-4">
+                  Boundaries verified: Zero route divergence, 100% in-VPC isolation.
+                </div>
+              </div>
+            </article>
+
+            <!-- Step 5: Zero-Egress Kernel eBPF -->
+            <article class="sre-step-card" id="sre-card-step5">
+              <div class="sre-step-top">
+                <span class="sre-step-num">STEP 05</span>
+                <span class="sre-step-tag healthy" id="sre-step5-tag">0 WAN Packets</span>
+              </div>
+              <h4 class="sre-step-title">Zero-Egress Kernel eBPF &amp; SPIFFE Attestation</h4>
+              <p class="sre-step-text">
+                Validates kernel XDP socket drop rules preventing external WAN packets and verifies SPIFFE mTLS SVID certificate cryptographic chain.
+              </p>
+              <div class="sre-step-action-row">
+                <button class="btn-sre-action" id="btn-sre-step-5" type="button">
+                  <span>🛡️ 1-Click Verify eBPF</span>
+                </button>
+                <div class="sre-step-feedback" id="sre-feedback-5">
+                  0 WAN Packets • eBPF XDP_DROP verified • $0.00 Egress.
+                </div>
+              </div>
+            </article>
+
+            <!-- Step 6: Escalate to SRE Bridge Ticket -->
+            <article class="sre-step-card sre-step-escalation" id="sre-card-step6">
+              <div class="sre-step-top">
+                <span class="sre-step-num">STEP 06</span>
+                <span class="sre-step-tag warning" id="sre-step6-tag">Self-Service Fallback</span>
+              </div>
+              <h4 class="sre-step-title">Automated SRE Ticket &amp; Diagnostic Bundle</h4>
+              <p class="sre-step-text">
+                If self-service steps 1-5 do not resolve the alert, generate a pre-populated cryptographic incident ticket and copy to clipboard.
+              </p>
+              <div class="sre-step-action-row">
+                <button class="btn-sre-action btn-sre-ticket-btn" id="btn-sre-step-6" type="button">
+                  <span>🎫 1-Click Copy SRE Ticket</span>
+                </button>
+                <div class="sre-step-feedback" id="sre-feedback-6">
+                  Ready to copy pre-populated SRE incident ticket.
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         Unified Multi-VPC Observed Mesh & Distributed Consensus Architecture Box
+         ========================================================================= -->
+    <section class="dash-panel unified-observer-mesh-panel" id="unified-mesh-panel" aria-label="Multi-VPC Architecture, Ingress &amp; Distributed Consensus">
+      
+      <!-- Top Zone: Interactive Multi-VPC Cross-Cloud Topology Map -->
+      <div class="mesh-top-topology">
+      <div class="panel-header">
+        <div class="panel-title-area">
+          <h2 class="panel-title">Interactive Multi-VPC Cross-Cloud Topology Map</h2>
+        </div>
+        <div class="panel-actions">
+          <button class="btn-sm-action" id="btn-topo-auto-arrange" type="button" style="background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 5px 12px; border-radius: 6px; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s ease;" title="Auto-Rearrange topology nodes and link badges to eliminate visual overlaps and optimize spacing">
+            <span id="topo-auto-arrange-icon">📐</span>
+            <span id="topo-auto-arrange-text">Auto-Arrange</span>
+          </button>
+          <span class="brand-badge">Cross-Cloud Mesh</span>
+        </div>
+      </div>
+
+      <div class="topology-search-row">
+        <input type="text" id="topology-search" class="search-input" placeholder="Search VPC, CIDR (10.100.0.0/16), or Subnet tier...">
+        <button class="filter-btn active" data-filter="all">All Networks</button>
+        <button class="filter-btn" data-filter="AWS">AWS</button>
+        <button class="filter-btn" data-filter="GCP">GCP</button>
+        <button class="filter-btn" data-filter="Azure">Azure</button>
+        <button class="filter-btn" data-filter="OnPrem">🏢 On-Prem / Legacy</button>
+      </div>
+
+      <div class="svg-topology-stage" id="topology-container">
+        <!-- Dynamic SVG injected via dashboard.js -->
+      </div>
+      </div>
+
+      <!-- Hairline Internal Divider -->
+      <div class="mesh-internal-divider" style="height: 1px; background: rgba(255, 255, 255, 0.08); margin: 0.25rem 0 0.55rem 0;"></div>
+
+      <!-- Bottom Zone: Unified 2-Column Split (VPC Architecture Details + Raft Consensus) -->
+      <div class="vpc-raft-split-grid" style="margin-bottom: 0; gap: 0.75rem;">
+      
+      <!-- Left Column: Selected VPC Information & Ingress Hierarchy -->
+      <article class="mesh-sub-panel" id="panel-vpc-inspector">
+        <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+          <div class="panel-title-area" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <h2 class="panel-title" style="margin: 0; font-size: 0.95rem; font-weight: 700; color: #f8fafc;">VPC Architecture &amp; Ingress Details</h2>
+            <span class="inspector-vpc-pill" style="display: inline-flex; align-items: center; gap: 7px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); padding: 3px 10px; border-radius: 6px;">
+              <span class="status-indicator-dot" id="inspector-status-dot" style="width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); display: inline-block; flex-shrink: 0;"></span>
+              <span id="inspector-name" style="color: #94a3b8; font-size: 0.78rem; font-family: var(--font-mono); font-weight: 600; letter-spacing: 0.2px;">No Monitored VPCs (Day-0 Blank Slate)</span>
+            </span>
+          </div>
+          <div class="panel-actions">
+            <span class="brand-badge" id="inspector-cloud-badge" style="font-size: 0.68rem; padding: 2px 8px; border-color: rgba(148, 163, 184, 0.3); background: rgba(148, 163, 184, 0.08); color: #94a3b8;">Blank Slate</span>
+          </div>
+        </div>
+
+        <div class="topology-node-inspector" id="node-inspector">
+          <div style="width: 100%; min-width: 0;">
+            <!-- Header Line: In-VPC Agent Status & Attestation -->
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 8px; flex-wrap: wrap;">
+              <div id="inspector-agent-container" style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 0.72rem; color: #94a3b8; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600;">In-VPC Agent:</span>
+                <span class="brand-badge" id="inspector-agent-badge" style="font-family: var(--font-mono); font-size: 0.74rem; padding: 3px 9px; border-color: rgba(148, 163, 184, 0.3); background: rgba(148, 163, 184, 0.08); color: #94a3b8; display: inline-flex; align-items: center; gap: 6px;">
+                  <span class="pulse-dot" id="inspector-agent-dot" style="background: #64748b; width: 6px; height: 6px;"></span>
+                  <span id="inspector-agent-text">No In-VPC Agents Connected (Awaiting Discovery)</span>
+                </span>
+                <span id="inspector-equivalent" style="display: none;"></span>
+              </div>
+              <div style="font-size: 0.72rem; color: #64748b; font-family: var(--font-mono);">
+                <span>100% In-VPC Staged Mesh • Zero WAN Packets</span>
+              </div>
+            </div>
+
+            <!-- Network & Telemetry Specs Summary -->
+            <div id="inspector-details" style="color: var(--text-muted); font-size: 0.74rem; font-family: var(--font-mono); margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+              <span><strong style="color: #94a3b8;">Topology Status:</strong> 0 VPCs &bull; 0 Subnets &bull; 0 Gateways in Active Production Database</span>
+            </div>
+            <!-- Inspector Navigation Tabs -->
+            <div class="inspector-tabs-nav" role="tablist">
+              <button type="button" class="inspector-tab-btn active" data-tab="subnets" id="tab-btn-subnets" role="tab" aria-selected="true">
+                <span>🏢 Subnets &amp; Racks</span>
+                <span class="tab-count-badge" id="inspector-subnet-count-badge">0</span>
+              </button>
+              <button type="button" class="inspector-tab-btn" data-tab="loadbalancers" id="tab-btn-lbs" role="tab" aria-selected="false">
+                <span>⚖️ Load Balancers</span>
+                <span class="tab-count-badge" id="inspector-lb-count-badge">0</span>
+              </button>
+              <button type="button" class="inspector-tab-btn" data-tab="accelerators" id="tab-btn-gas" role="tab" aria-selected="false">
+                <span>⚡ Global Accelerators</span>
+                <span class="tab-count-badge" id="inspector-ga-count-badge">0</span>
+              </button>
+              <button type="button" class="inspector-tab-btn" data-tab="capabilities" id="tab-btn-caps" role="tab" aria-selected="false">
+                <span>🛡️ Ingress &amp; Policies</span>
+              </button>
+            </div>
+
+            <!-- Tab Panel 1: Subnets & Racks -->
+            <div id="inspector-tab-subnets" class="inspector-tab-panel active" role="tabpanel">
+              <div id="inspector-subnets" class="inspector-cards-grid">
+                <!-- Subnet and rack cards populated dynamically by dashboard.js -->
+              </div>
+            </div>
+
+            <!-- Tab Panel 2: Load Balancers (Layer 4 / Layer 7, F5 BIG-IP, ALB, NLB, GCP Global LB) -->
+            <div id="inspector-tab-loadbalancers" class="inspector-tab-panel" role="tabpanel" style="display: none;">
+              <div id="inspector-loadbalancers" class="inspector-cards-grid">
+                <!-- Load balancer cards populated dynamically by dashboard.js -->
+              </div>
+            </div>
+
+            <!-- Tab Panel 3: Global Accelerators & Anycast Edge VIPs -->
+            <div id="inspector-tab-accelerators" class="inspector-tab-panel" role="tabpanel" style="display: none;">
+              <div id="inspector-accelerators" class="inspector-cards-grid">
+                <!-- Global accelerator cards populated dynamically by dashboard.js -->
+              </div>
+            </div>
+
+            <!-- Tab Panel 4: Ingress Capabilities & Security Policies -->
+            <div id="inspector-tab-capabilities" class="inspector-tab-panel" role="tabpanel" style="display: none;">
+              <div id="inspector-core-functions" style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center; padding: 4px 0;"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Right Column: Raft Cluster Consensus & WAL Compaction -->
+      <article class="mesh-sub-panel">
+        <div class="panel-header">
+          <div class="panel-title-area">
+            <h2 class="panel-title">Embedded Raft Consensus &amp; WAL Compaction</h2>
+          </div>
+          <div class="panel-actions">
+            <span class="status-pill healthy" style="font-size: 0.7rem; padding: 0.2rem 0.55rem;">3-Node Quorum Active</span>
+          </div>
+        </div>
+
+        <!-- 3-Node Quorum Cards -->
+        <div class="raft-nodes-list" id="raft-nodes-container">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Bottom Row: WAL Log Compaction & Circuit Breaker Side-by-Side -->
+        <div class="raft-bottom-grid">
+          <!-- WAL Log Compaction Math Card -->
+          <div class="wal-compaction-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 600; font-size: 0.82rem; color: #ffffff;">WAL Log Compaction Monitor</span>
+              <span id="wal-compaction-badge" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--cyan);">53.9% of Threshold</span>
+            </div>
+            <div class="kpi-bar" style="margin-top: 0.5rem; height: 6px;">
+              <div id="wal-bar-fill" class="kpi-bar-fill" style="width: 53.9%;"></div>
+            </div>
+            <div class="wal-stats-grid">
+              <div>Applied: <strong id="wal-applied-idx" style="color: #fff;">28,923</strong></div>
+              <div>Snapshot: <strong id="wal-snapshot-idx" style="color: #fff;">24,495</strong></div>
+              <div>Delta: <strong id="wal-delta-val" style="color: var(--cyan);">4,428 / 8,192</strong></div>
+            </div>
+          </div>
+
+          <!-- Circuit Breaker Chaos Drill Simulation -->
+          <div class="circuit-breaker-card">
+            <div class="cb-status-label">
+              <span class="pulse-dot" id="cb-dot" style="background: var(--emerald);"></span>
+              <span>Circuit Breaker: <span id="cb-status-text" style="color: var(--emerald);">CLOSED (Operational)</span></span>
+            </div>
+            <div class="cb-action-row">
+              <span class="cb-subtext">Trip: 5 fails • Auto-Recovery: 10s</span>
+              <span style="font-size: 0.72rem; color: #64748b; font-family: var(--font-mono);">Automated Failover Active</span>
+            </div>
+          </div>
+        </div>
+
+      </article>
+
+      </div>
+
+    </section>
+
+
+      <!-- =========================================================================
+         Below Dashboard: Smart Optimization Built-In Notice with In-Depth Tooltip
+         ========================================================================= -->
+    <div class="smart-opt-bar" id="smart-opt-bar" aria-label="Smart In-VPC Bandwidth Optimization">
+      <div style="display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: #cbd5e1; flex: 1 1 320px;">
+        <span style="font-size: 1.25rem; line-height: 1;">💡</span>
+        <span>
+          <strong style="color: #38bdf8;">Smart Optimization Built-In:</strong> Tab Sleep visibility detection automatically slows streaming from 1s to 30s when minimized, reducing data transfer by 96.6% when nobody is watching.
+        </span>
+      </div>
+      <div class="smart-opt-tooltip-wrap" id="tab-sleep-tooltip-wrap">
+        <button type="button" class="smart-opt-info-btn" id="btn-tab-sleep-info" aria-label="Learn how Tab Sleep optimization works">
+          <span>ℹ️ How This Works</span>
+        </button>
+        <div class="smart-opt-tooltip-popup" id="tab-sleep-popup" role="tooltip">
+          <div style="font-weight: 700; color: #ffffff; font-size: 0.85rem; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.4rem;">
+            <span>⚡</span>
+            <span>Tab Sleep &amp; In-VPC Bandwidth Lifecycle</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.55rem;">
+            <div>
+              <strong style="color: #38bdf8;">1. Active Monitoring (1s Frequency):</strong>
+              <div style="color: #94a3b8; font-size: 0.73rem; margin-top: 1px;">While this browser tab is active, the <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> daemon streams telemetry at 1-second intervals for real-time sub-millisecond anomaly detection.</div>
+            </div>
+            <div>
+              <strong style="color: #34d399;">2. Background Idle Mode (30s Frequency):</strong>
+              <div style="color: #94a3b8; font-size: 0.73rem; margin-top: 1px;">When you switch tabs or minimize the window (<code>document.hidden = true</code>), the HTML5 Page Visibility engine automatically drops streaming to 30s intervals, cutting network transfer by <strong>96.6%</strong> (from 48 KB/min down to ~1.6 KB/min per client).</div>
+            </div>
+            <div>
+              <strong style="color: #a78bfa;">3. Instant Wakeup Burst:</strong>
+              <div style="color: #94a3b8; font-size: 0.73rem; margin-top: 1px;">Returning to this tab immediately triggers an instantaneous state burst so your topology and telemetry are instantly fresh without missing a single packet or wasting cross-AZ network egress fees.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- =========================================================================
+       Footer
+       ========================================================================= -->
+  <footer class="dash-footer">
+    <div>
+      <strong><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></strong>: Zero-Egress In-App Telemetry &amp; Multi-VPC Architecture Engine v1.0.0
+    </div>
+    <div class="footer-badges">
+      <span class="footer-pill">AIR-GAP CERTIFIED</span>
+      <span class="footer-pill">ZERO PUBLIC EGRESS</span>
+      <span class="footer-pill">VOLATILE MEMORY ONLY</span>
+    </div>
+  </footer>
+
+        <!-- =========================================================================
+         Modal: 7-Tier Full-Stack Monitoring Matrix & Notification Hub
+         ========================================================================= -->
+    <div id="modal-7tier-matrix" class="modal-backdrop" style="display: none; align-items: center; justify-content: center; z-index: 99999;" role="dialog" aria-modal="true" aria-labelledby="modal-7tier-title">
+      <div class="modal-window modal-card" style="background: #0a0d16; border: 1px solid rgba(57, 255, 20, 0.45); box-shadow: 0 25px 80px rgba(0, 0, 0, 0.95), 0 0 50px rgba(57, 255, 20, 0.2); border-radius: 14px; max-width: 1240px; width: 96%; padding: 1.65rem; max-height: 92vh; overflow-y: auto;">
+        
+        <!-- Modal Header -->
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.85rem; margin-bottom: 1.25rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;">
+              <span class="brand-badge" style="background: rgba(57, 255, 20, 0.15); color: #39ff14; border: 1px solid rgba(57, 255, 20, 0.4); font-size: 0.72rem; font-weight: 700; padding: 2px 8px;">7-Tier Full-Stack Architecture</span>
+              <span class="brand-badge" style="background: rgba(6, 182, 212, 0.15); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.35); font-size: 0.7rem;">22 Components &bull; 111 Metrics</span>
+              <span class="brand-badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.35); font-size: 0.7rem;">NOC &amp; SRE Forwarding</span>
+              <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); font-size: 0.7rem;">Zero Cloud Egress</span>
+            </div>
+            <div style="float: right; margin-bottom: 6px;">
+              <a href="/configuration" target="_blank" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; font-size: 0.74rem; font-weight: 700; background: rgba(57, 255, 20, 0.18); border: 1px solid #39ff14; color: #39ff14; border-radius: 6px; text-decoration: none;">⚙️ Open Full Configuration Page ↗</a>
+            </div>
+            <h2 id="modal-7tier-title" style="font-size: 1.35rem; font-weight: 800; color: #ffffff; margin: 0; display: flex; align-items: center; gap: 8px;">
+              🛡️ 7-Tier Full-Stack Monitoring Matrix &amp; NOC Notification Hub
+            </h2>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin: 5px 0 0 0;">
+              Configure warning/critical thresholds, alerting severity levels (P1–P4), evaluation windows, and multi-channel notification routing to NOC and support engineers.
+            </p>
+          </div>
+          <button type="button" id="btn-close-7tier-modal" class="modal-close-btn" style="background: none; border: none; font-size: 1.6rem; color: #94a3b8; cursor: pointer; padding: 0 4px; line-height: 1;" title="Close (Esc)">&times;</button>
+        </div>
+
+        <!-- Global Status Bar -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin-bottom: 1.25rem;">
+          <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 0.75rem;">
+            <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-family: var(--font-mono);">Infrastructure Tiers</div>
+            <div style="font-size: 1.3rem; font-weight: 800; color: #39ff14;" id="stat-7tier-tiers">7 / 7 Active</div>
+            <div style="font-size: 0.7rem; color: #64748b;">Bare Metal to SIEM</div>
+          </div>
+          <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 0.75rem;">
+            <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-family: var(--font-mono);">Monitored Components</div>
+            <div style="font-size: 1.3rem; font-weight: 800; color: #38bdf8;" id="stat-7tier-components">22 Active</div>
+            <div style="font-size: 0.7rem; color: #64748b;">Auto-correlated in RAM</div>
+          </div>
+          <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 0.75rem;">
+            <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-family: var(--font-mono);">Evaluated Invariants</div>
+            <div style="font-size: 1.3rem; font-weight: 800; color: #c084fc;" id="stat-7tier-metrics">111 Invariants</div>
+            <div style="font-size: 0.7rem; color: #64748b;">Sub-millisecond sliding windows</div>
+          </div>
+          <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 0.75rem;">
+            <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-family: var(--font-mono);">Overall Health Matrix</div>
+            <div style="font-size: 1.3rem; font-weight: 800; color: #34d399;" id="stat-7tier-health">22 Healthy • 0 Alert</div>
+            <div style="font-size: 0.7rem; color: #64748b;">P1: 11 | P2: 11 | P3: 0 | P4: 0</div>
+          </div>
+        </div>
+
+        <!-- Main Hub Mode Selector Tabs -->
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1.1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.12); padding-bottom: 0.65rem; flex-wrap: wrap;" id="hub-mode-bar">
+          <button type="button" class="hub-mode-btn active" id="btn-mode-7tier" style="padding: 7px 16px; font-size: 0.82rem; font-weight: 800; border-radius: 7px; cursor: pointer; border: 1px solid #39ff14; background: rgba(57, 255, 20, 0.18); color: #39ff14; display: inline-flex; align-items: center; gap: 6px;">
+            <span>📊 7-Tier Infrastructure Matrix</span>
+          </button>
+          <button type="button" class="hub-mode-btn" id="btn-mode-node-tech" style="padding: 7px 16px; font-size: 0.82rem; font-weight: 700; border-radius: 7px; cursor: pointer; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.08); color: #38bdf8; display: inline-flex; align-items: center; gap: 6px;">
+            <span>🖥️ Node Tech Stack Census (71 Nodes • 4 Networks)</span>
+          </button>
+          <button type="button" class="hub-mode-btn" id="btn-mode-alert-connectors" style="padding: 7px 16px; font-size: 0.82rem; font-weight: 700; border-radius: 7px; cursor: pointer; border: 1px solid rgba(168, 85, 247, 0.4); background: rgba(168, 85, 247, 0.08); color: #c084fc; display: inline-flex; align-items: center; gap: 6px;">
+            <span>🔌 Alert Routing &amp; VOE SRE Connector</span>
+          </button>
+        </div>
+
+        <!-- Section 1: 7-Tier Infrastructure Matrix View -->
+        <div id="section-7tier-matrix">
+        <!-- Tier Navigation Tabs -->
+        <div class="tier-nav-tabs" id="tier-nav-tabs" style="display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+          <button type="button" class="tier-tab-btn active" data-tier="tier_1_physical_dc" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 700; border-radius: 6px; cursor: pointer; border: 1px solid rgba(57, 255, 20, 0.5); background: rgba(57, 255, 20, 0.18); color: #39ff14; white-space: nowrap;">🏢 1. Physical DC</button>
+          <button type="button" class="tier-tab-btn" data-tier="tier_2_network" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 600; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.04); color: #94a3b8; white-space: nowrap;">🌐 2. Networking</button>
+          <button type="button" class="tier-tab-btn" data-tier="tier_3_vpc_cloud" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 600; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.04); color: #94a3b8; white-space: nowrap;">☁️ 3. Cloud &amp; VPC</button>
+          <button type="button" class="tier-tab-btn" data-tier="tier_4_virtualization_containers" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 600; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.04); color: #94a3b8; white-space: nowrap;">☸️ 4. Virtualization &amp; K8s</button>
+          <button type="button" class="tier-tab-btn" data-tier="tier_5_middleware_databases" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 600; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.04); color: #94a3b8; white-space: nowrap;">🗄️ 5. Middleware &amp; DBs</button>
+          <button type="button" class="tier-tab-btn" data-tier="tier_6_apm_tracing" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 600; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.04); color: #94a3b8; white-space: nowrap;">⚡ 6. APM &amp; Traces</button>
+          <button type="button" class="tier-tab-btn" data-tier="tier_7_logs_security_siem" style="padding: 6px 12px; font-size: 0.78rem; font-weight: 600; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.04); color: #94a3b8; white-space: nowrap;">🔒 7. Logs &amp; SIEM</button>
+        </div>
+
+        <!-- Tier Components Stage (Dynamic Container) -->
+        <div id="tier-components-stage" style="min-height: 280px; margin-bottom: 1.5rem;">
+          <div style="color: #94a3b8; font-size: 0.85rem; padding: 2rem; text-align: center;">Loading 7-tier monitoring matrix from local observer daemon...</div>
+        </div>
+        </div><!-- End Section 1 -->
+
+        <!-- Section 2: Node Tech Stack Census View -->
+        <div id="section-node-tech-census" style="display: none; min-height: 320px; margin-bottom: 1.5rem;">
+          <!-- Node Selector and Scan Toolbar -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem; background: rgba(15, 23, 42, 0.6); padding: 0.75rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.06);">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 0.76rem; font-weight: 700; color: #94a3b8;">Select Node Census:</span>
+              <div id="node-census-buttons" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
+            </div>
+            <button type="button" id="btn-scan-node-tech" style="padding: 6px 14px; font-size: 0.76rem; font-weight: 700; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+              <span>⚡ Trigger eBPF Node Census Scan</span>
+            </button>
+          </div>
+          <!-- Node Details Card & Tech Grid -->
+          <div id="node-tech-cards-container">
+            <div style="color: #94a3b8; font-size: 0.85rem; padding: 2rem; text-align: center;">Loading node technologies census...</div>
+          </div>
+        </div>
+
+        <!-- Section 3: Universal Alert Routing & VOE Connector View -->
+        <div id="section-alert-connectors" style="display: none; min-height: 320px; margin-bottom: 1.5rem;">
+          <div id="alert-connectors-container">
+            <div style="color: #94a3b8; font-size: 0.85rem; padding: 2rem; text-align: center;">Loading alerting and VOE connectors...</div>
+          </div>
+        </div>
+
+        <!-- Live Dispatch Audit Trail / Receipt Drawer -->
+        <div style="background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+            <div style="font-weight: 700; color: #cbd5e1; font-size: 0.82rem; display: flex; align-items: center; gap: 6px;">
+              <span>📡</span>
+              <span>Live Notification Dispatch &amp; Delivery Console (Zero Egress Receipts)</span>
+            </div>
+            <span style="font-size: 0.72rem; color: #39ff14; font-family: var(--font-mono);">Air-Gap Cryptographic Attestation Active</span>
+          </div>
+          <div id="tier-dispatch-log" style="font-family: var(--font-mono); font-size: 0.74rem; color: #94a3b8; max-height: 140px; overflow-y: auto; background: rgba(11, 17, 32, 0.85); padding: 0.65rem; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.05); line-height: 1.6;">
+            <div>[READY] In-Perimeter notification hub initialized. Ready to dispatch test alerts to NOC PulseCast™, SRE SMTP, ServiceNow, and Out-of-Band Pager.</div>
+          </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem; padding-top: 0.5rem; border-top: 1px solid rgba(255, 255, 255, 0.08); flex-wrap: wrap; gap: 0.75rem;">
+          <div style="font-size: 0.74rem; color: #64748b; font-family: var(--font-mono);">
+            <span>SOP Reference: </span>
+            <a href="/docs/runbooks/RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.html" target="_blank" style="color: #38bdf8; text-decoration: none;">RUNBOOK-7-TIER-FULLSTACK-DATACENTER-AND-VPC-MONITORING.md ↗</a>
+          </div>
+          <button type="button" id="btn-close-7tier-bottom" class="btn-secondary" style="padding: 6px 16px; font-size: 0.8rem; cursor: pointer; border-radius: 6px;">Close Hub</button>
+        </div>
+
+      </div>
+    </div>
+
+<!-- =========================================================================
+     Modal: Outside-VPC Hubs: 24x7 Wallboards, Kiosks & Operator Desks (FULL EXPANDED)
+     ========================================================================= -->
+<div id="modal-wallboard-modes" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); z-index: 99999; align-items: center; justify-content: center; padding: 0; box-sizing: border-box;" onclick="if (event.target === this) this.style.display='none';">
+  <div class="modal-card" id="modal-wallboard-card" data-fullscreen="true" style="background: #090e17; border: 1px solid rgba(56, 189, 248, 0.35); box-shadow: 0 25px 80px rgba(0, 0, 0, 0.95), 0 0 50px rgba(56, 189, 248, 0.18); border-radius: 0; max-width: 100vw; width: 100vw; height: 100vh; max-height: 100vh; overflow-y: auto; display: flex; flex-direction: column; box-sizing: border-box; color: #f8fafc; padding: 1.6rem;">
+    
+    <!-- Modal Top Header -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.85rem; margin-bottom: 1.25rem;">
+      <div>
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px; flex-wrap: wrap;">
+          <span class="brand-badge" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.45); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">🛡️ ZERO-EGRESS AIR-GAPPED PERIMETER</span>
+          <span class="brand-badge" style="background: rgba(6, 182, 212, 0.15); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.35); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">☁️ CLOUDFLARE ZERO TRUST READY</span>
+          <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">🔒 0 INBOUND OPEN PORTS</span>
+          <span class="brand-badge" style="background: rgba(250, 204, 21, 0.15); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.35); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">~$0.01/mo TRANSPORT</span>
+        </div>
+        <h2 id="modal-wallboard-title" style="font-size: 1.45rem; font-weight: 800; color: #ffffff; margin: 0; display: flex; align-items: center; gap: 10px;">
+          📺 Outside-VPC Hubs: 24x7 Wallboards, Kiosks &amp; Operator Desks
+        </h2>
+        <p style="font-size: 0.82rem; color: #94a3b8; margin: 5px 0 0 0; line-height: 1.4;">
+          Project real-time multi-cloud topology, 7-tier operational health, and incident triage securely outside the VPC perimeter with strictly $0.00 billable cloud egress. Choose your operational display or deploy turnkey background tunnels:
+        </p>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button type="button" class="modal-close-btn" id="btn-close-wallboard-modal" onclick="document.getElementById('modal-wallboard-modes').style.display='none';" style="background: none; border: none; color: #94a3b8; font-size: 1.8rem; cursor: pointer; line-height: 1; padding: 0 4px;" title="Close Modal">&times;</button>
+      </div>
+    </div>
+
+    <!-- The 4 Outside-VPC Hubs Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 1.5rem;">
+      
+      <!-- 1. NOC Desk (Recommended · 2-Way) -->
+      <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(6, 182, 212, 0.35); border-radius: 10px; padding: 1.15rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span class="brand-badge" style="background: rgba(6, 182, 212, 0.2); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.45); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">NOC Desk (Recommended)</span>
+            <span style="font-size: 0.68rem; color: #6ee7b7; font-family: monospace; font-weight: 600;">~$0.01 / month</span>
+          </div>
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0 0 4px 0;">
+            <span style="font-weight: 800; letter-spacing: -0.02em;"><span style="color: #64748b;">&lt;</span><span style="color: #38bdf8;">dcouplr</span><span style="color: #64748b;">/&gt;</span></span> NOC Desk (AirLock™)
+          </h3>
+          <div style="font-size: 0.74rem; color: #38bdf8; font-weight: 600; margin-bottom: 8px;">
+            Zero-Trust Ingress Tunnel • 2-Way Interactive Replica of /dashboard
+          </div>
+          <p style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 10px;">
+            Interactive bidirectional command center projected outside VPC. NOC operators receive 1s SSE streams, inspect subnets and load balancers, dispatch incidents, trigger test simulations, and click "Reset to Nominal (Healthy)" to clear active outages cluster-wide.
+          </p>
+          <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 8px; margin-bottom: 12px; font-size: 0.7rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Source URL:</span><span style="display: inline-flex; align-items: center; gap: 4px;"><code style="color: #38bdf8; font-weight: 700;">/dashboard</code> <span style="color: #64748b; font-size: 0.65rem;">(In-VPC)</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Target URL:</span><span style="display: inline-flex; align-items: center; gap: 4px;"><code style="color: #a7f3d0; font-weight: 700;">/NOCDesk</code> <span style="color: #64748b; font-size: 0.65rem;">(Out-VPC)</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Path:</span><span style="color: #f8fafc; font-weight: 600;">Outbound Cloudflare Tunnel / TLS 1.3</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">Mode:</span><span style="color: #38bdf8; font-weight: 700;">2-Way Interactive (Dispatch &amp; Clear)</span>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <a href="/NOCDesk" target="_blank" class="btn-sm-action" style="flex: 1; text-align: center; text-decoration: none; background: linear-gradient(135deg, rgba(6, 182, 212, 0.3), rgba(16, 185, 129, 0.3)); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.5); padding: 7px 10px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+            🚀 Launch NOC Desk (/NOCDesk) ↗
+          </a>
+          <button type="button" id="btn-copy-airlock-cmd" onclick="navigator.clipboard.writeText('cloudflared tunnel --url http://127.0.0.1:8000').then(() => { this.textContent = '✓ Copied!'; setTimeout(() => this.textContent = '📋 Copy CLI', 1500); });" style="background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 7px 8px; border-radius: 6px; font-size: 0.74rem; cursor: pointer;">
+            📋 Copy CLI
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. SRE Desk (Specialized Engineering · 2-Way) -->
+      <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.45); border-radius: 10px; padding: 1.15rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span class="brand-badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.45); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">SRE Desk (Specialized Engineering)</span>
+            <span style="font-size: 0.68rem; color: #38bdf8; font-family: monospace; font-weight: 600;">2-Way Console</span>
+          </div>
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0 0 4px 0;">
+            <span style="font-weight: 800; letter-spacing: -0.02em;"><span style="color: #64748b;">&lt;</span><span style="color: #38bdf8;">dcouplr</span><span style="color: #64748b;">/&gt;</span></span> SRE Desk
+          </h3>
+          <div style="font-size: 0.74rem; color: #38bdf8; font-weight: 600; margin-bottom: 8px;">
+            7-Tier Matrix Out-VPC Console • Dedicated DBA &amp; SRE Command
+          </div>
+          <p style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 10px;">
+            Dedicated 2-way console for DBAs, SREs, Network, and SecOps teams. Projected outside VPC from /matrix with deep node diagnostics (HostName &amp; Node ID, IP, Subnet, OS, Stacks, /logs link) and bidirectional simulation &amp; reset controls.
+          </p>
+          <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 8px; margin-bottom: 12px; font-size: 0.7rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Source URL:</span><span style="display: inline-flex; align-items: center; gap: 4px;"><code style="color: #38bdf8; font-weight: 700;">/matrix</code> <span style="color: #64748b; font-size: 0.65rem;">(In-VPC)</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Target URL:</span><span style="display: inline-flex; align-items: center; gap: 4px;"><code style="color: #a7f3d0; font-weight: 700;">/SREDesk</code> <span style="color: #64748b; font-size: 0.65rem;">(Out-VPC)</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Path:</span><span style="color: #f8fafc; font-weight: 600;">Cloudflare Access SSO / mTLS</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">Mode:</span><span style="color: #38bdf8; font-weight: 700;">2-Way Simulation &amp; Reset</span>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <a href="/SREDesk" target="_blank" class="btn-sm-action" style="flex: 1; text-align: center; text-decoration: none; background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(139, 92, 246, 0.3)); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.5); padding: 7px 10px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+            🛠️ Launch SRE Desk (/SREDesk) ↗
+          </a>
+          <a href="/matrix" target="_blank" class="btn-sm-action" style="text-decoration: none; background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 7px 8px; border-radius: 6px; font-size: 0.74rem;">
+            In-VPC Matrix ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- 3. 7-Tier Wallboard (Wall Projection · 1-Way) -->
+      <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(57, 255, 20, 0.35); border-radius: 10px; padding: 1.15rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span class="brand-badge" style="background: rgba(57, 255, 20, 0.15); color: #39ff14; border: 1px solid rgba(57, 255, 20, 0.45); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Full-Stack Monitoring Matrix Hub</span>
+            <span style="font-size: 0.68rem; color: #86efac; font-family: monospace; font-weight: 600;">1-Way Wall</span>
+          </div>
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0 0 4px 0;">
+            <span style="font-weight: 800; letter-spacing: -0.02em;"><span style="color: #64748b;">&lt;</span><span style="color: #38bdf8;">dcouplr</span><span style="color: #64748b;">/&gt;</span></span> 7-Tier Wallboard
+          </h3>
+          <div style="font-size: 0.74rem; color: #39ff14; font-weight: 600; margin-bottom: 8px;">
+            1-Way Out-VPC Matrix Projection • Operations Center Display
+          </div>
+          <p style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 10px;">
+            Wall-mounted projection of the 7-Tier Operational Health Matrix, High-Priority Incident Triage Board, and Alert &amp; Triage Engine architectural blueprint. Synchronized with the cluster state with zero interaction required.
+          </p>
+          <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 8px; margin-bottom: 12px; font-size: 0.7rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Source URL:</span><span style="display: inline-flex; align-items: center; gap: 4px;"><code style="color: #38bdf8; font-weight: 700;">/matrix</code> <span style="color: #64748b; font-size: 0.65rem;">(In-VPC)</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Target URL:</span><span style="display: inline-flex; align-items: center; gap: 4px;"><code style="color: #a7f3d0; font-weight: 700;">/wallboard</code> <span style="color: #64748b; font-size: 0.65rem;">(Out-VPC)</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Path:</span><span style="color: #f8fafc; font-weight: 600;">Sanitized Pulse JSON / Edge CDN</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">Mode:</span><span style="color: #34d399; font-weight: 700;">1-Way Read-Only Wallboard</span>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <a href="/wallboard" target="_blank" class="btn-sm-action" style="flex: 1; text-align: center; text-decoration: none; background: linear-gradient(135deg, rgba(57, 255, 20, 0.25), rgba(6, 182, 212, 0.25)); color: #86efac; border: 1px solid rgba(57, 255, 20, 0.5); padding: 7px 10px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+            🛡️ Launch 7-Tier Wallboard (/wallboard) ↗
+          </a>
+          <a href="/matrix" target="_blank" class="btn-sm-action" style="text-decoration: none; background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 7px 8px; border-radius: 6px; font-size: 0.74rem;">
+            In-VPC Matrix ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- 4. NOC Kiosk (Air-Gapped SecOps · 1-Way) -->
+      <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(139, 92, 246, 0.35); border-radius: 10px; padding: 1.15rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span class="brand-badge" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.45); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">NOC Kiosk (Air-Gapped SecOps)</span>
+            <span style="font-size: 0.68rem; color: #a78bfa; font-family: monospace; font-weight: 600;">$0.00 R2 / $0.05 S3</span>
+          </div>
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #ffffff; margin: 0 0 4px 0;">
+            <span style="font-weight: 800; letter-spacing: -0.02em;"><span style="color: #64748b;">&lt;</span><span style="color: #38bdf8;">dcouplr</span><span style="color: #64748b;">/&gt;</span></span> NOC Kiosk (PulseCast™)
+          </h3>
+          <div style="font-size: 0.74rem; color: #c4b5fd; font-weight: 600; margin-bottom: 8px;">
+            Edge CDN Pulse Mirror • 1-Way Public Lobby &amp; Multi-NOC Walls
+          </div>
+          <p style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 10px;">
+            Unhackable unidirectional edge broadcast projected outside VPC from /dashboard. An in-VPC exporter pushes an ultra-lean 1.14 KB sanitized JSON pulse every 5 seconds. Absolute zero incoming ports or attack surface.
+          </p>
+          <div style="background: rgba(11, 17, 32, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 8px; margin-bottom: 12px; font-size: 0.7rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Source URL:</span><span style="display: inline-flex; align-items: center; gap: 4px;"><code style="color: #38bdf8; font-weight: 700;">/dashboard</code> <span style="color: #64748b; font-size: 0.65rem;">(In-VPC)</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Target URL:</span><span style="display: inline-flex; align-items: center; gap: 4px;"><code style="color: #a7f3d0; font-weight: 700;">/kiosk</code> <span style="color: #64748b; font-size: 0.65rem;">(Out-VPC)</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+              <span style="color: #94a3b8;">Path:</span><span style="color: #f8fafc; font-weight: 600;">Outbound HTTPS PUT only</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #94a3b8;">Mode:</span><span style="color: #34d399; font-weight: 700;">1-Way Air-Gapped Wallboard</span>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <a href="/kiosk" target="_blank" class="btn-sm-action" style="flex: 1; text-align: center; text-decoration: none; background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(6, 182, 212, 0.3)); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.5); padding: 7px 10px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+            📺 Launch NOC Kiosk (/kiosk) ↗
+          </a>
+          <button type="button" id="btn-copy-pulsecast-cmd" onclick="navigator.clipboard.writeText('curl -X POST http://127.0.0.1:8000/v1/telemetry/topology-pulse').then(() => { this.textContent = '✓ Copied!'; setTimeout(() => this.textContent = '📋 Copy Exporter', 1500); });" style="background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 7px 8px; border-radius: 6px; font-size: 0.74rem; cursor: pointer;">
+            📋 Copy Exporter
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Comprehensive Turnkey Setup & Cloudflare Tunnel Engine Tabbed Section -->
+    <div style="background: rgba(11, 17, 32, 0.95); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem;">
+      
+      <!-- Section Tab Bar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.05rem; font-weight: 800; color: #ffffff;">🚀 Turnkey Outside-VPC Deployment &amp; Cloudflare Tunnel Engine</span>
+          <span style="font-size: 0.68rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 2px 7px; border-radius: 4px; font-family: monospace;">cloudflared • TLS 1.3 • QUIC</span>
+        </div>
+        
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="hub-modal-tabs">
+          <button type="button" onclick="document.querySelectorAll('.hub-tab-content').forEach(function(el){el.style.display='none';}); document.getElementById('tab-installers').style.display='block'; document.querySelectorAll('.hub-tab-btn').forEach(function(b){b.style.background='rgba(255,255,255,0.05)'; b.style.color='#cbd5e1'; b.style.border='1px solid rgba(255,255,255,0.15)'; b.style.fontWeight='600';}); this.style.background='rgba(56,189,248,0.25)'; this.style.color='#38bdf8'; this.style.border='1px solid rgba(56,189,248,0.5)'; this.style.fontWeight='700';" class="hub-tab-btn active" style="background: rgba(56, 189, 248, 0.25); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.5); padding: 4px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: 700; cursor: pointer;">⚡ 1-Click Installers</button>
+          <button type="button" onclick="document.querySelectorAll('.hub-tab-content').forEach(function(el){el.style.display='none';}); document.getElementById('tab-why-cloudflare').style.display='block'; document.querySelectorAll('.hub-tab-btn').forEach(function(b){b.style.background='rgba(255,255,255,0.05)'; b.style.color='#cbd5e1'; b.style.border='1px solid rgba(255,255,255,0.15)'; b.style.fontWeight='600';}); this.style.background='rgba(56,189,248,0.25)'; this.style.color='#38bdf8'; this.style.border='1px solid rgba(56,189,248,0.5)'; this.style.fontWeight='700';" class="hub-tab-btn" style="background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 4px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: 600; cursor: pointer;">☁️ Why Cloudflare Zero Trust?</button>
+          <button type="button" onclick="document.querySelectorAll('.hub-tab-content').forEach(function(el){el.style.display='none';}); document.getElementById('tab-routes').style.display='block'; document.querySelectorAll('.hub-tab-btn').forEach(function(b){b.style.background='rgba(255,255,255,0.05)'; b.style.color='#cbd5e1'; b.style.border='1px solid rgba(255,255,255,0.15)'; b.style.fontWeight='600';}); this.style.background='rgba(56,189,248,0.25)'; this.style.color='#38bdf8'; this.style.border='1px solid rgba(56,189,248,0.5)'; this.style.fontWeight='700';" class="hub-tab-btn" style="background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 4px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: 600; cursor: pointer;">🗺️ Multi-Ingress Route Map</button>
+        </div>
+      </div>
+
+      <!-- TAB 1: 1-Click Installers (Linux & Windows) -->
+      <div id="tab-installers" class="hub-tab-content">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 14px;">
+          
+          <!-- Linux Installer Box -->
+          <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <strong style="color: #38bdf8; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                🐧 Linux Turnkey Deployment (Ubuntu / RHEL / AL2023)
+              </strong>
+              <span style="font-size: 0.68rem; color: #a7f3d0; font-family: monospace;">Systemd Daemon</span>
+            </div>
+            <p style="font-size: 0.74rem; color: #94a3b8; line-height: 1.4; margin-bottom: 8px;">
+              Downloads <code style="color: #38bdf8;">install-outside-vpc-hubs.sh</code>, provisions official <code style="color: #38bdf8;">cloudflared</code>, configures multi-route ingress for all 4 hubs, and starts the systemd service.
+            </p>
+            <div style="background: #040810; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 8px 10px; font-family: monospace; font-size: 0.7rem; color: #67e8f9; word-break: break-all; margin-bottom: 8px; user-select: all;">
+              curl -sSL http://127.0.0.1:8000/install-outside-vpc-hubs.sh | sudo bash -s -- --domain "noc.yourcompany.com"
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" onclick="navigator.clipboard.writeText('curl -sSL http://127.0.0.1:8000/install-outside-vpc-hubs.sh | sudo bash -s -- --domain &quot;noc.yourcompany.com&quot;').then(() => { this.textContent = '✓ Copied Linux Command!'; setTimeout(() => this.textContent = '📋 Copy Linux Command', 2000); });" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 5px 12px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">
+                📋 Copy Linux Command
+              </button>
+              <a href="/install-outside-vpc-hubs.sh" download style="background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 10px; border-radius: 5px; font-size: 0.72rem; text-decoration: none;">
+                ⬇ Download Script (.sh)
+              </a>
+            </div>
+          </div>
+
+          <!-- Windows Installer Box -->
+          <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <strong style="color: #c4b5fd; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                🪟 Windows Server PowerShell (2019 / 2022 / 2025)
+              </strong>
+              <span style="font-size: 0.68rem; color: #c4b5fd; font-family: monospace;">Windows Service</span>
+            </div>
+            <p style="font-size: 0.74rem; color: #94a3b8; line-height: 1.4; margin-bottom: 8px;">
+              Executes <code style="color: #c4b5fd;">install-outside-vpc-hubs.ps1</code>, fetches official <code style="color: #c4b5fd;">cloudflared.exe</code>, configures routes, and installs a resilient Windows Service.
+            </p>
+            <div style="background: #040810; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 8px 10px; font-family: monospace; font-size: 0.7rem; color: #c4b5fd; word-break: break-all; margin-bottom: 8px; user-select: all;">
+              irm http://127.0.0.1:8000/install-outside-vpc-hubs.ps1 | iex
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" onclick="navigator.clipboard.writeText('irm http://127.0.0.1:8000/install-outside-vpc-hubs.ps1 | iex').then(() => { this.textContent = '✓ Copied PowerShell Command!'; setTimeout(() => this.textContent = '📋 Copy PowerShell Command', 2000); });" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.4); padding: 5px 12px; border-radius: 5px; font-size: 0.72rem; font-weight: 700; cursor: pointer;">
+                📋 Copy PowerShell Command
+              </button>
+              <a href="/install-outside-vpc-hubs.ps1" download style="background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 10px; border-radius: 5px; font-size: 0.72rem; text-decoration: none;">
+                ⬇ Download Script (.ps1)
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB 2: Why Cloudflare Zero Trust? -->
+      <div id="tab-why-cloudflare" class="hub-tab-content" style="display: none;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+          
+          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 10px 12px;">
+            <h4 style="font-size: 0.82rem; font-weight: 700; color: #34d399; margin: 0 0 4px 0;">
+              🔒 100% Outbound Connections Only
+            </h4>
+            <p style="font-size: 0.74rem; color: #cbd5e1; line-height: 1.4; margin: 0;">
+              The tunnel initiates outbound TLS 1.3 / QUIC connections to Cloudflare Edge data centers. <strong>Zero open inbound ports on AWS Security Groups or GCP Firewalls</strong> (0.0.0.0/0:ANY = Blocked).
+            </p>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 10px 12px;">
+            <h4 style="font-size: 0.82rem; font-weight: 700; color: #38bdf8; margin: 0 0 4px 0;">
+              🔑 Identity-Aware SSO &amp; Hardware MFA
+            </h4>
+            <p style="font-size: 0.74rem; color: #cbd5e1; line-height: 1.4; margin: 0;">
+              2-way command desks (<code style="color: #38bdf8;">/NOCDesk</code>, <code style="color: #38bdf8;">/SREDesk</code>) are protected at Cloudflare Edge by Okta, Azure AD, or Google Workspace SSO with mandatory YubiKey MFA before packets reach the VPC.
+            </p>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 8px; padding: 10px 12px;">
+            <h4 style="font-size: 0.82rem; font-weight: 700; color: #facc15; margin: 0 0 4px 0;">
+              💰 Zero-Egress FinOps Invariant ($0.00)
+            </h4>
+            <p style="font-size: 0.74rem; color: #cbd5e1; line-height: 1.4; margin: 0;">
+              Cloudflare does not charge data transfer egress on tunnels. The in-VPC agent keeps all telemetry inside the perimeter and streams only UI state, preserving the sub-$0.05/mo operating profile.
+            </p>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 10px 12px;">
+            <h4 style="font-size: 0.82rem; font-weight: 700; color: #c4b5fd; margin: 0 0 4px 0;">
+              📺 Unidirectional Air-Gap for Wallboards
+            </h4>
+            <p style="font-size: 0.74rem; color: #cbd5e1; line-height: 1.4; margin: 0;">
+              1-way wallboards (<code style="color: #c4b5fd;">/wallboard</code>, <code style="color: #c4b5fd;">/kiosk</code>) consume static 1.14 KB JSON pulses from Cloudflare R2 / Edge CDN. Wall TV screens have absolute zero network routes into the VPC.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB 3: Multi-Ingress Route Map -->
+      <div id="tab-routes" class="hub-tab-content" style="display: none;">
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.74rem; color: #cbd5e1; text-align: left;">
+            <thead>
+              <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.15); color: #94a3b8;">
+                <th style="padding: 6px 8px;">Hub Name</th>
+                <th style="padding: 6px 8px;">Source URL (In-VPC)</th>
+                <th style="padding: 6px 8px;">Target Route (Out-VPC)</th>
+                <th style="padding: 6px 8px;">Path</th>
+                <th style="padding: 6px 8px;">Mode</th>
+                <th style="padding: 6px 8px;">Security &amp; Auth</th>
+                <th style="padding: 6px 8px;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                <td style="padding: 6px 8px; font-weight: 700; color: #fff;">1. NOC Desk</td>
+                <td style="padding: 6px 8px;"><code style="color: #38bdf8; font-weight: 700;">/dashboard</code></td>
+                <td style="padding: 6px 8px;"><code style="color: #a7f3d0; font-weight: 700;">/NOCDesk</code></td>
+                <td style="padding: 6px 8px; color: #f8fafc;">Cloudflare Tunnel</td>
+                <td style="padding: 6px 8px;"><span style="color: #38bdf8; font-weight: 700;">2-Way Interactive</span></td>
+                <td style="padding: 6px 8px;">Cloudflare Access SSO (NOC Role + MFA)</td>
+                <td style="padding: 6px 8px;"><a href="/NOCDesk" target="_blank" style="color: #38bdf8; text-decoration: none;">Launch ↗</a></td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                <td style="padding: 6px 8px; font-weight: 700; color: #fff;">2. SRE Desk</td>
+                <td style="padding: 6px 8px;"><code style="color: #38bdf8; font-weight: 700;">/matrix</code></td>
+                <td style="padding: 6px 8px;"><code style="color: #a7f3d0; font-weight: 700;">/SREDesk</code></td>
+                <td style="padding: 6px 8px; color: #f8fafc;">Access SSO / mTLS</td>
+                <td style="padding: 6px 8px;"><span style="color: #38bdf8; font-weight: 700;">2-Way Interactive</span></td>
+                <td style="padding: 6px 8px;">Cloudflare Access SSO (SRE / DBA Role + MFA)</td>
+                <td style="padding: 6px 8px;"><a href="/SREDesk" target="_blank" style="color: #7dd3fc; text-decoration: none;">Launch ↗</a></td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                <td style="padding: 6px 8px; font-weight: 700; color: #fff;">3. 7-Tier Wallboard</td>
+                <td style="padding: 6px 8px;"><code style="color: #38bdf8; font-weight: 700;">/matrix</code></td>
+                <td style="padding: 6px 8px;"><code style="color: #a7f3d0; font-weight: 700;">/wallboard</code></td>
+                <td style="padding: 6px 8px; color: #f8fafc;">Pulse JSON / CDN</td>
+                <td style="padding: 6px 8px;"><span style="color: #34d399; font-weight: 700;">1-Way Passive</span></td>
+                <td style="padding: 6px 8px;">Edge Pulse Token / IP Allowlist</td>
+                <td style="padding: 6px 8px;"><a href="/wallboard" target="_blank" style="color: #86efac; text-decoration: none;">Launch ↗</a></td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 8px; font-weight: 700; color: #fff;">4. NOC Kiosk</td>
+                <td style="padding: 6px 8px;"><code style="color: #38bdf8; font-weight: 700;">/dashboard</code></td>
+                <td style="padding: 6px 8px;"><code style="color: #a7f3d0; font-weight: 700;">/kiosk</code></td>
+                <td style="padding: 6px 8px; color: #f8fafc;">HTTPS PUT Push</td>
+                <td style="padding: 6px 8px;"><span style="color: #34d399; font-weight: 700;">1-Way Air-Gapped</span></td>
+                <td style="padding: 6px 8px;">Public Edge CDN / Anonymous Read-Only</td>
+                <td style="padding: 6px 8px;"><a href="/kiosk" target="_blank" style="color: #c4b5fd; text-decoration: none;">Launch ↗</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Documentation & Health Quick-Links Footer Strip -->
+    <div style="background: rgba(11, 17, 32, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <div style="font-size: 0.78rem; font-weight: 700; color: #f8fafc; margin-bottom: 2px;">
+          Exhaustive Cloudflare Zero Trust Runbook &amp; Attestation Proofs
+        </div>
+        <div style="font-size: 0.72rem; color: #94a3b8;">
+          Review production config.yml, systemd unit templates, Windows service commands, and disaster recovery procedures.
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+        <a href="/docs/runbooks/RUNBOOK-OUTSIDE-VPC-HUBS-DEPLOYMENT-AND-CLOUDFLARE-TUNNELS.html" target="_blank" style="text-decoration: none; font-size: 0.74rem; color: #38bdf8; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); padding: 5px 12px; border-radius: 6px; font-weight: 700;">
+          📖 Read Exhaustive Runbook ↗
+        </a>
+        <a href="/v1/hubs/status" target="_blank" style="text-decoration: none; font-size: 0.72rem; color: #a78bfa; background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.35); padding: 5px 9px; border-radius: 5px; font-family: monospace;">
+          Inspect /v1/hubs/status JSON ↗
+        </a>
+        <a href="/v1/telemetry/topology-pulse" target="_blank" style="text-decoration: none; font-size: 0.72rem; color: #34d399; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); padding: 5px 9px; border-radius: 5px; font-family: monospace;">
+          Inspect 1.14KB Pulse ↗
+        </a>
+        <button type="button" onclick="document.getElementById('modal-wallboard-modes').style.display='none';" style="background: rgba(255, 255, 255, 0.08); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.18); padding: 5px 12px; border-radius: 6px; font-size: 0.74rem; cursor: pointer; font-weight: 600;">
+          Close Hub
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+    <!-- In-Perimeter Security & Zero-Egress Attestation Modal -->
+    <div id="modal-invariant-proof" class="modal-backdrop" style="display: none; align-items: center; justify-content: center; z-index: 2100;" role="dialog" aria-modal="true" aria-labelledby="modal-invariant-title">
+      <div class="modal-card" style="max-width: 780px; width: 92%; background: #090e1a; border: 1px solid rgba(57, 255, 20, 0.35); border-radius: 12px; padding: 1.75rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.3rem;">🛡️</span>
+            <h2 id="modal-invariant-title" style="font-size: 1.15rem; font-weight: 700; color: #fff; margin: 0;">In-Perimeter Security &amp; Data Sovereignty Attestation</h2>
+          </div>
+          <button type="button" id="btn-close-invariant-modal" style="background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; padding: 0 4px;" aria-label="Close modal">&times;</button>
+        </div>
+        <div id="invariant-proof-content">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 1rem;">
+              <div style="font-size: 0.74rem; text-transform: uppercase; color: #94a3b8; font-family: var(--font-mono); letter-spacing: 0.04em;">Boundary Status</div>
+              <div id="inv-verdict" style="font-size: 1.1rem; font-weight: 800; color: #39ff14; margin-top: 4px;">FULLY PROTECTED</div>
+              <div style="font-size: 0.74rem; color: #64748b; margin-top: 2px;">100% In-VPC Isolation &bull; Zero Data Leaks</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 1rem;">
+              <div style="font-size: 0.74rem; text-transform: uppercase; color: #94a3b8; font-family: var(--font-mono); letter-spacing: 0.04em;">WAN Cloud Egress Cost</div>
+              <div style="font-size: 1.1rem; font-weight: 800; color: #38bdf8; margin-top: 4px;">$0.00 / month Guaranteed</div>
+              <div style="font-size: 0.74rem; color: #64748b; margin-top: 2px;">Volatile RAM Execution &bull; Zero Egress Fees</div>
+            </div>
+          </div>
+          
+          <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(57,255,20,0.2); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+            <div style="font-weight: 700; color: #fff; font-size: 0.88rem; margin-bottom: 0.35rem;">Continuous Traffic Accounting &amp; Boundary Verification</div>
+            <p style="font-size: 0.8rem; color: #94a3b8; line-height: 1.5; margin-bottom: 0.65rem;">
+              Every telemetry packet entering the in-VPC engine is tracked, validated, and accounted for within private VPC memory. Continuous boundary checks confirm that zero telemetry is silently lost and zero data escapes across unauthorized external network gateways.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+              <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; background: rgba(255,255,255,0.025); padding: 5px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">
+                <span style="color: #cbd5e1; font-weight: 600;">Data Sovereignty Guarantee:</span>
+                <span style="color: #39ff14; font-weight: 700; font-family: var(--font-mono);">100% In-VPC (Zero Third-Party Cloud Transmit)</span>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; background: rgba(255,255,255,0.025); padding: 5px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">
+                <span style="color: #cbd5e1; font-weight: 600;">External WAN Egress:</span>
+                <span style="color: #38bdf8; font-weight: 700; font-family: var(--font-mono);">0 Packets Outbound (eBPF Kernel Enforced)</span>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; background: rgba(255,255,255,0.025); padding: 5px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">
+                <span style="color: #cbd5e1; font-weight: 600;">Telemetry Delivery Assurance:</span>
+                <span style="color: #34d399; font-weight: 700; font-family: var(--font-mono);">Fully Accounted (Zero Silent Packet Loss)</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+              <span style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-family: var(--font-mono);">Cryptographic Audit Attestation Token:</span>
+              <span style="font-size: 0.68rem; color: #34d399; font-family: var(--font-mono);">SHA-256 Audit Seal</span>
+            </div>
+            <div id="inv-sha" style="font-family: var(--font-mono); font-size: 0.76rem; color: #a78bfa; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; word-break: break-all; border: 1px solid rgba(255,255,255,0.06);">
+              Evaluating...
+            </div>
+            <div style="font-size: 0.7rem; color: #64748b; margin-top: 4px;">
+              Digital compliance seal confirming zero WAN exfiltration for SOC 2 Type II, ISO 27001, and FedRAMP audits.
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+            <button type="button" id="btn-recalc-invariant" style="background: #39ff14; color: #000; font-weight: 700; padding: 6px 14px; border-radius: 6px; border: none; font-size: 0.82rem; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
+              <span>🔄 Re-verify Perimeter Security</span>
+            </button>
+            <button type="button" onclick="document.getElementById('modal-invariant-proof').style.display='none'" style="background: rgba(255,255,255,0.08); color: #fff; padding: 6px 14px; border-radius: 6px; border: none; font-size: 0.82rem; cursor: pointer;">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div>
+    <!-- =========================================================================
+         Modal: In-VPC Financial Cost Breakdown & Bandwidth Calculator
+         (Triggered by clicking Monthly Cost KPI card)
+         ========================================================================= -->
+    <div id="modal-financial-calculator" class="modal-backdrop" style="display: none; align-items: center; justify-content: center; z-index: 2100;" role="dialog" aria-modal="true" aria-labelledby="modal-fin-title">
+      <div class="modal-card" style="max-width: 960px; width: 94%; background: #0b101b; border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 1.75rem; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(16, 185, 129, 0.15); max-height: 90vh; overflow-y: auto;">
+        
+        <!-- Modal Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.3rem;">💰</span>
+            <h2 id="modal-fin-title" style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin: 0;">In-VPC Financial Cost Breakdown &amp; Bandwidth Calculator</h2>
+            <span class="status-pill healthy" style="font-size: 0.72rem; padding: 2px 8px;">$0 Software &bull; Zero Egress Tax</span>
+          </div>
+          <button type="button" id="btn-close-fin-modal" style="background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; padding: 0 4px; line-height: 1;" aria-label="Close modal">&times;</button>
+        </div>
+
+        <!-- 2-Column Grid -->
+        <div class="cost-breakdown-grid" style="display: grid; grid-template-columns: 1fr 1.1fr; gap: 1.25rem; margin-bottom: 1.25rem;">
+          
+          <!-- Left: Cost Categories -->
+          <div class="cost-category-list">
+            
+            <div class="cost-category-item">
+              <div>
+                <div class="cost-cat-title">1. Software Licensing Cost</div>
+                <div class="cost-cat-desc">Zero third-party vendor fees, no per-seat licenses ($0/user), zero volumetric ingestion taxes.</div>
+              </div>
+              <div class="cost-cat-pill">$0.00</div>
+            </div>
+
+            <div class="cost-category-item">
+              <div>
+                <div class="cost-cat-title">2. Cloud Infrastructure Cost</div>
+                <div class="cost-cat-desc">Runs inside existing <span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> Kubernetes pod. Zero separate VMs, external RDS, or Redis cache.</div>
+              </div>
+              <div class="cost-cat-pill">~$0.50 – $1.50 / mo</div>
+            </div>
+
+            <div class="cost-category-item">
+              <div>
+                <div class="cost-cat-title">3. Server Overhead (Under the Hood)</div>
+                <div class="cost-cat-desc">~2 MiB circular ring buffer, &lt; 0.2% CPU of 1 core, ~800 bytes/sec over HTTP/2 SSE, 0 disk I/O.</div>
+              </div>
+              <div class="cost-cat-pill">&lt; 0.2% CPU &bull; 2 MiB</div>
+            </div>
+
+            <div class="cost-category-item">
+              <div>
+                <div class="cost-cat-title">4. Bandwidth Cost per Engineer</div>
+                <div class="cost-cat-desc">All traffic stays within private VPC/VPN. 506 MB/month per engineer = half a cent cross-AZ.</div>
+              </div>
+              <div class="cost-cat-pill">&lt; $0.02 / mo</div>
+            </div>
+
+          </div>
+
+          <!-- Right: Interactive Bandwidth Math & SaaS Egress Comparison -->
+          <div class="bandwidth-calculator-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <strong style="color: #ffffff; font-size: 0.88rem;">Interactive Engineer Bandwidth &amp; Cloud Bill Calculator</strong>
+              <span id="active-engineers-display" style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--cyan); font-weight: 700;">50 Active Engineers</span>
+            </div>
+
+            <div style="margin-bottom: 0.75rem;">
+              <input type="range" id="engineers-slider" class="threshold-slider" min="1" max="100" value="50">
+            </div>
+
+            <table class="math-table">
+              <thead>
+                <tr>
+                  <th>Timeframe</th>
+                  <th>Volume / Engineer</th>
+                  <th>Team In-VPC Cost</th>
+                  <th>External WAN Network Egress</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Per Minute</td>
+                  <td class="mono">48 KB</td>
+                  <td class="mono">$0.00</td>
+                  <td class="mono" style="color: #ff80ab;">$0.00</td>
+                </tr>
+                <tr>
+                  <td>Per Hour</td>
+                  <td class="mono">2.88 MB</td>
+                  <td class="mono">$0.00</td>
+                  <td class="mono" style="color: #ff80ab;">$0.00</td>
+                </tr>
+                <tr>
+                  <td>Full Month (22 Workdays)</td>
+                  <td class="mono">506 MB (0.5 GB)</td>
+                  <td class="mono bold" id="calc-team-vpc-cost" style="color: var(--emerald);">&lt; $0.50 / month</td>
+                  <td class="mono bold" style="color: var(--crimson);">Variable WAN Network Egress</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <!-- Requested Optimization Callout Below -->
+        <div style="background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.25); border-radius: var(--radius-sm); padding: 0.85rem 1rem; font-size: 0.8rem; color: #cbd5e1; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.25rem;">💡</span>
+          <div>
+            <strong style="color: #38bdf8;">Smart Optimization Built-In:</strong> Tab Sleep visibility detection automatically slows streaming from 1s to 30s when minimized, reducing data transfer by 96.6% when nobody is watching.
+          </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem;">
+          <button type="button" onclick="document.getElementById('modal-financial-calculator').style.display='none'" style="background: rgba(255,255,255,0.08); color: #fff; padding: 6px 16px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); font-size: 0.82rem; cursor: pointer;">
+            Close
+          </button>
+        </div>
+
+      </div>
+    </div>
+    </div>
+
+  <!-- Modal: Open Ticket / Report Incident from Dashboard -->
+  <div class="modal-backdrop" id="modal-dash-ticket" style="display: none;">
+    <div class="modal-card" style="max-width: 680px;">
+      
+      <!-- Persistent Identification Strip -->
+      <div class="modal-ident-strip">
+        <span class="modal-ident-title" style="color: #f87171;">
+          <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 8px #ef4444;"></span>
+          ACTIVE MODAL: OPEN SUPPORT TICKET &amp; INCIDENT DISPATCH
+        </span>
+        <span class="modal-ident-status">
+          <span style="color: #f87171; font-weight: 700;">DIRECT SRE ESCALATION</span>
+          <span>•</span>
+          <span>IN-VPC SLA CHANNEL</span>
+        </span>
+      </div>
+
+      <!-- Frozen Modal Header -->
+      <div class="modal-header-frozen">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+            <span style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Direct SRE Dispatch</span>
+            <span style="font-size: 0.72rem; color: #94a3b8;">Zero-Egress In-VPC Channel</span>
+          </div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; color: #ffffff; margin: 0 0 0.25rem;">Open Support Ticket / Report Incident</h3>
+          <p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">Dispatches an emergency ticket directly to the in-house SRE operations queue with your SLA attached.</p>
+        </div>
+        <button id="btn-close-dash-ticket-modal" type="button" style="background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; padding: 0; line-height: 1; transition: color 0.15s ease;" aria-label="Close">&times;</button>
+      </div>
+
+      <!-- Scrollable Modal Body -->
+      <div class="modal-body-scroll">
+        <!-- Smart Pre-Populated Customer Identity Card -->
+      <div id="dash-ticket-company-card" style="background: rgba(0, 229, 255, 0.04); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+          <span style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cyan); font-weight: 700;">🏢 Pre-Identified Customer Identity</span>
+          <span id="dash-ticket-cust-badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 0.7rem; font-weight: 600; padding: 1px 6px; border-radius: 4px;">Verified Account</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.78rem;">
+          <div>
+            <span style="color: #64748b;">Company / Org:</span>
+            <strong id="dash-ticket-company-name" style="color: #ffffff; display: block;">Acme Global Financial (CUST-101)</strong>
+          </div>
+          <div>
+            <span style="color: #64748b;">Tier &amp; Quota:</span>
+            <strong id="dash-ticket-tier" style="color: #38bdf8; display: block;">Cluster Large (320 Active Nodes)</strong>
+          </div>
+          <div>
+            <span style="color: #64748b;">Assigned TAM / Lead:</span>
+            <span id="dash-ticket-tam" style="color: #cbd5e1; display: block;">Marcus Vance (Principal TAM)</span>
+          </div>
+          <div>
+            <span style="color: #64748b;">Contact Email:</span>
+            <span id="dash-ticket-email" style="color: #cbd5e1; font-family: var(--font-mono); display: block;">sre-leads@acmefinancial.corp</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Container -->
+      <form id="form-dash-ticket" style="display: flex; flex-direction: column; gap: 1rem;">
+        <input type="hidden" id="dash-ticket-cust-id" value="CUST-101">
+
+        <!-- Field 1: Incident Severity / Target SLA -->
+        <div>
+          <label for="dash-ticket-severity" style="display: block; font-size: 0.78rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.35rem;">
+            Incident Severity / Target SLA <span style="color: #f87171;">*</span>
+          </label>
+          <select id="dash-ticket-severity" required style="width: 100%; background: #070a12; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 0.65rem 0.85rem; border-radius: 6px; font-size: 0.82rem;">
+            <option value="P0 - Blocker">P0 - Blocker (1-Hour SLA • Complete Cluster Outage)</option>
+            <option value="P1 - Critical" selected>P1 - Critical (2-Hour SLA • Production Impairment)</option>
+            <option value="P2 - Major">P2 - Major (4-Hour SLA • Degraded Performance)</option>
+            <option value="P3 - Minor">P3 - Minor (48-Hour SLA • General Guidance / AST Query)</option>
+          </select>
+        </div>
+
+        <!-- Field 2: Architectural Domain / Category -->
+        <div>
+          <label for="dash-ticket-category" style="display: block; font-size: 0.78rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.35rem;">
+            Architectural Domain / Category <span style="color: #f87171;">*</span>
+          </label>
+          <select id="dash-ticket-category" required style="width: 100%; background: #070a12; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 0.65rem 0.85rem; border-radius: 6px; font-size: 0.82rem;">
+            <option value="Compiler Engine / AST Parser" selected>Compiler Engine / AST Parser</option>
+            <option value="Telemetry & In-VPC Monitoring Mesh">Telemetry &amp; In-VPC Monitoring Mesh</option>
+            <option value="Dual-Stack Mirroring & Circuit Breakers">Dual-Stack Mirroring &amp; Circuit Breakers</option>
+            <option value="Raft Consensus & WAL Log Compaction">Raft Consensus &amp; WAL Log Compaction</option>
+            <option value="OpenTofu / IaC State Drift">OpenTofu / IaC State Drift</option>
+            <option value="Cloud Migration & Transpilation">Cloud Migration &amp; Transpilation</option>
+          </select>
+        </div>
+
+        <!-- Field 3: Issue Summary / Title -->
+        <div>
+          <label for="dash-ticket-title" style="display: block; font-size: 0.78rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.35rem;">
+            Issue Summary / Title <span style="color: #f87171;">*</span>
+          </label>
+          <input type="text" id="dash-ticket-title" required placeholder="e.g. AST transpile syntax drift on custom Datadog monitor JSON..." style="width: 100%; background: #070a12; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 0.65rem 0.85rem; border-radius: 6px; font-size: 0.84rem;">
+        </div>
+
+        <!-- Field 4: Impacted Nodes -->
+        <div>
+          <label for="dash-ticket-nodes" style="display: block; font-size: 0.78rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.35rem;">
+            Impacted Nodes <span style="color: #f87171;">*</span>
+          </label>
+          <input type="number" id="dash-ticket-nodes" required min="1" max="1000" value="1" style="width: 100%; background: #070a12; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 0.65rem 0.85rem; border-radius: 6px; font-size: 0.84rem; font-family: var(--font-mono);">
+        </div>
+
+        <!-- Field 5: Detailed Symptoms, Error Traces, or AST Payloads -->
+        <div>
+          <label for="dash-ticket-desc" style="display: block; font-size: 0.78rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.35rem;">
+            Detailed Symptoms, Error Traces, or AST Payloads <span style="color: #f87171;">*</span>
+          </label>
+          <textarea id="dash-ticket-desc" required rows="4" placeholder="Paste sanitized AST payloads, error logs, or describe the unexpected behavior..." style="width: 100%; background: #070a12; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 0.65rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-family: var(--font-mono); resize: vertical;"></textarea>
+        </div>
+
+        <!-- Form Actions -->
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 0.5rem;">
+          <button type="button" id="btn-cancel-dash-ticket" style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15); color: #cbd5e1; padding: 0.65rem 1.25rem; border-radius: 6px; font-size: 0.82rem; cursor: pointer;">Cancel</button>
+          <button type="submit" id="btn-submit-dash-ticket" style="background: linear-gradient(135deg, #ef4444, #f43f5e); border: none; color: #fff; font-weight: 700; padding: 0.65rem 1.4rem; border-radius: 6px; font-size: 0.84rem; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <span>🚀 Dispatch Ticket to SRE</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Success State Container (Hidden Initially) -->
+      <div id="dash-ticket-success" style="display: none; text-align: center; padding: 1.5rem 0.5rem;">
+        <div style="font-size: 3rem; margin-bottom: 0.75rem;">🎫</div>
+        <h3 style="font-size: 1.35rem; font-weight: 700; color: #ffffff; margin: 0 0 0.5rem;">Ticket Dispatched Successfully!</h3>
+        <p style="font-size: 0.84rem; color: #94a3b8; margin: 0 0 1.25rem;">
+          Your incident has been queued in the SRE Operations war-room with full priority enforcement.
+        </p>
+
+        <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 1rem; max-width: 440px; margin: 0 auto 1.5rem; text-align: left;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.82rem;">
+            <span style="color: #64748b;">Ticket Reference:</span>
+            <strong id="dash-ticket-created-id" style="color: var(--cyan); font-family: var(--font-mono);">TCK-1045</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.82rem;">
+            <span style="color: #64748b;">Incident Priority:</span>
+            <strong id="dash-ticket-created-priority" style="color: #f87171;">P1 - Critical</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.82rem;">
+            <span style="color: #64748b;">Target Response SLA:</span>
+            <strong id="dash-ticket-created-sla" style="color: #fbbf24;">2 Hours (120 min countdown)</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
+            <span style="color: #64748b;">Assigned Dispatch Lead:</span>
+            <strong id="dash-ticket-created-tam" style="color: #ffffff;">Marcus Vance (Principal TAM)</strong>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+          <a id="dash-ticket-link-bridge" href="https://meet.internal.dcouplr.com/bridge-inc-live" target="_blank" class="btn-action-primary" style="display: none; text-decoration: none; align-items: center; gap: 5px; background: linear-gradient(135deg, #ef4444, #f43f5e); color: #fff; font-weight: 700; padding: 0.65rem 1.25rem; border-radius: 6px; font-size: 0.82rem;">
+            <span>🌉 Join Live Support Bridge</span>
+          </a>
+          <button type="button" id="btn-dash-ticket-done" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 0.65rem 1.4rem; border-radius: 6px; font-size: 0.84rem; cursor: pointer; font-weight: 600;">
+            Close
+          </button>
+        </div>
+      </div>
+
+      </div><!-- End modal-body-scroll -->
+    </div>
+  </div>
+
+  <!-- Modal: Automated Multi-VPC & Legacy System Lift & Shift Migration Engine (Fluid Layout) -->
+  <div class="ls-modal-backdrop" id="modal-lift-and-shift">
+    <div class="ls-modal-card" id="ls-modal-card">
+      
+      <!-- Persistent Identification Strip -->
+      <div class="modal-ident-strip">
+        <span class="modal-ident-title" style="color: var(--cyan);">
+          <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #00e5ff; box-shadow: 0 0 8px #00e5ff;"></span>
+          &lt;DCOUPLR/&gt; WORKLOAD MIGRATION &amp; REPLICATION STAGING
+        </span>
+        <span class="modal-ident-status">
+          <span style="color: #69f0ae; font-weight: 700;">READY</span>
+          <span>•</span>
+          <span>eBPF DNAT + CLOUD-NATIVE REPLICATION</span>
+        </span>
+      </div>
+
+      <!-- Frozen Modal Header -->
+      <div class="ls-modal-header">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; flex-wrap: wrap;">
+            <span style="background: rgba(6, 182, 212, 0.2); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.5); font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 4px;">MIGRATION STAGING CONSOLE</span>
+            <span style="font-size: 0.72rem; color: #94a3b8;">IaC OpenTofu Synthesis • Prometheus Alert Rules • eBPF Routing • Provider Replication</span>
+          </div>
+          <h3 style="font-size: clamp(1.1rem, 2vw, 1.35rem); font-weight: 700; color: #ffffff; margin: 0 0 0.25rem;">Multi-VPC &amp; Workload Migration Console</h3>
+          <p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">Compiles target OpenTofu landing zones, maps hardcoded IPv4 routes via eBPF DNAT, ensures Prometheus alert parity, and stages launch configs for AWS MGN, GCP M4CE, and Azure Migrate.</p>
+        </div>
+        <div class="ls-header-actions">
+          <button id="btn-toggle-ls-fullscreen" type="button" class="ls-btn-header-ctrl" title="Toggle Fluid Fullscreen">⛶</button>
+          <button id="btn-close-lift-shift-modal" type="button" class="ls-btn-header-ctrl" title="Close Modal" style="font-size: 1.25rem;">&times;</button>
+        </div>
+      </div>
+
+      <!-- Scrollable / Fluid Modal Body Area (2-Column Architecture) -->
+      <div class="ls-modal-body-area">
+        <!-- Left Column: Parameters & IP Network Topology Enclave (Compact Width) -->
+        <aside class="ls-sidebar-col">
+          <div class="ls-sidebar-section-title">
+            <span>⚙️ MIGRATION PARAMETERS</span>
+          </div>
+
+          <!-- Migration Configuration Bar -->
+          <div class="ls-config-bar">
+            <div class="ls-field-group">
+              <label for="ls-source-vpc" class="ls-field-label">Source Network / Legacy DC:</label>
+              <select id="ls-source-vpc" class="ls-field-input">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+            <div class="ls-field-group">
+              <label for="ls-target-cloud" class="ls-field-label">Target Destination Cloud:</label>
+              <select id="ls-target-cloud" class="ls-field-input" style="font-family: inherit;">
+                <option value="GCP" selected>Google Cloud Platform (GCP)</option>
+                <option value="AWS">Amazon Web Services (AWS)</option>
+                <option value="Azure">Microsoft Azure</option>
+              </select>
+            </div>
+            <div class="ls-field-group">
+              <label for="ls-target-region" class="ls-field-label">Destination Region:</label>
+              <input type="text" id="ls-target-region" value="us-central1" class="ls-field-input">
+            </div>
+            <div class="ls-field-group">
+              <label for="ls-target-cidr" class="ls-field-label">Destination VPC CIDR:</label>
+              <input type="text" id="ls-target-cidr" value="10.200.0.0/16" class="ls-field-input">
+            </div>
+            <div style="margin-top: 0.25rem;">
+              <button id="btn-recompute-lift-shift" type="button" style="background: linear-gradient(135deg, #06b6d4, #3b82f6); border: none; color: #fff; font-weight: 700; padding: 0.6rem 1.15rem; border-radius: 6px; font-size: 0.82rem; cursor: pointer; white-space: nowrap; height: 36px; width: 100%; box-shadow: 0 4px 14px rgba(6, 182, 212, 0.25);">
+                ⚡ Re-Compile Bundle
+              </button>
+            </div>
+          </div>
+
+          <!-- Migration Metrics & IP Highlights (Compact) -->
+          <div class="ls-sidebar-section-title">
+            <span>🌐 SUPERNET &amp; IP METRICS</span>
+          </div>
+          <div id="ls-metrics-summary" class="ls-metrics-summary">
+            <!-- Injected dynamically -->
+          </div>
+
+          <!-- Zero Translation Hole Assurance Card -->
+          <div class="ls-enclave-card">
+            <div class="ls-enclave-title">🛡️ Zero Translation Holes</div>
+            <p class="ls-enclave-desc">
+              Child /24 subnets partition cleanly from parent /16 supernet. Static legacy IPs map deterministically to in-VPC DNS endpoints with zero code rewrites.
+            </p>
+          </div>
+        </aside>
+
+        <!-- Right Column: Full Script Viewport & Tab Controller (Max Width & Height) -->
+        <main class="ls-main-col">
+          <!-- Tab Buttons & Actions Bar -->
+          <div class="ls-tab-nav">
+            <div class="ls-tabs-list" id="ls-tab-buttons">
+              <button class="ls-tab-btn active" data-tab="opentofu">1. OpenTofu IaC (HCL)</button>
+              <button class="ls-tab-btn" data-tab="remapping">2. Subnet &amp; Private DNS</button>
+              <button class="ls-tab-btn" data-tab="alerts">3. Prometheus Alerts</button>
+              <button class="ls-tab-btn" data-tab="cutover">4. Cutover Runbook</button>
+              <button class="ls-tab-btn" data-tab="fullbundle" id="ls-tab-btn-fullbundle">📦 5. Full Bundle (JSON)</button>
+              <button class="ls-tab-btn" data-tab="finops" id="ls-tab-btn-finops" style="border-color: rgba(234, 179, 8, 0.4); color: #fde047;">💰 6. FinOps Cost Comparison</button>
+              <button class="ls-tab-btn" data-tab="enabler" id="ls-tab-btn-enabler" style="border-color: rgba(6, 182, 212, 0.4); color: var(--cyan); font-weight: 700;">⚙️ 7. Replication Staging &amp; Scripts</button>
+            </div>
+            <div class="ls-actions-group">
+              <button id="btn-copy-ls-code" type="button" class="ls-tab-btn" style="background: rgba(255, 255, 255, 0.08); color: #fff;">
+                📋 Copy Active Tab
+              </button>
+              <button id="btn-view-bundle-direct" type="button" class="ls-tab-btn" style="background: rgba(6, 182, 212, 0.15); border-color: rgba(6, 182, 212, 0.35); color: var(--cyan); font-weight: 600;">
+                🔍 View Full Bundle
+              </button>
+              <button id="btn-download-ls-bundle" type="button" class="ls-tab-btn" style="background: rgba(16, 185, 129, 0.18); border-color: rgba(16, 185, 129, 0.45); color: #34d399; font-weight: 700; box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);">
+                💾 Export Full Bundle (.json)
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab Contents (Fluid Height) -->
+          <div id="ls-tab-content-opentofu" class="ls-tab-pane active">
+            <pre class="ls-code-pre" id="ls-code-opentofu">Generating OpenTofu IaC...</pre>
+          </div>
+
+          <div id="ls-tab-content-remapping" class="ls-tab-pane">
+            <div style="display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; height: 100%;">
+              <div style="background: #070a12; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 1rem;">
+                <div style="font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">Subnet &amp; CIDR Translation Table:</div>
+                <div id="ls-table-subnets" style="overflow-x: auto;"></div>
+              </div>
+              <div style="background: #070a12; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 1rem;">
+                <div style="font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">Hardcoded Static IP &rarr; In-VPC Private DNS Remapping (No Application Code Edits):</div>
+                <div id="ls-table-dns" style="overflow-x: auto;"></div>
+              </div>
+              <div style="background: #070a12; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 1rem;">
+                <div style="font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">Kernel eBPF &amp; iptables Static DNAT Rewrites (Zero-Code Hardcoded IP Translation):</div>
+                <div id="ls-table-ebpf-dnat" style="overflow-x: auto;"></div>
+              </div>
+              <div style="background: #070a12; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 1rem;">
+                <div style="font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">⚖️ Ingress &amp; Load Balancer Remapping (F5 / ALB &rarr; Target Cloud):</div>
+                <div id="ls-table-lbs" style="overflow-x: auto;"></div>
+              </div>
+              <div style="background: #070a12; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 1rem;">
+                <div style="font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">⚡ Global Accelerator &amp; Anycast Edge Remapping:</div>
+                <div id="ls-table-ga" style="overflow-x: auto;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="ls-tab-content-alerts" class="ls-tab-pane">
+            <pre class="ls-code-pre" id="ls-code-alerts">Generating Prometheus Alertmanager Rules...</pre>
+          </div>
+
+          <div id="ls-tab-content-cutover" class="ls-tab-pane">
+            <pre class="ls-code-pre" id="ls-code-cutover">Generating Cutover Script...</pre>
+          </div>
+
+          <div id="ls-tab-content-fullbundle" class="ls-tab-pane">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.5rem; flex-shrink: 0;">
+              <div style="font-size: 0.76rem; color: #94a3b8;">
+                Complete compiled turnkey JSON migration bundle payload ready for migration execution or IaC pipelines.
+              </div>
+              <div style="display: flex; gap: 0.5rem;">
+                <button type="button" id="btn-quick-export-bundle" class="ls-tab-btn" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: #34d399; font-size: 0.74rem;">
+                  💾 Export This Bundle
+                </button>
+              </div>
+            </div>
+            <pre class="ls-code-pre" id="ls-code-fullbundle">Generating unified bundle JSON...</pre>
+          </div>
+
+          <div id="ls-tab-content-finops" class="ls-tab-pane">
+            <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%; height: 100%; overflow-y: auto;">
+              <!-- FinOps Header & Pricing Model Toggle -->
+              <div style="display: flex; justify-content: space-between; align-items: center; background: #070a12; border: 1px solid rgba(234, 179, 8, 0.25); border-radius: 8px; padding: 0.85rem 1.15rem; flex-wrap: wrap; gap: 0.75rem;">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="background: rgba(234, 179, 8, 0.15); color: #fde047; border: 1px solid rgba(234, 179, 8, 0.3); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">FinOps Migration Engine</span>
+                    <span style="font-size: 0.88rem; font-weight: 700; color: #fff;">Source vs. Future Multi-Cloud Cost Comparison</span>
+                  </div>
+                  <p style="font-size: 0.76rem; color: #94a3b8; margin: 0.25rem 0 0;">Public benchmark pricing model computing compute, storage, data egress, and telemetry software license savings.</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.4rem; background: rgba(255,255,255,0.05); padding: 3px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">
+                  <button type="button" class="finops-commitment-btn" data-commitment="ondemand" id="finops-btn-ondemand" style="background: transparent; border: none; color: #94a3b8; padding: 5px 10px; border-radius: 4px; font-size: 0.72rem; cursor: pointer; font-weight: 600;">On-Demand</button>
+                  <button type="button" class="finops-commitment-btn active" data-commitment="1yr" id="finops-btn-1yr" style="background: #eab308; border: none; color: #000; padding: 5px 10px; border-radius: 4px; font-size: 0.72rem; cursor: pointer; font-weight: 700;">1-Yr Committed (~35% off)</button>
+                  <button type="button" class="finops-commitment-btn" data-commitment="3yr" id="finops-btn-3yr" style="background: transparent; border: none; color: #94a3b8; padding: 5px 10px; border-radius: 4px; font-size: 0.72rem; cursor: pointer; font-weight: 600;">3-Yr Committed (~55% off)</button>
+                </div>
+              </div>
+
+              <!-- FinOps KPI Cards (Dynamically Injected) -->
+              <div id="finops-kpi-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem;">
+                <!-- Rendered by JS -->
+              </div>
+
+              <!-- Multi-Cloud Side-by-Side Comparison Matrix Table -->
+              <div style="background: #070a12; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+                  <span style="font-size: 0.82rem; font-weight: 700; color: #fff;">📊 Side-by-Side Multi-Cloud Expenditure Matrix:</span>
+                  <span id="finops-active-commitment-label" style="font-size: 0.72rem; color: #fde047; font-weight: 600;">Pricing Model: 1-Year Committed Use</span>
+                </div>
+                <div id="finops-comparison-table-container" style="overflow-x: auto;">
+                  <!-- Table rendered by JS -->
+                </div>
+              </div>
+
+              <!-- Recommendation & TCO Payback Banner -->
+              <div id="finops-recommendation-box" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 7: Turnkey Enabler & Cloud-Native Replication Orchestration -->
+          <div id="ls-tab-content-enabler" class="ls-tab-pane">
+            <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%; height: 100%; overflow-y: auto;">
+              <!-- Clean Technical Replication Staging Header -->
+              <div style="display: flex; justify-content: space-between; align-items: center; background: #070a12; border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 8px; padding: 0.85rem 1.15rem; flex-wrap: wrap; gap: 0.75rem;">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="background: rgba(6, 182, 212, 0.15); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.3); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">PROVIDER REPLICATION</span>
+                    <span style="font-size: 0.88rem; font-weight: 700; color: #fff;">Cloud-Native Block Replication Staging &amp; Launch Scripts</span>
+                  </div>
+                  <p style="font-size: 0.76rem; color: #94a3b8; margin: 0.25rem 0 0;">Host replication mapping, pre-flight launch configuration scripts, and agent bootstrap commands for AWS MGN, GCP M4CE, and Azure Migrate.</p>
+                </div>
+                <div id="enabler-active-engine-badge" style="font-size: 0.72rem; color: var(--cyan); font-weight: 700; background: rgba(6,182,212,0.15); border: 1px solid rgba(6,182,212,0.3); padding: 4px 10px; border-radius: 4px;">
+                  AWS MGN / GCP M4CE / Azure Migrate
+                </div>
+              </div>
+
+              <!-- Cloud-Native Block Replication Orchestrator View -->
+              <div style="background: #070a12; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 0.82rem; font-weight: 700; color: #fff;">⚙️ Cloud-Native Block Replication Orchestrator:</span>
+                    <span style="font-size: 0.68rem; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 2px 6px; border-radius: 4px; font-weight: 700;">Phase 1 Ready</span>
+                  </div>
+                  <div id="enabler-active-engine-badge" style="font-size: 0.72rem; color: var(--cyan); font-weight: 700; background: rgba(6,182,212,0.15); border: 1px solid rgba(6,182,212,0.3); padding: 3px 8px; border-radius: 4px;">
+                    AWS MGN / GCP M4CE / Azure Migrate
+                  </div>
+                </div>
+                
+                <div id="enabler-replication-server-table" style="overflow-x: auto; margin-bottom: 1rem;"></div>
+
+                <!-- Engineer's SRE Runbook: Parameters & Execution Steps (Where & What to Change) -->
+                <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 6px; padding: 0.85rem; margin-bottom: 1rem;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <span style="font-size: 0.8rem; font-weight: 700; color: #38bdf8;">📖 Engineer's Script Runbook: Where &amp; What to Change</span>
+                      <span style="font-size: 0.65rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 1px 6px; border-radius: 4px; font-weight: 700;">RUNBOOK-DCOUPLR-REPL-001</span>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                      <a href="/docs/runbooks/RUNBOOK-DCOUPLR-REPLICATION-MIGRATION.md" target="_blank" style="background: rgba(255, 255, 255, 0.06); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 4px; padding: 2px 8px; font-size: 0.68rem; font-weight: 600; text-decoration: none;" title="Open full markdown runbook document">📄 View Docs</a>
+                      <button id="btn-toggle-runbook-details" type="button" style="background: rgba(255, 255, 255, 0.06); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 4px; padding: 2px 8px; font-size: 0.68rem; font-weight: 600; cursor: pointer;">Show Workflow Steps</button>
+                      <button id="btn-copy-runbook-reference" type="button" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 4px; padding: 2px 8px; font-size: 0.68rem; font-weight: 600; cursor: pointer;">📋 Copy Checklist</button>
+                    </div>
+                  </div>
+
+                  <!-- Parameter Reference Table (Where & What to Change) -->
+                  <div id="enabler-runbook-params-container" style="overflow-x: auto; margin-bottom: 0.5rem;"></div>
+
+                  <!-- Step-by-Step Operator Flow (Collapsible) -->
+                  <div id="enabler-runbook-steps-container" style="display: none; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 4px; padding: 0.6rem; font-size: 0.72rem; color: #94a3b8; margin-top: 0.5rem;"></div>
+                </div>
+
+                <!-- Provider CLI Execution Staging Script -->
+                <div style="margin-bottom: 1rem; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 0.75rem;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                    <span style="font-size: 0.76rem; font-weight: 700; color: #34d399;">Provider Native CLI Execution Script (Launch Configuration Staging):</span>
+                    <button id="btn-copy-enabler-cli" type="button" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 4px; padding: 2px 8px; font-size: 0.7rem; font-weight: 600; cursor: pointer;">📋 Copy CLI Script</button>
+                  </div>
+                  <pre class="ls-code-pre" id="enabler-cli-script" style="max-height: 160px; font-size: 0.72rem; margin: 0;"></pre>
+                </div>
+
+                <!-- Ephemeral JIT Bootstrap Scripts -->
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                  <div style="flex: 1; min-width: 300px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                      <span style="font-size: 0.76rem; font-weight: 700; color: #fde047;">Windows WinRM Agent Bootstrap (PowerShell):</span>
+                      <button id="btn-copy-enabler-ps" type="button" style="background: rgba(253, 224, 71, 0.15); color: #fde047; border: 1px solid rgba(253, 224, 71, 0.4); border-radius: 4px; padding: 2px 8px; font-size: 0.7rem; font-weight: 600; cursor: pointer;">📋 Copy</button>
+                    </div>
+                    <pre class="ls-code-pre" id="enabler-powershell-script" style="max-height: 180px; font-size: 0.72rem; margin: 0;"></pre>
+                  </div>
+                  <div style="flex: 1; min-width: 300px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                      <span style="font-size: 0.76rem; font-weight: 700; color: #38bdf8;">Linux SSH Agent Bootstrap (Bash):</span>
+                      <button id="btn-copy-enabler-sh" type="button" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 4px; padding: 2px 8px; font-size: 0.7rem; font-weight: 600; cursor: pointer;">📋 Copy</button>
+                    </div>
+                    <pre class="ls-code-pre" id="enabler-bash-script" style="max-height: 180px; font-size: 0.72rem; margin: 0;"></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div><!-- End ls-modal-body-area -->
+    </div>
+  </div>
+
+  <!-- Modal: Pre-Export Full Bundle Inspection & Verification Modal -->
+  <div class="ls-bundle-preview-backdrop" id="modal-bundle-preview">
+    <div class="ls-bundle-preview-card" id="ls-bundle-preview-card">
+      
+      <!-- Persistent Identification Strip -->
+      <div class="modal-ident-strip">
+        <span class="modal-ident-title" style="color: #34d399;">
+          <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+          ACTIVE MODAL: PRE-EXPORT FULL BUNDLE VERIFICATION
+        </span>
+        <span class="modal-ident-status">
+          <span style="color: #34d399; font-weight: 700;">AIR-GAPPED JSON MANIFEST</span>
+          <span>•</span>
+          <span>PRE-FLIGHT VALIDATION</span>
+        </span>
+      </div>
+
+      <!-- Frozen Pre-Export Header -->
+      <div class="ls-preview-header">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
+            <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">Verified Pre-Export Bundle</span>
+            <span style="font-size: 0.72rem; color: #94a3b8;">100% In-VPC Zero Egress • Complete Turnkey Wave Bundle</span>
+          </div>
+          <h3 style="font-size: clamp(1.1rem, 2vw, 1.3rem); font-weight: 700; color: #ffffff; margin: 0 0 0.2rem;">Full Migration Wave Bundle Manifest</h3>
+          <p style="font-size: 0.78rem; color: #94a3b8; margin: 0;">Review your complete migration bundle before exporting. Inspect OpenTofu HCL, Subnets, DNS, Alerts, and Cutover scripts.</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <button id="btn-close-bundle-preview" type="button" class="ls-btn-header-ctrl" title="Close Preview" style="font-size: 1.25rem;">&times;</button>
+        </div>
+      </div>
+
+      <!-- Scrollable / Fluid Preview Body Area -->
+      <div class="ls-preview-body-area">
+        <!-- Live Metadata Summary Chips -->
+        <div class="ls-preview-chips" id="ls-preview-chips">
+          <!-- Injected dynamically -->
+        </div>
+
+        <!-- Preview Toolbar -->
+        <div class="ls-preview-toolbar">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 0.74rem; color: #94a3b8; font-weight: 600;">View Mode:</span>
+            <button type="button" id="btn-preview-mode-raw" class="ls-tab-btn active" style="font-size: 0.74rem; padding: 0.3rem 0.65rem;">Raw JSON</button>
+            <button type="button" id="btn-preview-mode-tree" class="ls-tab-btn" style="font-size: 0.74rem; padding: 0.3rem 0.65rem;">Artifact Summary</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="text" id="ls-bundle-search" class="ls-preview-search" placeholder="Search / filter JSON..." />
+          </div>
+        </div>
+
+        <!-- Main Viewer Area (Fluid) -->
+        <div style="flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; overflow: hidden; position: relative;">
+          <!-- Raw JSON Container -->
+          <div id="ls-preview-raw-container" style="flex: 1 1 auto; height: 100%; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
+            <pre class="ls-code-pre" id="ls-preview-json-code">Rendering full bundle...</pre>
+          </div>
+
+          <!-- Artifact Summary Container -->
+          <div id="ls-preview-summary-container" style="flex: 1 1 auto; height: 100%; min-height: 0; display: none; overflow-y: auto; padding-right: 0.5rem;">
+            <div id="ls-preview-summary-content" style="display: flex; flex-direction: column; gap: 0.85rem;">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Pre-Export Actions Footer -->
+        <div class="ls-preview-footer">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <button type="button" id="btn-preview-back" class="ls-tab-btn" style="color: #94a3b8;">
+              ← Back to Editor
+            </button>
+            <span id="ls-preview-file-target" style="font-size: 0.72rem; color: #64748b; font-family: var(--font-mono);"></span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.65rem;">
+            <button type="button" id="btn-copy-bundle-json" class="ls-tab-btn" style="background: rgba(255, 255, 255, 0.08); color: #fff;">
+              📋 Copy JSON
+            </button>
+            <button type="button" id="btn-confirm-download-bundle" style="background: linear-gradient(135deg, #10b981, #059669); border: none; color: #fff; font-weight: 700; padding: 0.55rem 1.15rem; border-radius: 6px; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+              💾 Confirm &amp; Download Bundle (.json)
+            </button>
+          </div>
+        </div>
+
+      </div><!-- End ls-preview-body-area -->
+    </div>
+  </div>
+
+  
+
+  <!-- =========================================================================
+       Modal: Pre-Populated SRE Incident Ticket Preview
+       ========================================================================= -->
+  <div class="modal-overlay" id="modal-sre-ticket" style="display: none;" aria-hidden="true" role="dialog">
+    <div class="modal-dialog modal-lg" style="max-width: 820px; background: #0b1120; border: 1px solid #1e293b; border-radius: 10px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); overflow: hidden; display: flex; flex-direction: column; max-height: 90vh;">
+      <div class="modal-header" style="background: #101a30; border-bottom: 1px solid #1e293b; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1.2rem;">🎫</span>
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: #f8fafc; margin: 0;" id="modal-sre-ticket-title">Pre-Populated SRE Incident Ticket</h3>
+        </div>
+        <button class="btn-modal-close" id="btn-close-sre-ticket-modal" type="button" style="background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 1.25rem; overflow-y: auto; flex: 1 1 auto;">
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 0.8rem; color: #34d399; font-weight: 600;" id="sre-ticket-status-note">✅ Diagnostic snapshot captured! Click Copy Ticket below to share with SRE on-call.</span>
+          <span style="font-family: var(--font-mono); font-size: 0.72rem; color: #94a3b8;">Format: GitHub / Jira Markdown</span>
+        </div>
+        <pre id="sre-ticket-markdown-pre" style="background: #060911; border: 1px solid #1e293b; border-radius: 6px; padding: 1rem; color: #e2e8f0; font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.5; white-space: pre-wrap; word-break: break-all; max-height: 400px; overflow-y: auto;">Generating ticket...</pre>
+      </div>
+      <div class="modal-footer" style="background: #101a30; border-top: 1px solid #1e293b; padding: 0.85rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.74rem; color: #64748b;">100% In-VPC • Zero Egress • Cryptographically Attested</span>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn-sm-action" id="btn-copy-ticket-clipboard" type="button" style="background: #06b6d4; color: #060911; font-weight: 700; border: none; padding: 0.45rem 1rem; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">
+            📋 Copy Markdown to Clipboard
+          </button>
+          <button class="btn-sm-action" id="btn-dismiss-ticket-modal" type="button" style="background: #1e293b; color: #f8fafc; border: 1px solid #334155; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- =========================================================================
+         Modal: Licensed Node Capacity & Paid Installation Census
+         (Pop-up Modal triggered by clicking Commercial Active / Header Status Pill)
+         ========================================================================= -->
+    <div id="modal-license-census" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-census-title">
+      <div class="modal-window" style="background: #0b101b; border: 1px solid rgba(0, 229, 255, 0.35); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 229, 255, 0.15); border-radius: 12px; max-width: 950px; width: 95%; padding: 1.5rem; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <h2 id="modal-census-title" style="font-size: 1.05rem; font-weight: 700; color: #ffffff; margin: 0;">In-VPC License Entitlement &amp; Installation Census</h2>
+            <span class="status-pill healthy" id="census-tier-pill" style="font-size: 0.72rem; padding: 2px 8px;">Commercial Active</span>
+            <span class="brand-badge" style="background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 0.68rem; padding: 1px 6px;">Secondary Verification Hub</span>
+          </div>
+          <button type="button" class="modal-close-btn" id="btn-close-license-modal" style="background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 0 4px;" title="Close Modal">&times;</button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px;">
+          <span class="brand-badge" id="census-zone-badge" style="background: rgba(6, 182, 212, 0.15); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.35);">Zone 1: Included Base</span>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <button type="button" id="btn-census-upgrade-action" class="btn-sm-action" style="cursor: pointer; background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(6, 182, 212, 0.25)); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.5); padding: 5px 14px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;">
+              ⚡ Upgrade Tier / Resolve Overages &rarr;
+            </button>
+            <a href="/#pricing?tier=Cluster%20Medium" target="_blank" class="btn-sm-action" style="text-decoration: none; background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 10px; border-radius: 6px; font-size: 0.74rem;">Commercial Plans ↗</a>
+          </div>
+        </div>
+
+        <div class="census-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+          <!-- Card 1: Total Number of Installations -->
+          <div class="census-card" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px 16px;">
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Total Active Installations</div>
+            <div style="display: flex; align-items: baseline; gap: 6px; margin-top: 4px;">
+              <span style="font-size: 1.35rem; font-weight: 800; color: #38bdf8;" id="census-active-nodes">24</span>
+              <span style="font-size: 0.78rem; color: var(--text-secondary);">Installed Nodes / Agents</span>
+            </div>
+            <div class="kpi-bar" style="margin-top: 8px; height: 5px;">
+              <div class="kpi-bar-fill" id="census-progress-bar" style="width: 96%; background: var(--cyan);"></div>
+            </div>
+          </div>
+
+          <!-- Card 2: License Availability Status (Available Licenses Remaining) -->
+          <div class="census-card" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Available Licenses</span>
+              <span id="census-avail-badge" style="font-size: 0.65rem; padding: 1px 6px; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #34d399; font-weight: 700;">Available</span>
+            </div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: #34d399; margin-top: 4px;" id="census-avail-count">1 Remaining</div>
+            <div style="font-size: 0.74rem; color: var(--text-secondary);" id="census-avail-detail">1 Base + 0 Overage Available</div>
+          </div>
+
+          <!-- Card 3: Purchased Overage Licenses (How many overages bought) -->
+          <div class="census-card" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px 16px; display: flex; flex-direction: column;">
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Purchased Overage Licenses</div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: #a78bfa; margin-top: 4px;" id="census-purchased-overage">+0 Nodes</div>
+            <div style="font-size: 0.74rem; color: var(--text-secondary);" id="census-purchased-detail">0 / 0 Pool Consumed</div>
+            <button type="button" id="btn-card3-buy-overage" style="margin-top: 8px; cursor: pointer; background: rgba(167, 139, 250, 0.15); color: #c4b5fd; border: 1px solid rgba(167, 139, 250, 0.4); padding: 4px 8px; border-radius: 5px; font-size: 0.72rem; font-weight: 600; text-align: center; transition: all 0.15s ease;">
+              💳 Purchase Overage Pool (+46 Nodes) &rarr;
+            </button>
+          </div>
+
+          <!-- Card 4: Licensed Tier & Entitlement -->
+          <div class="census-card" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px 16px;">
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Licensed Tier &amp; Customer</div>
+            <div style="font-size: 1.05rem; font-weight: 700; color: #ffffff; margin-top: 4px;" id="census-tier-name">Cluster Small</div>
+            <div style="font-size: 0.76rem; color: var(--text-secondary);" id="census-org-name">Acme Fintech Corp</div>
+          </div>
+
+          <!-- Card 5: Installation Seat & Hardware ID -->
+          <div class="census-card" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px 16px;">
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Installation Seat Lease</div>
+            <div style="font-family: var(--font-mono); font-size: 0.84rem; font-weight: 600; color: #69f0ae; margin-top: 4px;" id="census-seat-id">seat-a984f18c2910d8a1</div>
+            <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="census-hw-fingerprint">HW: bf039bd88ffc16b3... (Zero-Egress)</div>
+          </div>
+
+          <!-- Card 6: FinOps Monthly Invoicing -->
+          <div class="census-card" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px 16px;">
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">FinOps Monthly Invoicing</div>
+            <div style="font-size: 1.05rem; font-weight: 700; color: #ffffff; margin-top: 4px;" id="census-cost-total">$1,500.00 / mo</div>
+            <div style="font-size: 0.76rem; color: var(--text-secondary);" id="census-overage-detail">0 Uncommitted Overages ($0.00)</div>
+          </div>
+
+          <!-- Card 7: Free Community Core Downloads & Evaluation Census -->
+          <div class="census-card" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Community Core Census</span>
+              <span id="census-comm-badge" style="font-size: 0.65rem; padding: 1px 6px; border-radius: 4px; background: rgba(6, 182, 212, 0.2); color: #38bdf8; font-weight: 700;">Community Leads</span>
+            </div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: #38bdf8; margin-top: 4px;" id="census-comm-count">4 Registered</div>
+            <div style="font-size: 0.74rem; color: var(--text-secondary);" id="census-comm-detail">Prospective In-VPC Users</div>
+          </div>
+        </div>
+
+        <!-- Secondary Verification Audit & Assurance Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.08); font-size: 0.76rem; color: #94a3b8; flex-wrap: wrap; gap: 8px;">
+          <div>
+            🛡️ <strong>Secondary Verification Notice:</strong> This dashboard verifies active installations, available licenses, and purchased overages in-VPC via Raft mesh consensus. Primary verification is accessible via CLI: <code>dcouplr auth status</code> and <code>dcouplr auth overage</code>.
+          </div>
+          <div style="font-family: var(--font-mono); color: #38bdf8;" id="census-capacity-summary">
+            25 Base + 0 Purchased = 25 Total Paid Capacity
+          </div>
+        </div>
+
+        <!-- Crossover Savings Banner -->
+        <div id="census-crossover-banner" style="display: none; margin-top: 12px; background: rgba(6, 182, 212, 0.12); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 6px; padding: 10px 14px; font-size: 0.8rem; color: #e0f2fe; align-items: center; justify-content: space-between;">
+          <span id="census-crossover-text">[TIP] Tier 3 Crossover: Upgrading to Tier 3 Base saves money!</span>
+          <button type="button" id="btn-crossover-upgrade-action" style="cursor: pointer; background: rgba(0, 229, 255, 0.2); color: #38bdf8; border: 1px solid rgba(0, 229, 255, 0.4); padding: 4px 12px; border-radius: 5px; font-weight: 700; white-space: nowrap; margin-left: 12px; font-size: 0.76rem;">
+            Lock In FinOps Savings Now &rarr;
+          </button>
+        </div>
+
+        <div style="margin-top: 10px; font-size: 0.72rem; color: #64748b; text-align: right;">
+          Need enterprise procurement or custom contract? <a href="/#pricing?tier=Cluster%20Medium" target="_blank" style="color: #38bdf8; text-decoration: underline;">Open Commercial Subscription &amp; Pricing Portal ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         Modal: In-VPC Commercial Subscription & Capacity Upgrade
+         (Direct directional resolution when overages or tier upgrade needed)
+         ========================================================================= -->
+    <div id="modal-upgrade-checkout" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-upgrade-title">
+      <div class="modal-window" style="background: #090e17; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85), 0 0 40px rgba(16, 185, 129, 0.15); border-radius: 12px; max-width: 820px; width: 95%; padding: 1.5rem; max-height: 90vh; overflow-y: auto;">
+        
+        <!-- Header -->
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.85rem; margin-bottom: 1.15rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+              <span class="brand-badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 0.7rem; font-weight: 700; padding: 2px 7px;">Zero-Egress In-VPC Upgrade</span>
+              <span style="font-size: 0.72rem; color: #94a3b8;">1-Click Local Mesh Activation • Private Fulfillment</span>
+            </div>
+            <h2 id="modal-upgrade-title" style="font-size: 1.25rem; font-weight: 800; color: #ffffff; margin: 0;">Commercial Subscription &amp; Capacity Upgrade</h2>
+            <p style="font-size: 0.78rem; color: #94a3b8; margin: 4px 0 0 0;">Resolve node overages, expand base cluster quotas, and upgrade enterprise SLA terms directly within your private VPC.</p>
+          </div>
+          <button type="button" class="modal-close-btn" id="btn-close-upgrade-modal" style="background: none; border: none; color: #94a3b8; font-size: 1.6rem; cursor: pointer; line-height: 1; padding: 0 4px;" title="Close Modal">&times;</button>
+        </div>
+
+        <!-- Current Workload & Deficit Diagnostic Strip -->
+        <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: 8px; padding: 12px 16px; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <div style="font-size: 0.7rem; color: #f43f5e; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
+              <span class="pulse-dot" style="background: #f43f5e;"></span>
+              Active Workload Deficit Detected
+            </div>
+            <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-top: 2px;" id="upgrade-diagnostic-text">
+              71 Monitored Nodes installed vs. 25 Base Nodes permitted (+46 Overage)
+            </div>
+            <div style="font-size: 0.74rem; color: #94a3b8; margin-top: 2px;" id="upgrade-diagnostic-subtext">
+              Status: Hard Cap Breached. Immediate capacity upgrade recommended to maintain full automation.
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <span class="brand-badge" id="upgrade-deficit-badge" style="background: rgba(244, 63, 94, 0.2); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.4); font-size: 0.78rem; padding: 4px 10px; font-weight: 700;">+46 Nodes Deficit</span>
+          </div>
+        </div>
+
+        <!-- Upgrade Resolution Options -->
+        <div style="margin-bottom: 1.25rem;">
+          <div style="font-size: 0.78rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">
+            Select Recommended Resolution:
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            
+            <!-- Option 1: Recommended Cluster Medium -->
+            <label class="upgrade-option-card" style="display: flex; align-items: flex-start; gap: 12px; background: rgba(16, 185, 129, 0.06); border: 2px solid rgba(16, 185, 129, 0.5); border-radius: 8px; padding: 12px 14px; cursor: pointer; transition: all 0.2s ease;">
+              <input type="radio" name="upgrade-tier-radio" value="Cluster Medium" checked style="margin-top: 3px; accent-color: #10b981;">
+              <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.95rem; font-weight: 800; color: #34d399;">Cluster Medium (75 Nodes Base)</span>
+                    <span style="background: rgba(16, 185, 129, 0.25); color: #6ee7b7; font-size: 0.65rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;">Recommended • Best ROI</span>
+                  </div>
+                  <div style="text-align: right;">
+                    <span style="font-size: 1.05rem; font-weight: 800; color: #ffffff;">$3,500</span>
+                    <span style="font-size: 0.75rem; color: #94a3b8;">/ mo</span>
+                  </div>
+                </div>
+                <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 4px;">
+                  Fully covers all <strong>71 active installations</strong> with <strong>4 spare available seats</strong>. Eliminates $60/node overages, saving over $1,050/mo. Includes 24x7 P1 SLA + Shared Slack channel.
+                </div>
+              </div>
+            </label>
+
+            <!-- Option 2: Add 46-Node Overage Pool -->
+            <label class="upgrade-option-card" style="display: flex; align-items: flex-start; gap: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(167, 139, 250, 0.35); border-radius: 8px; padding: 12px 14px; cursor: pointer; transition: all 0.2s ease;">
+              <input type="radio" name="upgrade-tier-radio" value="Overage Pool" style="margin-top: 3px; accent-color: #a78bfa;">
+              <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.95rem; font-weight: 800; color: #c4b5fd;">Developer Pro + 46-Node Overage Pool</span>
+                    <span style="background: rgba(167, 139, 250, 0.2); color: #c4b5fd; font-size: 0.65rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;">Committed Overage</span>
+                  </div>
+                  <div style="text-align: right;">
+                    <span style="font-size: 1.05rem; font-weight: 800; color: #ffffff;">$2,370</span>
+                    <span style="font-size: 0.75rem; color: #94a3b8;">/ mo ($300 base + 46×$45)</span>
+                  </div>
+                </div>
+                <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 4px;">
+                  Retains Developer Pro base and pre-purchases exactly 46 overage licenses to bring total licensed capacity to 71 nodes. (Standard Email SLA).
+                </div>
+              </div>
+            </label>
+
+            <!-- Option 3: Cluster Large -->
+            <label class="upgrade-option-card" style="display: flex; align-items: flex-start; gap: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px 14px; cursor: pointer; transition: all 0.2s ease;">
+              <input type="radio" name="upgrade-tier-radio" value="Cluster Large" style="margin-top: 3px; accent-color: #38bdf8;">
+              <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.95rem; font-weight: 800; color: #38bdf8;">Cluster Large (Up to 300 Nodes)</span>
+                    <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; font-size: 0.65rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;">Enterprise Fleet</span>
+                  </div>
+                  <div style="text-align: right;">
+                    <span style="font-size: 1.05rem; font-weight: 800; color: #ffffff;">$45</span>
+                    <span style="font-size: 0.75rem; color: #94a3b8;">/ node / mo</span>
+                  </div>
+                </div>
+                <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 4px;">
+                  For large-scale enterprise deployments requiring cross-region synchronization and dedicated War-Room TAM support.
+                </div>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Procurement Channel Selection -->
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px 14px; margin-bottom: 1.25rem;">
+          <div style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">
+            Fulfillment / Billing Channel:
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: #e2e8f0; cursor: pointer;">
+              <input type="radio" name="procurement-channel" value="AWS_MARKETPLACE" style="accent-color: #f59e0b;">
+              <span>AWS Marketplace</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: #e2e8f0; cursor: pointer;">
+              <input type="radio" name="procurement-channel" value="GCP_MARKETPLACE" style="accent-color: #3b82f6;">
+              <span>GCP Marketplace</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: #e2e8f0; cursor: pointer;">
+              <input type="radio" name="procurement-channel" value="DIRECT_PO_OFFLINE" checked style="accent-color: #10b981;">
+              <span>Direct PO / In-VPC Offline</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Feedback & Status Notification -->
+        <div id="upgrade-action-feedback" style="display: none; padding: 10px 14px; border-radius: 6px; font-size: 0.8rem; margin-bottom: 1rem;"></div>
+
+        <!-- Modal Actions Footer -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1rem; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <a href="/#pricing?tier=Cluster%20Medium" target="_blank" style="color: var(--cyan); font-size: 0.75rem; text-decoration: underline;">
+              View Full Commercial Pricing &amp; SLA Breakdown ↗
+            </a>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" id="btn-cancel-upgrade-modal" class="btn-sm-action" style="background: rgba(255, 255, 255, 0.08); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.15); padding: 7px 14px; border-radius: 6px; font-size: 0.78rem; cursor: pointer;">
+              Cancel
+            </button>
+            <button type="button" id="btn-confirm-upgrade-activate" style="cursor: pointer; background: linear-gradient(135deg, #10b981, #059669); border: none; color: #ffffff; font-weight: 700; padding: 7px 18px; border-radius: 6px; font-size: 0.82rem; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+              ⚡ Activate Capacity &amp; Reconcile Mesh
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    
+
+  <script src="/static/dashboard.js?v=20261029_live_v15"></script>
+  <script>
+    // Unified Cluster Simulation Synchronizer (Dashboard <-> Matrix <-> Wallboard <-> Kiosk)
+    (function() {
+      const banner = document.getElementById('dashboard-incident-banner');
+      const textEl = document.getElementById('dashboard-incident-text');
+      const resetBtn = document.getElementById('btn-reset-cluster-sim');
+
+      async function syncSimState() {
+        try {
+          const res = await fetch('/v1/telemetry/simulation', { cache: 'no-store' });
+          if (!res.ok) return;
+          const data = await res.json();
+          renderSimulationBanner(data);
+        } catch (e) {
+          // offline silent
+        }
+      }
+
+      function renderSimulationBanner(data) {
+        if (!banner || !textEl) return;
+        const scenario = data.scenario || 'HEALTHY';
+        const actionsEl = document.getElementById('dashboard-incident-actions');
+        if (window.updateTopologyAlarmButton) {
+          window.updateTopologyAlarmButton(scenario);
+        }
+        if (window.applyClusterSimulation) {
+          window.applyClusterSimulation(scenario);
+        } else if (window.state) {
+          const isAlarm = scenario !== 'HEALTHY';
+          window.state.simulatedAlarmActive = isAlarm;
+          window.state.alarmVpcId = scenario === 'P2_WARNING' ? 'dc-onprem-core-01' : 'vpc-aws-prod-01';
+          if (isAlarm) window.state.selectedVpcId = window.state.alarmVpcId;
+          if (window.updateInspector) window.updateInspector(window.state.selectedVpcId);
+          if (window.renderTopologySVG && window.state.topologyData) window.renderTopologySVG(window.state.topologyData);
+        }
+
+        if (scenario === 'P1_CRITICAL') {
+          banner.style.display = 'flex';
+          banner.style.alignItems = 'center';
+          banner.style.justifyContent = 'space-between';
+          banner.style.padding = '12px 18px';
+          banner.style.border = '2px solid #ef4444';
+          banner.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(15, 23, 42, 0.98) 100%)';
+          banner.style.boxShadow = '0 0 25px rgba(239, 68, 68, 0.5)';
+          if (actionsEl) actionsEl.style.display = 'flex';
+          textEl.style.display = 'flex';
+          textEl.style.alignItems = 'center';
+          textEl.style.gap = '10px';
+          textEl.style.width = 'auto';
+          textEl.innerHTML = `
+            <span style="background: #ef4444; color: #fff; padding: 2px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 800;">🚨 P1 CRITICAL</span>
+            <span style="color: #fff;">Database Lock Contention Spike on Target Node: <code style="color: #67e8f9; font-weight: 700;">node-vpc-db-01 (10.100.20.44)</code> in <strong style="color: #fca5a5;">AWS Production VPC</strong> &bull; Subnet: <strong style="color: #fca5a5;">private-db-1b (10.100.20.0/24)</strong> &bull; LB: <strong style="color: #cbd5e1;">prod-internal-nlb</strong> &bull; 198 locks (&gt;100) &bull; Automated VOE Spool Dispatched</span>
+          `;
+        } else if (scenario === 'P2_WARNING') {
+          banner.style.display = 'flex';
+          banner.style.alignItems = 'center';
+          banner.style.justifyContent = 'space-between';
+          banner.style.padding = '12px 18px';
+          banner.style.border = '2px solid #f59e0b';
+          banner.style.background = 'linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(15, 23, 42, 0.98) 100%)';
+          banner.style.boxShadow = '0 0 25px rgba(245, 158, 11, 0.5)';
+          if (actionsEl) actionsEl.style.display = 'flex';
+          textEl.style.display = 'flex';
+          textEl.style.alignItems = 'center';
+          textEl.style.gap = '10px';
+          textEl.style.width = 'auto';
+          textEl.innerHTML = `
+            <span style="background: #f59e0b; color: #000; padding: 2px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 800;">⚠️ P2 WARNING</span>
+            <span style="color: #fff;">Core Ingress Buffer Drops on Target Node: <code style="color: #67e8f9; font-weight: 700;">node-dc1-bm-08 (172.16.1.18)</code> in <strong style="color: #fde047;">Legacy Datacenter Chicago (DC1)</strong> &bull; Subnet: <strong style="color: #fde047;">bare-metal-kvm-racks (172.16.1.0/24)</strong> &bull; LB: <strong style="color: #cbd5e1;">internal-haproxy-vrrp</strong> &bull; 0.18% drop (&gt;0.05%) &bull; ChatOps Advisory Active</span>
+          `;
+        } else if (scenario === 'DUAL_CASCADE') {
+          banner.style.display = 'block';
+          banner.style.border = '2px solid #ef4444';
+          banner.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.28) 0%, rgba(15, 23, 42, 0.98) 100%)';
+          banner.style.boxShadow = '0 0 25px rgba(239, 68, 68, 0.6)';
+          banner.style.padding = '10px 18px 12px 18px';
+          if (actionsEl) actionsEl.style.display = 'none';
+          textEl.style.display = 'block';
+          textEl.style.width = '100%';
+          textEl.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <span style="background: #ef4444; color: #fff; padding: 2px 7px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.02em;">🚨 MULTI-INCIDENT CASCADE (2 ACTIVE)</span>
+                <span style="color: #fff; font-weight: 800; font-size: 0.82rem;">Simultaneous Cross-Cloud Invariant Breaches Detected</span>
+                <span style="color: #fde047; font-size: 0.72rem; font-weight: 700; background: rgba(245, 158, 11, 0.15); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(245, 158, 11, 0.3);">Auto-Sorted by Priority (P1 &rarr; P2) &bull; Zero WAN Egress</span>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="/matrix" target="_blank" class="btn-sm-action" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 4px 10px; border-radius: 5px; text-decoration: none; font-size: 0.74rem; font-weight: 700;">
+                  🛡️ View in 7-Tier Matrix ↗
+                </a>
+                
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.73rem;">
+              <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 6px; padding: 8px 12px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                  <span style="background: #ef4444; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.68rem; font-weight: 800;">#1 🚨 P1 CRITICAL</span>
+                  <span style="color: #f87171; font-weight: 800; font-size: 0.75rem;">198 locks (>100)</span>
+                </div>
+                <div style="color: #ffffff; font-weight: 700; margin-bottom: 2px;">PostgreSQL Lock Contention Spike</div>
+                <div style="color: #94a3b8; font-size: 0.7rem;">Target: <code style="color: #67e8f9; font-weight: 700;">node-vpc-db-01 (10.100.20.44)</code></div>
+                <div style="color: #cbd5e1; font-size: 0.68rem; margin-top: 2px;">AWS Prod &bull; Subnet: <strong style="color: #fca5a5;">private-db-1b</strong> &bull; LB: <strong>prod-internal-nlb</strong></div>
+                <div style="color: #86efac; font-size: 0.68rem; margin-top: 3px;">Dispatch: ServiceNow + PagerDuty</div>
+              </div>
+              <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 6px; padding: 8px 12px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                  <span style="background: #f59e0b; color: #000; padding: 2px 6px; border-radius: 3px; font-size: 0.68rem; font-weight: 800;">#2 ⚠️ P2 WARNING</span>
+                  <span style="color: #fde047; font-weight: 800; font-size: 0.75rem;">0.18% drop (>0.05%)</span>
+                </div>
+                <div style="color: #ffffff; font-weight: 700; margin-bottom: 2px;">HAProxy Core Ingress Buffer Saturation</div>
+                <div style="color: #94a3b8; font-size: 0.7rem;">Target: <code style="color: #67e8f9; font-weight: 700;">node-dc1-bm-08 (172.16.1.18)</code></div>
+                <div style="color: #cbd5e1; font-size: 0.68rem; margin-top: 2px;">Chicago DC1 &bull; Subnet: <strong style="color: #fca5a5;">bare-metal-kvm-racks</strong> &bull; LB: <strong>internal-haproxy-vrrp</strong></div>
+                <div style="color: #86efac; font-size: 0.68rem; margin-top: 3px;">Dispatch: Slack + PagerDuty</div>
+              </div>
+            </div>
+          `;
+          const cascadeResetBtn = banner.querySelector('.btn-reset-cluster-sim-cascade');
+          if (cascadeResetBtn) {
+            cascadeResetBtn.onclick = async () => {
+              localStorage.setItem('dcouplr_active_scenario', 'HEALTHY');
+              try {
+                await fetch('/v1/telemetry/simulation', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ scenario: 'HEALTHY' })
+                });
+              } catch (e) {}
+              renderSimulationBanner({ scenario: 'HEALTHY' });
+            };
+          }
+        } else {
+          banner.style.display = 'none';
+        }
+      }
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', async () => {
+          localStorage.setItem('dcouplr_active_scenario', 'HEALTHY');
+          try {
+            await fetch('/v1/telemetry/simulation', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ scenario: 'HEALTHY' })
+            });
+          } catch (e) {}
+          syncSimState();
+        });
+      }
+
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'dcouplr_active_scenario') syncSimState();
+      });
+
+      window.syncDashboardSimState = syncSimState;
+      syncSimState();
+      setInterval(syncSimState, 2500);
+    })();
+      // Auto-open Outside-VPC Hubs modal if requested via URL param or hash
+      if (window.location.hash === '#hubs' || window.location.hash === '#outside-vpc-hubs' || new URLSearchParams(window.location.search).get('modal') === 'hubs') {
+        const m = document.getElementById('modal-wallboard-modes');
+        if (m) m.style.display = 'flex';
+        if (new URLSearchParams(window.location.search).get('tab') === 'routes' || window.location.hash === '#tab-routes') {
+          document.querySelectorAll('.hub-tab-content').forEach(function(el){el.style.display='none';});
+          const tr = document.getElementById('tab-routes');
+          if (tr) tr.style.display='block';
+        }
+      }
+  </script>
+</body>
+</html>

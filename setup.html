@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; &bull; In-VPC Observability Setup Checklist &amp; Deployment Wizard</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #060911;
+      --bg-surface: #0b1120;
+      --bg-card: #0f172a;
+      --bg-card-hover: #172554;
+      --border-subtle: #1e293b;
+      --border-glow: rgba(56, 189, 248, 0.3);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-green: #39ff14;
+      --accent-cyan: #06b6d4;
+      --accent-purple: #8b5cf6;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Inter', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-deep);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      padding: 1.25rem 0;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    .container {
+      width: 100%;
+      max-width: 100%;
+      padding: 0 clamp(1rem, 2.5vw, 2.5rem);
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+
+    /* Top Navigation Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .dcouplr-wordmark {
+      display: inline-flex;
+      align-items: center;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      text-decoration: none;
+      font-size: 1.5rem;
+    }
+    .dcouplr-bracket {
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+      font-weight: 800;
+      color: #39ff14;
+      letter-spacing: -1px;
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.4);
+    }
+    .dcouplr-text {
+      color: #ffffff;
+      margin: 0 1.5px;
+      font-weight: 800;
+    }
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .nav-link-btn {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 6px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .nav-link-btn:hover {
+      color: #ffffff;
+      border-color: rgba(56, 189, 248, 0.4);
+      background: rgba(15, 23, 42, 0.95);
+    }
+    .nav-link-btn.highlight {
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.4);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    /* Purpose Banner */
+    .purpose-banner {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(56, 189, 248, 0.08));
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    }
+    .purpose-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .purpose-desc {
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    /* Product Suite Demarcation Selector */
+    .suite-selector-bar {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.6));
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 10px;
+      padding: 0.9rem 1.25rem;
+      margin-bottom: 1.15rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+    .suite-selector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .suite-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .suite-pill-btn {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      color: #94a3b8;
+      padding: 6px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      transition: all 0.2s ease;
+      font-family: var(--font-sans);
+    }
+    .suite-pill-btn:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #ffffff;
+      background: rgba(30, 41, 59, 0.9);
+    }
+    .suite-pill-btn.active {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(139, 92, 246, 0.2));
+      border-color: #38bdf8;
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+    }
+    .suite-pill-btn span:first-child {
+      font-weight: 700;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .suite-pill-sub {
+      font-size: 0.66rem;
+      color: #94a3b8;
+      font-family: var(--font-mono);
+    }
+    .suite-pill-btn.active .suite-pill-sub {
+      color: #38bdf8;
+    }
+    .suite-info-box {
+      font-size: 0.77rem;
+      color: #cbd5e1;
+      background: rgba(11, 17, 32, 0.7);
+      border-left: 3px solid #38bdf8;
+      padding: 8px 12px;
+      border-radius: 0 6px 6px 0;
+      line-height: 1.45;
+    }
+
+    /* Preset Profile Selector */
+    .presets-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 1.25rem;
+      width: 100%;
+    }
+    @media (max-width: 1120px) {
+      .presets-bar { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .presets-bar { grid-template-columns: 1fr; }
+    }
+    .preset-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .preset-card:hover {
+      border-color: rgba(56, 189, 248, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      transform: translateY(-2px);
+    }
+    .preset-card.active {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+    }
+    .preset-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #ffffff;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .preset-badge {
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      margin-top: 4px;
+      display: inline-block;
+      width: fit-content;
+    }
+    .badge-minimal { background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
+    .badge-standard { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .badge-full { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .badge-compliance { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    /* Resource Meter Ribbon */
+    .meter-ribbon {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 1.5rem;
+      width: 100%;
+      backdrop-filter: blur(8px);
+    }
+    .meter-item {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+    .meter-label { color: #94a3b8; font-size: 0.70rem; text-transform: uppercase; }
+    .meter-val { font-weight: 800; font-size: 0.90rem; }
+
+    /* Layout Grid */
+    .setup-layout {
+      display: grid;
+      grid-template-columns: minmax(420px, 1.15fr) minmax(480px, 1.35fr);
+      gap: 24px;
+      margin-bottom: 1.5rem;
+      align-items: start;
+      width: 100%;
+    }
+    @media (max-width: 1120px) {
+      .setup-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Modules List */
+    .module-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .module-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(15, 23, 42, 0.9);
+    }
+    .module-checkbox {
+      margin-top: 3px;
+      transform: scale(1.2);
+      cursor: pointer;
+      accent-color: #38bdf8;
+    }
+    .module-content { flex: 1; }
+    .module-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+    .module-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .module-ram {
+      font-size: 0.70rem;
+      font-family: var(--font-mono);
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .module-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .module-endpoint {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      color: #a7f3d0;
+      margin-top: 4px;
+    }
+
+    /* Generator Panel */
+    .generator-panel {
+      background: var(--bg-card);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: sticky;
+      top: 1rem;
+    }
+    .gen-tab-bar {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 8px;
+    }
+    .gen-tab-btn {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #94a3b8;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .gen-tab-btn:hover { color: #fff; border-color: rgba(255, 255, 255, 0.2); }
+    .gen-tab-btn.active {
+      color: #38bdf8;
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+    }
+    .code-container {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: #cbd5e1;
+      overflow-x: auto;
+      min-height: 480px;
+      max-height: 720px;
+      white-space: pre;
+    }
+    .action-btn-row {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .btn-action {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border: 1px solid #38bdf8;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.76rem;
+      padding: 6px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .btn-action:hover {
+      background: linear-gradient(135deg, #0369a1, #075985);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      font-size: 0.76rem;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn-secondary:hover { color: #fff; border-color: rgba(255, 255, 255, 0.3); }
+
+    /* Toast notification */
+    #toast-msg {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid #34d399;
+      color: #a7f3d0;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 10px 18px;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      display: none;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Top Navigation Header -->
+    <header class="header">
+      <a href="/dashboard" class="dcouplr-wordmark">
+        <span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span>
+      </a>
+      <div class="customer-ssot-bar" style="display: flex; align-items: center; gap: 8px; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 9999px; padding: 4px 14px; font-size: 0.75rem;">
+        <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 8px #38bdf8;"></span>
+        <span style="font-weight: 700; color: #38bdf8;" id="header-ssot-company">Acme Financial Services International</span>
+        <span style="color: #64748b;">•</span>
+        <span style="color: #cbd5e1;" id="header-ssot-census">5 VPCs • 75 Nodes</span>
+        <span style="color: #64748b;">•</span>
+        <span style="color: #34d399; font-weight: 600;">$0.00 WAN Egress</span>
+      </div>
+      <nav class="nav-links" aria-label="Platform Links">
+        <a href="/liftnshift" class="nav-link-btn highlight" title="Lift &amp; Shift Pipeline">🚀 Lift &amp; Shift Pipeline</a>
+        <a href="/companyadmin" class="nav-link-btn" title="Application Admin">🏢 Application Admin</a>
+        <a href="/dcouplrSREDispatch" class="nav-link-btn" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; font-weight: 600;" title="Customer Support Portal &amp; Ticket Tracking">🎫 Open Ticket↗</a>
+      </nav>
+    </header>
+
+    <!-- Executive Purpose & Sizing Banner -->
+    <section class="purpose-banner">
+      <div class="purpose-title">
+        <span>⚙️ In-VPC Observability Setup Checklist &amp; Deployment Sizer</span>
+        <span style="font-size: 0.68rem; font-family: var(--font-mono); background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.35); padding: 3px 8px; border-radius: 4px;">
+          $0.00 CLOUD WAN EGRESS CERTIFIED
+        </span>
+      </div>
+      <p class="purpose-desc">
+        <strong>What is this page?</strong> This is the <strong>In-VPC Capabilities Sizer &amp; Deployment Wizard</strong> for <span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span>. 
+        It configures the precise in-guest, container, or systemd daemon footprint required for your target infrastructure. 
+        Select your modules below or choose a preset profile to generate tailor-made <strong>Docker Compose</strong>, <strong>Kubernetes Helm/DaemonSet</strong>, <strong>Linux systemd</strong>, or <strong>OpenTofu HCL</strong> manifests. All modules execute 100% inside your private RFC 1918 VPC with zero external SaaS dependencies.
+      </p>
+    </section>
+
+    <!-- Product Suite Demarcation Selector -->
+    <section class="suite-selector-bar" aria-label="Product Suite Selector">
+      <div class="suite-selector-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 0.84rem; font-weight: 800; color: #ffffff; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.04em;">
+            🎯 Operational Suite Mode:
+          </span>
+          <span style="font-size: 0.73rem; color: #94a3b8;">
+            Determine whether this deployment is for active cloud migration or permanent production monitoring:
+          </span>
+        </div>
+        <div class="suite-pills">
+          <button type="button" class="suite-pill-btn" id="btn-suite-migration" onclick="selectSuiteMode('migration')">
+            <span>🏢 Migration Suite</span>
+            <span class="suite-pill-sub">Day-0/1 Project Engine</span>
+          </button>
+          <button type="button" class="suite-pill-btn active" id="btn-suite-fullstack" onclick="selectSuiteMode('fullstack')">
+            <span>🛡️ Full-Stack Suite</span>
+            <span class="suite-pill-sub">Day-2 Permanent Ops</span>
+          </button>
+          <button type="button" class="suite-pill-btn" id="btn-suite-unified" onclick="selectSuiteMode('unified')">
+            <span>🌐 Enterprise Unified</span>
+            <span class="suite-pill-sub">Migration + 24x7 Ops</span>
+          </button>
+        </div>
+      </div>
+      <div class="suite-info-box" id="suite-info-box">
+        <strong><span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span> Full-Stack Suite:</strong> Permanent 24x7 in-VPC monitoring, 122-invariant 7-tier matrix (<a href="/configuration" target="_blank" style="color:#38bdf8;">/configuration</a>), Live SRE Dashboard (<a href="/dashboard" target="_blank" style="color:#38bdf8;">/dashboard</a>), 24x7 NOC Wallboard (<a href="/wallboard" target="_blank" style="color:#38bdf8;">/wallboard</a>), 2-Way NOC Desk (<a href="/NOCDesk" target="_blank" style="color:#38bdf8;">/NOCDesk</a>), APM Traces (<a href="/traces" target="_blank" style="color:#38bdf8;">/traces</a>), and VictoriaLogs (<a href="/logs" target="_blank" style="color:#38bdf8;">/logs</a>). Slashes SaaS monitoring bills (Datadog/New Relic) by 70%–85% with zero WAN egress.
+      </div>
+    </section>
+
+    <!-- 1-Click Preset Profiles Bar -->
+    <section class="presets-bar" aria-label="Preset Profiles">
+      <div class="preset-card" id="preset-minimal" onclick="selectPreset('minimal')">
+        <div>
+          <div class="preset-title"><span>⚡ Minimal Core</span></div>
+          <span class="preset-badge badge-minimal">&lt;50 MiB RAM</span>
+        </div>
+        <p style="font-size: 0.72rem; color: #94a3b8; margin-top: 6px;">
+          Bare-metal, Edge &amp; Micro-VMs: Kernel eBPF socket tracing, Raft consensus &amp; CDC lag tracking.
+        </p>
+      </div>
+
+      <div class="preset-card" id="preset-standard" onclick="selectPreset('standard')">
+        <div>
+          <div class="preset-title"><span>📊 Standard SRE</span></div>
+          <span class="preset-badge badge-standard">~120 MiB RAM</span>
+        </div>
+        <p style="font-size: 0.72rem; color: #94a3b8; margin-top: 6px;">
+          Recommended for Cloud VMs: Core + 24/7 NOC Wallboard + OpenTelemetry OTLP Ingestion Pipeline.
+        </p>
+      </div>
+
+      <div class="preset-card active" id="preset-full" onclick="selectPreset('full')">
+        <div>
+          <div class="preset-title"><span>🚀 Full-Stack Enterprise</span></div>
+          <span class="preset-badge badge-full">~385 MiB RAM</span>
+        </div>
+        <p style="font-size: 0.72rem; color: #94a3b8; margin-top: 6px;">
+          Replaces Datadog &amp; New Relic: Core + Wallboard + OTel + Jaeger APM (/traces) + VictoriaLogs (/logs) + cloaudit Bridge.
+        </p>
+      </div>
+
+      <div class="preset-card" id="preset-compliance" onclick="selectPreset('compliance')">
+        <div>
+          <div class="preset-title"><span>📜 Regulated Compliance</span></div>
+          <span class="preset-badge badge-compliance">~465 MiB RAM</span>
+        </div>
+        <p style="font-size: 0.72rem; color: #94a3b8; margin-top: 6px;">
+          Full-Stack + VictoriaMetrics Long-Term TSDB for 1-to-7 year regulatory compliance &amp; cryptographic seals.
+        </p>
+      </div>
+    </section>
+
+    <!-- Dynamic Resource Meter Ribbon -->
+    <section class="meter-ribbon" aria-label="Dynamic Resource Footprint">
+      <div class="meter-item">
+        <span class="meter-label">Total RAM Allocation:</span>
+        <strong class="meter-val" id="val-total-ram" style="color: #38bdf8;">385 MiB</strong>
+      </div>
+      <div class="meter-item">
+        <span class="meter-label">Operating Overhead:</span>
+        <strong class="meter-val" id="val-overhead-status" style="color: #34d399;">LIGHTWEIGHT (&lt; 0.5 GB)</strong>
+      </div>
+      <div class="meter-item">
+        <span class="meter-label">Cloud WAN Egress:</span>
+        <strong class="meter-val" style="color: #34d399;">$0.00 / mo</strong>
+      </div>
+      <div class="meter-item">
+        <span class="meter-label">Per-User Seat Tax:</span>
+        <strong class="meter-val" style="color: #34d399;">$0 (Unlimited)</strong>
+      </div>
+      <div class="meter-item">
+        <span class="meter-label">Data Sovereignty:</span>
+        <strong class="meter-val" style="color: #a7f3d0;">100% In-VPC (RFC 1918)</strong>
+      </div>
+    </section>
+
+    <!-- Main Setup Grid: Modular Checklist & Live Generator -->
+    <div class="setup-layout">
+      <!-- Left: Modular Capabilities Checklist -->
+      <section>
+        <h2 style="font-size: 0.95rem; font-weight: 800; color: #ffffff; font-family: var(--font-mono); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          <span>📦 In-VPC Modules Checklist (Toggle to Customize Footprint):</span>
+        </h2>
+
+        <!-- Module 1: Core -->
+        <div class="module-card">
+          <input type="checkbox" class="module-checkbox" id="chk-core" checked disabled>
+          <div class="module-content">
+            <div class="module-header">
+              <span class="module-name">1. Core Consensus &amp; Data Replication Engine</span>
+              <span class="module-ram">35 MiB (Mandatory)</span>
+            </div>
+            <p class="module-desc">
+              Change Data Capture (CDC) block replication lag, Go Raft quorum health, volatile lock-free ring buffers, and SHA-256 cryptographic state seals.
+            </p>
+            <div class="module-endpoint">Port: 8000 &bull; Protocol: gRPC / Raft &bull; Storage: In-Memory Ring Buffer</div>
+          </div>
+        </div>
+
+        <!-- Module 2: Infra & Wallboard -->
+        <div class="module-card" onclick="toggleModule('chk-infra')">
+          <input type="checkbox" class="module-checkbox" id="chk-infra" checked onclick="event.stopPropagation(); updateRecalculations();">
+          <div class="module-content">
+            <div class="module-header">
+              <span class="module-name">2. Infrastructure Telemetry &amp; 24x7 NOC Wallboard</span>
+              <span class="module-ram">+15 MiB RAM</span>
+            </div>
+            <p class="module-desc">
+              Sub-second CPU/RAM/socket streaming, Live SRE Dashboard (/dashboard), 24x7 NOC Wallboard (/wallboard), 2-Way NOC Desk (/NOCDesk), and Living AST Compiler Studio (/compiler)
+            </p>
+            <div class="module-endpoint">Endpoints: /dashboard &bull; /wallboard &bull; /NOCDesk &bull; /compiler &bull; 60 FPS SSE</div>
+          </div>
+        </div>
+
+        <!-- Module 3: OpenTelemetry -->
+        <div class="module-card" onclick="toggleModule('chk-otel')">
+          <input type="checkbox" class="module-checkbox" id="chk-otel" checked onclick="event.stopPropagation(); updateRecalculations();">
+          <div class="module-content">
+            <div class="module-header">
+              <span class="module-name">3. In-VPC OpenTelemetry (OTel) Collector Pipeline</span>
+              <span class="module-ram">+35 MiB RAM</span>
+            </div>
+            <p class="module-desc">
+              CNCF standard OTLP gRPC (port 4317) and HTTP (port 4318) ingestion gateway. Receives traces, metrics, and logs from application containers without SaaS vendor agents.
+            </p>
+            <div class="module-endpoint">Ports: 4317 (gRPC) &bull; 4318 (HTTP) &bull; In-Memory PII Token Scrubbing</div>
+          </div>
+        </div>
+
+        <!-- Module 4: APM Tracing -->
+        <div class="module-card" onclick="toggleModule('chk-apm')">
+          <input type="checkbox" class="module-checkbox" id="chk-apm" checked onclick="event.stopPropagation(); updateRecalculations();">
+          <div class="module-content">
+            <div class="module-header">
+              <span class="module-name">4. Code-Level Distributed APM Tracing (replaces Datadog APM)</span>
+              <span class="module-ram">+120 MiB RAM</span>
+            </div>
+            <p class="module-desc">
+              In-VPC Jaeger / Tempo sidecar engine: request span tracing, database query latency, and method execution flamegraphs (/traces).
+            </p>
+            <div class="module-endpoint">Endpoint: /traces &bull; Protocol: W3C TraceContext &bull; Sampling: 100% In-VPC</div>
+          </div>
+        </div>
+
+        <!-- Module 5: VictoriaLogs -->
+        <div class="module-card" onclick="toggleModule('chk-logs')">
+          <input type="checkbox" class="module-checkbox" id="chk-logs" checked onclick="event.stopPropagation(); updateRecalculations();">
+          <div class="module-content">
+            <div class="module-header">
+              <span class="module-name">5. High-Throughput Log Search Engine (replaces Datadog Logs)</span>
+              <span class="module-ram">+150 MiB RAM</span>
+            </div>
+            <p class="module-desc">
+              In-VPC VictoriaLogs sidecar engine: sub-second regex grep, million-line-per-hour ingestion, and zero JVM indexing overhead (/logs).
+            </p>
+            <div class="module-endpoint">Endpoint: /logs &bull; Format: JSON Lines / Syslog &bull; Storage: Compressed Block Store</div>
+          </div>
+        </div>
+
+        <!-- Module 6: VictoriaMetrics TSDB -->
+        <div class="module-card" onclick="toggleModule('chk-tsdb')">
+          <input type="checkbox" class="module-checkbox" id="chk-tsdb" onclick="event.stopPropagation(); updateRecalculations();">
+          <div class="module-content">
+            <div class="module-header">
+              <span class="module-name">6. Long-Term Historical Time-Series TSDB (GAP-06)</span>
+              <span class="module-ram">+80 MiB RAM</span>
+            </div>
+            <p class="module-desc">
+              Prometheus Remote-Write integration pushing to in-VPC VictoriaMetrics TSDB for 1-to-7 year regulatory compliance and capacity planning.
+            </p>
+            <div class="module-endpoint">Protocol: Snappy Protobuf Remote-Write &bull; Retention: 1–7 Years Configurable</div>
+          </div>
+        </div>
+
+        <!-- Module 7: cloaudit Bridge -->
+        <div class="module-card" onclick="toggleModule('chk-finops')">
+          <input type="checkbox" class="module-checkbox" id="chk-finops" checked onclick="event.stopPropagation(); updateRecalculations();">
+          <div class="module-content">
+            <div class="module-header">
+              <span class="module-name">7. FinOps Cost Auditor Bridge (<span class="cloaudit-wordmark"><span class="clo-blue">clo</span><span class="audit-green">audit</span></span>)</span>
+              <span class="module-ram">+10 MiB RAM</span>
+            </div>
+            <p class="module-desc">
+              Coordinates over private IPC with cloaudit (Port 3780) to ingest cloud billing invoices, detect unutilized downscaled capacity, and dispute erroneous NAT gateway data transfer fees.
+            </p>
+            <div class="module-endpoint">Endpoint: http://127.0.0.1:3780 &bull; Protocol: Private IPC &bull; Downscale Math: Active</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Live Deployment Manifest Generator -->
+      <section class="generator-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2 style="font-size: 0.95rem; font-weight: 800; color: #38bdf8; font-family: var(--font-mono);">
+            🛠️ Live Deployment Manifest Generator
+          </h2>
+          <span style="font-size: 0.68rem; font-family: var(--font-mono); color: #34d399; background: rgba(16, 185, 129, 0.15); padding: 2px 6px; border-radius: 4px;">
+            READY TO DEPLOY
+          </span>
+        </div>
+
+        <div class="gen-tab-bar">
+          <button type="button" class="gen-tab-btn active" id="tab-btn-compose" onclick="switchManifestTab('compose')">Docker Compose</button>
+          <button type="button" class="gen-tab-btn" id="tab-btn-k8s" onclick="switchManifestTab('k8s')">Kubernetes Helm</button>
+          <button type="button" class="gen-tab-btn" id="tab-btn-systemd" onclick="switchManifestTab('systemd')">Linux systemd</button>
+          <button type="button" class="gen-tab-btn" id="tab-btn-tofu" onclick="switchManifestTab('tofu')">OpenTofu HCL</button>
+          <button type="button" class="gen-tab-btn" id="tab-btn-cli" onclick="switchManifestTab('cli')">1-Click CLI</button>
+        </div>
+
+        <div class="code-container" id="code-output"></div>
+
+        <div class="action-btn-row">
+          <button type="button" class="btn-secondary" onclick="downloadManifestFile()">💾 Download File</button>
+          <button type="button" class="btn-action" onclick="copyManifestCode()">📋 Copy Manifest</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="toast-msg"></div>
+
+  <script>
+    let currentSuiteMode = 'fullstack';
+
+    const SUITE_DESCRIPTIONS = {
+      migration: {
+        badge: '🏢 Migration Suite Active (Day-0 to Day-1 Project Engine)',
+        desc: '<strong><span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span> Migration Suite:</strong> Purpose-built for active cloud migration, IaC &amp; AST transpilation (<a href="/compiler" target="_blank" style="color:#38bdf8;">/compiler</a>), continuous data replication (CDC block lag tracking), staged cutover waves (<a href="/liftnshift" target="_blank" style="color:#38bdf8;">/liftnshift</a>), and hyperscaler handover. Operates in volatile memory with $0.00 WAN egress. Ideal for project-based infrastructure modernization.',
+        recommendedPreset: 'minimal',
+        pillColor: '#00e5ff'
+      },
+      fullstack: {
+        badge: '🛡️ Full-Stack Suite Active (Day-2 Permanent Operational Backbone)',
+        desc: '<strong><span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span> Full-Stack Suite:</strong> Permanent 24x7 in-VPC monitoring, 122-invariant 7-tier matrix (<a href="/configuration" target="_blank" style="color:#38bdf8;">/configuration</a>), Live SRE Dashboard (<a href="/dashboard" target="_blank" style="color:#38bdf8;">/dashboard</a>), 24x7 NOC Wallboard (<a href="/wallboard" target="_blank" style="color:#38bdf8;">/wallboard</a>), 2-Way NOC Desk (<a href="/NOCDesk" target="_blank" style="color:#38bdf8;">/NOCDesk</a>), in-VPC APM Traces (<a href="/traces" target="_blank" style="color:#38bdf8;">/traces</a>), and VictoriaLogs (<a href="/logs" target="_blank" style="color:#38bdf8;">/logs</a>). Slashes SaaS monitoring bills (Datadog/New Relic) by 70%–85% with zero WAN egress.',
+        recommendedPreset: 'full',
+        pillColor: '#34d399'
+      },
+      unified: {
+        badge: '🌐 Enterprise Unified Active (Complete Migration + 24x7 Operations)',
+        desc: '<strong><span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span> Enterprise Complete:</strong> All-in-one appliance combining active cross-cloud migration tools with permanent 24x7 full-stack operational observability. Seamlessly transitions workloads from initial migration into ongoing SLA protection without re-architecting your telemetry agents.',
+        recommendedPreset: 'compliance',
+        pillColor: '#c084fc'
+      }
+    };
+
+    function selectSuiteMode(mode) {
+      currentSuiteMode = mode;
+      document.querySelectorAll('.suite-pill-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`btn-suite-${mode}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const infoBox = document.getElementById('suite-info-box');
+      const data = SUITE_DESCRIPTIONS[mode];
+      infoBox.innerHTML = data.desc;
+      infoBox.style.borderLeftColor = data.pillColor;
+
+      showToast(`Selected Suite: ${mode.toUpperCase()}`, '🎯');
+    }
+
+    let activeManifestTab = 'compose';
+
+    const MODULE_RAM = {
+      core: 35,
+      infra: 15,
+      otel: 35,
+      apm: 120,
+      logs: 150,
+      tsdb: 80,
+      finops: 10
+    };
+
+    function toggleModule(chkId) {
+      const chk = document.getElementById(chkId);
+      if (!chk || chk.disabled) return;
+      chk.checked = !chk.checked;
+      updateRecalculations();
+    }
+
+    function selectPreset(preset) {
+      document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+      const card = document.getElementById(`preset-${preset}`);
+      if (card) card.classList.add('active');
+
+      const chkInfra = document.getElementById('chk-infra');
+      const chkOtel = document.getElementById('chk-otel');
+      const chkApm = document.getElementById('chk-apm');
+      const chkLogs = document.getElementById('chk-logs');
+      const chkTsdb = document.getElementById('chk-tsdb');
+      const chkFinops = document.getElementById('chk-finops');
+
+      if (preset === 'minimal') {
+        chkInfra.checked = false;
+        chkOtel.checked = false;
+        chkApm.checked = false;
+        chkLogs.checked = false;
+        chkTsdb.checked = false;
+        chkFinops.checked = false;
+      } else if (preset === 'standard') {
+        chkInfra.checked = true;
+        chkOtel.checked = true;
+        chkApm.checked = false;
+        chkLogs.checked = false;
+        chkTsdb.checked = false;
+        chkFinops.checked = true;
+      } else if (preset === 'full') {
+        chkInfra.checked = true;
+        chkOtel.checked = true;
+        chkApm.checked = true;
+        chkLogs.checked = true;
+        chkTsdb.checked = false;
+        chkFinops.checked = true;
+      } else if (preset === 'compliance') {
+        chkInfra.checked = true;
+        chkOtel.checked = true;
+        chkApm.checked = true;
+        chkLogs.checked = true;
+        chkTsdb.checked = true;
+        chkFinops.checked = true;
+      }
+
+      updateRecalculations();
+      showToast(`Applied Preset Profile: ${preset.toUpperCase()}`, '⚡');
+    }
+
+    function updateRecalculations() {
+      let totalRam = MODULE_RAM.core;
+      if (document.getElementById('chk-infra').checked) totalRam += MODULE_RAM.infra;
+      if (document.getElementById('chk-otel').checked) totalRam += MODULE_RAM.otel;
+      if (document.getElementById('chk-apm').checked) totalRam += MODULE_RAM.apm;
+      if (document.getElementById('chk-logs').checked) totalRam += MODULE_RAM.logs;
+      if (document.getElementById('chk-tsdb').checked) totalRam += MODULE_RAM.tsdb;
+      if (document.getElementById('chk-finops').checked) totalRam += MODULE_RAM.finops;
+
+      document.getElementById('val-total-ram').textContent = `${totalRam} MiB`;
+
+      const overheadEl = document.getElementById('val-overhead-status');
+      if (totalRam <= 60) {
+        overheadEl.textContent = 'ULTRA-LEAN (< 60 MiB)';
+        overheadEl.style.color = '#34d399';
+      } else if (totalRam <= 200) {
+        overheadEl.textContent = 'LIGHTWEIGHT (~120 MiB)';
+        overheadEl.style.color = '#38bdf8';
+      } else if (totalRam <= 400) {
+        overheadEl.textContent = 'BALANCED FULL-STACK (~385 MiB)';
+        overheadEl.style.color = '#c084fc';
+      } else {
+        overheadEl.textContent = 'EXTENDED COMPLIANCE (~465 MiB)';
+        overheadEl.style.color = '#fbbf24';
+      }
+
+      renderManifestCode();
+    }
+
+    function switchManifestTab(tabKey) {
+      activeManifestTab = tabKey;
+      document.querySelectorAll('.gen-tab-btn').forEach(b => b.classList.remove('active'));
+      const btn = document.getElementById(`tab-btn-${tabKey}`);
+      if (btn) btn.classList.add('active');
+      renderManifestCode();
+    }
+
+    function renderManifestCode() {
+      const codeBox = document.getElementById('code-output');
+      const hasInfra = document.getElementById('chk-infra').checked;
+      const hasOtel = document.getElementById('chk-otel').checked;
+      const hasApm = document.getElementById('chk-apm').checked;
+      const hasLogs = document.getElementById('chk-logs').checked;
+      const hasTsdb = document.getElementById('chk-tsdb').checked;
+      const hasFinops = document.getElementById('chk-finops').checked;
+
+      if (activeManifestTab === 'compose') {
+        codeBox.textContent = `version: "3.8"
+
+services:
+  dcouplr-core:
+    image: ghcr.io/dcouplr/dcouplr-core:latest
+    container_name: dcouplr-in-vpc-engine
+    restart: unless-stopped
+    network_mode: "host"
+    environment:
+      - DCOUPLR_PORT=8000
+      - DCOUPLR_DATA_SOVEREIGNTY=enforced_zero_wan_egress
+      - DCOUPLR_EBPF_ENABLED=true
+      - DCOUPLR_ENABLE_WALLBOARD=${hasInfra}
+      - DCOUPLR_ENABLE_NOCDESK=${hasInfra}
+      - DCOUPLR_FINOPS_ENDPOINT=${hasFinops ? "http://127.0.0.1:3780" : "none"}
+    volumes:
+      - /sys/kernel/debug:/sys/kernel/debug:ro
+      - /proc:/host/proc:ro
+    ports:
+      - "8000:8000"
+` + (hasOtel ? `
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.96.0
+    container_name: dcouplr-otel-collector
+    restart: unless-stopped
+    command: ["--config=/etc/otel/config.yaml"]
+    volumes:
+      - ./otel-config.yaml:/etc/otel/config.yaml:ro
+    ports:
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
+` : '') + (hasApm ? `
+  jaeger-tempo:
+    image: jaegertracing/all-in-one:1.54
+    container_name: dcouplr-jaeger-apm
+    restart: unless-stopped
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686" # UI for /traces
+` : '') + (hasLogs ? `
+  victorialogs:
+    image: victoriametrics/victoria-logs:latest
+    container_name: dcouplr-victoria-logs
+    restart: unless-stopped
+    volumes:
+      - ./vlogs-data:/vlogs-data
+    ports:
+      - "9428:9428" # VictoriaLogs Ingest/Query
+` : '') + (hasTsdb ? `
+  victoriametrics-tsdb:
+    image: victoriametrics/victoria-metrics:latest
+    container_name: dcouplr-victoria-tsdb
+    restart: unless-stopped
+    volumes:
+      - ./vm-data:/victoria-metrics-data
+    ports:
+      - "8428:8428" # Long-Term TSDB Storage
+` : '');
+      } else if (activeManifestTab === 'k8s') {
+        codeBox.textContent = `# dcouplr-values.yaml (Helm / Kubernetes In-VPC DaemonSet)
+global:
+  dataSovereignty: enforced_zero_wan_egress
+  environment: target-landing-zone-production
+
+coreEngine:
+  enabled: true
+  port: 8000
+  ebpf:
+    enabled: true
+    ringBufferPages: 512
+  consensus:
+    raftEnabled: true
+
+observability:
+  wallboard: ${hasInfra}
+  nocDesk: ${hasInfra}
+  compilerStudio: ${hasInfra}
+  
+opentelemetry:
+  enabled: ${hasOtel}
+  grpcPort: 4317
+  httpPort: 4318
+
+distributedTracing:
+  enabled: ${hasApm}
+  provider: jaeger_tempo
+  inVpcOnly: true
+
+centralizedLogging:
+  enabled: ${hasLogs}
+  provider: victorialogs
+  retentionDays: 30
+
+historicalTSDB:
+  enabled: ${hasTsdb}
+  retentionMonths: 12
+
+finopsBridge:
+  enabled: ${hasFinops}
+  cloauditPort: 3780`;
+      } else if (activeManifestTab === 'systemd') {
+        codeBox.textContent = `# /etc/systemd/system/dcouplr.service
+[Unit]
+Description=dcouplr In-VPC Living Telemetry Daemon & Consensus Engine
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=dcouplr
+Group=dcouplr
+ExecStart=/usr/local/bin/dcouplr run --port 8000 ${hasOtel ? '--otel' : ''} ${hasApm ? '--apm' : ''} ${hasLogs ? '--logs' : ''}
+Restart=always
+RestartSec=5s
+LimitNOFILE=65536
+LimitMEMLOCK=infinity
+MemoryMax=${document.getElementById('val-total-ram').textContent}
+
+# Sandboxing & Zero-Egress Protection
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target`;
+      } else if (activeManifestTab === 'tofu') {
+        codeBox.textContent = `# OpenTofu Module: In-VPC Observability Landing Zone
+module "dcouplr_in_vpc_observability" {
+  source = "./modules/dcouplr-in-vpc"
+
+  vpc_id          = var.target_vpc_id
+  subnet_id       = var.target_private_subnet_id
+  zero_wan_egress = true
+
+  enable_core_engine   = true
+  enable_wallboard     = ${hasInfra}
+  enable_nocdesk       = ${hasInfra}
+  enable_otel_pipeline = ${hasOtel}
+  enable_apm_tracing   = ${hasApm}
+  enable_log_search    = ${hasLogs}
+  enable_tsdb_archive  = ${hasTsdb}
+  cloaudit_bridge_port = ${hasFinops ? 3780 : 0}
+
+  tags = {
+    Environment = "production-target"
+    Compliance  = "zero-egress"
+  }
+}`;
+      } else if (activeManifestTab === 'cli') {
+        const flags = [];
+        if (hasInfra) flags.push('--wallboard');
+        if (hasOtel) flags.push('--otel');
+        if (hasApm) flags.push('--apm');
+        if (hasLogs) flags.push('--logs');
+        if (hasTsdb) flags.push('--tsdb');
+        if (hasFinops) flags.push('--finops');
+
+        codeBox.textContent = `# 1-Click Interactive Terminal Activation
+# 1. Download pre-compiled in-VPC binary:
+curl -sSL http://localhost:8000/static/install.sh | bash
+
+# 2. Activate with customized footprint (${document.getElementById('val-total-ram').textContent}):
+dcouplr setup ${flags.join(' ')} --daemon
+
+# 3. Verify in-VPC health & Zero WAN Egress status:
+dcouplr doctor --check-egress`;
+      }
+    }
+
+    function copyManifestCode() {
+      const code = document.getElementById('code-output').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        showToast('Manifest copied to clipboard!', '📋');
+      });
+    }
+
+    function downloadManifestFile() {
+      const code = document.getElementById('code-output').textContent;
+      const extensions = {
+        compose: 'docker-compose.yml',
+        k8s: 'dcouplr-values.yaml',
+        systemd: 'dcouplr.service',
+        tofu: 'observability_landing_zone.tf',
+        cli: 'install_dcouplr.sh'
+      };
+      const filename = extensions[activeManifestTab] || 'manifest.txt';
+      const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      showToast(`Downloaded ${filename}`, '💾');
+    }
+
+    function showToast(msg, icon = '✅') {
+      const t = document.getElementById('toast-msg');
+      t.innerHTML = `${icon} ${msg}`;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3000);
+    }
+
+    // Initial render
+    updateRecalculations();
+  </script>
+  <script>
+    (async function initCustomerEnvironmentSSOT() {
+      try {
+        const res = await fetch('/v1/customer/environment');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && data.customer) {
+          const comp = data.customer.company_name;
+          const inv = data.inventory || {};
+          const elComp = document.getElementById('header-ssot-company');
+          if (elComp && comp) elComp.textContent = comp;
+          const elCensus = document.getElementById('header-ssot-census');
+          if (elCensus) elCensus.textContent = `${inv.total_vpcs || 5} VPCs • ${inv.total_nodes || 75} Nodes`;
+        }
+      } catch (e) {
+        console.warn('Customer environment SSOT sync:', e);
+      }
+    })();
+  </script>
+</body>
+</html>
+

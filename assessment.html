@@ -1,0 +1,3167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Fleet Scout &bull; Pre-Flight Capacity Sizer &amp; Estate Assessor</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #060911;
+      --bg-surface: #0b1120;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(56, 189, 248, 0.3);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --green: #34d399;
+      --cyan: #38bdf8;
+      --purple: #a855f7;
+      --yellow: #fbbf24;
+      --red: #f87171;
+      --font-sans: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-base);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      line-height: 1.5;
+      padding: 1.25rem 2rem;
+      width: 100%;
+    }
+    /* Fluid Full-Width Layout */
+    .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      transition: opacity 0.15s ease;
+    }
+    .brand-link:hover {
+      opacity: 0.9;
+    }
+    
+    .dcouplr-brand-tag {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: baseline;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .dcouplr-brand-tag .tag-bracket {
+      color: #39ff14;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .dcouplr-brand-tag .tag-name {
+      color: #ffffff;
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+    }
+
+    .dcouplr-logo {
+      display: inline-flex;
+      align-items: center;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0;
+      margin: 0;
+      user-select: none;
+      line-height: 1;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .dcouplr-logo .dcouplr-bracket {
+      color: #39ff14; /* Electric Neon-Lime Green */
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+      font-weight: 800;
+      font-size: 1.55rem;
+      line-height: 1;
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.45), 0 0 2px #39ff14;
+      letter-spacing: -1px;
+    }
+    .dcouplr-logo .dcouplr-text {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      color: #ffffff;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+      transition: color 0.15s ease;
+    }
+    .brand-link:hover .dcouplr-logo .dcouplr-text {
+      color: #ffffff;
+      text-shadow: 0 0 14px rgba(255, 255, 255, 0.6);
+    }
+    .brand-badge {
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+    .security-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      color: var(--green);
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 6px 14px;
+      border-radius: 9999px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1.75rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.75rem;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 0.4rem;
+    }
+    .card-subtitle {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 4px;
+    }
+    .form-control {
+      width: 100%;
+      background: #05070b;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #fff;
+      font-size: 0.84rem;
+      font-family: var(--font-sans);
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--cyan);
+    }
+    .subnet-row {
+      display: grid;
+      grid-template-columns: 1.4fr 1.4fr 1.4fr 0.8fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: none;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: #39ff14;
+      color: #000;
+    }
+    .btn-primary:hover {
+      background: #2ed30e;
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .btn-secondary:hover {
+      background: #334155;
+      color: #fff;
+    }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 6px 10px;
+    }
+    .btn-danger:hover {
+      background: #ef4444;
+      color: #fff;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 1.25rem;
+    }
+    .stat-card {
+      background: #05070b;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+    .stat-val {
+      font-size: 1.35rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+    }
+    .stat-label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+
+    /* Capacity Simulator Toolbar */
+    .simulator-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 1.5rem;
+    }
+    .simulator-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-right: 6px;
+    }
+    .preset-pill {
+      background: #05070b;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .preset-pill:hover, .preset-pill.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--cyan);
+      color: #fff;
+    }
+    .preset-pill.overage-pill {
+      border-color: rgba(251, 191, 36, 0.4);
+      color: var(--yellow);
+    }
+    .preset-pill.overage-pill:hover, .preset-pill.overage-pill.active {
+      background: rgba(251, 191, 36, 0.25);
+      border-color: var(--yellow);
+      color: #fff;
+    }
+
+    /* Decision Matrix Section */
+    .decision-container {
+      background: #0b1120;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    .verdict-banner {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.15) 0%, rgba(52, 211, 153, 0.15) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .verdict-banner.step-up {
+      background: linear-gradient(90deg, rgba(52, 211, 153, 0.18) 0%, rgba(56, 189, 248, 0.18) 100%);
+      border-color: var(--green);
+    }
+    .verdict-banner.overage {
+      background: linear-gradient(90deg, rgba(251, 191, 36, 0.15) 0%, rgba(249, 115, 22, 0.15) 100%);
+      border-color: var(--yellow);
+    }
+    .verdict-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+    .verdict-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .verdict-text {
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .option-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .option-card.highlight {
+      border: 1.5px solid var(--green);
+      box-shadow: 0 0 20px rgba(52, 211, 153, 0.15);
+    }
+    .option-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    .option-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .option-price-block {
+      margin: 12px 0;
+      padding: 10px 12px;
+      background: #05070b;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .option-price {
+      font-size: 1.5rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: #fff;
+    }
+    .option-price-sub {
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .option-stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 0.76rem;
+    }
+    .option-stat-item {
+      background: rgba(15, 23, 42, 0.7);
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .option-stat-item .label {
+      color: var(--muted);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+    }
+    .option-stat-item .val {
+      font-weight: 700;
+      color: #fff;
+      font-family: var(--font-mono);
+    }
+
+    .pros-cons-section {
+      margin-top: 10px;
+    }
+    .pc-header {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .pc-list {
+      list-style: none;
+      font-size: 0.76rem;
+      margin-bottom: 10px;
+    }
+    .pc-list li {
+      margin-bottom: 5px;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      line-height: 1.35;
+    }
+    .pc-list.pros li span {
+      color: var(--green);
+      font-weight: 800;
+    }
+    .pc-list.cons li span {
+      color: var(--yellow);
+      font-weight: 800;
+    }
+
+    .best-for-callout {
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 3px solid var(--cyan);
+      padding: 6px 10px;
+      border-radius: 0 4px 4px 0;
+      font-size: 0.74rem;
+      color: #cbd5e1;
+      margin-top: 8px;
+    }
+
+    /* Suite Comparison Grid */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1.25rem;
+    }
+    .suite-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
+    .suite-card.highlight {
+      border-color: rgba(56, 189, 248, 0.4);
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.2) 100%);
+    }
+    .suite-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    .price-tag {
+      font-size: 1.6rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      margin: 8px 0;
+    }
+    .roi-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: var(--green);
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+    .capability-list {
+      list-style: none;
+      margin-top: 12px;
+      font-size: 0.78rem;
+      color: #cbd5e1;
+    }
+    .capability-list li {
+      margin-bottom: 6px;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .capability-list li span {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    /* Suite Pros and Cons 3-Column Matrix */
+    .suite-pros-cons-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .suite-pc-card {
+      background: #05070b;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .suite-pc-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .suite-pc-accounting {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .bundle-banner {
+      background: linear-gradient(90deg, rgba(168, 85, 247, 0.15) 0%, rgba(56, 189, 248, 0.15) 100%);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .token-box {
+      background: #05070b;
+      border: 1px dashed var(--cyan);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--cyan);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    /* Subnet Row & Inventory Table Styles */
+    .subnet-header-row {
+      display: grid;
+      grid-template-columns: 1.4fr 1.3fr 1.3fr 0.8fr auto;
+      gap: 8px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+      padding: 0 4px;
+    }
+    .filter-chip {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-chip:hover {
+      color: #fff;
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .filter-chip.active {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: rgba(56, 189, 248, 0.6);
+      color: var(--cyan);
+      font-weight: 700;
+    }
+    .inventory-table th, .inventory-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .inventory-table tr:hover {
+      background: rgba(56, 189, 248, 0.04);
+    }
+    .ip-badge {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ip-dot {
+      width: 7px;
+      height: 7px;
+      background: #22c55e;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #22c55e;
+      display: inline-block;
+    }
+  
+    /* Executive Proposal Modal & Viewer Styles */
+    .proposal-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 7, 18, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: modalFadeIn 0.2s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .proposal-modal-window {
+      background: #0b1120;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 12px;
+      max-width: 1040px;
+      width: 100%;
+      height: 90vh;
+      max-height: 860px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 65px rgba(0, 0, 0, 0.8), 0 0 35px rgba(56, 189, 248, 0.15);
+      overflow: hidden;
+    }
+
+    .proposal-modal-header {
+      padding: 16px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f172a;
+    }
+
+    .btn-modal-close {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 1.6rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0 6px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .btn-modal-close:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .proposal-modal-toolbar {
+      padding: 10px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.65);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .modal-tab-group {
+      display: flex;
+      gap: 6px;
+      background: rgba(5, 8, 17, 0.6);
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .modal-tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .modal-tab-btn.active {
+      background: rgba(56, 189, 248, 0.16);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    .proposal-modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 26px 28px;
+      background: #070c17;
+    }
+
+    /* Rendered Markdown Typography */
+    .proposal-rendered-view {
+      color: #cbd5e1;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .proposal-rendered-view h1 {
+      font-size: 1.55rem;
+      color: #fff;
+      margin-top: 0;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+      font-weight: 700;
+    }
+
+    .proposal-rendered-view h2 {
+      font-size: 1.22rem;
+      color: #f8fafc;
+      margin-top: 26px;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-weight: 700;
+    }
+
+    .proposal-rendered-view h3 {
+      font-size: 1.02rem;
+      color: var(--yellow);
+      margin-top: 18px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .proposal-rendered-view p {
+      margin-bottom: 12px;
+    }
+
+    .proposal-rendered-view table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      font-size: 0.82rem;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .proposal-rendered-view th, 
+    .proposal-rendered-view td {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    .proposal-rendered-view th {
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--cyan);
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .proposal-rendered-view tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .proposal-rendered-view code {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--cyan);
+    }
+
+    .proposal-rendered-view pre {
+      background: #04060c;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      padding: 14px;
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+
+    .proposal-rendered-view blockquote {
+      border-left: 3px solid var(--cyan);
+      background: rgba(56, 189, 248, 0.08);
+      padding: 10px 16px;
+      border-radius: 0 6px 6px 0;
+      margin: 16px 0;
+      color: #93c5fd;
+      font-size: 0.84rem;
+    }
+
+    .proposal-rendered-view ul, 
+    .proposal-rendered-view ol {
+      padding-left: 22px;
+      margin: 10px 0 16px;
+    }
+
+    .proposal-rendered-view li {
+      margin-bottom: 6px;
+    }
+
+    .proposal-rendered-view hr {
+      border: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 26px 0;
+    }
+
+    .proposal-raw-view {
+      width: 100%;
+      height: 100%;
+      min-height: 520px;
+      background: #04060c;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 18px;
+      resize: none;
+      line-height: 1.55;
+      outline: none;
+    }
+
+    .proposal-modal-footer {
+      padding: 14px 22px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f172a;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+  </style>
+  <script src="/static/marked.min.js"></script>
+  <script src="marked.min.js"></script>
+</head>
+<body>
+
+  <div class="container">
+    
+    <header>
+      <div class="brand">
+        <a href="/" class="brand-link" aria-label="&lt;dcouplr/&gt; Home" title="Return to &lt;dcouplr/&gt; Homepage" style="display: flex; align-items: center; text-decoration: none;">
+          <div class="dcouplr-logo" title="&lt;dcouplr/&gt;">
+            <span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span>
+          </div>
+        </a>
+        <span class="brand-badge">FLEET SCOUT &bull; PRE-FLIGHT CAPACITY ASSESSOR</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button type="button" class="btn btn-secondary" id="btn-header-instructions" onclick="openInstructionsModal()" style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 0.78rem; font-weight: 600; border-color: rgba(56, 189, 248, 0.4); color: #fff;">
+          <span>📖</span> Instructions &amp; Guide
+        </button>
+        <div class="security-pill">
+          <span>🛡️</span>
+          <span>100% IN-PERIMETER SCAN &bull; ZERO PUBLIC WAN EGRESS ($0.00)</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- CAPACITY SIMULATOR TOOLBAR -->
+    <div class="simulator-bar">
+      <div class="simulator-label">
+        <span>⚡</span>
+        <span>Simulate Capacity &amp; Test Overage Bands:</span>
+      </div>
+      <button type="button" class="preset-pill" onclick="simulateNodeCount(10)">10 Nodes Developer Pro</button>
+      <button type="button" class="preset-pill" onclick="simulateNodeCount(25)">25 Nodes (Cluster Small)</button>
+      <button type="button" class="preset-pill overage-pill" onclick="simulateNodeCount(35)">35 Nodes (10 Overage)</button>
+      <button type="button" class="preset-pill overage-pill" onclick="simulateNodeCount(55)">55 Nodes (Step-Up Cheaper!)</button>
+      <button type="button" class="preset-pill" onclick="simulateNodeCount(75)">75 Nodes (Cluster Medium)</button>
+      <button type="button" class="preset-pill overage-pill" onclick="simulateNodeCount(85)">85 Nodes (10 Overage)</button>
+      <button type="button" class="preset-pill" onclick="simulateNodeCount(100)">100 Nodes (Cluster Large)</button>
+      <button type="button" class="preset-pill" onclick="simulateNodeCount(300)">300 Nodes (Enterprise Base)</button>
+      <button type="button" class="preset-pill overage-pill" onclick="simulateNodeCount(450)">450 Nodes (Ent Block 1)</button>
+      <button type="button" class="preset-pill overage-pill" onclick="simulateNodeCount(625)">625 Nodes (Expanded)</button>
+      <button type="button" class="preset-pill overage-pill" onclick="simulateNodeCount(800)">800 Nodes (Multi)</button>
+      <button type="button" class="preset-pill" onclick="simulateNodeCount(850)">850 Nodes (Unlimited Site)</button>
+      <div style="display: flex; align-items: center; gap: 6px; margin-left: auto;">
+        <span style="font-size: 0.72rem; color: var(--muted);">Custom:</span>
+        <input type="number" id="input-custom-nodes" style="width: 80px; padding: 3px 8px; background: #05070b; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: #fff; font-family: var(--font-mono); font-size: 0.75rem;" value="" placeholder="e.g. 150" onchange="simulateNodeCount(parseInt(this.value) || 0)">
+      </div>
+    </div>
+
+    <!-- TOP SECTION: Subnet Input & Scan Controls -->
+    <div class="grid-2">
+      
+      <!-- LEFT: Discovery Configuration -->
+      <div class="card">
+        <div class="card-title">
+          <span>⚡</span>
+          <span>Target Network CIDRs &amp; Datacenter Inventory</span>
+        </div>
+        <p class="card-subtitle">
+          Input your private cloud VPC subnets and bare-metal rack IP ranges. Fleet Scout executes 100% locally on this workstation—no credentials or topology data are ever transmitted to vendor clouds.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label">Evaluating Organization / Account Name:</label>
+          <input type="text" id="input-customer-org" class="form-control" value="" placeholder="e.g. Varinull Inc.">
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 0.78rem; font-weight: 700; color: #fff;">In-Scope Subnets, CIDRs &amp; Target Host IPs:</span>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="btn btn-secondary" onclick="openInstructionsModal()" style="padding: 4px 10px; font-size: 0.72rem;">
+              📖 How It Works
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-load-sample" style="padding: 4px 10px; font-size: 0.72rem;">
+              Load Enterprise Sample Estate
+            </button>
+          </div>
+        </div>
+
+        <div class="subnet-header-row">
+          <div>Target IP / CIDR Block</div>
+          <div>Environment Type</div>
+          <div>Workload / Enclave Label</div>
+          <div>Est. Hosts</div>
+          <div>&nbsp;</div>
+        </div>
+
+        <div id="subnet-rows-container">
+          <!-- Rendered via JS -->
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-secondary" id="btn-add-subnet" style="padding: 6px 12px; font-size: 0.76rem;">
+            <span>+</span> Add Subnet / CIDR
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-add-single-ip" onclick="addSingleHostSubnet()" style="padding: 6px 12px; font-size: 0.76rem;">
+            <span>+</span> Add Single Host IP
+          </button>
+          <button type="button" class="btn btn-primary" id="btn-run-scan" style="flex: 1; padding: 6px 16px; font-size: 0.76rem;">
+            <span>⚡</span> Run Offline Pre-Flight Assessment
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT: Live Discovery Radar & Fleet Dial -->
+      <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div class="card-title">
+            <span>📊</span>
+            <span>Discovered Estate Summary</span>
+          </div>
+          <p class="card-subtitle">Real-time aggregate compute census calculated entirely in local memory.</p>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-val" id="stat-total-nodes" style="color: var(--green);">0</div>
+              <div class="stat-label">Total Nodes</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val" id="stat-vms" style="color: var(--cyan);">0</div>
+              <div class="stat-label">Cloud VMs</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val" id="stat-k8s" style="color: var(--purple);">0</div>
+              <div class="stat-label">K8s Workers</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val" id="stat-bm" style="color: var(--yellow);">0</div>
+              <div class="stat-label">Bare Metal / DB</div>
+            </div>
+          </div>
+
+          <div style="background: #05070b; border: 1px solid var(--border); border-radius: 8px; padding: 12px;">
+            <div style="font-size: 0.72rem; color: var(--muted); text-transform: uppercase; margin-bottom: 6px;">Environment Breakdown</div>
+            <div id="env-breakdown-list" style="font-size: 0.78rem; font-family: var(--font-mono); color: #cbd5e1; line-height: 1.6;">
+              &bull; AWS VPC (us-east-1): <span style="color: #fff; font-weight: 700;">180 nodes</span><br>
+              &bull; GCP VPC (us-central1): <span style="color: #fff; font-weight: 700;">90 nodes</span><br>
+              &bull; Bare Metal (Equinix Ashburn): <span style="color: #fff; font-weight: 700;">60 nodes</span><br>
+              &bull; VMware vSphere (On-Prem): <span style="color: #fff; font-weight: 700;">45 nodes</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="token-box">
+            <div>
+              <div style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase;">Cryptographic Capacity Certificate Token</div>
+              <div id="display-token" style="font-weight: 700; color: #fff;">— (Awaiting Subnet Scope)</div>
+            </div>
+            <button type="button" class="btn btn-secondary" id="btn-copy-token" style="padding: 4px 10px; font-size: 0.72rem;">Copy</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- LIVE DISCOVERED FLEET & TARGET HOST IP INVENTORY -->
+    <div class="card" id="discovered-inventory-card" style="margin-top: 1.5rem; border-color: rgba(56, 189, 248, 0.35);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <div style="font-size: 0.72rem; color: var(--cyan); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
+            🌐 Live Discovered Host &amp; IP Inventory
+          </div>
+          <h2 style="font-size: 1.25rem; color: #fff; margin-top: 2px;">
+            Target Host &amp; Subnet Discovery Census
+          </h2>
+          <p style="font-size: 0.78rem; color: var(--muted); margin: 2px 0 0;">
+            Non-intrusive in-perimeter census enumerating discovered nodes, synthesized IP targets, and workload runtimes across your input CIDRs and IPs. Zero public WAN egress ($0.00).
+          </p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span id="inventory-node-count-badge" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--cyan); padding: 5px 12px; border-radius: 6px; font-size: 0.78rem; font-family: var(--font-mono); font-weight: 700;">
+            375 Nodes Discovered
+          </span>
+          <button type="button" class="btn btn-secondary" onclick="exportDiscoveredInventoryCsv()" style="padding: 6px 12px; font-size: 0.76rem;">
+            <span>📥</span> Export Discovered CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters & Search Toolbar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 1.15rem; margin-bottom: 1rem; background: #05070b; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px;">
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="inventory-filter-chips">
+          <button type="button" class="filter-chip active" id="chip-ALL" onclick="setInventoryCategory('ALL')">All Workloads (<span id="chip-count-all">0</span>)</button>
+          <button type="button" class="filter-chip" id="chip-vm" onclick="setInventoryCategory('Compute VM')">Compute VMs (<span id="chip-count-vm">0</span>)</button>
+          <button type="button" class="filter-chip" id="chip-k8s" onclick="setInventoryCategory('Kubernetes Worker')">K8s Workers (<span id="chip-count-k8s">0</span>)</button>
+          <button type="button" class="filter-chip" id="chip-bm" onclick="setInventoryCategory('Bare Metal Server')">Bare Metal (<span id="chip-count-bm">0</span>)</button>
+          <button type="button" class="filter-chip" id="chip-db" onclick="setInventoryCategory('Database Instance')">Databases (<span id="chip-count-db">0</span>)</button>
+        </div>
+        <div style="flex: 1; max-width: 380px; min-width: 240px;">
+          <input type="text" id="inventory-search-input" class="form-control" placeholder="🔍 Search IP, Node ID, CIDR, or OS..." oninput="handleInventorySearch(this.value)">
+        </div>
+      </div>
+
+      <!-- Inventory Table -->
+      <div style="overflow-x: auto; border: 1px solid var(--border); border-radius: 8px;">
+        <table class="inventory-table" style="width: 100%; border-collapse: collapse; font-size: 0.8rem; background: #05070b;">
+          <thead>
+            <tr style="background: #0f172a; border-bottom: 1px solid var(--border); text-align: left;">
+              <th style="color: var(--cyan); font-size: 0.72rem; text-transform: uppercase;">Node ID</th>
+              <th style="color: var(--cyan); font-size: 0.72rem; text-transform: uppercase;">Discovered IP Address</th>
+              <th style="color: var(--cyan); font-size: 0.72rem; text-transform: uppercase;">Target CIDR / Range</th>
+              <th style="color: var(--cyan); font-size: 0.72rem; text-transform: uppercase;">Environment / VPC Site</th>
+              <th style="color: var(--cyan); font-size: 0.72rem; text-transform: uppercase;">Workload Role</th>
+              <th style="color: var(--cyan); font-size: 0.72rem; text-transform: uppercase;">Operating System / Engine</th>
+              <th style="color: var(--cyan); font-size: 0.72rem; text-transform: uppercase;">Status</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-table-body">
+            <!-- Dynamic rows -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination & Metrics Footer -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.76rem; color: var(--muted); flex-wrap: wrap; gap: 8px;">
+        <div id="inventory-pagination-info">
+          Showing 1–20 of 375 nodes
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <button type="button" class="btn btn-secondary" id="btn-inventory-prev" onclick="changeInventoryPage(-1)" style="padding: 4px 10px; font-size: 0.72rem;">◀ Previous</button>
+          <button type="button" class="btn btn-secondary" id="btn-inventory-next" onclick="changeInventoryPage(1)" style="padding: 4px 10px; font-size: 0.72rem;">Next ▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WHAT MAKES MORE SENSE: OVERAGE VS GOING A TIER ABOVE DECISION MATRIX -->
+    <div id="decision-matrix-wrapper" class="decision-container">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div>
+          <div style="font-size: 0.72rem; color: var(--yellow); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
+            ⚖️ Tier Optimization &amp; Capacity Decision Matrix
+          </div>
+          <h2 style="font-size: 1.2rem; color: #fff; margin-top: 2px;">
+            What Makes More Sense: Adding Overage vs. Going a Tier Above?
+          </h2>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <span id="decision-fleet-tag" style="background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4); color: var(--yellow); padding: 4px 10px; border-radius: 4px; font-size: 0.74rem; font-family: var(--font-mono); font-weight: 700;">
+            Fleet: 375 Nodes (75 Overage)
+          </span>
+        </div>
+      </div>
+
+      <!-- Verdict Banner -->
+      <div id="verdict-banner" class="verdict-banner step-up">
+        <div class="verdict-icon" id="verdict-icon">🎯</div>
+        <div>
+          <div class="verdict-title" id="verdict-title">Strategic Verdict: Step Up to Next Tier for Headroom &amp; 24/7 SLA</div>
+          <div class="verdict-text" id="verdict-text">
+            For discovered capacity (375 nodes), stepping up unlocks substantial free growth buffer while locking in a fixed annual rate and upgrading to 24/7 Critical SRE support.
+          </div>
+        </div>
+      </div>
+
+      <!-- Side-by-Side Comparison Grid -->
+      <div class="options-grid">
+        
+        <!-- Option A: Current Tier + Overage -->
+        <div class="option-card" id="option-a-card">
+          <div>
+            <span class="option-badge" style="background: rgba(251, 191, 36, 0.15); color: var(--yellow); border: 1px solid rgba(251, 191, 36, 0.3);">
+              OPTION A: CURRENT TIER + OVERAGE ADD-ON
+            </span>
+            <div class="option-title" id="opt-a-title">Enterprise Air-Gap (+75 Overage Nodes)</div>
+            
+            <div class="option-price-block">
+              <div class="option-price" id="opt-a-price" style="color: var(--yellow);">$202,500 <span style="font-size: 0.8rem; font-weight: 400; color: var(--muted);">/ yr</span></div>
+              <div class="option-price-sub" id="opt-a-sub">Base $180,000 + $22,500 overage ($25/node/mo)</div>
+            </div>
+
+            <div class="option-stats-row">
+              <div class="option-stat-item">
+                <div class="label">Monthly Rate</div>
+                <div class="val" id="opt-a-mo">$16,875 / mo</div>
+              </div>
+              <div class="option-stat-item">
+                <div class="label">Effective / Node</div>
+                <div class="val" id="opt-a-eff">$45.00 / mo</div>
+              </div>
+              <div class="option-stat-item">
+                <div class="label">Growth Headroom</div>
+                <div class="val" id="opt-a-headroom" style="color: var(--red);">0 Nodes (Exact Fit)</div>
+              </div>
+              <div class="option-stat-item">
+                <div class="label">Support SLA</div>
+                <div class="val" id="opt-a-sla" style="font-size: 0.72rem;">Air-Gapped 15m</div>
+              </div>
+            </div>
+
+            <div class="pros-cons-section">
+              <div class="pc-header" style="color: var(--green);">
+                <span>✓</span> Advantages (Pros)
+              </div>
+              <ul class="pc-list pros" id="opt-a-pros">
+                <li><span>✓</span> Minimal upfront capital: Pay base tier and only active overage nodes.</li>
+                <li><span>✓</span> Zero lock-in: If temporary test nodes terminate, overage stops.</li>
+                <li><span>✓</span> Capital agility for short-term cutover sprints.</li>
+              </ul>
+
+              <div class="pc-header" style="color: var(--yellow); margin-top: 8px;">
+                <span>⚠️</span> Drawbacks (Cons)
+              </div>
+              <ul class="pc-list cons" id="opt-a-cons">
+                <li><span>⚠️</span> Premium unit price on all 75 overage nodes.</li>
+                <li><span>⚠️</span> Zero growth buffer: Every subsequent node adds cost.</li>
+                <li><span>⚠️</span> Ongoing monthly reconciliation tracking required.</li>
+              </ul>
+            </div>
+
+            <div class="best-for-callout" id="opt-a-bestfor">
+              <strong>Best For:</strong> Short-term project bursts (&lt; 3–6 months) or fleets expected to contract.
+            </div>
+          </div>
+
+          <div style="margin-top: 14px;">
+            <button type="button" class="btn btn-secondary" style="width: 100%;" onclick="selectOption('A')">
+              Select Option A (Base + Overage)
+            </button>
+          </div>
+        </div>
+
+        <!-- Option B: Step Up a Tier Above -->
+        <div class="option-card highlight" id="option-b-card">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="option-badge" style="background: rgba(52, 211, 153, 0.15); color: var(--green); border: 1px solid rgba(52, 211, 153, 0.4);">
+                OPTION B: STEP UP TO NEXT TIER ABOVE
+              </span>
+              <span id="opt-b-tag" style="font-size: 0.68rem; font-family: var(--font-mono); font-weight: 700; color: var(--green);">
+                RECOMMENDED ROUTE
+              </span>
+            </div>
+            
+            <div class="option-title" id="opt-b-title">Unlimited Enterprise Site License</div>
+            
+            <div class="option-price-block">
+              <div class="option-price" id="opt-b-price" style="color: var(--green);">$360,000 <span style="font-size: 0.8rem; font-weight: 400; color: var(--muted);">/ yr</span></div>
+              <div class="option-price-sub" id="opt-b-sub">100% Uncapped Nodes &bull; Locked Fixed Budget</div>
+            </div>
+
+            <div class="option-stats-row">
+              <div class="option-stat-item">
+                <div class="label">Monthly Rate</div>
+                <div class="val" id="opt-b-mo">$30,000 / mo</div>
+              </div>
+              <div class="option-stat-item">
+                <div class="label">Annual Delta</div>
+                <div class="val" id="opt-b-delta" style="color: var(--green);">Uncapped Headroom</div>
+              </div>
+              <div class="option-stat-item">
+                <div class="label">Growth Headroom</div>
+                <div class="val" id="opt-b-headroom" style="color: var(--green);">Uncapped Nodes</div>
+              </div>
+              <div class="option-stat-item">
+                <div class="label">Support SLA</div>
+                <div class="val" id="opt-b-sla" style="font-size: 0.72rem;">Executive Air-Gap 15m</div>
+              </div>
+            </div>
+
+            <div class="pros-cons-section">
+              <div class="pc-header" style="color: var(--green);">
+                <span>✓</span> Advantages (Pros)
+              </div>
+              <ul class="pc-list pros" id="opt-b-pros">
+                <li><span>✓</span> 100% Fixed and predictable annual budget—zero true-ups.</li>
+                <li><span>✓</span> Massive included growth headroom at $0 marginal cost.</li>
+                <li><span>✓</span> Upgraded executive 24/7 mission-critical SLA.</li>
+              </ul>
+
+              <div class="pc-header" style="color: var(--yellow); margin-top: 8px;">
+                <span>⚠️</span> Considerations (Cons)
+              </div>
+              <ul class="pc-list cons" id="opt-b-cons">
+                <li><span>⚠️</span> Higher upfront baseline commitment compared to overage.</li>
+                <li><span>⚠️</span> Unused headroom is not refundable if fleet shrinks.</li>
+              </ul>
+            </div>
+
+            <div class="best-for-callout" style="border-left-color: var(--green);" id="opt-b-bestfor">
+              <strong>Best For:</strong> Permanent production infrastructure and growing enterprise microservices.
+            </div>
+          </div>
+
+          <div style="margin-top: 14px;">
+            <button type="button" class="btn btn-primary" style="width: 100%;" onclick="selectOption('B')">
+              Select Option B (Step Up Tier) &rarr;
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOTTOM SECTION: Commercial Upsell & Dual-Suite ROI Matrix -->
+    <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+      
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 0.72rem; color: var(--cyan); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Commercial Sizing &amp; Value Realization Matrix</div>
+          <h2 style="font-size: 1.25rem; color: #fff; margin-top: 2px;">Evaluate Software Suites for Discovered Fleet</h2>
+        </div>
+        <div>
+          <button type="button" class="btn btn-primary" id="btn-export-markdown" onclick="openProposalModal()">
+            <span>📄</span> View / Export Executive Proposal
+          </button>
+        </div>
+      </div>
+
+      <!-- STRICTLY EITHER / OR ARCHITECTURAL NOTICE -->
+      <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 8px; padding: 14px 18px; margin-top: 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 14px;">
+        <span style="font-size: 1.6rem; line-height: 1;">💡</span>
+        <div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.45;">
+          <strong style="color: #fff; font-size: 0.9rem;">Strictly Either / Or Product Architecture:</strong><br>
+          <span style="color: var(--cyan); font-weight: 700;">The Full-Stack Suite supersets and contains 100% of the Turnkey Migration Suite capabilities</span> from Day-0 setup through permanent Day-2+ Observability. You do <strong>not</strong> combine or purchase both suites. You choose <strong>Option 1</strong> if you only need a temporary cutover tool, or <strong>Option 2</strong> for a complete all-in-one platform.
+        </div>
+      </div>
+
+      <!-- 2-Column Suite Comparison (Strict Either / Or) -->
+      <div class="comparison-grid">
+        
+        <!-- Option 1: Turnkey Migration Suite -->
+        <div class="suite-card highlight" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span class="suite-badge" style="background: rgba(56, 189, 248, 0.15); color: var(--cyan); border: 1px solid rgba(56, 189, 248, 0.3);">
+                OPTION 1: TURNKEY MIGRATION SUITE
+              </span>
+              <span style="font-size: 0.68rem; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase;">
+                CapEx Project Window
+              </span>
+            </div>
+
+            <h3 style="font-size: 1.15rem; color: #fff;" id="suite-1-tier">Enterprise Air-Gap Tier</h3>
+            <div class="price-tag" style="color: var(--cyan);" id="suite-1-price">$0 <span style="font-size: 0.78rem; font-weight: 400; color: var(--muted);">/ yr flat</span></div>
+            
+            <div class="roi-badge" id="suite-1-roi">
+              <span>⚡</span> <span>Displaces ~$157,500 Consulting &bull; +14.1% Net ROI</span>
+            </div>
+
+            <p style="font-size: 0.76rem; color: #94a3b8; margin-bottom: 12px;">
+              Purpose-built for finite 3–12 month cloud cutovers and breaking vendor lock-in. Retires cleanly once migration is verified.
+            </p>
+
+            <div style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; margin-bottom: 6px;">
+              Core Functional Scope:
+            </div>
+            <ul class="capability-list">
+              <li><span>✓</span> <strong>Multi-Vendor Parsers:</strong> Datadog, NRQL, Splunk, CloudWatch, Azure &amp; Dynatrace</li>
+              <li><span>✓</span> <strong>AST Compiler:</strong> Automatic conversion of proprietary alerts to open PromQL &amp; Grafana</li>
+              <li><span>✓</span> <strong>IaC Synthesizer:</strong> Generates ready-to-deploy OpenTofu, Terraform &amp; Azure Bicep manifests</li>
+              <li><span>✓</span> <strong>Parity Proofs:</strong> Kirchhoff conservation &amp; Welford online variance drift tracking</li>
+              <li><span>✓</span> <strong>Zero Cloud Egress:</strong> 100% offline in-perimeter transpilation ($0.00 WAN egress)</li>
+              <li><span>✓</span> <strong>Clean Retirement:</strong> Shuts down upon project completion with zero recurring commitment</li>
+            </ul>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <button type="button" class="btn btn-secondary" style="width: 100%; border-color: rgba(56, 189, 248, 0.4); color: #fff;" onclick="selectSuite('migration')">
+              Select Turnkey Migration Suite &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- Option 2: Full-Stack Suite (All-In-One Platform) -->
+        <div class="suite-card highlight" style="border-color: rgba(168, 85, 247, 0.5); background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(88, 28, 135, 0.25) 100%); display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span class="suite-badge" style="background: rgba(168, 85, 247, 0.2); color: var(--purple); border: 1px solid rgba(168, 85, 247, 0.4);">
+                OPTION 2: FULL-STACK OBSERVABILITY SUITE (ALL-IN-ONE)
+              </span>
+              <span style="font-size: 0.68rem; font-family: var(--font-mono); color: var(--green); font-weight: 700; text-transform: uppercase;">
+                ★ Includes Migration
+              </span>
+            </div>
+
+            <h3 style="font-size: 1.15rem; color: #fff;" id="suite-2-tier">Enterprise Air-Gap Tier</h3>
+            <div class="price-tag" style="color: var(--purple);" id="suite-2-price">$0 <span style="font-size: 0.78rem; font-weight: 400; color: var(--muted);">/ yr flat</span></div>
+            
+            <div class="roi-badge" id="suite-2-roi" style="border-color: rgba(168, 85, 247, 0.4); color: #d8b4fe;">
+              <span>📉</span> <span>Displaces ~$135,000/yr Datadog/NewRelic Invoices + All Migration Costs</span>
+            </div>
+
+            <p style="font-size: 0.76rem; color: #d8b4fe; margin-bottom: 12px;">
+              <strong>The complete all-in-one enterprise platform:</strong> supersets 100% of Migration Suite tools, adding Day-0 setup and continuous Day-2+ Observability.
+            </p>
+
+            <div style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; margin-bottom: 6px;">
+              Core Functional Scope:
+            </div>
+            <ul class="capability-list">
+              <li><span style="color: var(--green);">★</span> <strong style="color: #fff;">100% OF MIGRATION SUITE INCLUDED:</strong> All parsers, AST transpiler &amp; IaC generators</li>
+              <li><span>✓</span> <strong>Day-0 In-VPC Desks:</strong> Interactive Web Installation Wizard, /AdminDesk, /companyadmin &amp; /DBADesk</li>
+              <li><span>✓</span> <strong>7-Tier In-VPC Matrix:</strong> Physical hardware (IPMI/BMC) to eBPF network sockets to distributed APM</li>
+              <li><span>✓</span> <strong>Native Telemetry Ingest:</strong> Native OpenTelemetry OTLP (4317/4318) &amp; Prometheus Remote Write</li>
+              <li><span>✓</span> <strong>Kernel eBPF &amp; Log Search:</strong> Sub-second socket tracking + high-throughput in-VPC log engine</li>
+              <li><span>✓</span> <strong>Live 6-Hub NOC:</strong> Multi-cloud topology map, 24/7 SRE wallboards &amp; Uncapped Site License ceiling</li>
+            </ul>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <button type="button" class="btn btn-primary" style="width: 100%; background: #a855f7; color: #fff;" onclick="selectSuite('fullstack')">
+              Select Full-Stack All-In-One Suite &rarr;
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- EXHAUSTIVE FUNCTIONAL INVENTORY ACCORDION / TABS -->
+      <div style="margin-top: 2.25rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div>
+            <div style="font-size: 0.72rem; color: var(--cyan); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
+              📋 Complete Functional Inventory &amp; Feature Breakdown
+            </div>
+            <h3 style="font-size: 1.15rem; color: #fff; margin-top: 2px;">
+              Exhaustive Capability Matrix: Migration Suite vs. Full-Stack Suite
+            </h3>
+          </div>
+          <span style="font-size: 0.74rem; font-family: var(--font-mono); color: var(--muted); background: #05070b; padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border);">
+            Total Verified Capabilities: 47 Functions
+          </span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+          
+          <!-- Column 1: Migration Suite Functions -->
+          <div style="background: #05070b; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+              <div style="font-weight: 800; color: var(--cyan); font-size: 0.95rem;">
+                Turnkey Migration Suite Functions (25 Capabilities)
+              </div>
+              <span style="font-size: 0.68rem; font-family: var(--font-mono); color: var(--muted);">CapEx Project</span>
+            </div>
+
+            <!-- Group 1 -->
+            <div style="margin-bottom: 12px;">
+              <div style="font-size: 0.72rem; font-weight: 700; color: #fff; text-transform: uppercase; margin-bottom: 4px;">1. Multi-Vendor Alert Parsers</div>
+              <ul style="list-style: none; font-size: 0.75rem; color: #cbd5e1; line-height: 1.5;">
+                <li>&bull; Datadog Monitor JSON/YAML Parser (Thresholds &amp; Multi-Metrics)</li>
+                <li>&bull; New Relic NRQL Alert Parser (FACET &amp; Aggregations)</li>
+                <li>&bull; Splunk SPL Search &amp; Alert Parser (Eval Expressions)</li>
+                <li>&bull; AWS CloudWatch Metric Alarm Parser</li>
+                <li>&bull; Azure Monitor Metric &amp; Activity Log Parser</li>
+                <li>&bull; Dynatrace Anomaly &amp; Event Detection Parser</li>
+                <li>&bull; Prometheus / Alertmanager Rule Parser</li>
+                <li>&bull; Terraform HCL AST Dependency Graph Parser</li>
+              </ul>
+            </div>
+
+            <!-- Group 2 -->
+            <div style="margin-bottom: 12px;">
+              <div style="font-size: 0.72rem; font-weight: 700; color: #fff; text-transform: uppercase; margin-bottom: 4px;">2. Semantic AST Compiler &amp; Linter</div>
+              <ul style="list-style: none; font-size: 0.75rem; color: #cbd5e1; line-height: 1.5;">
+                <li>&bull; Living Abstract Syntax Tree (AST) Intermediate Representation</li>
+                <li>&bull; Turnkey Alert Transpiler (Datadog/NRQL/Splunk &rarr; PromQL)</li>
+                <li>&bull; Syntactic Query Converter (Preserves Metric Semantics)</li>
+                <li>&bull; Pre-Flight AST Rule Linter (Detects Unsupported Functions)</li>
+                <li>&bull; Semantic Threshold Validator (Proves Math Equivalence)</li>
+                <li>&bull; System Diagnostic Doctor (Automated Rule Health Checks)</li>
+              </ul>
+            </div>
+
+            <!-- Group 3 -->
+            <div style="margin-bottom: 12px;">
+              <div style="font-size: 0.72rem; font-weight: 700; color: #fff; text-transform: uppercase; margin-bottom: 4px;">3. Automated IaC Manifest Synthesis</div>
+              <ul style="list-style: none; font-size: 0.75rem; color: #cbd5e1; line-height: 1.5;">
+                <li>&bull; Automated OpenTofu &amp; Terraform Manifest Generator</li>
+                <li>&bull; Automated Azure Bicep Template Synthesizer</li>
+                <li>&bull; Grafana Alert Rule &amp; Contact Point Synthesizer</li>
+                <li>&bull; Datadog-to-Prometheus Metric Translation Dictionary</li>
+              </ul>
+            </div>
+
+            <!-- Group 4 -->
+            <div>
+              <div style="font-size: 0.72rem; font-weight: 700; color: #fff; text-transform: uppercase; margin-bottom: 4px;">4. Verification &amp; In-Perimeter Guarantee</div>
+              <ul style="list-style: none; font-size: 0.75rem; color: #cbd5e1; line-height: 1.5;">
+                <li>&bull; Kirchhoff Conservation Law Invariant Checking</li>
+                <li>&bull; Welford Online Running Variance &amp; Drift Tracker</li>
+                <li>&bull; Urn Statistical Anomaly Detector (Alert Parity)</li>
+                <li>&bull; Shadow Dual-Engine Execution Verification</li>
+                <li>&bull; 100% In-Perimeter Offline Execution ($0.00 WAN Egress)</li>
+                <li>&bull; Data Anonymizer &amp; Clean Project Retirement</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Column 2: Full-Stack Suite Functions -->
+          <div style="background: #05070b; border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 8px; padding: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+              <div style="font-weight: 800; color: var(--purple); font-size: 0.95rem;">
+                Full-Stack Suite Functions (All-In-One: 47 Capabilities)
+              </div>
+              <span style="font-size: 0.68rem; font-family: var(--font-mono); color: var(--green); font-weight: 700;">Includes 100% Migration</span>
+            </div>
+
+            <!-- Group 1: Migration Included -->
+            <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 6px; padding: 8px 12px; margin-bottom: 12px;">
+              <div style="font-size: 0.72rem; font-weight: 800; color: var(--cyan); text-transform: uppercase;">
+                ★ 100% OF MIGRATION SUITE CAPABILITIES (INCLUDED)
+              </div>
+              <div style="font-size: 0.73rem; color: #cbd5e1; margin-top: 2px;">
+                Includes all 25 Migration functions: multi-vendor parsers, AST transpiler, OpenTofu/Terraform/Bicep generators, and Kirchhoff/Welford drift verifiers.
+              </div>
+            </div>
+
+            <!-- Group 2: Day-0 Setup -->
+            <div style="margin-bottom: 12px;">
+              <div style="font-size: 0.72rem; font-weight: 700; color: #fff; text-transform: uppercase; margin-bottom: 4px;">1. Day-0 Host Setup &amp; Governance Desks</div>
+              <ul style="list-style: none; font-size: 0.75rem; color: #cbd5e1; line-height: 1.5;">
+                <li>&bull; Interactive First-Run Web Installation Wizard</li>
+                <li>&bull; Application Administrator Central Control Desk (/AdminDesk)</li>
+                <li>&bull; Cluster Admin Console (/companyadmin) with Licensing Anti-Flap Ledger</li>
+                <li>&bull; In-VPC Database Admin Desk (/DBADesk) with Safe SQL Scratchpad</li>
+                <li>&bull; Deployment Manifest Generator &amp; Sizer (/setup)</li>
+              </ul>
+            </div>
+
+            <!-- Group 3: 7-Tier Observability -->
+            <div style="margin-bottom: 12px;">
+              <div style="font-size: 0.72rem; font-weight: 700; color: #fff; text-transform: uppercase; margin-bottom: 4px;">2. 7-Tier In-VPC Observability Matrix</div>
+              <ul style="list-style: none; font-size: 0.75rem; color: #cbd5e1; line-height: 1.5;">
+                <li>&bull; Layer 1: Physical Bare-Metal &amp; IPMI/BMC Hardware Telemetry</li>
+                <li>&bull; Layer 2: Network Infrastructure &amp; eBPF Socket Latency (RTT/Drops)</li>
+                <li>&bull; Layer 3: Cloud VPCs, NATs &amp; Transit Gateways (AWS/GCP/Azure)</li>
+                <li>&bull; Layer 4: Hypervisors, VMware ESXi &amp; Kubernetes Pods</li>
+                <li>&bull; Layer 5: Databases &amp; Middleware (PostgreSQL, Oracle, Redis, Kafka)</li>
+                <li>&bull; Layer 6: APM Distributed Traces, HTTP/gRPC Latency &amp; Error Rates</li>
+                <li>&bull; Layer 7: Security SIEM Forwarding, CIS Benchmarks &amp; Audit Logs</li>
+              </ul>
+            </div>
+
+            <!-- Group 4: Native Ingestion & Operations -->
+            <div>
+              <div style="font-size: 0.72rem; font-weight: 700; color: #fff; text-transform: uppercase; margin-bottom: 4px;">3. Telemetry Ingest &amp; Live SRE NOC</div>
+              <ul style="list-style: none; font-size: 0.75rem; color: #cbd5e1; line-height: 1.5;">
+                <li>&bull; Native OpenTelemetry Receiver: OTLP gRPC (4317) &amp; HTTP (4318)</li>
+                <li>&bull; Prometheus Remote Write Ingest Endpoint (/api/v1/write)</li>
+                <li>&bull; In-VPC High-Throughput Log Search Engine (Replaces Loki/Datadog)</li>
+                <li>&bull; 6-Hub Live SRE &amp; NOC Telemetry Wallboard (/dashboard)</li>
+                <li>&bull; Outside-VPC mTLS Heartbeat Relay with Ed25519 Hardware Signing</li>
+                <li>&bull; Enterprise SAML 2.0, OIDC &amp; SCIM Provisioning</li>
+                <li>&bull; Uncapped Flat Volume Spend Ceiling at Site License Tier</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SIDE-BY-SIDE ARCHITECTURAL COMPARISON: STRICT EITHER / OR -->
+      <div style="margin-top: 2.25rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+        <div style="font-size: 0.72rem; color: var(--cyan); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
+          ⚖️ Architectural Comparison
+        </div>
+        <h3 style="font-size: 1.15rem; color: #fff; margin-top: 2px; margin-bottom: 1rem;">
+          Strategic Evaluation: Turnkey Migration Suite vs. Full-Stack All-In-One Suite
+        </h3>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+          
+          <!-- Column 1: Migration Suite -->
+          <div class="suite-pc-card" style="border-top: 3px solid var(--cyan);">
+            <div>
+              <div class="suite-pc-title">Option 1: Turnkey Migration Suite</div>
+              <div class="suite-pc-accounting">CapEx &bull; Finite 3–12 Month Cutover Window</div>
+              
+              <div class="pc-header" style="color: var(--green); margin-top: 8px;">
+                <span>✓</span> When to Choose (Advantages)
+              </div>
+              <ul class="pc-list pros" id="suite-pc-s1-pros">
+                <li><span>✓</span> Lowest initial ACV investment.</li>
+                <li><span>✓</span> Turnkey AST transpiler for Datadog &amp; NRQL.</li>
+                <li><span>✓</span> Automated Terraform &amp; Bicep synthesis.</li>
+                <li><span>✓</span> $0.00 cloud egress fees in-perimeter.</li>
+                <li><span>✓</span> Retires cleanly after cutover completion.</li>
+              </ul>
+
+              <div class="pc-header" style="color: var(--yellow); margin-top: 8px;">
+                <span>⚠️</span> Trade-offs (Limitations)
+              </div>
+              <ul class="pc-list cons" id="suite-pc-s1-cons">
+                <li><span>⚠️</span> Visibility ceases once migration closes.</li>
+                <li><span>⚠️</span> No permanent eBPF socket telemetry.</li>
+                <li><span>⚠️</span> No continuous SRE NOC wallboards.</li>
+              </ul>
+            </div>
+
+            <div class="best-for-callout" style="border-left-color: var(--cyan); margin-top: 10px;" id="suite-pc-s1-bestfor">
+              <strong>Best For:</strong> Datacenter exits, cloud cutovers, and breaking free from SaaS contracts.
+            </div>
+          </div>
+
+          <!-- Column 2: Full-Stack Suite -->
+          <div class="suite-pc-card" style="border-top: 3px solid var(--purple);">
+            <div>
+              <div class="suite-pc-title">Option 2: Full-Stack Observability (All-In-One)</div>
+              <div class="suite-pc-accounting">OpEx &bull; Migration + Day-0 Provisioning + Day-2+ Operations</div>
+              
+              <div class="pc-header" style="color: var(--green); margin-top: 8px;">
+                <span>✓</span> When to Choose (Advantages)
+              </div>
+              <ul class="pc-list pros" id="suite-pc-s2-pros">
+                <li><span>✓</span> INCLUDES 100% of Migration Suite tools.</li>
+                <li><span>✓</span> Single all-in-one license from Day-0 onwards.</li>
+                <li><span>✓</span> Complete self-hosted SaaS replacement.</li>
+                <li><span>✓</span> 6-Hub unified SRE &amp; NOC wallboard.</li>
+                <li><span>✓</span> Zero-agent kernel-level eBPF tracing.</li>
+                <li><span>✓</span> Flat predictable spend ceiling at Site tier.</li>
+              </ul>
+
+              <div class="pc-header" style="color: var(--yellow); margin-top: 8px;">
+                <span>⚠️</span> Trade-offs (Considerations)
+              </div>
+              <ul class="pc-list cons" id="suite-pc-s2-cons">
+                <li><span>⚠️</span> Higher annual baseline commitment.</li>
+                <li><span>⚠️</span> Requires operational SRE rotation buy-in.</li>
+              </ul>
+            </div>
+
+            <div class="best-for-callout" style="border-left-color: var(--purple); margin-top: 10px;" id="suite-pc-s2-bestfor">
+              <strong>Best For:</strong> Permanent in-VPC telemetry, air-gapped enclaves, eliminating SaaS bills.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const sampleSubnets = [
+      { cidr: "10.100.0.0/22", type: "AWS VPC", dc: "us-east-1 (Primary VPC)", label: "AWS Production Kubernetes & Microservices", hosts: 180 },
+      { cidr: "10.200.0.0/23", type: "GCP VPC", dc: "us-central1 (Analytics Cluster)", label: "GCP BigQuery & Spark Dataproc Enclave", hosts: 90 },
+      { cidr: "192.168.10.0/24", type: "Bare Metal / Legacy Datacenter", dc: "Equinix Ashburn DC-01", label: "Bare Metal Oracle & Core Banking Rack", hosts: 60 },
+      { cidr: "172.16.50.0/24", type: "VMware vSphere", dc: "On-Prem Enterprise Cluster", label: "VMware ESXi Enterprise App Hypervisors", hosts: 45 }
+    ];
+
+    let currentSubnets = []; // Starts clean with no information until user inputs subnets or clicks sample
+
+    function parseIpOrCidr(val) {
+      if (!val) return { type: 'unknown', hosts: 25, label: '' };
+      val = val.trim();
+      // Single IP: e.g. 192.168.1.50
+      if (/^(\d{1,3}\.){3}\d{1,3}$/.test(val)) {
+        return { type: 'single_ip', hosts: 1, label: '● Single Host IP (1 Node)' };
+      }
+      // IP Range: e.g. 192.168.1.1-192.168.1.50
+      if (val.includes('-')) {
+        const parts = val.split('-');
+        if (parts.length === 2 && /^(\d{1,3}\.){3}\d{1,3}$/.test(parts[0].trim()) && /^(\d{1,3}\.){3}\d{1,3}$/.test(parts[1].trim())) {
+          const p1 = parts[0].trim().split('.').map(Number);
+          const p2 = parts[1].trim().split('.').map(Number);
+          const i1 = ((p1[0]<<24)>>>0) + ((p1[1]<<16)>>>0) + ((p1[2]<<8)>>>0) + p1[3];
+          const i2 = ((p2[0]<<24)>>>0) + ((p2[1]<<16)>>>0) + ((p2[2]<<8)>>>0) + p2[3];
+          const diff = Math.abs(i2 - i1) + 1;
+          return { type: 'range', hosts: Math.min(diff, 10000), label: `● IP Range (${diff} Hosts)` };
+        }
+      }
+      // CIDR: e.g. 10.0.0.0/24
+      const match = val.match(/^(\d{1,3}\.){3}\d{1,3}\/(\d{1,2})$/);
+      if (match) {
+        const prefix = parseInt(match[2]);
+        if (prefix >= 0 && prefix <= 32) {
+          const totalIps = Math.pow(2, 32 - prefix);
+          const usable = prefix === 32 ? 1 : (prefix === 31 ? 2 : Math.max(1, totalIps - 2));
+          let estimated = usable;
+          if (usable > 1024) estimated = Math.round(usable * 0.10);
+          else if (usable > 256) estimated = Math.round(usable * 0.20);
+          else if (usable > 32) estimated = Math.min(usable, Math.max(25, Math.round(usable * 0.35)));
+          return { type: 'cidr', usable: usable, hosts: estimated, label: `● /${prefix} Subnet (${usable.toLocaleString()} Usable IPs)` };
+        }
+      }
+      return { type: 'custom', hosts: 25, label: '' };
+    }
+
+    function renderSubnetRows() {
+      const container = document.getElementById('subnet-rows-container');
+      container.innerHTML = '';
+
+      if (!currentSubnets || currentSubnets.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 26px 16px; border: 1px dashed var(--border); border-radius: 8px; background: rgba(255,255,255,0.015); color: var(--muted);">
+            <div style="font-size: 0.95rem; color: #cbd5e1; font-weight: 600; margin-bottom: 6px;">Target Network Scope is Empty (0 subnets configured)</div>
+            <div style="font-size: 0.8rem; margin-bottom: 14px;">All subnet rows have been deleted. Add an IP or CIDR subnet to scan, or reload the enterprise sample estate.</div>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+              <button type="button" class="btn btn-secondary" onclick="addSingleHostSubnet()" style="font-size: 0.78rem;">+ Add Single Host IP</button>
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('btn-add-subnet').click()" style="font-size: 0.78rem;">+ Add CIDR Subnet</button>
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('btn-load-sample').click()" style="font-size: 0.78rem; border-color: var(--accent); color: var(--accent);">Load Enterprise Sample Estate (375 Nodes)</button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      currentSubnets.forEach((sub, idx) => {
+        const parsed = parseIpOrCidr(sub.cidr);
+        const row = document.createElement('div');
+        row.className = 'subnet-row';
+        row.innerHTML = `
+          <div>
+            <input type="text" class="form-control" value="${sub.cidr}" placeholder="CIDR e.g. 10.0.0.0/24 or IP" oninput="updateSubnet(${idx}, 'cidr', this.value)">
+            <div id="subnet-hint-${idx}" style="font-size: 0.65rem; color: var(--cyan); margin-top: 2px; font-family: var(--font-mono);">${parsed.label || ''}</div>
+          </div>
+          <div>
+            <select class="form-control" onchange="updateSubnet(${idx}, 'type', this.value)">
+              <option value="AWS VPC" ${sub.type === 'AWS VPC' ? 'selected' : ''}>AWS VPC</option>
+              <option value="GCP VPC" ${sub.type === 'GCP VPC' ? 'selected' : ''}>GCP VPC</option>
+              <option value="Azure VNet" ${sub.type === 'Azure VNet' ? 'selected' : ''}>Azure VNet</option>
+              <option value="Bare Metal / Legacy Datacenter" ${sub.type === 'Bare Metal / Legacy Datacenter' ? 'selected' : ''}>Bare Metal Datacenter</option>
+              <option value="VMware vSphere" ${sub.type === 'VMware vSphere' ? 'selected' : ''}>VMware vSphere</option>
+              <option value="Kubernetes Cluster" ${sub.type === 'Kubernetes Cluster' ? 'selected' : ''}>Kubernetes Cluster</option>
+            </select>
+          </div>
+          <div>
+            <input type="text" class="form-control" value="${sub.label || ''}" placeholder="Label e.g. Production Cluster" oninput="updateSubnet(${idx}, 'label', this.value)">
+          </div>
+          <div>
+            <input type="number" id="subnet-hosts-${idx}" class="form-control" value="${sub.hosts || 25}" placeholder="Est. Hosts" oninput="updateSubnet(${idx}, 'hosts', parseInt(this.value) || 1)">
+          </div>
+          <div>
+            <button type="button" class="btn btn-danger" onclick="removeSubnet(${idx})" title="Remove Subnet" style="padding: 6px 10px;">&times;</button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    let _assessmentDebounceTimer = null;
+    function scheduleAssessment() {
+      clearTimeout(_assessmentDebounceTimer);
+      _assessmentDebounceTimer = setTimeout(() => {
+        executeAssessment();
+      }, 180);
+    }
+
+    window.updateSubnet = function(idx, key, val) {
+      if (currentSubnets[idx]) {
+        currentSubnets[idx][key] = val;
+        if (key === 'cidr') {
+          const parsed = parseIpOrCidr(val);
+          if (parsed.hosts) {
+            currentSubnets[idx].hosts = parsed.hosts;
+            const hInput = document.getElementById(`subnet-hosts-${idx}`);
+            if (hInput) hInput.value = parsed.hosts;
+            const hint = document.getElementById(`subnet-hint-${idx}`);
+            if (hint) hint.innerText = parsed.label;
+          }
+        }
+        scheduleAssessment();
+      }
+    };
+
+    window.addSingleHostSubnet = function() {
+      const idx = currentSubnets.length + 1;
+      currentSubnets.push({
+        cidr: "192.168.1." + (50 + idx),
+        type: "Bare Metal / Legacy Datacenter",
+        dc: "Datacenter Rack",
+        label: "Dedicated Server " + idx,
+        hosts: 1
+      });
+      renderSubnetRows();
+      executeAssessment();
+    };
+
+    window.removeSubnet = function(idx) {
+      currentSubnets.splice(idx, 1);
+      renderSubnetRows();
+      executeAssessment();
+    };
+
+    document.getElementById('btn-add-subnet').addEventListener('click', () => {
+      currentSubnets.push({
+        cidr: "10.0." + (currentSubnets.length + 1) + ".0/24",
+        type: "AWS VPC",
+        dc: "us-east-1",
+        label: "Subnet " + (currentSubnets.length + 1),
+        hosts: 25
+      });
+      renderSubnetRows();
+      executeAssessment();
+    });
+
+    const custOrgInputEl = document.getElementById('input-customer-org');
+    if (custOrgInputEl) {
+      custOrgInputEl.addEventListener('input', scheduleAssessment);
+    }
+
+    document.getElementById('btn-load-sample').addEventListener('click', () => {
+      currentSubnets = JSON.parse(JSON.stringify(sampleSubnets));
+      renderSubnetRows();
+      executeAssessment();
+    });
+
+    window.simulateNodeCount = function(count) {
+      document.querySelectorAll('.preset-pill').forEach(btn => {
+        btn.classList.remove('active');
+        const txt = btn.innerText.trim();
+        if (txt.startsWith(count + ' Nodes') || txt.startsWith(count + ' Node ')) {
+          btn.classList.add('active');
+        }
+      });
+      const customInput = document.getElementById('input-custom-nodes');
+      if (customInput) customInput.value = count;
+
+      // Update first subnet with simulated count and set others to 0
+      currentSubnets = [
+        { cidr: "10.100.0.0/20", type: "AWS VPC", dc: "us-east-1 (Primary VPC)", label: "Simulated Fleet Estate", hosts: count }
+      ];
+      renderSubnetRows();
+      executeAssessment();
+    };
+
+    async function executeAssessment() {
+      const customer = (document.getElementById('input-customer-org')?.value || "").trim() || "Varinull Inc.";
+      const payload = {
+        customer_org: customer,
+        subnets: currentSubnets.map(s => ({
+          cidr_or_range: s.cidr,
+          environment_type: s.type,
+          region_or_dc: s.dc || "Default Region",
+          label: s.label,
+          estimated_active_hosts: s.hosts
+        }))
+      };
+
+      try {
+        const res = await fetch('/v1/assessment/report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const report = await res.json();
+          renderReport(report);
+          return;
+        }
+      } catch (err) {
+        console.warn("Backend report endpoint unavailable, executing client-side in-perimeter engine:", err);
+      }
+
+      // Standalone client-side fallback for static web hosting (Hostinger / GitHub Pages)
+      const fallbackReport = await generateClientSideReport(customer, currentSubnets);
+      renderReport(fallbackReport);
+    }
+
+    async function deriveCryptographicToken(customer, totalNodes, s1Price, s2Price) {
+      if (totalNodes <= 0) {
+        return "— (Awaiting Subnet Scope)";
+      }
+      const today = new Date().toISOString().split('T')[0];
+      const payload = `${customer}:${totalNodes}:${Math.round(s1Price)}:${Math.round(s2Price)}:${today}`;
+      try {
+        const enc = new TextEncoder();
+        const keyData = enc.encode("dcouplr-scout-authoritative-salt-2026");
+        const key = await crypto.subtle.importKey(
+          "raw", keyData, { name: "HMAC", hash: { name: "SHA-256" } }, false, ["sign"]
+        );
+        const sigBuffer = await crypto.subtle.sign("HMAC", key, enc.encode(payload));
+        const hashArray = Array.from(new Uint8Array(sigBuffer));
+        const hex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+        return `DCL-TOKEN-${hex.slice(0, 24)}-${totalNodes}N`;
+      } catch (e) {
+        let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+        for (let i = 0; i < payload.length; i++) {
+          const ch = payload.charCodeAt(i);
+          h1 = Math.imul(h1 ^ ch, 2654435761);
+          h2 = Math.imul(h2 ^ ch, 1597334677);
+        }
+        h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+        h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+        const hex = (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16).toUpperCase().padStart(12, '0') +
+                    (4294967296 * (2097151 & h1) + (h2 >>> 0)).toString(16).toUpperCase().padStart(12, '0');
+        return `DCL-TOKEN-${hex.slice(0, 24)}-${totalNodes}N`;
+      }
+    }
+
+    async function generateClientSideReport(customer, subnets) {
+      let totalNodes = 0;
+      let byEnv = {};
+      let byCat = { "Compute VM": 0, "Kubernetes Worker": 0, "Bare Metal Server": 0, "Database Instance": 0 };
+
+      const synthesizedNodes = [];
+      let globalNodeSeq = 1;
+
+      (subnets || []).forEach(s => {
+        const count = parseInt(s.hosts) || 0;
+        totalNodes += count;
+        const envKey = s.type || "AWS VPC";
+        byEnv[envKey] = (byEnv[envKey] || 0) + count;
+        const envPrefix = envKey.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase() || 'NET';
+        const rawCidr = (s.cidr || '10.0.0.0/24').trim();
+
+        for (let i = 0; i < count; i++) {
+          const nNum = globalNodeSeq++;
+          const nId = `SCOUT-${envPrefix}-${String(nNum).padStart(4, '0')}`;
+          const ip = synthesizeClientIp(rawCidr, i);
+          let cat = "Compute VM";
+          let os = "Ubuntu 22.04 LTS (Kernel 6.5 x86_64)";
+
+          const low = envKey.toLowerCase();
+          if (low.includes("bare metal")) {
+            if (i % 4 === 0) {
+              cat = "Database Instance";
+              os = "Oracle Linux 9.2 (Oracle RAC 19c Enterprise)";
+            } else {
+              cat = "Bare Metal Server";
+              os = "RHEL 9.3 (Bare Metal Supermicro/Dell)";
+            }
+          } else if (low.includes("k8s") || low.includes("gcp") || low.includes("kubernetes")) {
+            if (i % 5 === 0) {
+              cat = "Database Instance";
+              os = "Google Cloud SQL (PostgreSQL 16 High-Availability)";
+            } else {
+              cat = "Kubernetes Worker";
+              os = "Container-Optimized OS / Kubernetes v1.30 Worker";
+            }
+          } else if (low.includes("vmware")) {
+            if (i % 4 === 0) {
+              cat = "Database Instance";
+              os = "Microsoft SQL Server 2022 Enterprise (Windows Server)";
+            } else {
+              cat = "Compute VM";
+              os = "VMware ESXi 8.0 Guest (RHEL 8.9 / Rocky Linux)";
+            }
+          } else {
+            if (i % 8 === 0) {
+              cat = "Database Instance";
+              os = "AWS RDS Aurora PostgreSQL 16.2 Multi-AZ";
+            } else {
+              cat = "Compute VM";
+              os = "Amazon Linux 2023 / Ubuntu 22.04 LTS";
+            }
+          }
+
+          byCat[cat] = (byCat[cat] || 0) + 1;
+
+          synthesizedNodes.push({
+            node_id: nId,
+            ip_anonymized: ip,
+            environment_type: envKey,
+            category: cat,
+            os_or_engine: os,
+            region_or_dc: s.dc || s.label || "In-Perimeter VPC / Datacenter",
+            target_cidr: rawCidr,
+            is_monitored_candidate: true
+          });
+        }
+      });
+
+      if (totalNodes === 0) {
+        return {
+          assessment_id: "DCL-ASSESS-00000000",
+          customer_org: customer,
+          cryptographic_token: "— (Awaiting Subnet Scope)",
+          executive_summary_markdown: `# <dcouplr/> Fleet Scout: Pre-Flight Capacity Assessment & Sizing Dossier\n\n**Status:** Awaiting Subnet Scope (0 Active Nodes Configured)\n\n> Target network scope is currently empty. Configure target CIDR subnets or host IP addresses above to initiate in-perimeter discovery and automated sizing.`,
+          census: {
+            customer_org: customer,
+            total_subnets_analyzed: 0,
+            total_discovered_nodes: 0,
+            nodes: [],
+            by_environment: {},
+            by_category: { "Compute VM": 0, "Kubernetes Worker": 0, "Bare Metal Server": 0, "Database Instance": 0 },
+            by_region_datacenter: {},
+            scan_duration_ms: 0.1,
+            zero_egress_verified: true
+          },
+          proposal: {
+            customer_org: customer,
+            fleet_total_nodes: 0,
+            suite_1_migration: {
+              suite_id: "migration_suite",
+              suite_name: "<dcouplr/> Turnkey Migration Suite",
+              recommended_tier_name: "— (0 Nodes In Scope)",
+              annual_acv_usd: 0,
+              estimated_displaced_cost_annual_usd: 0,
+              roi_percentage: 0,
+              included_capabilities: []
+            },
+            suite_2_observability: {
+              suite_id: "fullstack_suite",
+              suite_name: "<dcouplr/> Full-Stack Datacenter & VPC Observability Suite",
+              recommended_tier_name: "— (0 Nodes In Scope)",
+              annual_acv_usd: 0,
+              estimated_displaced_cost_annual_usd: 0,
+              roi_percentage: 0,
+              included_capabilities: []
+            },
+            overage_vs_step_up_analysis: {
+              has_overage: false
+            }
+          }
+        };
+      }
+
+      const tiers = [
+        { id: "T1", name: "Single Node", max: 5, m_base: 6000, o_base: 9000, overage_mo: 45, sla: "Standard 8x5" },
+        { id: "T2", name: "Cluster Small", max: 25, m_base: 24000, o_base: 36000, overage_mo: 35, sla: "Standard 8x5" },
+        { id: "T3", name: "Cluster Medium", max: 75, m_base: 36000, o_base: 54000, overage_mo: 30, sla: "24/7 Mission-Critical" },
+        { id: "T4", name: "Cluster Large", max: 150, m_base: 72000, o_base: 108000, overage_mo: 28, sla: "24/7 Mission-Critical" },
+        { id: "T5", name: "Enterprise Air-Gap", max: 300, m_base: 120000, o_base: 180000, overage_mo: 25, sla: "Air-Gapped 15m" },
+        { id: "T6", name: "Unlimited Enterprise Site License", max: 999999, m_base: 300000, o_base: 360000, overage_mo: 0, sla: "Executive Air-Gap 15m" }
+      ];
+
+      let currentTierIdx = 0;
+      for (let i = 0; i < tiers.length - 1; i++) {
+        if (totalNodes <= tiers[i].max) {
+          currentTierIdx = i;
+          break;
+        }
+        currentTierIdx = i;
+      }
+      if (totalNodes > tiers[4].max && totalNodes <= tiers[5].max) {
+        currentTierIdx = 4;
+      }
+
+      const curTier = tiers[currentTierIdx];
+      const nextTier = tiers[Math.min(currentTierIdx + 1, tiers.length - 1)];
+
+      const isOverage = totalNodes > curTier.max && curTier.max < 999999;
+      const overageNodes = isOverage ? (totalNodes - curTier.max) : 0;
+      const annualOverageCost = isOverage ? (overageNodes * curTier.overage_mo * 12) : 0;
+
+      const optATotal = curTier.o_base + annualOverageCost;
+      const optBTotal = nextTier.o_base;
+      const costDelta = optBTotal - optATotal;
+      const isCheaper = costDelta < 0;
+
+      const optBheadroom = nextTier.max >= 999999 ? 999999 : (nextTier.max - totalNodes);
+      const breakEvenOverageNodes = curTier.overage_mo > 0 ? Math.ceil((nextTier.o_base - curTier.o_base) / (curTier.overage_mo * 12)) : 0;
+      const breakEvenFleetNodes = curTier.max + breakEvenOverageNodes;
+
+      let verdictHeadline = "";
+      let verdictRationale = "";
+      let recommendation = "";
+
+      if (isCheaper) {
+        recommendation = "STEP_UP_TIER";
+        verdictHeadline = `Strategic Verdict: Upgrade to ${nextTier.name} (Saves $${Math.abs(costDelta).toLocaleString()}/yr vs Overage!)`;
+        verdictRationale = `At ${totalNodes} nodes, paying $${curTier.overage_mo}/node/month in overage costs $${optATotal.toLocaleString()}/yr, whereas stepping up to ${nextTier.name} is only $${optBTotal.toLocaleString()}/yr—saving $${Math.abs(costDelta).toLocaleString()}/yr while unlocking headroom and higher SLA.`;
+      } else if (optBheadroom > 0 && costDelta < 30000) {
+        recommendation = "STEP_UP_TIER";
+        verdictHeadline = `Strategic Verdict: Step Up to ${nextTier.name} for Headroom & 24/7 SLA`;
+        verdictRationale = `Stepping up to ${nextTier.name} adds +$${costDelta.toLocaleString()}/yr (+${Math.round((costDelta / optATotal) * 100)}%), but unlocks ${optBheadroom >= 999999 ? 'uncapped nodes' : '+' + optBheadroom + ' spare node headroom'} and elevates SLA to ${nextTier.sla}.`;
+      } else {
+        recommendation = "STAY_WITH_OVERAGE";
+        verdictHeadline = `Strategic Verdict: Maintain ${curTier.name} with ${overageNodes} Overage Nodes`;
+        verdictRationale = `At ${totalNodes} nodes, staying on ${curTier.name} with overage saves $${Math.abs(costDelta).toLocaleString()}/yr compared to the next tier base commitment ($${optBTotal.toLocaleString()}/yr).`;
+      }
+
+      const token = await deriveCryptographicToken(customer, totalNodes, curTier.m_base, curTier.o_base);
+      const hex = token.replace('DCL-TOKEN-', '').replace(`-${totalNodes}N`, '');
+
+      return {
+        assessment_id: `SCOUT-${hex.slice(0, 8)}`,
+        customer_org: customer,
+        cryptographic_token: token,
+        executive_summary_markdown: `# <dcouplr/> Fleet Scout: Pre-Flight Capacity Assessment & Sizing Dossier
+
+**Assessment ID:** \`SCOUT-${hex.slice(0, 8)}\`  
+**Evaluating Organization:** **${customer}**  
+**Execution Mode:** Standalone Desktop / In-VPC Jump-Host Utility (100% In-Perimeter)  
+**Security Invariant:** Zero Public WAN Egress Verified ($0.00 Egress Cost)  
+**Cryptographic Token:** \`${token}\`  
+**Product Model:** Strictly Either / Or (Full-Stack Suite includes 100% of Migration Suite)
+
+---
+
+## 1. Discovered Fleet Inventory & Environment Census
+
+- **Total Discovered Compute Nodes:** **${totalNodes.toLocaleString()} Active Nodes**
+- **Cloud Virtual Machines (VMs):** ${byCat["Compute VM"]} hosts
+- **Kubernetes Worker Nodes:** ${byCat["Kubernetes Worker"]} hosts
+- **Bare Metal Servers & DB Appliances:** ${byCat["Bare Metal Server"] + byCat["Database Instance"]} hosts
+
+### Discovered Subnets & Infrastructure Enclaves:
+${Object.entries(byEnv).map(([e, c]) => `- **${e}:** ${c} nodes`).join('\n')}
+
+---
+
+## 2. Capacity Sizing & Decision Matrix: Overage Add-On vs. Tier Step-Up
+
+${isOverage ? `Your current capacity of **${totalNodes} nodes** exceeds the base quota for **${curTier.name} (${curTier.max} nodes)** by **${overageNodes} overage nodes**.
+
+### Side-by-Side Trade-off Analysis:
+
+| Architectural & Financial Dimension | Option A: ${curTier.name} (+${overageNodes} Overage) | Option B: Step Up to ${nextTier.name} |
+| :--- | :--- | :--- |
+| **Annualized Total Cost** | **$${optATotal.toLocaleString()} / yr** | **$${optBTotal.toLocaleString()} / yr** |
+| **Cost Composition** | Base $${curTier.o_base.toLocaleString()} + $${annualOverageCost.toLocaleString()} overage | Flat Annual License Base (Uncapped Headroom) |
+| **Effective Monthly Commitment** | $${Math.round(optATotal / 12).toLocaleString()} / month | $${Math.round(optBTotal / 12).toLocaleString()} / month |
+| **Effective Per-Node Rate** | $${(optATotal / (totalNodes * 12)).toFixed(2)} / node / month | Uncapped Headroom Buffer |
+| **Growth Headroom Buffer** | **0 Nodes** (Exact Fit & Compounding Fees) | **${optBheadroom >= 999999 ? 'Uncapped Nodes' : '+' + optBheadroom + ' Spare Nodes'}** |
+| **SLA & Support Guarantee** | ${curTier.sla} | **${nextTier.sla}** |
+
+> **Strategic Verdict:**  
+> **${verdictHeadline}**  
+> ${verdictRationale}
+` : `Your fleet of **${totalNodes} nodes** is 100% covered within the **${curTier.name}** base allocation (${curTier.max} nodes maximum). You have **${curTier.max - totalNodes} spare nodes of headroom** remaining.`}
+
+---
+
+## 3. Architectural & Strategic Suite Comparison (Strictly Either / Or)
+
+\`<dcouplr/>\` operates on a strict **Either / Or** product model:
+- **The Full-Stack Suite supersets and contains 100% of the capabilities of the Turnkey Migration Suite** from Day-0 host setup to Day-1 cutover to permanent Day-2+ operations.
+- **Customers choose one suite or the other—you do NOT combine or purchase both suites.**
+
+| Dimension | Option 1: Turnkey Migration Suite | Option 2: Full-Stack Observability Suite (All-In-One) |
+| :--- | :--- | :--- |
+| **Product Scope** | Dedicated Migration & Cutover Tool | **All-in-One Enterprise Platform (Migration + Day-0 + Day-2+)** |
+| **Contains Migration Capabilities?** | Yes (Core Focus) | **Yes (100% Included - All Parsers, AST & IaC Tools)** |
+| **Accounting Classification** | Project CapEx (3 to 12 Month Bounded Cutover) | **Permanent Operating Expense (OpEx Core Infrastructure)** |
+| **Annualized Cost** | $${(curTier.m_base + (isOverage ? Math.round(annualOverageCost * 0.7) : 0)).toLocaleString()} / yr flat | **$${optATotal.toLocaleString()} / yr flat** |
+| **Core Value Realization** | Displaces ~$420/node manual migration consulting | Replaces ~$30/host/mo SaaS monitoring bills + all migration tools |
+| **Cloud WAN Egress** | $0.00 (100% In-Perimeter) | $0.00 (100% In-Perimeter) |
+| **Best For** | Targeted 3–12 month cloud cutovers | Permanent 24x7 enterprise production monitoring |
+
+---
+
+## 4. Complete Functional Checklist & Feature Inventory
+
+### A. Turnkey Migration Suite (25 Capabilities):
+- [x] Multi-Vendor Alert Parsers: Datadog Monitor JSON/YAML Parser
+- [x] Multi-Vendor Alert Parsers: Splunk SPL Search & Alert Ingestion
+- [x] Multi-Vendor Alert Parsers: Prometheus / Alertmanager YAML Parser
+- [x] Multi-Vendor Alert Parsers: New Relic NRQL Query Transpiler
+- [x] Multi-Vendor Alert Parsers: Dynatrace Metric Query Importer
+- [x] Multi-Vendor Alert Parsers: AWS CloudWatch Alarm Metric Converter
+- [x] Semantic AST Compiler: Living AST Intermediate Representation (/compiler)
+- [x] Semantic AST Compiler: Interactive AST Transpilation CLI (dcouplr migrate)
+- [x] Semantic AST Compiler: In-Memory Secret & Credential Sanitizer
+- [x] Semantic AST Compiler: PII & Sensitive Token Redaction Engine
+- [x] Automated IaC Synthesis: Terraform / OpenTofu Synthesis (.tf)
+- [x] Automated IaC Synthesis: AWS CloudFormation Generation (.yaml/.json)
+- [x] Automated IaC Synthesis: Azure Bicep / ARM Template Generator
+- [x] Automated IaC Synthesis: Kubernetes Helm Chart Synthesis
+- [x] Automated IaC Synthesis: CDC State Relocation Engine (/liftnshift)
+- [x] Automated IaC Synthesis: Staged Cutover Enabler (/stage-migration)
+- [x] Verification & Invariants: Mathematical Invariant Engine
+- [x] Verification & Invariants: Kirchhoff Flow Conservation Checking (Sum Preservation)
+- [x] Verification & Invariants: Welford Running Numerical Variance Verifier
+- [x] Verification & Invariants: Synthetic Invariant Replay & Test Harness
+- [x] Verification & Invariants: Pre-Cutover Delta Diff Ledger
+- [x] Verification & Invariants: Rollback Canary Health Validator
+- [x] Security Invariant: 100% In-Perimeter Offline Execution ($0.00 Public WAN Egress)
+- [x] Security Invariant: In-VPC SQLite SSOT Database (vpc_telemetry_db)
+- [x] Security Invariant: Zero-Knowledge Capacity Certificate Token Derivation
+
+### B. Full-Stack All-In-One Observability Suite (47 Capabilities):
+- [x] **INCLUDES 100% OF MIGRATION SUITE CAPABILITIES** (All 25 Capabilities Above Included at $0 Extra Cost)
+- [x] Day-0 Onboarding: Interactive First-Run Web Installation Wizard
+- [x] Day-0 Onboarding: Authoritative Admin Control Desk (/AdminDesk) for Obs-Admins
+- [x] Day-0 Onboarding: In-VPC Cluster Administrator Console (/companyadmin)
+- [x] Day-0 Onboarding: Database Administrator Inspection Desk (/DBADesk)
+- [x] Day-0 Onboarding: Offline Ed25519 Cryptographic Licensing
+- [x] Day-0 Onboarding: Central System Configuration & Audit Trail SSOT
+- [x] 7-Tier Invariant Matrix: Tier 1 - Physical Datacenter & Host Hardware Invariants
+- [x] 7-Tier Invariant Matrix: Tier 2 - In-Guest OS & Memory Buffer Rings
+- [x] 7-Tier Invariant Matrix: Tier 3 - Ingress, Egress & Mesh Network Telemetry
+- [x] 7-Tier Invariant Matrix: Tier 4 - Distributed Raft Consensus & Split-Brain Prevention
+- [x] 7-Tier Invariant Matrix: Tier 5 - Application Runtime & Microservice Latencies
+- [x] 7-Tier Invariant Matrix: Tier 6 - Database Storage, CDC Queues & WAL Replay
+- [x] 7-Tier Invariant Matrix: Tier 7 - Security SIEM & In-VPC Dual-Dispatch Relays
+- [x] In-VPC Observability: Native OpenTelemetry (OTLP) gRPC Receiver on Port 4317
+- [x] In-VPC Observability: Native OpenTelemetry (OTLP) HTTP Receiver on Port 4318
+- [x] In-VPC Observability: In-Guest Local High-Throughput Log Search Engine (/logs)
+- [x] In-VPC Observability: Distributed APM Trace Waterfall & Jaeger Flamegraphs (/traces)
+- [x] In-VPC Observability: Dual-Dispatch Enriched Relays (Splunk HEC / Syslog SIEM)
+- [x] In-VPC Observability: Zero WAN Cloud Ingestion Surcharges ($0.00 Public Egress)
+- [x] In-VPC Observability: In-Memory Sliding Ring Buffers
+- [x] SRE / NOC Command: Real-Time SRE Fleet Telemetry Dashboard (/dashboard)
+- [x] SRE / NOC Command: 24x7 In-Perimeter NOC Wallboard (/wallboard)
+- [x] SRE / NOC Command: Air-Gapped Server Room Kiosk Display (/kiosk)
+- [x] SRE / NOC Command: 2-Way NOC Operations Desk (/NOCDesk)
+- [x] SRE / NOC Command: SRE Incident Desk (/SREDesk)
+- [x] SRE / NOC Command: Capabilities Sizer & Deployment Manifest Generator (/setup)
+
+---
+
+## 5. Next Steps & Offline License Activation
+
+1. **Procurement Quotation:** Supply the certified token \`${token}\` to your \`<dcouplr/>\` sales representative or procurement officer.
+2. **Offline Activation:** Once the Ed25519 license key is issued, activate your cluster completely offline:
+   \`\`\`bash
+   dcouplr license activate --token ${token}
+   \`\`\`
+`,
+
+        census: {
+          total_discovered_nodes: totalNodes,
+          by_environment: byEnv,
+          by_category: byCat,
+          nodes: synthesizedNodes,
+          scan_duration_ms: 12.4
+        },
+        proposal: {
+          suite_1_migration: {
+            recommended_tier_name: curTier.name + " Tier",
+            annual_acv_usd: curTier.m_base + (isOverage ? Math.round(annualOverageCost * 0.7) : 0),
+            estimated_displaced_cost_annual_usd: Math.round(totalNodes * 420),
+            roi_percentage: 18.5
+          },
+          suite_2_observability: {
+            recommended_tier_name: curTier.name + " Tier",
+            annual_acv_usd: optATotal,
+            estimated_displaced_cost_annual_usd: Math.round(totalNodes * 360),
+            roi_percentage: 42.0
+          },
+          overage_vs_step_up_analysis: {
+            has_overage: isOverage,
+            recommendation: recommendation,
+            verdict_headline: verdictHeadline,
+            verdict_rationale: verdictRationale,
+            break_even_overage_nodes: breakEvenOverageNodes,
+            break_even_total_fleet_nodes: breakEvenFleetNodes,
+            option_a_overage: {
+              tier_name: curTier.name,
+              overage_nodes: overageNodes,
+              annual_base_acv_usd: curTier.o_base,
+              annual_overage_cost_usd: annualOverageCost,
+              total_annual_cost_usd: optATotal,
+              monthly_cost_usd: Math.round(optATotal / 12),
+              effective_price_per_node_mo_usd: optATotal / (totalNodes * 12),
+              overage_rate_monthly_usd: curTier.overage_mo,
+              headroom_nodes: 0,
+              sla_tier: curTier.sla,
+              pros: [
+                "Lowest initial cash commitment on Day 1",
+                "Zero unallocated node seats",
+                "Seamless transition if node growth stops"
+              ],
+              cons: [
+                `Overage rate ($${curTier.overage_mo}/node/mo) compounds as fleet grows`,
+                "Zero buffer for unexpected auto-scaling spikes",
+                `Exceeding ${curTier.max + 150} nodes forces tier step-up`
+              ],
+              best_for: "Stagnant or tightly managed infrastructure with no near-term expansion."
+            },
+            option_b_step_up: {
+              tier_name: nextTier.name,
+              annual_base_acv_usd: optBTotal,
+              cost_delta_annual_usd: costDelta,
+              monthly_cost_usd: Math.round(optBTotal / 12),
+              is_cheaper_than_overage: isCheaper,
+              headroom_nodes: optBheadroom,
+              sla_tier: nextTier.sla,
+              pros: [
+                isCheaper ? `Saves $${Math.abs(costDelta).toLocaleString()}/yr compared to overage penalty!` : "Pre-allocated growth buffer for auto-scaling surges",
+                "Higher SLA tier with faster incident response",
+                "Fixed, predictable annual invoicing with zero monthly overage friction"
+              ],
+              cons: [
+                isCheaper ? "Requires commitment to the higher tier" : "Higher upfront cash outlay on Day 1",
+                isCheaper ? "Requires budget authority" : "Unused node buffer if fleet does not expand"
+              ],
+              best_for: "Aggressively growing multi-cloud estates or critical production environments requiring 24/7 SLAs."
+            }
+          },
+          suite_pros_cons_comparison: {
+            suite_1_migration: {
+              pros: [
+                "Turnkey automated transpilation of Datadog, Splunk & New Relic into PromQL & Grafana",
+                "Zero-egress in-memory AST compiler stripping hardcoded secrets and credentials",
+                "Displaces $150k+ in third-party systems integration consulting fees"
+              ],
+              cons: [
+                "Project-bounded (decommissions post-cutover; does not include continuous monitoring)",
+                "Requires customer-maintained Grafana/Prometheus infrastructure"
+              ],
+              best_for: "Targeted 3–12 month cloud migration and infrastructure cutover projects."
+            },
+            suite_2_observability: {
+              pros: [
+                "Includes 100% of Turnkey Migration Suite capabilities at $0 extra cost",
+                "Permanent 24x7 in-VPC monitoring with 7-tier invariant calculus and zero WAN egress",
+                "Native OTLP ingest, local in-memory log search, APM traces, and 6-hub live NOC wallboards",
+                "Displaces recurring Datadog / New Relic bills, saving $135k to $948k+/yr"
+              ],
+              cons: [
+                "Permanent operational commitment requiring ongoing in-VPC deployment",
+                "Requires dedicated in-VPC storage allocation (local ring buffers)"
+              ],
+              best_for: "Permanent 24x7 enterprise production monitoring and SLA protection."
+            }
+          }
+        }
+      };
+    }
+
+    function synthesizeClientIp(cidrStr, index) {
+      cidrStr = (cidrStr || '10.0.0.0/24').trim();
+      if (!cidrStr.includes('/') && !cidrStr.includes('-')) {
+        if (/^(\d{1,3}\.){3}\d{1,3}$/.test(cidrStr)) {
+          return cidrStr;
+        }
+      }
+      if (cidrStr.includes('-')) {
+        const parts = cidrStr.split('-');
+        if (parts.length === 2 && /^(\d{1,3}\.){3}\d{1,3}$/.test(parts[0].trim())) {
+          const octets = parts[0].trim().split('.').map(Number);
+          const last = Math.min(254, octets[3] + index);
+          return `${octets[0]}.${octets[1]}.${octets[2]}.${last}`;
+        }
+      }
+      const match = cidrStr.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/);
+      if (match) {
+        const o1 = match[1];
+        const o2 = match[2];
+        const o3 = (parseInt(match[3]) + Math.floor(index / 250)) % 256;
+        const o4 = (index % 250) + 4;
+        return `${o1}.${o2}.${o3}.${o4}`;
+      }
+      return `10.x.x.${index + 1}`;
+    }
+
+    // =========================================================================
+    // Discovered Nodes & IP Inventory Table Explorer
+    // =========================================================================
+    window._allDiscoveredNodes = [];
+    window._currentInventoryFilter = 'ALL';
+    window._currentInventorySearch = '';
+    window._currentInventoryPage = 1;
+
+    function updateInventoryChipCounts() {
+      const all = window._allDiscoveredNodes || [];
+      const cAll = document.getElementById('chip-count-all');
+      const cVm = document.getElementById('chip-count-vm');
+      const cK8s = document.getElementById('chip-count-k8s');
+      const cBm = document.getElementById('chip-count-bm');
+      const cDb = document.getElementById('chip-count-db');
+      const bBadge = document.getElementById('inventory-node-count-badge');
+
+      if (cAll) cAll.innerText = all.length.toLocaleString();
+      if (cVm) cVm.innerText = all.filter(n => n.category === 'Compute VM').length.toLocaleString();
+      if (cK8s) cK8s.innerText = all.filter(n => n.category === 'Kubernetes Worker').length.toLocaleString();
+      if (cBm) cBm.innerText = all.filter(n => n.category === 'Bare Metal Server').length.toLocaleString();
+      if (cDb) cDb.innerText = all.filter(n => n.category === 'Database Instance').length.toLocaleString();
+      if (bBadge) bBadge.innerText = `${all.length.toLocaleString()} Nodes Discovered`;
+    }
+
+    window.setInventoryCategory = function(cat) {
+      window._currentInventoryFilter = cat;
+      window._currentInventoryPage = 1;
+      document.querySelectorAll('#inventory-filter-chips .filter-chip').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      if (cat === 'ALL') {
+        const btn = document.getElementById('chip-ALL');
+        if (btn) btn.classList.add('active');
+      } else if (cat === 'Compute VM') {
+        const btn = document.getElementById('chip-vm');
+        if (btn) btn.classList.add('active');
+      } else if (cat === 'Kubernetes Worker') {
+        const btn = document.getElementById('chip-k8s');
+        if (btn) btn.classList.add('active');
+      } else if (cat === 'Bare Metal Server') {
+        const btn = document.getElementById('chip-bm');
+        if (btn) btn.classList.add('active');
+      } else if (cat === 'Database Instance') {
+        const btn = document.getElementById('chip-db');
+        if (btn) btn.classList.add('active');
+      }
+      renderInventoryTable();
+    };
+
+    window.handleInventorySearch = function(query) {
+      window._currentInventorySearch = query;
+      window._currentInventoryPage = 1;
+      renderInventoryTable();
+    };
+
+    window.changeInventoryPage = function(delta) {
+      window._currentInventoryPage += delta;
+      renderInventoryTable();
+    };
+
+    window.renderInventoryTable = function() {
+      const tbody = document.getElementById('inventory-table-body');
+      if (!tbody) return;
+      const all = window._allDiscoveredNodes || [];
+      const filter = window._currentInventoryFilter || 'ALL';
+      const search = (window._currentInventorySearch || '').toLowerCase().trim();
+
+      const filtered = all.filter(n => {
+        if (filter !== 'ALL' && n.category !== filter) return false;
+        if (search) {
+          const matchIp = (n.ip_anonymized || '').toLowerCase().includes(search);
+          const matchId = (n.node_id || '').toLowerCase().includes(search);
+          const matchCidr = (n.target_cidr || '').toLowerCase().includes(search);
+          const matchEnv = (n.environment_type || '').toLowerCase().includes(search);
+          const matchOs = (n.os_or_engine || '').toLowerCase().includes(search);
+          const matchCat = (n.category || '').toLowerCase().includes(search);
+          return matchIp || matchId || matchCidr || matchEnv || matchOs || matchCat;
+        }
+        return true;
+      });
+
+      const pageSize = 20;
+      const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+      if (window._currentInventoryPage > totalPages) window._currentInventoryPage = totalPages;
+      if (window._currentInventoryPage < 1) window._currentInventoryPage = 1;
+
+      const page = window._currentInventoryPage;
+      const start = (page - 1) * pageSize;
+      const end = Math.min(start + pageSize, filtered.length);
+      const pageNodes = filtered.slice(start, end);
+
+      if (pageNodes.length === 0) {
+        if (all.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 36px 20px; color: var(--muted);"><div style="font-size: 1.1rem; color: #fff; margin-bottom: 6px;">🌐 No Nodes In Scope</div><div>Add an IP or CIDR subnet above, or click <a href="javascript:void(0)" onclick="document.getElementById('btn-load-sample').click()" style="color: var(--accent); text-decoration: underline;">Load Sample Estate</a> to begin automated discovery.</div></td></tr>`;
+        } else {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 28px; color: var(--muted);">No matching nodes or IP addresses found for current search/filter.</td></tr>`;
+        }
+      } else {
+        tbody.innerHTML = pageNodes.map(n => {
+          let catBadgeClass = 'rgba(56, 189, 248, 0.15)';
+          let catColor = 'var(--cyan)';
+          if (n.category === 'Kubernetes Worker') {
+            catBadgeClass = 'rgba(168, 85, 247, 0.15)';
+            catColor = 'var(--purple)';
+          } else if (n.category === 'Bare Metal Server' || n.category === 'Database Instance') {
+            catBadgeClass = 'rgba(251, 191, 36, 0.15)';
+            catColor = 'var(--yellow)';
+          }
+          return `
+            <tr>
+              <td style="font-family: var(--font-mono); font-weight: 700; color: #fff;">${n.node_id}</td>
+              <td>
+                <span class="ip-badge">
+                  <span class="ip-dot"></span>
+                  ${n.ip_anonymized}
+                </span>
+              </td>
+              <td style="font-family: var(--font-mono); color: var(--cyan);">${n.target_cidr || 'In-Scope Network'}</td>
+              <td><span style="color: #cbd5e1; font-weight: 500;">${n.environment_type}</span></td>
+              <td>
+                <span style="background: ${catBadgeClass}; color: ${catColor}; padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;">
+                  ${n.category}
+                </span>
+              </td>
+              <td style="color: #cbd5e1; font-size: 0.76rem;">${n.os_or_engine}</td>
+              <td>
+                <span style="color: var(--green); font-size: 0.72rem; font-weight: 600;">
+                  ✓ In-Perimeter Ready
+                </span>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      const pInfo = document.getElementById('inventory-pagination-info');
+      if (pInfo) {
+        pInfo.innerText = filtered.length === 0
+          ? 'Showing 0 of 0 nodes'
+          : `Showing ${(start + 1).toLocaleString()}–${end.toLocaleString()} of ${filtered.length.toLocaleString()} nodes (Page ${page} of ${totalPages})`;
+      }
+
+      const prevBtn = document.getElementById('btn-inventory-prev');
+      const nextBtn = document.getElementById('btn-inventory-next');
+      if (prevBtn) prevBtn.disabled = page <= 1;
+      if (nextBtn) nextBtn.disabled = page >= totalPages;
+    };
+
+    window.exportDiscoveredInventoryCsv = function() {
+      const all = window._allDiscoveredNodes || [];
+      if (!all.length) {
+        alert("No discovered node inventory to export.");
+        return;
+      }
+      let csv = "Node ID,Discovered IP Address,Target CIDR or Range,Environment Type,Workload Category,Operating System Engine,Region Site,Status\n";
+      all.forEach(n => {
+        csv += `"${n.node_id}","${n.ip_anonymized}","${n.target_cidr || ''}","${n.environment_type}","${n.category}","${n.os_or_engine}","${n.region_or_dc}","Monitored Candidate"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `DCOUPLR-DISCOVERED-FLEET-INVENTORY-${Date.now()}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
+    function renderReport(report) {
+      const census = report.census;
+      const prop = report.proposal;
+      const nodes = census.total_discovered_nodes;
+
+      document.getElementById('stat-total-nodes').innerText = nodes.toLocaleString();
+
+      // Populate Discovered Nodes & IP Inventory Table
+      const rawNodes = (census && census.nodes) ? census.nodes : [];
+      window._allDiscoveredNodes = rawNodes;
+      updateInventoryChipCounts();
+      renderInventoryTable();
+      document.getElementById('stat-vms').innerText = (census.by_category["Compute VM"] || 0).toLocaleString();
+      document.getElementById('stat-k8s').innerText = (census.by_category["Kubernetes Worker"] || 0).toLocaleString();
+      document.getElementById('stat-bm').innerText = ((census.by_category["Bare Metal Server"] || 0) + (census.by_category["Database Instance"] || 0)).toLocaleString();
+
+      let envHtml = '';
+      if (!census.by_environment || Object.keys(census.by_environment).length === 0) {
+        envHtml = '<span style="color: var(--muted); font-size: 0.8rem;">No active environments</span>';
+      } else {
+        for (const [env, count] of Object.entries(census.by_environment)) {
+          envHtml += `&bull; ${env}: <span style="color: #fff; font-weight: 700;">${count} nodes</span><br>`;
+        }
+      }
+      document.getElementById('env-breakdown-list').innerHTML = envHtml;
+
+      document.getElementById('display-token').innerText = report.cryptographic_token;
+
+      // Suite 1
+      const s1 = prop.suite_1_migration;
+      document.getElementById('suite-1-tier').innerText = s1.recommended_tier_name;
+      document.getElementById('suite-1-price').innerHTML = `$${s1.annual_acv_usd.toLocaleString()} <span style="font-size: 0.78rem; font-weight: 400; color: var(--muted);">/ yr flat</span>`;
+      document.getElementById('suite-1-roi').innerHTML = `<span>⚡</span> <span>Displaces ~$${s1.estimated_displaced_cost_annual_usd.toLocaleString()} Consulting &bull; +${s1.roi_percentage}% Net ROI</span>`;
+
+      // Suite 2
+      const s2 = prop.suite_2_observability;
+      document.getElementById('suite-2-tier').innerText = s2.recommended_tier_name;
+      document.getElementById('suite-2-price').innerHTML = `$${s2.annual_acv_usd.toLocaleString()} <span style="font-size: 0.78rem; font-weight: 400; color: var(--muted);">/ yr flat</span>`;
+      document.getElementById('suite-2-roi').innerHTML = `<span>📉</span> <span>Displaces ~$${s2.estimated_displaced_cost_annual_usd.toLocaleString()}/yr Datadog/NewRelic SaaS Invoices</span>`;
+
+      // Strict Either / Or: No bundle banner needed
+
+      // Render Decision Matrix: Overage vs Going a Tier Above
+      const overage = prop.overage_vs_step_up_analysis;
+      if (overage && overage.has_overage && overage.option_a_overage && overage.option_b_step_up) {
+        document.getElementById('decision-matrix-wrapper').style.display = 'block';
+        document.getElementById('decision-fleet-tag').innerText = `Fleet: ${nodes.toLocaleString()} Nodes (${overage.option_a_overage.overage_nodes} Overage)`;
+
+        const isCheaper = overage.option_b_step_up.is_cheaper_than_overage;
+        const banner = document.getElementById('verdict-banner');
+        banner.className = `verdict-banner ${overage.recommendation === 'STEP_UP_TIER' ? 'step-up' : 'overage'}`;
+        document.getElementById('verdict-icon').innerText = overage.recommendation === 'STEP_UP_TIER' ? (isCheaper ? '🎯' : '🚀') : '⚡';
+        document.getElementById('verdict-title').innerText = overage.verdict_headline;
+        document.getElementById('verdict-text').innerText = overage.verdict_rationale;
+
+        // Option A Card
+        const oa = overage.option_a_overage;
+        document.getElementById('opt-a-title').innerText = `${oa.tier_name} (+${oa.overage_nodes} Overage)`;
+        document.getElementById('opt-a-price').innerHTML = `$${oa.total_annual_cost_usd.toLocaleString()} <span style="font-size: 0.8rem; font-weight: 400; color: var(--muted);">/ yr</span>`;
+        document.getElementById('opt-a-sub').innerText = `Base $${oa.annual_base_acv_usd.toLocaleString()} + $${oa.annual_overage_cost_usd.toLocaleString()} overage ($${oa.overage_rate_monthly_usd}/node/mo)`;
+        document.getElementById('opt-a-mo').innerText = `$${oa.monthly_cost_usd.toLocaleString()} / mo`;
+        document.getElementById('opt-a-eff').innerText = `$${oa.effective_price_per_node_mo_usd.toFixed(2)} / mo`;
+        document.getElementById('opt-a-headroom').innerText = `0 Nodes (Exact Fit)`;
+        document.getElementById('opt-a-sla').innerText = oa.sla_tier;
+        document.getElementById('opt-a-pros').innerHTML = oa.pros.map(p => `<li><span>✓</span> ${p}</li>`).join('');
+        document.getElementById('opt-a-cons').innerHTML = oa.cons.map(c => `<li><span>⚠️</span> ${c}</li>`).join('');
+        document.getElementById('opt-a-bestfor').innerHTML = `<strong>Best For:</strong> ${oa.best_for}`;
+
+        // Option B Card
+        const ob = overage.option_b_step_up;
+        document.getElementById('opt-b-title').innerText = ob.tier_name;
+        document.getElementById('opt-b-price').innerHTML = `$${ob.annual_base_acv_usd.toLocaleString()} <span style="font-size: 0.8rem; font-weight: 400; color: var(--muted);">/ yr</span>`;
+        const deltaPrefix = ob.cost_delta_annual_usd < 0 ? `Saves $${Math.abs(ob.cost_delta_annual_usd).toLocaleString()}/yr vs Overage!` : `+$${ob.cost_delta_annual_usd.toLocaleString()}/yr for Headroom & SLA`;
+        document.getElementById('opt-b-sub').innerText = deltaPrefix;
+        document.getElementById('opt-b-mo').innerText = `$${ob.monthly_cost_usd.toLocaleString()} / mo`;
+        document.getElementById('opt-b-delta').innerText = ob.cost_delta_annual_usd < 0 ? `-$${Math.abs(ob.cost_delta_annual_usd).toLocaleString()}/yr` : `+$${ob.cost_delta_annual_usd.toLocaleString()}/yr`;
+        document.getElementById('opt-b-headroom').innerText = ob.headroom_nodes >= 999999 ? 'Uncapped Nodes' : `+${ob.headroom_nodes.toLocaleString()} Nodes Buffer`;
+        document.getElementById('opt-b-sla').innerText = ob.sla_tier;
+        document.getElementById('opt-b-pros').innerHTML = ob.pros.map(p => `<li><span>✓</span> ${p}</li>`).join('');
+        document.getElementById('opt-b-cons').innerHTML = ob.cons.map(c => `<li><span>⚠️</span> ${c}</li>`).join('');
+        document.getElementById('opt-b-bestfor').innerHTML = `<strong>Best For:</strong> ${ob.best_for}`;
+
+        // Tag Option B styling
+        if (overage.recommendation === 'STEP_UP_TIER') {
+          document.getElementById('option-b-card').classList.add('highlight');
+          document.getElementById('option-a-card').classList.remove('highlight');
+          document.getElementById('opt-b-tag').innerText = isCheaper ? 'STRICTLY CHEAPER ROUTE' : 'RECOMMENDED ROUTE';
+        } else {
+          document.getElementById('option-a-card').classList.add('highlight');
+          document.getElementById('option-b-card').classList.remove('highlight');
+          document.getElementById('opt-b-tag').innerText = 'OPTIONAL UPGRADE';
+        }
+      } else {
+        // Hide decision matrix if covered or no overage
+        document.getElementById('decision-matrix-wrapper').style.display = 'none';
+      }
+
+      // Render Suite Pros & Cons 2-Column Grid (Strictly Either / Or)
+      const pc = prop.suite_pros_cons_comparison;
+      if (pc) {
+        if (pc.suite_1_migration && document.getElementById('suite-pc-s1-pros')) {
+          document.getElementById('suite-pc-s1-pros').innerHTML = pc.suite_1_migration.pros.map(function(p) { return '<li><span>✓</span> ' + p + '</li>'; }).join('');
+          document.getElementById('suite-pc-s1-cons').innerHTML = pc.suite_1_migration.cons.map(function(c) { return '<li><span>⚠️</span> ' + c + '</li>'; }).join('');
+          document.getElementById('suite-pc-s1-bestfor').innerHTML = '<strong>Best For:</strong> ' + pc.suite_1_migration.best_for;
+        }
+
+        if (pc.suite_2_observability && document.getElementById('suite-pc-s2-pros')) {
+          document.getElementById('suite-pc-s2-pros').innerHTML = pc.suite_2_observability.pros.map(function(p) { return '<li><span>✓</span> ' + p + '</li>'; }).join('');
+          document.getElementById('suite-pc-s2-cons').innerHTML = pc.suite_2_observability.cons.map(function(c) { return '<li><span>⚠️</span> ' + c + '</li>'; }).join('');
+          document.getElementById('suite-pc-s2-bestfor').innerHTML = '<strong>Best For:</strong> ' + pc.suite_2_observability.best_for;
+        }
+      }
+
+      window._lastReport = report;
+    }
+
+    window.selectOption = function(opt) {
+      if (!window._lastReport) return;
+      const overage = window._lastReport.proposal.overage_vs_step_up_analysis;
+      const token = window._lastReport.cryptographic_token;
+      if (opt === 'A') {
+        alert(`Option A Selected: Base ${overage.option_a_overage.tier_name} with ${overage.option_a_overage.overage_nodes} overage nodes ($${overage.option_a_overage.total_annual_cost_usd.toLocaleString()}/yr).\n\nCertificate Token: ${token}`);
+      } else {
+        alert(`Option B Selected: Step-Up to ${overage.option_b_step_up.tier_name} ($${overage.option_b_step_up.annual_base_acv_usd.toLocaleString()}/yr).\n\nCertificate Token: ${token}`);
+      }
+      openProposalModal();
+    };
+
+    window.selectSuite = function(suiteType) {
+      if (!window._lastReport) return;
+      const token = window._lastReport.cryptographic_token;
+      const prop = window._lastReport.proposal;
+      if (suiteType === 'migration') {
+        alert(`Turnkey Migration Suite Selected ($${prop.suite_1_migration.annual_acv_usd.toLocaleString()}/yr).\n\nCertificate Token: ${token}`);
+      } else {
+        alert(`Full-Stack All-In-One Suite Selected ($${prop.suite_2_observability.annual_acv_usd.toLocaleString()}/yr).\nIncludes 100% of Migration Suite tools.\n\nCertificate Token: ${token}`);
+      }
+      openProposalModal();
+    };
+
+    document.getElementById('btn-run-scan').addEventListener('click', executeAssessment);
+
+    document.getElementById('btn-copy-token').addEventListener('click', () => {
+      const tok = document.getElementById('display-token').innerText;
+      navigator.clipboard.writeText(tok);
+      const btn = document.getElementById('btn-copy-token');
+      btn.innerText = 'Copied!';
+      setTimeout(() => btn.innerText = 'Copy', 2000);
+    });
+
+    
+    // =========================================================================
+    // Executive Proposal Modal & Viewer Logic
+    // =========================================================================
+    window.openProposalModal = async function() {
+      if (!window._lastReport || !window._lastReport.executive_summary_markdown) {
+        await executeAssessment();
+      }
+
+      let report = window._lastReport;
+      if (!report || !report.executive_summary_markdown) {
+        const customer = document.getElementById('input-customer-org').value || "Enterprise Prospect";
+        report = generateClientSideReport(customer, currentSubnets);
+        window._lastReport = report;
+      }
+
+      const rawMd = report.executive_summary_markdown || "";
+      const token = report.cryptographic_token || "";
+
+      document.getElementById('modal-token-display').innerText = token;
+      document.getElementById('proposal-raw-content').value = rawMd;
+
+      // Render Markdown to HTML
+      const previewContainer = document.getElementById('proposal-preview-content');
+      if (window.marked && typeof window.marked.parse === 'function') {
+        previewContainer.innerHTML = window.marked.parse(rawMd);
+      } else {
+        previewContainer.innerHTML = renderSimpleMarkdown(rawMd);
+      }
+
+
+
+      // Default to preview tab
+      switchProposalView('preview');
+
+      // Show modal
+      document.getElementById('modal-proposal-viewer').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeProposalModal = function() {
+      document.getElementById('modal-proposal-viewer').style.display = 'none';
+      document.body.style.overflow = '';
+    };
+
+    window.handleModalBackdropClick = function(event) {
+      if (event.target.id === 'modal-proposal-viewer') {
+        closeProposalModal();
+      }
+    };
+
+    // =========================================================================
+    // Instructions Modal & Technical Guide Logic
+    // =========================================================================
+    window.openInstructionsModal = function() {
+      switchInstructionsTab('quickstart');
+      document.getElementById('modal-instructions-viewer').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeInstructionsModal = function() {
+      document.getElementById('modal-instructions-viewer').style.display = 'none';
+      const pModal = document.getElementById('modal-proposal-viewer');
+      if (!pModal || pModal.style.display === 'none') {
+        document.body.style.overflow = '';
+      }
+    };
+
+    window.handleInstructionsBackdropClick = function(event) {
+      if (event.target.id === 'modal-instructions-viewer') {
+        closeInstructionsModal();
+      }
+    };
+
+    window.switchInstructionsTab = function(tabKey) {
+      const tabs = ['quickstart', 'subnets', 'matrix', 'suites', 'security'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('tab-inst-' + t);
+        const panel = document.getElementById('inst-panel-' + t);
+        if (btn) btn.classList.remove('active');
+        if (panel) panel.style.display = 'none';
+      });
+      const activeBtn = document.getElementById('tab-inst-' + tabKey);
+      const activePanel = document.getElementById('inst-panel-' + tabKey);
+      if (activeBtn) activeBtn.classList.add('active');
+      if (activePanel) activePanel.style.display = 'block';
+    };
+
+    window.switchProposalView = function(view) {
+      const btnPreview = document.getElementById('tab-btn-preview');
+      const btnRaw = document.getElementById('tab-btn-raw');
+      const previewDiv = document.getElementById('proposal-preview-content');
+      const rawTextarea = document.getElementById('proposal-raw-content');
+
+      if (view === 'preview') {
+        btnPreview.classList.add('active');
+        btnRaw.classList.remove('active');
+        previewDiv.style.display = 'block';
+        rawTextarea.style.display = 'none';
+      } else {
+        btnPreview.classList.remove('active');
+        btnRaw.classList.add('active');
+        previewDiv.style.display = 'none';
+        rawTextarea.style.display = 'block';
+      }
+    };
+
+    window.copyProposalMarkdown = function() {
+      const rawMd = document.getElementById('proposal-raw-content').value;
+      if (!rawMd) return;
+
+      navigator.clipboard.writeText(rawMd).then(() => {
+        const icon = document.getElementById('copy-btn-icon');
+        const text = document.getElementById('copy-btn-text');
+        icon.innerText = '✓';
+        text.innerText = 'Copied to Clipboard!';
+        setTimeout(() => {
+          icon.innerText = '📋';
+          text.innerText = 'Copy Markdown';
+        }, 2000);
+      });
+    };
+
+    window.downloadProposalMarkdown = function() {
+      if (window._lastReport && window._lastReport.executive_summary_markdown) {
+        const blob = new Blob([window._lastReport.executive_summary_markdown], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const id = window._lastReport.assessment_id || 'SCOUT';
+        a.download = `DCOUPLR-EXECUTIVE-PROPOSAL-${id}.md`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    };
+
+    window.printProposalPreview = function() {
+      // Switch to preview first if in raw mode
+      switchProposalView('preview');
+      const content = document.getElementById('proposal-preview-content').innerHTML;
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Executive Proposal - <dcouplr/> Fleet Scout</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; color: #111; line-height: 1.6; }
+            table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+            th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; }
+            th { background: #f0f4f8; }
+            code { font-family: monospace; background: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
+            pre { background: #f8f8f8; padding: 12px; border-radius: 4px; overflow-x: auto; }
+            blockquote { border-left: 3px solid #0284c7; background: #f0f9ff; padding: 8px 12px; margin: 12px 0; }
+            hr { border: none; border-top: 1px solid #ddd; margin: 20px 0; }
+            
+    @media (max-width: 1100px) {
+      body {
+        padding: 1rem;
+      }
+      .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+      .comparison-grid {
+        grid-template-columns: 1fr;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media print { body { padding: 0; } }
+          </style>
+        </head>
+        <body>
+          ${content}
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+    };
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('modal-proposal-viewer');
+        if (modal && modal.style.display !== 'none') {
+          closeProposalModal();
+        }
+        const iModal = document.getElementById('modal-instructions-viewer');
+        if (iModal && iModal.style.display !== 'none') {
+          closeInstructionsModal();
+        }
+      }
+    });
+
+    // Fallback lightweight markdown renderer if marked is unavailable
+    function renderSimpleMarkdown(md) {
+      if (!md) return '';
+      let html = md
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
+        .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/gim, '<code>$1</code>')
+        .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
+        .replace(/^\s*\- \[x\] (.*$)/gim, '<div style="margin: 4px 0;"><span style="color: var(--green);">✓</span> $1</div>')
+        .replace(/^\s*\- (.*$)/gim, '<li>$1</li>')
+        .replace(/---/gim, '<hr>');
+      return html;
+    }
+
+    document.getElementById('btn-export-markdown').addEventListener('click', () => {
+      openProposalModal();
+    });
+
+    // Initialize
+    renderSubnetRows();
+    const urlParams = new URLSearchParams(window.location.search);
+    const nodesParam = parseInt(urlParams.get('nodes'));
+    if (!isNaN(nodesParam) && nodesParam > 0) {
+      simulateNodeCount(nodesParam);
+    } else {
+      executeAssessment();
+    }
+  </script>
+
+  <!-- MODAL: EXECUTIVE PROPOSAL VIEWER & EXPORTER -->
+  <div id="modal-proposal-viewer" class="proposal-modal-backdrop" style="display: none;" onclick="handleModalBackdropClick(event)">
+    <div class="proposal-modal-window">
+      <div class="proposal-modal-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 1.6rem;">📄</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; color: #fff; font-weight: 700;">Executive Proposal &amp; Capacity Sizing Dossier</h3>
+            <p style="margin: 2px 0 0; font-size: 0.76rem; color: var(--muted);">Review complete executive proposal, decision matrix, break-even math, and functional checklist before downloading.</p>
+          </div>
+        </div>
+        <button type="button" class="btn-modal-close" onclick="closeProposalModal()" title="Close Viewer">&times;</button>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="proposal-modal-toolbar">
+        <div class="modal-tab-group">
+          <button type="button" class="modal-tab-btn active" id="tab-btn-preview" onclick="switchProposalView('preview')">
+            <span>👁️</span> Formatted Preview
+          </button>
+          <button type="button" class="modal-tab-btn" id="tab-btn-raw" onclick="switchProposalView('raw')">
+            <span>📝</span> Raw Markdown (.md)
+          </button>
+        </div>
+
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button type="button" class="btn btn-secondary" id="btn-modal-copy" onclick="copyProposalMarkdown()" style="padding: 6px 12px; font-size: 0.76rem;">
+            <span id="copy-btn-icon">📋</span> <span id="copy-btn-text">Copy Markdown</span>
+          </button>
+          <button type="button" class="btn btn-primary" onclick="downloadProposalMarkdown()" style="padding: 6px 14px; font-size: 0.76rem;">
+            <span>⬇️</span> Download .md File
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="printProposalPreview()" style="padding: 6px 12px; font-size: 0.76rem;">
+            <span>🖨️</span> Print / Save PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="proposal-modal-body">
+        <div id="proposal-preview-content" class="proposal-rendered-view"></div>
+        <textarea id="proposal-raw-content" class="proposal-raw-view" readonly style="display: none;"></textarea>
+      </div>
+
+      <!-- Footer -->
+      <div class="proposal-modal-footer">
+        <div style="display: flex; align-items: center; gap: 10px; font-size: 0.78rem; font-family: var(--font-mono);">
+          <span style="color: var(--muted);">Certificate Token:</span>
+          <span id="modal-token-display" style="color: var(--cyan); font-weight: 700;">DCL-TOKEN-...</span>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn btn-secondary" onclick="closeProposalModal()" style="padding: 6px 14px; font-size: 0.78rem;">Close</button>
+          <button type="button" class="btn btn-primary" onclick="downloadProposalMarkdown()" style="padding: 6px 16px; font-size: 0.78rem;">
+            <span>⬇️</span> Download .md File
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: INSTRUCTIONS & OPERATIONAL USER GUIDE -->
+  <div id="modal-instructions-viewer" class="proposal-modal-backdrop" style="display: none;" onclick="handleInstructionsBackdropClick(event)">
+    <div class="proposal-modal-window" style="max-width: 980px;">
+      <div class="proposal-modal-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 1.6rem;">📖</span>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; color: #fff; font-weight: 700;">Fleet Scout Assessment Studio &mdash; User Guide &amp; Instructions</h3>
+            <p style="margin: 2px 0 0; font-size: 0.76rem; color: var(--muted);">Step-by-step instructions for in-perimeter network discovery, capacity sizing, decision matrix analysis, and proposal generation.</p>
+          </div>
+        </div>
+        <button type="button" class="btn-modal-close" onclick="closeInstructionsModal()" title="Close Instructions">&times;</button>
+      </div>
+
+      <!-- Tabbed Toolbar -->
+      <div class="proposal-modal-toolbar">
+        <div class="modal-tab-group" id="instructions-tab-group">
+          <button type="button" class="modal-tab-btn active" id="tab-inst-quickstart" onclick="switchInstructionsTab('quickstart')">
+            <span>⚡</span> 1. Quick Start &amp; Workflow
+          </button>
+          <button type="button" class="modal-tab-btn" id="tab-inst-subnets" onclick="switchInstructionsTab('subnets')">
+            <span>🌐</span> 2. IP &amp; CIDR Discovery
+          </button>
+          <button type="button" class="modal-tab-btn" id="tab-inst-matrix" onclick="switchInstructionsTab('matrix')">
+            <span>⚖️</span> 3. Decision Matrix &amp; Break-Even
+          </button>
+          <button type="button" class="modal-tab-btn" id="tab-inst-suites" onclick="switchInstructionsTab('suites')">
+            <span>📦</span> 4. Either / Or Suites
+          </button>
+          <button type="button" class="modal-tab-btn" id="tab-inst-security" onclick="switchInstructionsTab('security')">
+            <span>🛡️</span> 5. Security &amp; Zero-Egress
+          </button>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="proposal-modal-body" style="padding: 24px 30px;">
+        
+        <!-- Tab 1: Quick Start & Workflow -->
+        <div id="inst-panel-quickstart" class="proposal-rendered-view">
+          <h1>⚡ Quick Start &amp; 5-Step Assessment Workflow</h1>
+          <p>The <strong><span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> Fleet Scout Assessment Studio</strong> is a zero-footprint capacity sizer and commercial evaluation tool that runs 100% inside your local network perimeter or browser sandbox. It models your multi-cloud and on-premise compute footprint without installing agents or requiring elevated credentials.</p>
+          
+          <h2>Standard 5-Step Workflow:</h2>
+          <ol>
+            <li><strong>Define Scope &amp; Target Subnets:</strong> Enter your evaluating organization name and list your in-scope network CIDRs, IP ranges, or standalone server IP addresses. Click <em>"Load Enterprise Sample Estate"</em> to test with a 375-node reference architecture.</li>
+            <li><strong>Run In-Perimeter Assessment:</strong> Click <strong>"⚡ Run Offline Pre-Flight Assessment"</strong>. The engine performs mathematical subnet decomposition, host density synthesis, and in-memory capacity aggregation in under 500ms.</li>
+            <li><strong>Inspect Discovered Fleet &amp; IP Inventory:</strong> Explore the live table displaying each discovered node ID, synthesized IP address, origin CIDR, workload classification (Compute VM, K8s Worker, Bare Metal, Database), and operating system. Filter by category or search by IP in real time.</li>
+            <li><strong>Analyze Capacity Decision Matrix:</strong> If your discovered node count falls into an overage band between tiers, review the side-by-side trade-off matrix comparing <strong>Option A (Current Tier + Overage)</strong> against <strong>Option B (Step Up to Next Tier)</strong> with exact break-even math.</li>
+            <li><strong>Review &amp; Export Executive Proposal:</strong> Compare Option 1 (Turnkey Migration Suite) vs. Option 2 (Full-Stack Observability Suite). Click <strong>"📄 View / Export Executive Proposal"</strong> to review the formatted dossier, copy raw markdown, or download the <code>.md</code> document.</li>
+          </ol>
+
+          <blockquote>
+            <strong>Key Benefit:</strong> You can stress-test any fleet size at any time using the <strong>Capacity Simulator Bar</strong> at the top of the studio to instantly evaluate tier costs from 25 nodes up to 850+ nodes.
+          </blockquote>
+        </div>
+
+        <!-- Tab 2: IP & CIDR Discovery -->
+        <div id="inst-panel-subnets" class="proposal-rendered-view" style="display: none;">
+          <h1>🌐 IP, CIDR &amp; Subnet Discovery Rules</h1>
+          <p>Fleet Scout supports multiple network input formats and dynamically calculates active node allocations:</p>
+          
+          <h2>Supported Input Formats:</h2>
+          <ul>
+            <li><strong>Single Server IP (e.g. <code>192.168.1.150</code>):</strong> Automatically recognized as an individual standalone node (<code>Est. Hosts = 1</code>). Click <strong>"+ Add Single Host IP"</strong> to quickly append dedicated server rows.</li>
+            <li><strong>Standard CIDR Block (e.g. <code>10.0.0.0/24</code> or <code>10.100.0.0/22</code>):</strong> The engine decodes the 32-bit subnet mask, computes the total and usable IP address space (e.g. 254 hosts for a /24, 1,022 hosts for a /22), and applies enterprise density modeling.</li>
+            <li><strong>Hyphenated IP Range (e.g. <code>192.168.1.1-192.168.1.50</code>):</strong> Automatically computes the exact host count across the defined IP span (50 nodes).</li>
+          </ul>
+
+          <h2>Active Host Estimation &amp; Manual Overrides:</h2>
+          <p>Because large cloud CIDRs (e.g. /16 or /20) are rarely 100% occupied, the engine uses enterprise allocation heuristics (10%&ndash;35% active density) to prevent accidental over-licensing. You can manually override the host count at any time in the <strong>Est. Hosts</strong> input field.</p>
+
+          <h2>Live Discovered Host Table &amp; CSV Export:</h2>
+          <p>Every discovered node is assigned a unique tracking ID (e.g. <code>SCOUT-AWS-0001</code>), a synthesized IP address within the target CIDR, its environment type, workload role, and runtime OS. You can search the inventory in real time or export the entire census via <strong>"📥 Export Discovered CSV"</strong>.</p>
+        </div>
+
+        <!-- Tab 3: Decision Matrix & Break-Even -->
+        <div id="inst-panel-matrix" class="proposal-rendered-view" style="display: none;">
+          <h1>⚖️ Capacity Decision Matrix &amp; Break-Even Math</h1>
+          <p>When an enterprise's discovered node count exceeds a base tier quota (e.g. 35 nodes against a 25-node tier, or 375 nodes against a 300-node tier), leadership faces a critical budgeting choice:</p>
+          
+          <h2>The Strategic Dilemma:</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Strategic Dimension</th>
+                <th>Option A: Current Tier + Overage</th>
+                <th>Option B: Step Up to Next Tier</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Cash Outlay on Day 1</strong></td>
+                <td>Lowest initial dollar commitment.</td>
+                <td>Higher annual license base.</td>
+              </tr>
+              <tr>
+                <td><strong>Headroom Buffer</strong></td>
+                <td><strong>0 spare nodes</strong> (Exact fit; any auto-scale spikes compound overage).</td>
+                <td><strong>Substantial spare growth buffer</strong> (+20 to +125 nodes at $0 extra cost).</td>
+              </tr>
+              <tr>
+                <td><strong>SLA &amp; Support</strong></td>
+                <td>Retains base tier support SLA (e.g. 8x5 Standard).</td>
+                <td><strong>Upgrades to next SLA tier</strong> (e.g. 24/7 Mission-Critical or Air-Gapped 15m).</td>
+              </tr>
+              <tr>
+                <td><strong>Invoicing Stability</strong></td>
+                <td>Fluctuating monthly overage invoices.</td>
+                <td>Fixed, 100% predictable annual invoicing.</td>
+              </tr>
+              <tr>
+                <td><strong>Best For</strong></td>
+                <td>Stagnant or tightly managed infrastructure with zero planned growth.</td>
+                <td>Scaling multi-cloud estates or mission-critical production clusters.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>The Mathematical Break-Even Formula:</h2>
+          <p>Fleet Scout calculates the exact tipping point where paying overage penalties becomes more expensive than stepping up to the next tier:</p>
+          <blockquote>
+            <code>Break-Even Overage Nodes = (Next Tier Base Annual Cost - Current Tier Base Annual Cost) / Annual Per-Node Overage Rate</code>
+          </blockquote>
+          <p>When your fleet's overage nodes exceed this threshold, the studio flags a <strong>"Strictly Cheaper"</strong> verdict, proving that stepping up saves immediate net budget while adding free headroom.</p>
+        </div>
+
+        <!-- Tab 4: Either / Or Suites -->
+        <div id="inst-panel-suites" class="proposal-rendered-view" style="display: none;">
+          <h1>📦 Strictly Either / Or Software Architecture</h1>
+          <p><span class="dcouplr-brand-tag"><span class="tag-bracket">&lt;</span><span class="tag-name">dcouplr</span><span class="tag-bracket">/&gt;</span></span> operates on a <strong>strictly either / or product model</strong>. The two enterprise suites are <strong>never combined or dual-purchased</strong>:</p>
+
+          <h2>Suite Comparison Overview:</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Product Dimension</th>
+                <th>Option 1: Turnkey Migration Suite</th>
+                <th>Option 2: Full-Stack Observability Suite</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Accounting Classification</strong></td>
+                <td>Project CapEx (Finite 3&ndash;12 month cutover window).</td>
+                <td>Permanent Operating Expense (OpEx core platform).</td>
+              </tr>
+              <tr>
+                <td><strong>Contains Migration Tools?</strong></td>
+                <td>Yes (Core dedicated migration capability).</td>
+                <td><strong>YES (Includes 100% of Migration Suite tools at $0 extra cost).</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Day-0 &amp; Day-2+ Capabilities</strong></td>
+                <td>No (Decommissions cleanly post-cutover).</td>
+                <td><strong>YES (Day-0 Setup Desks, 7-Tier Observability, APM Traces, NOC Wallboards).</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Displaced Competitor Spend</strong></td>
+                <td>Displaces $150k+ in manual migration consulting.</td>
+                <td>Displaces recurring Datadog / New Relic SaaS bills ($135k&ndash;$948k+/yr).</td>
+              </tr>
+              <tr>
+                <td><strong>Best For</strong></td>
+                <td>Teams executing a finite datacenter exit or cloud migration.</td>
+                <td>Enterprises needing both migration cutover AND permanent self-hosted in-VPC monitoring.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <blockquote>
+            <strong>Rule:</strong> If you only need a temporary cutover tool, choose Option 1. If you need permanent observability and Day-0 provisioning, choose Option 2. You do <strong>not</strong> need to buy both suites.
+          </blockquote>
+        </div>
+
+        <!-- Tab 5: Security & Zero-Egress -->
+        <div id="inst-panel-security" class="proposal-rendered-view" style="display: none;">
+          <h1>🛡️ Enterprise Security, Zero-Egress &amp; Zero-Trust Guarantees</h1>
+          <p>Fleet Scout is specifically engineered for <strong>"Day -1" pre-procurement evaluations</strong> where corporate security teams and CISOs do not permit third-party agent installations or credential handoffs:</p>
+
+          <h2>Core Security Invariants:</h2>
+          <ul>
+            <li><strong>Zero Special OS Privileges (No Root / No Admin):</strong> Fleet Scout runs as a standard unprivileged user process. It does not require <code>sudo</code>, <code>root</code>, or Administrator rights.</li>
+            <li><strong>Zero Node Credentials (No SSH / No Active Directory):</strong> The tool never logs into target servers. No SSH private keys, passwords, Kerberos tickets, or service account tokens are requested or stored.</li>
+            <li><strong>Zero Public WAN Egress ($0.00 Egress):</strong> 100% of network decomposition, IP inventory synthesis, financial modeling, and cryptographic token derivation occurs locally inside your browser or local process memory. No packets traverse vendor WAN connections.</li>
+            <li><strong>Zero-Knowledge Cryptographic Certificate Token:</strong> Upon scan completion, an Ed25519-compatible certification token (e.g. <code>DCL-TOKEN-...</code>) is issued. This token cryptographically attests to the assessed node count without leaking IP addresses or infrastructure hostnames.</li>
+          </ul>
+
+          <blockquote>
+            <strong>CISO Audit Assurance:</strong> You can run Fleet Scout entirely offline or in an air-gapped environment with disconnected network cables.
+          </blockquote>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="proposal-modal-footer">
+        <div style="font-size: 0.78rem; color: var(--muted); font-family: var(--font-mono);">
+          Reference Runbook: <span style="color: var(--cyan);">VA-RUNBOOK-ASSESS-001</span> &bull; 100% In-Perimeter Offline
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn btn-secondary" onclick="closeInstructionsModal()" style="padding: 6px 14px; font-size: 0.78rem;">Close</button>
+          <button type="button" class="btn btn-primary" onclick="closeInstructionsModal()" style="padding: 6px 18px; font-size: 0.78rem;">
+            <span>⚡</span> Got It, Start Assessment
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-COMPANYADMIN-DATA-RETENTION-BACKUP-AND-DISASTER-RECOVERY.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-COMPANYADMIN-DATA-RETENTION-BACKUP-AND-DISASTER-RECOVERY.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-COMPANYADMIN-DATA-RETENTION-BACKUP-AND-DISASTER-RECOVERY.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="customer-enterprise-runbook-in-vpc-data-retention-backup-disaster-recovery">Customer Enterprise Runbook: In-VPC Data Retention, Backup &amp; Disaster Recovery</h1>
+<p><strong>Document Classification:</strong> Customer Standard Operating Procedure (SOP) • In-Perimeter Storage Operations<br />
+<strong>Runbook ID:</strong> <code>RUN-COMPANYADMIN-RETENTION-001</code><br />
+<strong>Governing Baseline:</strong> Enterprise Data Lifecycle Standard &amp; NIST SP 800-209<br />
+<strong>Target Roles:</strong> Customer Observability Administrators (<code>Observability-Admins</code>), Enterprise DBAs, Infrastructure Leads<br />
+<strong>Applicability:</strong> In-VPC Customer Enterprise Instance (<code>data/vpc_telemetry.db</code> / <code>data/backups/</code>)<br />
+<strong>Portal Scope:</strong> Customer Company Administrator Console (<code>/companyadmin</code>)<br />
+<strong>Version:</strong> 4.3.0-ENTERPRISE • Approved for Customer Production</p>
+<hr />
+<h2 id="1-scope-purpose">1. Scope &amp; Purpose</h2>
+<p>This operational runbook provides step-by-step Standard Operating Procedures (SOPs) for customer enterprise administrators and infrastructure leads managing <strong>Component Retention Policies</strong>, executing <strong>Hot Zero-Downtime Database Snapshots</strong>, automating <strong>Backup Rotation</strong>, and conducting <strong>Point-in-Time Disaster Recovery (DR)</strong> for <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>.</p>
+<p>All procedures in this runbook execute <strong>100% inside your private corporate VPC boundary</strong> without external network dependencies and with <strong>Zero-WAN Egress ($0.00)</strong>.</p>
+<hr />
+<h2 id="2-in-vpc-component-retention-architecture">2. In-VPC Component Retention Architecture</h2>
+<p>Retention policies govern how long telemetry streams, application traces, log buffers, and system audit events remain stored before automatic sliding-window pruning. All policies persist directly in your in-perimeter SQLite Single Source of Truth (<code>system_retention_policies</code>).</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+-------------------------------------------------------------------------------------------------------+
+|                                    IN-VPC RETENTION POLICY BASELINE                                   |
++------------------------------+-------------------------+--------------------+-------------------------+
+| Component                    | Category                | Default Retention  | Storage Quota Limit     |
++------------------------------+-------------------------+--------------------+-------------------------+
+| In-VPC APM Traces            | Observability &amp; Traces  | 14 Days            | 15.0 GB (100% Err / 20%)|
+| High-Throughput Logs         | Observability &amp; Logs    | 30 Days            | 30.0 GB (INFO+ Level)   |
+| Full-Stack Metrics           | Observability &amp; Metrics | 90 Days            | 25.0 GB (Multi-Res)     |
+| Compiler Studio AST          | Compiler &amp; Code Cache   | 30 Days            | 10.0 GB                 |
+| Outside-VPC Hubs Telemetry   | Perimeter &amp; Kiosk       | 14 Days            | 5.0 GB                  |
+| Customer SSoT Database (WAL) | Core Database &amp; Census  | 90 Days            | 10.0 GB                 |
+| Security &amp; Audit Trail Logs  | Security &amp; Compliance   | 365 Days (Locked)  | 10.0 GB (SOC 2 Invariant|
++------------------------------+-------------------------+--------------------+-------------------------+
+</code></pre></div>
+<hr />
+<h2 id="3-standard-operating-procedures-sops-via-companyadmin">3. Standard Operating Procedures (SOPs) via <code>/companyadmin</code></h2>
+<p>All retention, backup, and storage operations are accessible directly through the Customer Company Administrator Console:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">http://localhost:8000/companyadmin
+</code></pre></div>
+<h3 id="sop-01-updating-component-retention-policies-via-company-admin-ui">SOP-01: Updating Component Retention Policies via Company Admin UI</h3>
+<ol>
+<li>Open your browser and navigate to the Customer Company Administrator Console:<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">http://localhost:8000/companyadmin
+</code></pre></div>
+</li>
+<li>Click the <strong><code>⚙️ Retention Policies</code></strong> tab (Tab 2) in the top navigation bar.</li>
+<li>In the <strong>Component Retention Policies</strong> editor, locate the target component (e.g., <code>In-VPC APM Traces</code> or <code>High-Throughput Logs</code>).</li>
+<li>Modify the operational thresholds:
+<ul>
+<li><strong>Retention Duration (Days):</strong> The sliding evaluation window in days before record eviction.</li>
+<li><strong>Max Storage Quota (GB):</strong> Maximum disk allocation before forced FIFO roll-off.</li>
+<li><strong>Sampling Rate (%):</strong> Ingestion sampling density for high-throughput traces.</li>
+</ul>
+</li>
+<li>Click <strong>💾 Save &amp; Persist Retention Configuration</strong>.</li>
+<li>Verify that the badge indicates <strong>PERSISTED IN SSoT</strong> and changes take effect immediately with zero service restart.</li>
+</ol>
+<h3 id="sop-02-executing-on-demand-in-perimeter-retention-pruning">SOP-02: Executing On-Demand In-Perimeter Retention Pruning</h3>
+<ol>
+<li>Navigate to <a href="http://localhost:8000/companyadmin"><code>http://localhost:8000/companyadmin</code></a> and select Tab 2 (<strong><code>⚙️ Retention Policies</code></strong>).</li>
+<li>Click the <strong>⚡ Run Retention Pruning Now</strong> button in the actions toolbar.</li>
+<li>The platform executes a sliding-window eviction across expired traces, log buffers, and downsampled metric rolls:
+<ul>
+<li>Evaluates timestamps against configured policy limits.</li>
+<li>Reclaims database pages in SQLite WAL mode without locking read or write transactions.</li>
+</ul>
+</li>
+<li>A notification toast displays the total number of reclaimed records and freed disk bytes.</li>
+</ol>
+<h3 id="sop-03-generating-a-zero-downtime-hot-database-snapshot-vacuum-into">SOP-03: Generating a Zero-Downtime Hot Database Snapshot (<code>VACUUM INTO</code>)</h3>
+<ol>
+<li>In <a href="http://localhost:8000/companyadmin"><code>http://localhost:8000/companyadmin</code></a>, click the <strong><code>💾 Backup &amp; Restore</code></strong> tab (Tab 3).</li>
+<li>Under the <strong>Backend Database Backup &amp; Restore</strong> section, click <strong>🗄️ Create Hot SQLite Snapshot (VACUUM INTO)</strong>.</li>
+<li>The embedded database engine executes an atomic <code>VACUUM INTO</code> command:
+<ul>
+<li><strong>Zero Ingestion Interruption:</strong> Telemetry ingestion continues unpaused in WAL mode.</li>
+<li><strong>Cryptographic Integrity:</strong> Computes SHA-256 checksum and executes <code>PRAGMA quick_check</code> verification on the generated snapshot file.</li>
+<li><strong>Storage Destination:</strong> Persisted locally to <code>data/backups/backend_backup_&lt;timestamp&gt;.db</code>.</li>
+</ul>
+</li>
+<li>Confirm the new snapshot appears in the <strong>Available Backup Snapshots</strong> inventory table with file size and timestamp.</li>
+</ol>
+<h3 id="sop-04-generating-an-application-configuration-backup">SOP-04: Generating an Application Configuration Backup</h3>
+<ol>
+<li>In <a href="http://localhost:8000/companyadmin"><code>http://localhost:8000/companyadmin</code></a>, click the <strong><code>💾 Backup &amp; Restore</code></strong> tab (Tab 3).</li>
+<li>Locate the <strong>Application Configuration</strong> card.</li>
+<li>Click <strong>💾 Backup Application Configuration</strong>.</li>
+<li>The system exports all retention policies, backup schedule cron definitions, local RBAC user census, and alert threshold configurations into a signed JSON bundle (<code>app_config_backup_&lt;timestamp&gt;.json</code>).</li>
+<li>Download or mirror this file into your enterprise GitOps or backup archive.</li>
+</ol>
+<h3 id="sop-05-restoring-the-database-from-a-verified-backup-snapshot">SOP-05: Restoring the Database from a Verified Backup Snapshot</h3>
+<blockquote>
+<p>[!WARNING]
+Restoring a database snapshot replaces the active SQLite file. An automated pre-restore safety snapshot is created automatically before replacement to protect against accidental rollback.</p>
+</blockquote>
+<ol>
+<li>Navigate to <a href="http://localhost:8000/companyadmin"><code>http://localhost:8000/companyadmin</code></a> and open Tab 3 (<strong><code>💾 Backup &amp; Restore</code></strong>).</li>
+<li>In the <strong>Available Backup Snapshots</strong> table, locate the desired snapshot.</li>
+<li>Click the <strong>Restore</strong> button on the snapshot row.</li>
+<li>Review the confirmation dialog showing snapshot ID, file size, and creation timestamp.</li>
+<li>Confirm the action. The automated restore engine:
+<ul>
+<li>Validates snapshot binary integrity via <code>PRAGMA quick_check</code>.</li>
+<li>Creates a safety snapshot of the active database (<code>data/backups/pre_restore_safety_&lt;timestamp&gt;.db</code>).</li>
+<li>Flushes pending WAL write frames with <code>PRAGMA wal_checkpoint(TRUNCATE)</code>.</li>
+<li>Atomically replaces <code>data/vpc_telemetry.db</code> with the verified snapshot.</li>
+<li>Reloads in-memory telemetry and topology census structures.</li>
+</ul>
+</li>
+<li>Verify that the node census and VPC inventory show normal operational counts.</li>
+</ol>
+<h3 id="sop-06-storage-health-database-maintenance">SOP-06: Storage Health &amp; Database Maintenance</h3>
+<ol>
+<li>In <a href="http://localhost:8000/companyadmin"><code>http://localhost:8000/companyadmin</code></a>, click the <strong><code>🧹 Maintenance &amp; Storage</code></strong> tab (Tab 4).</li>
+<li>Execute proactive maintenance actions as needed:
+<ul>
+<li><strong>🧹 Flush WAL Checkpoint (TRUNCATE):</strong> Flushes pending WAL frames into the main database file, keeping <code>-wal</code> file sizes minimal.</li>
+<li><strong>⚡ Run Database Compaction (VACUUM):</strong> Defragments B-tree storage pages and reclaims disk space from deleted records.</li>
+<li><strong>🔍 Run Integrity Check:</strong> Executes <code>PRAGMA integrity_check</code> and <code>PRAGMA foreign_key_check</code> to guarantee database consistency.</li>
+</ul>
+</li>
+<li>Review the <strong>Physical Storage Health</strong> gauges to monitor disk usage across <code>/data</code> volumes.</li>
+</ol>
+<hr />
+<h2 id="4-in-vpc-api-automation-reference-for-cicd">4. In-VPC API Automation Reference for CI/CD</h2>
+<p>All retention and backup operations can be orchestrated locally via shell scripts, cron jobs, or internal pipelines:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># 1. Fetch current component retention policies
+curl -s http://localhost:8000/v1/admin/retention-policies | jq .
+
+# 2. Update APM traces retention to 21 days
+curl -X PUT http://localhost:8000/v1/admin/retention-policies/apm_traces \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;retention_days&quot;: 21, &quot;max_storage_gb&quot;: 20.0}'
+
+# 3. Trigger immediate retention pruning
+curl -X POST http://localhost:8000/v1/admin/retention-policies/prune
+
+# 4. Create a hot backend database snapshot
+curl -X POST http://localhost:8000/v1/admin/backups/create \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;target_type&quot;: &quot;backend_database&quot;, &quot;name&quot;: &quot;Nightly Automated Snapshot&quot;}'
+
+# 5. Flush WAL Checkpoint
+curl -X POST http://localhost:8000/v1/admin/maintenance/wal-checkpoint
+
+# 6. Retrieve storage health telemetry
+curl -s http://localhost:8000/v1/admin/maintenance/storage | jq .
+</code></pre></div>
+<hr />
+<h2 id="5-compliance-disaster-recovery-verification-checklist">5. Compliance &amp; Disaster Recovery Verification Checklist</h2>
+<ul>
+<li>[ ] All 7 component retention policies configured and verified in <code>http://localhost:8000/companyadmin</code>.</li>
+<li>[ ] Daily automated backend backup schedule active (<code>0 2 * * *</code>) with retention count &gt;= 14 snapshots.</li>
+<li>[ ] Application configuration backup verified with SHA-256 checksum and stored in offsite vault.</li>
+<li>[ ] Disaster recovery restore workflow dry-run tested on staging environment within the past 90 days.</li>
+<li>[ ] Physical disk consumption monitored and alerted prior to 85% capacity threshold.</li>
+<li>[ ] Audit logs validated for zero tampering and 365-day SOC 2 compliance retention.</li>
+</ul>
+<hr />
+<p><em>Authorized for Customer In-VPC Operations • Document Reference <code>RUN-COMPANYADMIN-RETENTION-001</code>.</em></p>
+</div>
+      <pre id="raw-view"><code># Customer Enterprise Runbook: In-VPC Data Retention, Backup &amp; Disaster Recovery
+**Document Classification:** Customer Standard Operating Procedure (SOP) • In-Perimeter Storage Operations  
+**Runbook ID:** `RUN-COMPANYADMIN-RETENTION-001`  
+**Governing Baseline:** Enterprise Data Lifecycle Standard &amp; NIST SP 800-209  
+**Target Roles:** Customer Observability Administrators (`Observability-Admins`), Enterprise DBAs, Infrastructure Leads  
+**Applicability:** In-VPC Customer Enterprise Instance (`data/vpc_telemetry.db` / `data/backups/`)  
+**Portal Scope:** Customer Company Administrator Console (`/companyadmin`)  
+**Version:** 4.3.0-ENTERPRISE • Approved for Customer Production  
+
+---
+
+## 1. Scope &amp; Purpose
+
+This operational runbook provides step-by-step Standard Operating Procedures (SOPs) for customer enterprise administrators and infrastructure leads managing **Component Retention Policies**, executing **Hot Zero-Downtime Database Snapshots**, automating **Backup Rotation**, and conducting **Point-in-Time Disaster Recovery (DR)** for `&lt;dcouplr/&gt;`.
+
+All procedures in this runbook execute **100% inside your private corporate VPC boundary** without external network dependencies and with **Zero-WAN Egress ($0.00)**. 
+
+---
+
+## 2. In-VPC Component Retention Architecture
+
+Retention policies govern how long telemetry streams, application traces, log buffers, and system audit events remain stored before automatic sliding-window pruning. All policies persist directly in your in-perimeter SQLite Single Source of Truth (`system_retention_policies`).
+
+```
++-------------------------------------------------------------------------------------------------------+
+|                                    IN-VPC RETENTION POLICY BASELINE                                   |
++------------------------------+-------------------------+--------------------+-------------------------+
+| Component                    | Category                | Default Retention  | Storage Quota Limit     |
++------------------------------+-------------------------+--------------------+-------------------------+
+| In-VPC APM Traces            | Observability &amp; Traces  | 14 Days            | 15.0 GB (100% Err / 20%)|
+| High-Throughput Logs         | Observability &amp; Logs    | 30 Days            | 30.0 GB (INFO+ Level)   |
+| Full-Stack Metrics           | Observability &amp; Metrics | 90 Days            | 25.0 GB (Multi-Res)     |
+| Compiler Studio AST          | Compiler &amp; Code Cache   | 30 Days            | 10.0 GB                 |
+| Outside-VPC Hubs Telemetry   | Perimeter &amp; Kiosk       | 14 Days            | 5.0 GB                  |
+| Customer SSoT Database (WAL) | Core Database &amp; Census  | 90 Days            | 10.0 GB                 |
+| Security &amp; Audit Trail Logs  | Security &amp; Compliance   | 365 Days (Locked)  | 10.0 GB (SOC 2 Invariant|
++------------------------------+-------------------------+--------------------+-------------------------+
+```
+
+---
+
+## 3. Standard Operating Procedures (SOPs) via `/companyadmin`
+
+All retention, backup, and storage operations are accessible directly through the Customer Company Administrator Console:
+```text
+http://localhost:8000/companyadmin
+```
+
+### SOP-01: Updating Component Retention Policies via Company Admin UI
+
+1. Open your browser and navigate to the Customer Company Administrator Console:
+   ```text
+   http://localhost:8000/companyadmin
+   ```
+2. Click the **`⚙️ Retention Policies`** tab (Tab 2) in the top navigation bar.
+3. In the **Component Retention Policies** editor, locate the target component (e.g., `In-VPC APM Traces` or `High-Throughput Logs`).
+4. Modify the operational thresholds:
+   - **Retention Duration (Days):** The sliding evaluation window in days before record eviction.
+   - **Max Storage Quota (GB):** Maximum disk allocation before forced FIFO roll-off.
+   - **Sampling Rate (%):** Ingestion sampling density for high-throughput traces.
+5. Click **💾 Save &amp; Persist Retention Configuration**.
+6. Verify that the badge indicates **PERSISTED IN SSoT** and changes take effect immediately with zero service restart.
+
+### SOP-02: Executing On-Demand In-Perimeter Retention Pruning
+
+1. Navigate to [`http://localhost:8000/companyadmin`](http://localhost:8000/companyadmin) and select Tab 2 (**`⚙️ Retention Policies`**).
+2. Click the **⚡ Run Retention Pruning Now** button in the actions toolbar.
+3. The platform executes a sliding-window eviction across expired traces, log buffers, and downsampled metric rolls:
+   - Evaluates timestamps against configured policy limits.
+   - Reclaims database pages in SQLite WAL mode without locking read or write transactions.
+4. A notification toast displays the total number of reclaimed records and freed disk bytes.
+
+### SOP-03: Generating a Zero-Downtime Hot Database Snapshot (`VACUUM INTO`)
+
+1. In [`http://localhost:8000/companyadmin`](http://localhost:8000/companyadmin), click the **`💾 Backup &amp; Restore`** tab (Tab 3).
+2. Under the **Backend Database Backup &amp; Restore** section, click **🗄️ Create Hot SQLite Snapshot (VACUUM INTO)**.
+3. The embedded database engine executes an atomic `VACUUM INTO` command:
+   - **Zero Ingestion Interruption:** Telemetry ingestion continues unpaused in WAL mode.
+   - **Cryptographic Integrity:** Computes SHA-256 checksum and executes `PRAGMA quick_check` verification on the generated snapshot file.
+   - **Storage Destination:** Persisted locally to `data/backups/backend_backup_&lt;timestamp&gt;.db`.
+4. Confirm the new snapshot appears in the **Available Backup Snapshots** inventory table with file size and timestamp.
+
+### SOP-04: Generating an Application Configuration Backup
+
+1. In [`http://localhost:8000/companyadmin`](http://localhost:8000/companyadmin), click the **`💾 Backup &amp; Restore`** tab (Tab 3).
+2. Locate the **Application Configuration** card.
+3. Click **💾 Backup Application Configuration**.
+4. The system exports all retention policies, backup schedule cron definitions, local RBAC user census, and alert threshold configurations into a signed JSON bundle (`app_config_backup_&lt;timestamp&gt;.json`).
+5. Download or mirror this file into your enterprise GitOps or backup archive.
+
+### SOP-05: Restoring the Database from a Verified Backup Snapshot
+
+&gt; [!WARNING]
+&gt; Restoring a database snapshot replaces the active SQLite file. An automated pre-restore safety snapshot is created automatically before replacement to protect against accidental rollback.
+
+1. Navigate to [`http://localhost:8000/companyadmin`](http://localhost:8000/companyadmin) and open Tab 3 (**`💾 Backup &amp; Restore`**).
+2. In the **Available Backup Snapshots** table, locate the desired snapshot.
+3. Click the **Restore** button on the snapshot row.
+4. Review the confirmation dialog showing snapshot ID, file size, and creation timestamp.
+5. Confirm the action. The automated restore engine:
+   - Validates snapshot binary integrity via `PRAGMA quick_check`.
+   - Creates a safety snapshot of the active database (`data/backups/pre_restore_safety_&lt;timestamp&gt;.db`).
+   - Flushes pending WAL write frames with `PRAGMA wal_checkpoint(TRUNCATE)`.
+   - Atomically replaces `data/vpc_telemetry.db` with the verified snapshot.
+   - Reloads in-memory telemetry and topology census structures.
+6. Verify that the node census and VPC inventory show normal operational counts.
+
+### SOP-06: Storage Health &amp; Database Maintenance
+
+1. In [`http://localhost:8000/companyadmin`](http://localhost:8000/companyadmin), click the **`🧹 Maintenance &amp; Storage`** tab (Tab 4).
+2. Execute proactive maintenance actions as needed:
+   - **🧹 Flush WAL Checkpoint (TRUNCATE):** Flushes pending WAL frames into the main database file, keeping `-wal` file sizes minimal.
+   - **⚡ Run Database Compaction (VACUUM):** Defragments B-tree storage pages and reclaims disk space from deleted records.
+   - **🔍 Run Integrity Check:** Executes `PRAGMA integrity_check` and `PRAGMA foreign_key_check` to guarantee database consistency.
+3. Review the **Physical Storage Health** gauges to monitor disk usage across `/data` volumes.
+
+---
+
+## 4. In-VPC API Automation Reference for CI/CD
+
+All retention and backup operations can be orchestrated locally via shell scripts, cron jobs, or internal pipelines:
+
+```bash
+# 1. Fetch current component retention policies
+curl -s http://localhost:8000/v1/admin/retention-policies | jq .
+
+# 2. Update APM traces retention to 21 days
+curl -X PUT http://localhost:8000/v1/admin/retention-policies/apm_traces \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;retention_days&quot;: 21, &quot;max_storage_gb&quot;: 20.0}&#x27;
+
+# 3. Trigger immediate retention pruning
+curl -X POST http://localhost:8000/v1/admin/retention-policies/prune
+
+# 4. Create a hot backend database snapshot
+curl -X POST http://localhost:8000/v1/admin/backups/create \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;target_type&quot;: &quot;backend_database&quot;, &quot;name&quot;: &quot;Nightly Automated Snapshot&quot;}&#x27;
+
+# 5. Flush WAL Checkpoint
+curl -X POST http://localhost:8000/v1/admin/maintenance/wal-checkpoint
+
+# 6. Retrieve storage health telemetry
+curl -s http://localhost:8000/v1/admin/maintenance/storage | jq .
+```
+
+---
+
+## 5. Compliance &amp; Disaster Recovery Verification Checklist
+
+- [ ] All 7 component retention policies configured and verified in `http://localhost:8000/companyadmin`.
+- [ ] Daily automated backend backup schedule active (`0 2 * * *`) with retention count &gt;= 14 snapshots.
+- [ ] Application configuration backup verified with SHA-256 checksum and stored in offsite vault.
+- [ ] Disaster recovery restore workflow dry-run tested on staging environment within the past 90 days.
+- [ ] Physical disk consumption monitored and alerted prior to 85% capacity threshold.
+- [ ] Audit logs validated for zero tampering and 365-day SOC 2 compliance retention.
+
+---
+*Authorized for Customer In-VPC Operations • Document Reference `RUN-COMPANYADMIN-RETENTION-001`.*
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># Customer Enterprise Runbook: In-VPC Data Retention, Backup &amp; Disaster Recovery
+**Document Classification:** Customer Standard Operating Procedure (SOP) • In-Perimeter Storage Operations  
+**Runbook ID:** `RUN-COMPANYADMIN-RETENTION-001`  
+**Governing Baseline:** Enterprise Data Lifecycle Standard &amp; NIST SP 800-209  
+**Target Roles:** Customer Observability Administrators (`Observability-Admins`), Enterprise DBAs, Infrastructure Leads  
+**Applicability:** In-VPC Customer Enterprise Instance (`data/vpc_telemetry.db` / `data/backups/`)  
+**Portal Scope:** Customer Company Administrator Console (`/companyadmin`)  
+**Version:** 4.3.0-ENTERPRISE • Approved for Customer Production  
+
+---
+
+## 1. Scope &amp; Purpose
+
+This operational runbook provides step-by-step Standard Operating Procedures (SOPs) for customer enterprise administrators and infrastructure leads managing **Component Retention Policies**, executing **Hot Zero-Downtime Database Snapshots**, automating **Backup Rotation**, and conducting **Point-in-Time Disaster Recovery (DR)** for `&lt;dcouplr/&gt;`.
+
+All procedures in this runbook execute **100% inside your private corporate VPC boundary** without external network dependencies and with **Zero-WAN Egress ($0.00)**. 
+
+---
+
+## 2. In-VPC Component Retention Architecture
+
+Retention policies govern how long telemetry streams, application traces, log buffers, and system audit events remain stored before automatic sliding-window pruning. All policies persist directly in your in-perimeter SQLite Single Source of Truth (`system_retention_policies`).
+
+```
++-------------------------------------------------------------------------------------------------------+
+|                                    IN-VPC RETENTION POLICY BASELINE                                   |
++------------------------------+-------------------------+--------------------+-------------------------+
+| Component                    | Category                | Default Retention  | Storage Quota Limit     |
++------------------------------+-------------------------+--------------------+-------------------------+
+| In-VPC APM Traces            | Observability &amp; Traces  | 14 Days            | 15.0 GB (100% Err / 20%)|
+| High-Throughput Logs         | Observability &amp; Logs    | 30 Days            | 30.0 GB (INFO+ Level)   |
+| Full-Stack Metrics           | Observability &amp; Metrics | 90 Days            | 25.0 GB (Multi-Res)     |
+| Compiler Studio AST          | Compiler &amp; Code Cache   | 30 Days            | 10.0 GB                 |
+| Outside-VPC Hubs Telemetry   | Perimeter &amp; Kiosk       | 14 Days            | 5.0 GB                  |
+| Customer SSoT Database (WAL) | Core Database &amp; Census  | 90 Days            | 10.0 GB                 |
+| Security &amp; Audit Trail Logs  | Security &amp; Compliance   | 365 Days (Locked)  | 10.0 GB (SOC 2 Invariant|
++------------------------------+-------------------------+--------------------+-------------------------+
+```
+
+---
+
+## 3. Standard Operating Procedures (SOPs) via `/companyadmin`
+
+All retention, backup, and storage operations are accessible directly through the Customer Company Administrator Console:
+```text
+http://localhost:8000/companyadmin
+```
+
+### SOP-01: Updating Component Retention Policies via Company Admin UI
+
+1. Open your browser and navigate to the Customer Company Administrator Console:
+   ```text
+   http://localhost:8000/companyadmin
+   ```
+2. Click the **`⚙️ Retention Policies`** tab (Tab 2) in the top navigation bar.
+3. In the **Component Retention Policies** editor, locate the target component (e.g., `In-VPC APM Traces` or `High-Throughput Logs`).
+4. Modify the operational thresholds:
+   - **Retention Duration (Days):** The sliding evaluation window in days before record eviction.
+   - **Max Storage Quota (GB):** Maximum disk allocation before forced FIFO roll-off.
+   - **Sampling Rate (%):** Ingestion sampling density for high-throughput traces.
+5. Click **💾 Save &amp; Persist Retention Configuration**.
+6. Verify that the badge indicates **PERSISTED IN SSoT** and changes take effect immediately with zero service restart.
+
+### SOP-02: Executing On-Demand In-Perimeter Retention Pruning
+
+1. Navigate to [`http://localhost:8000/companyadmin`](http://localhost:8000/companyadmin) and select Tab 2 (**`⚙️ Retention Policies`**).
+2. Click the **⚡ Run Retention Pruning Now** button in the actions toolbar.
+3. The platform executes a sliding-window eviction across expired traces, log buffers, and downsampled metric rolls:
+   - Evaluates timestamps against configured policy limits.
+   - Reclaims database pages in SQLite WAL mode without locking read or write transactions.
+4. A notification toast displays the total number of reclaimed records and freed disk bytes.
+
+### SOP-03: Generating a Zero-Downtime Hot Database Snapshot (`VACUUM INTO`)
+
+1. In [`http://localhost:8000/companyadmin`](http://localhost:8000/companyadmin), click the **`💾 Backup &amp; Restore`** tab (Tab 3).
+2. Under the **Backend Database Backup &amp; Restore** section, click **🗄️ Create Hot SQLite Snapshot (VACUUM INTO)**.
+3. The embedded database engine executes an atomic `VACUUM INTO` command:
+   - **Zero Ingestion Interruption:** Telemetry ingestion continues unpaused in WAL mode.
+   - **Cryptographic Integrity:** Computes SHA-256 checksum and executes `PRAGMA quick_check` verification on the generated snapshot file.
+   - **Storage Destination:** Persisted locally to `data/backups/backend_backup_&lt;timestamp&gt;.db`.
+4. Confirm the new snapshot appears in the **Available Backup Snapshots** inventory table with file size and timestamp.
+
+### SOP-04: Generating an Application Configuration Backup
+
+1. In [`http://localhost:8000/companyadmin`](http://localhost:8000/companyadmin), click the **`💾 Backup &amp; Restore`** tab (Tab 3).
+2. Locate the **Application Configuration** card.
+3. Click **💾 Backup Application Configuration**.
+4. The system exports all retention policies, backup schedule cron definitions, local RBAC user census, and alert threshold configurations into a signed JSON bundle (`app_config_backup_&lt;timestamp&gt;.json`).
+5. Download or mirror this file into your enterprise GitOps or backup archive.
+
+### SOP-05: Restoring the Database from a Verified Backup Snapshot
+
+&gt; [!WARNING]
+&gt; Restoring a database snapshot replaces the active SQLite file. An automated pre-restore safety snapshot is created automatically before replacement to protect against accidental rollback.
+
+1. Navigate to [`http://localhost:8000/companyadmin`](http://localhost:8000/companyadmin) and open Tab 3 (**`💾 Backup &amp; Restore`**).
+2. In the **Available Backup Snapshots** table, locate the desired snapshot.
+3. Click the **Restore** button on the snapshot row.
+4. Review the confirmation dialog showing snapshot ID, file size, and creation timestamp.
+5. Confirm the action. The automated restore engine:
+   - Validates snapshot binary integrity via `PRAGMA quick_check`.
+   - Creates a safety snapshot of the active database (`data/backups/pre_restore_safety_&lt;timestamp&gt;.db`).
+   - Flushes pending WAL write frames with `PRAGMA wal_checkpoint(TRUNCATE)`.
+   - Atomically replaces `data/vpc_telemetry.db` with the verified snapshot.
+   - Reloads in-memory telemetry and topology census structures.
+6. Verify that the node census and VPC inventory show normal operational counts.
+
+### SOP-06: Storage Health &amp; Database Maintenance
+
+1. In [`http://localhost:8000/companyadmin`](http://localhost:8000/companyadmin), click the **`🧹 Maintenance &amp; Storage`** tab (Tab 4).
+2. Execute proactive maintenance actions as needed:
+   - **🧹 Flush WAL Checkpoint (TRUNCATE):** Flushes pending WAL frames into the main database file, keeping `-wal` file sizes minimal.
+   - **⚡ Run Database Compaction (VACUUM):** Defragments B-tree storage pages and reclaims disk space from deleted records.
+   - **🔍 Run Integrity Check:** Executes `PRAGMA integrity_check` and `PRAGMA foreign_key_check` to guarantee database consistency.
+3. Review the **Physical Storage Health** gauges to monitor disk usage across `/data` volumes.
+
+---
+
+## 4. In-VPC API Automation Reference for CI/CD
+
+All retention and backup operations can be orchestrated locally via shell scripts, cron jobs, or internal pipelines:
+
+```bash
+# 1. Fetch current component retention policies
+curl -s http://localhost:8000/v1/admin/retention-policies | jq .
+
+# 2. Update APM traces retention to 21 days
+curl -X PUT http://localhost:8000/v1/admin/retention-policies/apm_traces \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;retention_days&quot;: 21, &quot;max_storage_gb&quot;: 20.0}&#x27;
+
+# 3. Trigger immediate retention pruning
+curl -X POST http://localhost:8000/v1/admin/retention-policies/prune
+
+# 4. Create a hot backend database snapshot
+curl -X POST http://localhost:8000/v1/admin/backups/create \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;target_type&quot;: &quot;backend_database&quot;, &quot;name&quot;: &quot;Nightly Automated Snapshot&quot;}&#x27;
+
+# 5. Flush WAL Checkpoint
+curl -X POST http://localhost:8000/v1/admin/maintenance/wal-checkpoint
+
+# 6. Retrieve storage health telemetry
+curl -s http://localhost:8000/v1/admin/maintenance/storage | jq .
+```
+
+---
+
+## 5. Compliance &amp; Disaster Recovery Verification Checklist
+
+- [ ] All 7 component retention policies configured and verified in `http://localhost:8000/companyadmin`.
+- [ ] Daily automated backend backup schedule active (`0 2 * * *`) with retention count &gt;= 14 snapshots.
+- [ ] Application configuration backup verified with SHA-256 checksum and stored in offsite vault.
+- [ ] Disaster recovery restore workflow dry-run tested on staging environment within the past 90 days.
+- [ ] Physical disk consumption monitored and alerted prior to 85% capacity threshold.
+- [ ] Audit logs validated for zero tampering and 365-day SOC 2 compliance retention.
+
+---
+*Authorized for Customer In-VPC Operations • Document Reference `RUN-COMPANYADMIN-RETENTION-001`.*
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

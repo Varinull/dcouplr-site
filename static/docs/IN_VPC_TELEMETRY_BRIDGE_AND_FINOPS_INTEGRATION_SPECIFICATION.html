@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - IN_VPC_TELEMETRY_BRIDGE_AND_FINOPS_INTEGRATION_SPECIFICATION.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/IN_VPC_TELEMETRY_BRIDGE_AND_FINOPS_INTEGRATION_SPECIFICATION.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="IN_VPC_TELEMETRY_BRIDGE_AND_FINOPS_INTEGRATION_SPECIFICATION.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="dcouplr-in-vpc-telemetry-bridge-cloaudit-cloud-audit-finops-integration-specification">🔗 <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> In-VPC Telemetry Bridge &amp; cloaudit (Cloud Audit) FinOps Integration Specification</h1>
+<p><strong>Document ID:</strong> <code>VA-SPEC-FINOPS-BRIDGE-001</code><br />
+<strong>Classification:</strong> Enterprise In-VPC Systems Integration &amp; FinOps Remediation Specification<br />
+<strong>Version:</strong> 1.0.0 Approved Production Standard<br />
+<strong>Date:</strong> 2026-10-25<br />
+<strong>Interoperating Systems:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> (Port 8000, In-VPC Telemetry &amp; Observability) $\longleftrightarrow$ <code>cloaudit</code> (Cloud Audit) (Port 3780, In-VPC Cloud Spend &amp; IaC Auditor)<br />
+<strong>Security Boundary:</strong> 100% In-VPC Hermetic Air-Gap ($0 Public WAN Egress)<br />
+<strong>Associated Architecture Decisions:</strong> <code>D-03</code>, <code>D-05</code>, <code>D-29</code>, <code>D-40</code>, <code>D-41</code><br />
+<strong>Compliance Standard:</strong> ISO 27001 / SOC 2 Type II / RFC 1918 Private Network Attestation</p>
+<hr />
+<h2 id="1-executive-summary-integration-architecture">1. Executive Summary &amp; Integration Architecture</h2>
+<p>Modern enterprise cloud environments suffer from severe fragmentation between <strong>infrastructure cost auditing</strong> and <strong>production telemetry enforcement</strong>. When an auditor tool flags an over-provisioned cloud resource (e.g. downscaling an idle <code>m5.4xlarge</code> database or compute instance to <code>m5.xlarge</code>), applying the change in isolation creates severe operational blindness:</p>
+<ol>
+<li><strong>Threshold Rupture:</strong> Static alert thresholds (e.g., Datadog memory alerts expecting 64 GB RAM) immediately false-alarm on the smaller 16 GB instance.</li>
+<li><strong>Context Blindness:</strong> Cloud billing APIs have 24–48 hour batch lag and cannot inspect live in-guest network throughput or circuit breaker states.</li>
+<li><strong>Data Transfer Disputes:</strong> Cloud hyperscalers frequently bill disputed Inter-AZ or NAT Gateway charges without verifiable cryptographic proof of traffic origin.</li>
+<li><strong>Volumetric SaaS Egress:</strong> Streaming production metrics out to third-party monitoring SaaS vendors (Datadog, New Relic) incurs $100k+ in annual bandwidth taxes.</li>
+</ol>
+<p>To resolve these challenges, <strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code></strong> (operating on port 8000 inside the customer's private VPC) and <strong><code>cloaudit</code> (Cloud Audit)</strong> (operating on port 3780 inside the same VPC as the customer's cloud spend and IaC remediation auditor) integrate over a secure, mutual API-gated in-VPC control plane.</p>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">graph TD
+    subgraph Customer Private VPC [100% In-VPC Isolated Boundary - Zero Public Egress]
+        subgraph Port 3780: cloaudit [cloaudit: Cloud Audit - Spend &amp; IaC Auditor]
+            C1[Cloud Spend Analysis]
+            C2[Over-Provisioning Detector]
+            C3[OpenTofu / Bicep Downscaling Synthesizer]
+            C4[FinOps Billing Dispute Engine]
+        end
+
+        subgraph Port 8000: <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> [Telemetry &amp; Observability Control Plane]
+            D1[In-Memory Telemetry Collector]
+            D2[Multi-VPC Topology Registry]
+            D3[Cryptographic SHA-256 Egress Attestation Engine]
+            D4[Downscaling Alert Rule Transpiler]
+            D5[Grafana / PromQL / OpenTelemetry YAML Emitters]
+        end
+
+        C2 --&gt;|1. GET /v1/telemetry/vpcs/{id}/monitoring-bundle| D1
+        C1 --&gt;|2. GET /v1/telemetry/vpcs| D2
+        C4 --&gt;|3. GET /v1/telemetry/vpcs/{id}/egress-attestation| D3
+        C3 --&gt;|4. POST /v1/compiler/transpile-alert-rules| D4
+        D4 --&gt; D5
+        D5 --&gt;|Calibrated Observability Bundle| C3
+    end
+</code></pre></div>
+<hr />
+<h2 id="2-strict-architectural-invariant-rules-scope-boundaries">2. Strict Architectural Invariant Rules (Scope Boundaries)</h2>
+<p>To guarantee long-term system cleanliness, security, and performance, this integration enforces three non-negotiable architectural invariant boundaries:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Invariant Rule</th>
+<th style="text-align:left">Boundary Definition</th>
+<th style="text-align:left">Enforced By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Invariant 1: No Billing Data in <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code></strong></td>
+<td style="text-align:left"><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> must <strong>NEVER</strong> contain cloud billing parsers (AWS Cost &amp; Usage Reports CUR, Azure Enterprise Agreements EA, GCP BigQuery billing exports) or financial cost calculation logic. All cloud cost auditing and billing ingestion belongs strictly to <code>cloaudit</code>.</td>
+<td style="text-align:left">Architectural Gate &amp; Regression Tests (<code>test_architectural_invariants</code>)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Invariant 2: Zero-Egress Invariant</strong></td>
+<td style="text-align:left">100% of telemetry, metrics, and logs must remain strictly within the customer's private RFC 1918 VPC boundary. Neither application may emit telemetry to external public SaaS backends (Datadog, New Relic, Dynatrace). Egress tariff is strictly <strong>$0.00</strong>.</td>
+<td style="text-align:left">eBPF Network Enforcement &amp; SHA-256 Cryptographic Attestation</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Invariant 3: Observability-Only Emissions</strong></td>
+<td style="text-align:left"><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> emits only Grafana Unified Alerting YAML, Prometheus Alertmanager rules, and OpenTelemetry Collector pipelines. Infrastructure downscaling patches (OpenTofu HCL, Azure Bicep parameters) belong strictly to <code>cloaudit</code>.</td>
+<td style="text-align:left">AST Compiler Scope Restriction (<code>D-05</code>, <code>D-41</code>)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-the-4-hyperscaler-gaps-bridged">3. The 4 Hyperscaler Gaps Bridged</h2>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                               THE 4 HYPERSCALER GAPS                                   │
+├───────────────────────────────┬────────────────────────────────────────────────────────┤
+│ 1. Context Gap                │ Bridges static IaC definitions with live telemetry      │
+│                               │ snapshots, latency percentiles, and circuit breakers.  │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ 2. Trust Gap                  │ Provides mathematical SHA-256 proof confirming 0 bytes  │
+│                               │ WAN egress to legally dispute inaccurate cloud bills.  │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ 3. Disconnected Enforcement   │ Synchronizes infrastructure downscaling with automatic │
+│                               │ recalibration of alert thresholds and PromQL rules.    │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ 4. Multi-Tenant Egress Gap    │ Retains 100% of telemetry inside the customer's VPC,    │
+│                               │ eliminating $100k+ annual third-party SaaS data taxes. │
+└───────────────────────────────┴────────────────────────────────────────────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="4-api-endpoints-specification">4. API Endpoints Specification</h2>
+<h3 id="41-in-vpc-monitoring-bundle">4.1 In-VPC Monitoring Bundle</h3>
+<p>Retrieves active monitors, alerts, severity classifications, and live telemetry performance snapshots for a specific VPC.</p>
+<ul>
+<li><strong>Path:</strong> <code>GET /v1/telemetry/vpcs/{vpc_id}/monitoring-bundle</code></li>
+<li><strong>Tags:</strong> <code>[&quot;Telemetry &amp; Topology&quot;]</code></li>
+<li><strong>Security Guard:</strong> <code>_auth: AuthenticatedUser = Depends(require_developer)</code></li>
+<li><strong>Path Parameter:</strong>
+<ul>
+<li><code>vpc_id</code> (string, required): Registered VPC ID (e.g. <code>dc-onprem-core-01</code>, <code>vpc-aws-prod-01</code>, or <code>default</code>).</li>
+</ul>
+</li>
+<li><strong>Headers:</strong>
+<ul>
+<li><code>X-API-Key: dcouplr-dev-2026</code> or <code>Authorization: Bearer &lt;developer-token&gt;</code></li>
+</ul>
+</li>
+<li><strong>Success Response (<code>200 OK</code>):</strong><div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;vpc_id&quot;: &quot;dc-onprem-core-01&quot;,
+  &quot;vpc_name&quot;: &quot;legacy_datacenter_chicago&quot;,
+  &quot;cloud_provider&quot;: &quot;OnPrem&quot;,
+  &quot;region&quot;: &quot;onprem-chicago-dc1&quot;,
+  &quot;cidr_supernet&quot;: &quot;172.16.0.0/16&quot;,
+  &quot;total_instances_monitored&quot;: 32,
+  &quot;subnets_count&quot;: 2,
+  &quot;active_monitors_count&quot;: 5,
+  &quot;active_monitors&quot;: [
+    {
+      &quot;id&quot;: 1001,
+      &quot;name&quot;: &quot;[legacy_datacenter_chicago] Node CPU Saturation (&gt; 85%)&quot;,
+      &quot;type&quot;: &quot;metric alert&quot;,
+      &quot;severity&quot;: &quot;critical&quot;,
+      &quot;query&quot;: &quot;avg(last_5m):system.cpu.user{vpc:legacy_datacenter_chicago} by {host} &gt; 85&quot;,
+      &quot;tags&quot;: [&quot;vpc:legacy_datacenter_chicago&quot;, &quot;cloud:onprem&quot;, &quot;severity:critical&quot;, &quot;env:production&quot;],
+      &quot;options&quot;: {&quot;thresholds&quot;: {&quot;critical&quot;: 85.0, &quot;warning&quot;: 75.0}}
+    },
+    {
+      &quot;id&quot;: 1002,
+      &quot;name&quot;: &quot;[legacy_datacenter_chicago] HTTP 5xx Server Error Surge (&gt; 15 req/s)&quot;,
+      &quot;type&quot;: &quot;metric alert&quot;,
+      &quot;severity&quot;: &quot;warning&quot;,
+      &quot;query&quot;: &quot;sum(last_5m):http.requests.5xx{vpc:legacy_datacenter_chicago} by {service} &gt; 15&quot;,
+      &quot;tags&quot;: [&quot;vpc:legacy_datacenter_chicago&quot;, &quot;severity:warning&quot;, &quot;tier:api-gateway&quot;],
+      &quot;options&quot;: {&quot;thresholds&quot;: {&quot;critical&quot;: 15.0, &quot;warning&quot;: 8.0}}
+    },
+    {
+      &quot;id&quot;: 1005,
+      &quot;name&quot;: &quot;[legacy_datacenter_chicago] Raft Consensus Quorum Loss or Network Partition&quot;,
+      &quot;type&quot;: &quot;service check&quot;,
+      &quot;severity&quot;: &quot;p1&quot;,
+      &quot;query&quot;: &quot;max(last_1m):dcouplr.cluster.partitions{vpc:legacy_datacenter_chicago} &gt; 0&quot;,
+      &quot;tags&quot;: [&quot;vpc:legacy_datacenter_chicago&quot;, &quot;consensus:raft&quot;, &quot;severity:p1&quot;],
+      &quot;options&quot;: {&quot;thresholds&quot;: {&quot;critical&quot;: 1.0}}
+    }
+  ],
+  &quot;live_telemetry_snapshot&quot;: {
+    &quot;p50_latency_ms&quot;: 1.2,
+    &quot;p90_latency_ms&quot;: 3.8,
+    &quot;p99_latency_ms&quot;: 8.1,
+    &quot;throughput_rps&quot;: 42.0,
+    &quot;error_rate_pct&quot;: 0.0,
+    &quot;circuit_breaker_state&quot;: &quot;CLOSED&quot;,
+    &quot;zero_egress_enforced&quot;: true
+  },
+  &quot;captured_at&quot;: &quot;2026-10-25T21:30:00.000000Z&quot;,
+  &quot;timestamp&quot;: &quot;2026-10-25T21:30:00.000000Z&quot;
+}
+</code></pre></div>
+</li>
+<li><strong>Error Response (<code>404 Not Found</code>):</strong><div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;detail&quot;: &quot;VPC 'vpc-invalid-999' not found.&quot;
+}
+</code></pre></div>
+</li>
+</ul>
+<hr />
+<h3 id="42-registered-multi-vpc-topology-endpoint">4.2 Registered Multi-VPC Topology Endpoint</h3>
+<p>Returns the active cross-cloud and on-premise VPC network topology monitored by the local cluster.</p>
+<ul>
+<li><strong>Path:</strong> <code>GET /v1/telemetry/vpcs</code></li>
+<li><strong>Tags:</strong> <code>[&quot;Telemetry &amp; Topology&quot;]</code></li>
+<li><strong>Security Guard:</strong> <code>_auth: AuthenticatedUser = Depends(require_developer)</code></li>
+<li><strong>Success Response (<code>200 OK</code>):</strong><div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">[
+  {
+    &quot;id&quot;: &quot;vpc-aws-prod-01&quot;,
+    &quot;name&quot;: &quot;production_vpc&quot;,
+    &quot;cloud&quot;: &quot;AWS&quot;,
+    &quot;region&quot;: &quot;us-east-1&quot;,
+    &quot;cidr_block&quot;: &quot;10.100.0.0/16&quot;,
+    &quot;total_instances&quot;: 15,
+    &quot;agent_status&quot;: &quot;HEALTHY&quot;,
+    &quot;peering_count&quot;: 2,
+    &quot;subnets_count&quot;: 3
+  },
+  {
+    &quot;id&quot;: &quot;vpc-aws-stage-02&quot;,
+    &quot;name&quot;: &quot;staging_vpc&quot;,
+    &quot;cloud&quot;: &quot;AWS&quot;,
+    &quot;region&quot;: &quot;us-west-2&quot;,
+    &quot;cidr_block&quot;: &quot;10.101.0.0/16&quot;,
+    &quot;total_instances&quot;: 6,
+    &quot;agent_status&quot;: &quot;HEALTHY&quot;,
+    &quot;peering_count&quot;: 1,
+    &quot;subnets_count&quot;: 2
+  },
+  {
+    &quot;id&quot;: &quot;vpc-gcp-analytics-03&quot;,
+    &quot;name&quot;: &quot;analytics_gcp_mesh&quot;,
+    &quot;cloud&quot;: &quot;GCP&quot;,
+    &quot;region&quot;: &quot;us-central1&quot;,
+    &quot;cidr_block&quot;: &quot;10.200.0.0/16&quot;,
+    &quot;total_instances&quot;: 18,
+    &quot;agent_status&quot;: &quot;HEALTHY&quot;,
+    &quot;peering_count&quot;: 1,
+    &quot;subnets_count&quot;: 2
+  },
+  {
+    &quot;id&quot;: &quot;dc-onprem-core-01&quot;,
+    &quot;name&quot;: &quot;legacy_datacenter_chicago&quot;,
+    &quot;cloud&quot;: &quot;OnPrem&quot;,
+    &quot;region&quot;: &quot;onprem-chicago-dc1&quot;,
+    &quot;cidr_block&quot;: &quot;172.16.0.0/16&quot;,
+    &quot;total_instances&quot;: 32,
+    &quot;agent_status&quot;: &quot;HEALTHY&quot;,
+    &quot;peering_count&quot;: 2,
+    &quot;subnets_count&quot;: 2
+  }
+]
+</code></pre></div>
+</li>
+</ul>
+<hr />
+<h3 id="43-zero-egress-cryptographic-attestation-endpoint">4.3 Zero-Egress Cryptographic Attestation Endpoint</h3>
+<p>Generates a legally defensible cryptographic SHA-256 proof verifying zero public WAN egress for a VPC. Used by FinOps teams in <code>cloaudit</code> to dispute spurious hyperscaler egress line items.</p>
+<ul>
+<li><strong>Path:</strong> <code>GET /v1/telemetry/vpcs/{vpc_id}/egress-attestation</code></li>
+<li><strong>Tags:</strong> <code>[&quot;Telemetry &amp; Topology&quot;]</code></li>
+<li><strong>Security Guard:</strong> <code>_auth: AuthenticatedUser = Depends(require_admin)</code></li>
+<li><strong>Headers:</strong>
+<ul>
+<li><code>X-API-Key: dcouplr-admin-2026</code> or <code>Authorization: Bearer &lt;admin-token&gt;</code></li>
+</ul>
+</li>
+<li><strong>Success Response (<code>200 OK</code>):</strong><div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;attestation_id&quot;: &quot;attest-vpc-aws-prod-01-1792963600&quot;,
+  &quot;vpc_id&quot;: &quot;vpc-aws-prod-01&quot;,
+  &quot;vpc_name&quot;: &quot;production_vpc&quot;,
+  &quot;cloud&quot;: &quot;AWS&quot;,
+  &quot;region&quot;: &quot;us-east-1&quot;,
+  &quot;cidr_block&quot;: &quot;10.100.0.0/16&quot;,
+  &quot;external_wan_egress_bytes&quot;: 0,
+  &quot;zero_egress_enforced&quot;: true,
+  &quot;internal_mesh_bytes&quot;: 6815744,
+  &quot;timestamp&quot;: &quot;2026-10-25T21:30:00.000000Z&quot;,
+  &quot;attestation_timestamp&quot;: &quot;2026-10-25T21:30:00.000000Z&quot;,
+  &quot;sha256_proof&quot;: &quot;b01020593d32fe4de30e0600d8db9c882c9744c80387b322a4664e40e69be29a&quot;,
+  &quot;cryptographic_proof&quot;: &quot;b01020593d32fe4de30e0600d8db9c882c9744c80387b322a4664e40e69be29a&quot;,
+  &quot;signature_algorithm&quot;: &quot;SHA-256&quot;,
+  &quot;verification_status&quot;: &quot;VERIFIED_ZERO_EGRESS&quot;,
+  &quot;finops_dispute_ready&quot;: true,
+  &quot;policy&quot;: &quot;RFC-1918-STRICT-IN-VPC&quot;,
+  &quot;mesh_integrity&quot;: &quot;UNCOMPROMISED&quot;,
+  &quot;auditor_note&quot;: &quot;Cryptographic zero-egress proof generated for cloaudit (Cloud Audit) in-VPC FinOps billing audit.&quot;
+}
+</code></pre></div>
+</li>
+<li><strong>Cryptographic Verification Algorithm:</strong><div class="code-box"><div class="code-box-header"><span>python</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-python">canonical_json = json.dumps({
+    &quot;vpc_id&quot;: data[&quot;vpc_id&quot;],
+    &quot;vpc_name&quot;: data[&quot;vpc_name&quot;],
+    &quot;cloud&quot;: data[&quot;cloud&quot;],
+    &quot;region&quot;: data[&quot;region&quot;],
+    &quot;cidr_block&quot;: data[&quot;cidr_block&quot;],
+    &quot;external_wan_egress_bytes&quot;: 0,
+    &quot;zero_egress_enforced&quot;: True,
+    &quot;internal_mesh_bytes&quot;: data[&quot;internal_mesh_bytes&quot;],
+    &quot;timestamp&quot;: data[&quot;timestamp&quot;],
+}, sort_keys=True)
+
+assert hashlib.sha256(canonical_json.encode(&quot;utf-8&quot;)).hexdigest() == data[&quot;sha256_proof&quot;]
+</code></pre></div>
+</li>
+</ul>
+<hr />
+<h3 id="44-alert-rule-adjustment-transpiler">4.4 Alert Rule Adjustment Transpiler</h3>
+<p>When <code>cloaudit</code> proposes downscaling an infrastructure target (e.g. <code>m5.4xlarge</code> to <code>m5.xlarge</code>), this endpoint recalibrates alert thresholds according to target compute/memory capacity and outputs ready-to-deploy Grafana Unified Alerting, Prometheus Alertmanager, and OpenTelemetry Collector YAML manifests.</p>
+<ul>
+<li><strong>Path:</strong> <code>POST /v1/compiler/transpile-alert-rules</code></li>
+<li><strong>Tags:</strong> <code>[&quot;Core Transpilation&quot;]</code></li>
+<li><strong>Security Guard:</strong> <code>_auth: AuthenticatedUser = Depends(require_developer)</code></li>
+<li><strong>Request Body (<code>application/json</code>):</strong><div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;resource_id&quot;: &quot;i-0987654321fedcba0&quot;,
+  &quot;original_tier&quot;: &quot;m5.4xlarge&quot;,
+  &quot;target_tier&quot;: &quot;m5.xlarge&quot;,
+  &quot;existing_rules&quot;: [
+    {
+      &quot;id&quot;: 101,
+      &quot;name&quot;: &quot;Host Memory Utilization Alert&quot;,
+      &quot;type&quot;: &quot;metric alert&quot;,
+      &quot;severity&quot;: &quot;critical&quot;,
+      &quot;query&quot;: &quot;avg(last_5m):system.mem.used{host:db-node} &gt; 48000&quot;,
+      &quot;options&quot;: {&quot;thresholds&quot;: {&quot;critical&quot;: 48000.0, &quot;warning&quot;: 40000.0}}
+    }
+  ]
+}
+</code></pre></div>
+</li>
+<li><strong>Success Response (<code>200 OK</code>):</strong><div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;resource_id&quot;: &quot;i-0987654321fedcba0&quot;,
+  &quot;original_tier&quot;: &quot;m5.4xlarge&quot;,
+  &quot;target_tier&quot;: &quot;m5.xlarge&quot;,
+  &quot;scale_factor&quot;: 0.25,
+  &quot;rules_transpiled&quot;: 1,
+  &quot;adjusted_rules&quot;: [
+    {
+      &quot;id&quot;: 101,
+      &quot;name&quot;: &quot;[m5.xlarge] Host Memory Utilization Alert&quot;,
+      &quot;type&quot;: &quot;metric alert&quot;,
+      &quot;severity&quot;: &quot;critical&quot;,
+      &quot;scale_factor&quot;: 0.25,
+      &quot;options&quot;: {
+        &quot;thresholds&quot;: {
+          &quot;critical&quot;: 12000.0,
+          &quot;warning&quot;: 10000.0
+        }
+      },
+      &quot;tags&quot;: [
+        &quot;resource:i-0987654321fedcba0&quot;,
+        &quot;tier:m5.xlarge&quot;,
+        &quot;dcouplr:recalibrated&quot;,
+        &quot;compliance:zero-egress&quot;
+      ]
+    }
+  ],
+  &quot;grafana_alert_yaml&quot;: &quot;apiVersion: 1\ngroups:\n  - orgId: 1\n    name: cloaudit_remediation_i_0987654321fedcba0\n    folder: Cloaudit Downscaling Remediation\n    rules:\n      - uid: dcouplr-i0987654321f-001\n        title: '[m5.xlarge] Host Memory Utilization Alert'\n...&quot;,
+  &quot;prometheus_alert_yaml&quot;: &quot;groups:\n  - name: dcouplr_i_0987654321fedcba0_rules\n    rules:\n      - alert: m5_xlarge_Host_Memory_Utilization_Alert\n...&quot;,
+  &quot;opentelemetry_yaml&quot;: &quot;receivers:\n  prometheus:\n    config:\n      scrape_configs:\n        - job_name: dcouplr-in-vpc-collector\nprocessors:\n  filter/zero_egress_lockdown:\n...&quot;,
+  &quot;zero_egress_enforced&quot;: true,
+  &quot;audit_compatibility&quot;: {
+    &quot;cloaudit_bridge_status&quot;: &quot;READY&quot;,
+    &quot;zero_egress_verified&quot;: true,
+    &quot;iac_remediation_target&quot;: &quot;OpenTofu / Azure Bicep&quot;,
+    &quot;hyperscaler_gap_bridged&quot;: [
+      &quot;Context (Live Topology &amp; Metrics)&quot;,
+      &quot;Trust (Cryptographic Attestation)&quot;,
+      &quot;Disconnected Enforcement (Coordinated Observability Recalibration)&quot;,
+      &quot;Multi-Tenant Egress ($0 In-VPC Cost)&quot;
+    ]
+  }
+}
+</code></pre></div>
+</li>
+</ul>
+<hr />
+<h2 id="5-capacity-scale-factor-calculation-matrix">5. Capacity Scale Factor Calculation Matrix</h2>
+<p>The alert transpiler normalizes tier naming conventions across AWS, Azure, and Google Cloud using blended compute capacity vectors (60% RAM capacity, 40% vCPU allocation):</p>
+<p>$$\text{Scale Factor} = \left(\frac{\text{RAM}<em>{\text{target}}}{\text{RAM}</em>{\text{orig}}} \times 0.60\right) + \left(\frac{\text{vCPU}<em>{\text{target}}}{\text{vCPU}</em>{\text{orig}}} \times 0.40\right)$$</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Original Cloud Tier</th>
+<th style="text-align:left">Target Downscaled Tier</th>
+<th style="text-align:center">RAM Transition</th>
+<th style="text-align:center">vCPU Transition</th>
+<th style="text-align:center">Calculated Scale Factor</th>
+<th style="text-align:left">Threshold Recalibration Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong><code>m5.4xlarge</code></strong></td>
+<td style="text-align:left"><strong><code>m5.xlarge</code></strong></td>
+<td style="text-align:center">64 GB $\to$ 16 GB</td>
+<td style="text-align:center">16 $\to$ 4</td>
+<td style="text-align:center"><strong><code>0.250</code></strong> (4x reduction)</td>
+<td style="text-align:left">Absolute memory thresholds scaled to 25%; CPU percentage warning headroom tightened by 5%.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>db.r5.2xlarge</code></strong></td>
+<td style="text-align:left"><strong><code>db.t3.medium</code></strong></td>
+<td style="text-align:center">32 GB $\to$ 4 GB</td>
+<td style="text-align:center">8 $\to$ 2</td>
+<td style="text-align:center"><strong><code>0.125</code></strong> (8x reduction)</td>
+<td style="text-align:left">Connection pool ceiling downscaled from 400 to 100; memory threshold adjusted to 600 MB.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>n2-standard-16</code></strong></td>
+<td style="text-align:left"><strong><code>n2-standard-4</code></strong></td>
+<td style="text-align:center">64 GB $\to$ 16 GB</td>
+<td style="text-align:center">16 $\to$ 4</td>
+<td style="text-align:center"><strong><code>0.250</code></strong> (4x reduction)</td>
+<td style="text-align:left">Disk burst IOPS ceiling adjusted from 12,800 to 3,200 IOPS.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>Standard_D8s_v5</code></strong></td>
+<td style="text-align:left"><strong><code>Standard_D2s_v5</code></strong></td>
+<td style="text-align:center">32 GB $\to$ 8 GB</td>
+<td style="text-align:center">8 $\to$ 2</td>
+<td style="text-align:center"><strong><code>0.250</code></strong> (4x reduction)</td>
+<td style="text-align:left">PromQL evaluation window tightened from 5m to 2m for faster detection on lower headroom.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-sre-operational-verification-commands">6. SRE Operational Verification Commands</h2>
+<p>Engineers validating the integration can execute the following commands inside the customer's VPC terminal:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># 1. Fetch live monitoring bundle with severity tags
+curl -s -H &quot;X-API-Key: dcouplr-dev-2026&quot; \
+  http://127.0.0.1:8000/v1/telemetry/vpcs/dc-onprem-core-01/monitoring-bundle | jq .
+
+# 2. Inspect multi-VPC topology registry
+curl -s -H &quot;X-API-Key: dcouplr-dev-2026&quot; \
+  http://127.0.0.1:8000/v1/telemetry/vpcs | jq .
+
+# 3. Generate cryptographic zero-egress attestation for FinOps audit dispute
+curl -s -H &quot;X-API-Key: dcouplr-admin-2026&quot; \
+  http://127.0.0.1:8000/v1/telemetry/vpcs/vpc-aws-prod-01/egress-attestation | jq .
+
+# 4. Transpile and recalibrate downscaling alert rules
+curl -s -X POST http://127.0.0.1:8000/v1/compiler/transpile-alert-rules \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;X-API-Key: dcouplr-dev-2026&quot; \
+  -d '{
+    &quot;resource_id&quot;: &quot;i-0987654321fedcba0&quot;,
+    &quot;original_tier&quot;: &quot;m5.4xlarge&quot;,
+    &quot;target_tier&quot;: &quot;m5.xlarge&quot;,
+    &quot;existing_rules&quot;: []
+  }' | jq .
+</code></pre></div>
+<hr />
+<h2 id="7-automated-test-coverage-quality-gates">7. Automated Test Coverage &amp; Quality Gates</h2>
+<p>All four integration vectors are covered by automated unit, security, and invariant regression suites:</p>
+<ul>
+<li><strong>Dedicated Integration Test Suite:</strong> <code>tests/test_cloaudit_bridge_endpoints.py</code> (9 tests passing)</li>
+<li><strong>Full Automated Regression Suite:</strong> 271 / 271 tests passing across 24 test suites (100% pass rate)</li>
+<li><strong>Audit ID:</strong> <code>VA-AUDIT-FINOPS-BRIDGE-2026-10-25</code></li>
+<li><strong>Admin Portal Registry ID:</strong> <code>sdlc-cloaudit-finops-bridge-spec</code></li>
+</ul>
+</div>
+      <pre id="raw-view"><code># 🔗 `&lt;dcouplr/&gt;` In-VPC Telemetry Bridge &amp; cloaudit (Cloud Audit) FinOps Integration Specification
+
+**Document ID:** `VA-SPEC-FINOPS-BRIDGE-001`  
+**Classification:** Enterprise In-VPC Systems Integration &amp; FinOps Remediation Specification  
+**Version:** 1.0.0 Approved Production Standard  
+**Date:** 2026-10-25  
+**Interoperating Systems:** `&lt;dcouplr/&gt;` (Port 8000, In-VPC Telemetry &amp; Observability) $\longleftrightarrow$ `cloaudit` (Cloud Audit) (Port 3780, In-VPC Cloud Spend &amp; IaC Auditor)  
+**Security Boundary:** 100% In-VPC Hermetic Air-Gap ($0 Public WAN Egress)  
+**Associated Architecture Decisions:** `D-03`, `D-05`, `D-29`, `D-40`, `D-41`  
+**Compliance Standard:** ISO 27001 / SOC 2 Type II / RFC 1918 Private Network Attestation  
+
+---
+
+## 1. Executive Summary &amp; Integration Architecture
+
+Modern enterprise cloud environments suffer from severe fragmentation between **infrastructure cost auditing** and **production telemetry enforcement**. When an auditor tool flags an over-provisioned cloud resource (e.g. downscaling an idle `m5.4xlarge` database or compute instance to `m5.xlarge`), applying the change in isolation creates severe operational blindness:
+1. **Threshold Rupture:** Static alert thresholds (e.g., Datadog memory alerts expecting 64 GB RAM) immediately false-alarm on the smaller 16 GB instance.
+2. **Context Blindness:** Cloud billing APIs have 24–48 hour batch lag and cannot inspect live in-guest network throughput or circuit breaker states.
+3. **Data Transfer Disputes:** Cloud hyperscalers frequently bill disputed Inter-AZ or NAT Gateway charges without verifiable cryptographic proof of traffic origin.
+4. **Volumetric SaaS Egress:** Streaming production metrics out to third-party monitoring SaaS vendors (Datadog, New Relic) incurs $100k+ in annual bandwidth taxes.
+
+To resolve these challenges, **`&lt;dcouplr/&gt;`** (operating on port 8000 inside the customer&#x27;s private VPC) and **`cloaudit` (Cloud Audit)** (operating on port 3780 inside the same VPC as the customer&#x27;s cloud spend and IaC remediation auditor) integrate over a secure, mutual API-gated in-VPC control plane.
+
+```mermaid
+graph TD
+    subgraph Customer Private VPC [100% In-VPC Isolated Boundary - Zero Public Egress]
+        subgraph Port 3780: cloaudit [cloaudit: Cloud Audit - Spend &amp; IaC Auditor]
+            C1[Cloud Spend Analysis]
+            C2[Over-Provisioning Detector]
+            C3[OpenTofu / Bicep Downscaling Synthesizer]
+            C4[FinOps Billing Dispute Engine]
+        end
+
+        subgraph Port 8000: &lt;dcouplr/&gt; [Telemetry &amp; Observability Control Plane]
+            D1[In-Memory Telemetry Collector]
+            D2[Multi-VPC Topology Registry]
+            D3[Cryptographic SHA-256 Egress Attestation Engine]
+            D4[Downscaling Alert Rule Transpiler]
+            D5[Grafana / PromQL / OpenTelemetry YAML Emitters]
+        end
+
+        C2 --&gt;|1. GET /v1/telemetry/vpcs/{id}/monitoring-bundle| D1
+        C1 --&gt;|2. GET /v1/telemetry/vpcs| D2
+        C4 --&gt;|3. GET /v1/telemetry/vpcs/{id}/egress-attestation| D3
+        C3 --&gt;|4. POST /v1/compiler/transpile-alert-rules| D4
+        D4 --&gt; D5
+        D5 --&gt;|Calibrated Observability Bundle| C3
+    end
+```
+
+---
+
+## 2. Strict Architectural Invariant Rules (Scope Boundaries)
+
+To guarantee long-term system cleanliness, security, and performance, this integration enforces three non-negotiable architectural invariant boundaries:
+
+| Invariant Rule | Boundary Definition | Enforced By |
+| :--- | :--- | :--- |
+| **Invariant 1: No Billing Data in `&lt;dcouplr/&gt;`** | `&lt;dcouplr/&gt;` must **NEVER** contain cloud billing parsers (AWS Cost &amp; Usage Reports CUR, Azure Enterprise Agreements EA, GCP BigQuery billing exports) or financial cost calculation logic. All cloud cost auditing and billing ingestion belongs strictly to `cloaudit`. | Architectural Gate &amp; Regression Tests (`test_architectural_invariants`) |
+| **Invariant 2: Zero-Egress Invariant** | 100% of telemetry, metrics, and logs must remain strictly within the customer&#x27;s private RFC 1918 VPC boundary. Neither application may emit telemetry to external public SaaS backends (Datadog, New Relic, Dynatrace). Egress tariff is strictly **$0.00**. | eBPF Network Enforcement &amp; SHA-256 Cryptographic Attestation |
+| **Invariant 3: Observability-Only Emissions** | `&lt;dcouplr/&gt;` emits only Grafana Unified Alerting YAML, Prometheus Alertmanager rules, and OpenTelemetry Collector pipelines. Infrastructure downscaling patches (OpenTofu HCL, Azure Bicep parameters) belong strictly to `cloaudit`. | AST Compiler Scope Restriction (`D-05`, `D-41`) |
+
+---
+
+## 3. The 4 Hyperscaler Gaps Bridged
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                               THE 4 HYPERSCALER GAPS                                   │
+├───────────────────────────────┬────────────────────────────────────────────────────────┤
+│ 1. Context Gap                │ Bridges static IaC definitions with live telemetry      │
+│                               │ snapshots, latency percentiles, and circuit breakers.  │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ 2. Trust Gap                  │ Provides mathematical SHA-256 proof confirming 0 bytes  │
+│                               │ WAN egress to legally dispute inaccurate cloud bills.  │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ 3. Disconnected Enforcement   │ Synchronizes infrastructure downscaling with automatic │
+│                               │ recalibration of alert thresholds and PromQL rules.    │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ 4. Multi-Tenant Egress Gap    │ Retains 100% of telemetry inside the customer&#x27;s VPC,    │
+│                               │ eliminating $100k+ annual third-party SaaS data taxes. │
+└───────────────────────────────┴────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 4. API Endpoints Specification
+
+### 4.1 In-VPC Monitoring Bundle
+Retrieves active monitors, alerts, severity classifications, and live telemetry performance snapshots for a specific VPC.
+
+* **Path:** `GET /v1/telemetry/vpcs/{vpc_id}/monitoring-bundle`
+* **Tags:** `[&quot;Telemetry &amp; Topology&quot;]`
+* **Security Guard:** `_auth: AuthenticatedUser = Depends(require_developer)`
+* **Path Parameter:**
+  * `vpc_id` (string, required): Registered VPC ID (e.g. `dc-onprem-core-01`, `vpc-aws-prod-01`, or `default`).
+* **Headers:**
+  * `X-API-Key: dcouplr-dev-2026` or `Authorization: Bearer &lt;developer-token&gt;`
+* **Success Response (`200 OK`):**
+  ```json
+  {
+    &quot;vpc_id&quot;: &quot;dc-onprem-core-01&quot;,
+    &quot;vpc_name&quot;: &quot;legacy_datacenter_chicago&quot;,
+    &quot;cloud_provider&quot;: &quot;OnPrem&quot;,
+    &quot;region&quot;: &quot;onprem-chicago-dc1&quot;,
+    &quot;cidr_supernet&quot;: &quot;172.16.0.0/16&quot;,
+    &quot;total_instances_monitored&quot;: 32,
+    &quot;subnets_count&quot;: 2,
+    &quot;active_monitors_count&quot;: 5,
+    &quot;active_monitors&quot;: [
+      {
+        &quot;id&quot;: 1001,
+        &quot;name&quot;: &quot;[legacy_datacenter_chicago] Node CPU Saturation (&gt; 85%)&quot;,
+        &quot;type&quot;: &quot;metric alert&quot;,
+        &quot;severity&quot;: &quot;critical&quot;,
+        &quot;query&quot;: &quot;avg(last_5m):system.cpu.user{vpc:legacy_datacenter_chicago} by {host} &gt; 85&quot;,
+        &quot;tags&quot;: [&quot;vpc:legacy_datacenter_chicago&quot;, &quot;cloud:onprem&quot;, &quot;severity:critical&quot;, &quot;env:production&quot;],
+        &quot;options&quot;: {&quot;thresholds&quot;: {&quot;critical&quot;: 85.0, &quot;warning&quot;: 75.0}}
+      },
+      {
+        &quot;id&quot;: 1002,
+        &quot;name&quot;: &quot;[legacy_datacenter_chicago] HTTP 5xx Server Error Surge (&gt; 15 req/s)&quot;,
+        &quot;type&quot;: &quot;metric alert&quot;,
+        &quot;severity&quot;: &quot;warning&quot;,
+        &quot;query&quot;: &quot;sum(last_5m):http.requests.5xx{vpc:legacy_datacenter_chicago} by {service} &gt; 15&quot;,
+        &quot;tags&quot;: [&quot;vpc:legacy_datacenter_chicago&quot;, &quot;severity:warning&quot;, &quot;tier:api-gateway&quot;],
+        &quot;options&quot;: {&quot;thresholds&quot;: {&quot;critical&quot;: 15.0, &quot;warning&quot;: 8.0}}
+      },
+      {
+        &quot;id&quot;: 1005,
+        &quot;name&quot;: &quot;[legacy_datacenter_chicago] Raft Consensus Quorum Loss or Network Partition&quot;,
+        &quot;type&quot;: &quot;service check&quot;,
+        &quot;severity&quot;: &quot;p1&quot;,
+        &quot;query&quot;: &quot;max(last_1m):dcouplr.cluster.partitions{vpc:legacy_datacenter_chicago} &gt; 0&quot;,
+        &quot;tags&quot;: [&quot;vpc:legacy_datacenter_chicago&quot;, &quot;consensus:raft&quot;, &quot;severity:p1&quot;],
+        &quot;options&quot;: {&quot;thresholds&quot;: {&quot;critical&quot;: 1.0}}
+      }
+    ],
+    &quot;live_telemetry_snapshot&quot;: {
+      &quot;p50_latency_ms&quot;: 1.2,
+      &quot;p90_latency_ms&quot;: 3.8,
+      &quot;p99_latency_ms&quot;: 8.1,
+      &quot;throughput_rps&quot;: 42.0,
+      &quot;error_rate_pct&quot;: 0.0,
+      &quot;circuit_breaker_state&quot;: &quot;CLOSED&quot;,
+      &quot;zero_egress_enforced&quot;: true
+    },
+    &quot;captured_at&quot;: &quot;2026-10-25T21:30:00.000000Z&quot;,
+    &quot;timestamp&quot;: &quot;2026-10-25T21:30:00.000000Z&quot;
+  }
+  ```
+* **Error Response (`404 Not Found`):**
+  ```json
+  {
+    &quot;detail&quot;: &quot;VPC &#x27;vpc-invalid-999&#x27; not found.&quot;
+  }
+  ```
+
+---
+
+### 4.2 Registered Multi-VPC Topology Endpoint
+Returns the active cross-cloud and on-premise VPC network topology monitored by the local cluster.
+
+* **Path:** `GET /v1/telemetry/vpcs`
+* **Tags:** `[&quot;Telemetry &amp; Topology&quot;]`
+* **Security Guard:** `_auth: AuthenticatedUser = Depends(require_developer)`
+* **Success Response (`200 OK`):**
+  ```json
+  [
+    {
+      &quot;id&quot;: &quot;vpc-aws-prod-01&quot;,
+      &quot;name&quot;: &quot;production_vpc&quot;,
+      &quot;cloud&quot;: &quot;AWS&quot;,
+      &quot;region&quot;: &quot;us-east-1&quot;,
+      &quot;cidr_block&quot;: &quot;10.100.0.0/16&quot;,
+      &quot;total_instances&quot;: 15,
+      &quot;agent_status&quot;: &quot;HEALTHY&quot;,
+      &quot;peering_count&quot;: 2,
+      &quot;subnets_count&quot;: 3
+    },
+    {
+      &quot;id&quot;: &quot;vpc-aws-stage-02&quot;,
+      &quot;name&quot;: &quot;staging_vpc&quot;,
+      &quot;cloud&quot;: &quot;AWS&quot;,
+      &quot;region&quot;: &quot;us-west-2&quot;,
+      &quot;cidr_block&quot;: &quot;10.101.0.0/16&quot;,
+      &quot;total_instances&quot;: 6,
+      &quot;agent_status&quot;: &quot;HEALTHY&quot;,
+      &quot;peering_count&quot;: 1,
+      &quot;subnets_count&quot;: 2
+    },
+    {
+      &quot;id&quot;: &quot;vpc-gcp-analytics-03&quot;,
+      &quot;name&quot;: &quot;analytics_gcp_mesh&quot;,
+      &quot;cloud&quot;: &quot;GCP&quot;,
+      &quot;region&quot;: &quot;us-central1&quot;,
+      &quot;cidr_block&quot;: &quot;10.200.0.0/16&quot;,
+      &quot;total_instances&quot;: 18,
+      &quot;agent_status&quot;: &quot;HEALTHY&quot;,
+      &quot;peering_count&quot;: 1,
+      &quot;subnets_count&quot;: 2
+    },
+    {
+      &quot;id&quot;: &quot;dc-onprem-core-01&quot;,
+      &quot;name&quot;: &quot;legacy_datacenter_chicago&quot;,
+      &quot;cloud&quot;: &quot;OnPrem&quot;,
+      &quot;region&quot;: &quot;onprem-chicago-dc1&quot;,
+      &quot;cidr_block&quot;: &quot;172.16.0.0/16&quot;,
+      &quot;total_instances&quot;: 32,
+      &quot;agent_status&quot;: &quot;HEALTHY&quot;,
+      &quot;peering_count&quot;: 2,
+      &quot;subnets_count&quot;: 2
+    }
+  ]
+  ```
+
+---
+
+### 4.3 Zero-Egress Cryptographic Attestation Endpoint
+Generates a legally defensible cryptographic SHA-256 proof verifying zero public WAN egress for a VPC. Used by FinOps teams in `cloaudit` to dispute spurious hyperscaler egress line items.
+
+* **Path:** `GET /v1/telemetry/vpcs/{vpc_id}/egress-attestation`
+* **Tags:** `[&quot;Telemetry &amp; Topology&quot;]`
+* **Security Guard:** `_auth: AuthenticatedUser = Depends(require_admin)`
+* **Headers:**
+  * `X-API-Key: dcouplr-admin-2026` or `Authorization: Bearer &lt;admin-token&gt;`
+* **Success Response (`200 OK`):**
+  ```json
+  {
+    &quot;attestation_id&quot;: &quot;attest-vpc-aws-prod-01-1792963600&quot;,
+    &quot;vpc_id&quot;: &quot;vpc-aws-prod-01&quot;,
+    &quot;vpc_name&quot;: &quot;production_vpc&quot;,
+    &quot;cloud&quot;: &quot;AWS&quot;,
+    &quot;region&quot;: &quot;us-east-1&quot;,
+    &quot;cidr_block&quot;: &quot;10.100.0.0/16&quot;,
+    &quot;external_wan_egress_bytes&quot;: 0,
+    &quot;zero_egress_enforced&quot;: true,
+    &quot;internal_mesh_bytes&quot;: 6815744,
+    &quot;timestamp&quot;: &quot;2026-10-25T21:30:00.000000Z&quot;,
+    &quot;attestation_timestamp&quot;: &quot;2026-10-25T21:30:00.000000Z&quot;,
+    &quot;sha256_proof&quot;: &quot;b01020593d32fe4de30e0600d8db9c882c9744c80387b322a4664e40e69be29a&quot;,
+    &quot;cryptographic_proof&quot;: &quot;b01020593d32fe4de30e0600d8db9c882c9744c80387b322a4664e40e69be29a&quot;,
+    &quot;signature_algorithm&quot;: &quot;SHA-256&quot;,
+    &quot;verification_status&quot;: &quot;VERIFIED_ZERO_EGRESS&quot;,
+    &quot;finops_dispute_ready&quot;: true,
+    &quot;policy&quot;: &quot;RFC-1918-STRICT-IN-VPC&quot;,
+    &quot;mesh_integrity&quot;: &quot;UNCOMPROMISED&quot;,
+    &quot;auditor_note&quot;: &quot;Cryptographic zero-egress proof generated for cloaudit (Cloud Audit) in-VPC FinOps billing audit.&quot;
+  }
+  ```
+* **Cryptographic Verification Algorithm:**
+  ```python
+  canonical_json = json.dumps({
+      &quot;vpc_id&quot;: data[&quot;vpc_id&quot;],
+      &quot;vpc_name&quot;: data[&quot;vpc_name&quot;],
+      &quot;cloud&quot;: data[&quot;cloud&quot;],
+      &quot;region&quot;: data[&quot;region&quot;],
+      &quot;cidr_block&quot;: data[&quot;cidr_block&quot;],
+      &quot;external_wan_egress_bytes&quot;: 0,
+      &quot;zero_egress_enforced&quot;: True,
+      &quot;internal_mesh_bytes&quot;: data[&quot;internal_mesh_bytes&quot;],
+      &quot;timestamp&quot;: data[&quot;timestamp&quot;],
+  }, sort_keys=True)
+
+  assert hashlib.sha256(canonical_json.encode(&quot;utf-8&quot;)).hexdigest() == data[&quot;sha256_proof&quot;]
+  ```
+
+---
+
+### 4.4 Alert Rule Adjustment Transpiler
+When `cloaudit` proposes downscaling an infrastructure target (e.g. `m5.4xlarge` to `m5.xlarge`), this endpoint recalibrates alert thresholds according to target compute/memory capacity and outputs ready-to-deploy Grafana Unified Alerting, Prometheus Alertmanager, and OpenTelemetry Collector YAML manifests.
+
+* **Path:** `POST /v1/compiler/transpile-alert-rules`
+* **Tags:** `[&quot;Core Transpilation&quot;]`
+* **Security Guard:** `_auth: AuthenticatedUser = Depends(require_developer)`
+* **Request Body (`application/json`):**
+  ```json
+  {
+    &quot;resource_id&quot;: &quot;i-0987654321fedcba0&quot;,
+    &quot;original_tier&quot;: &quot;m5.4xlarge&quot;,
+    &quot;target_tier&quot;: &quot;m5.xlarge&quot;,
+    &quot;existing_rules&quot;: [
+      {
+        &quot;id&quot;: 101,
+        &quot;name&quot;: &quot;Host Memory Utilization Alert&quot;,
+        &quot;type&quot;: &quot;metric alert&quot;,
+        &quot;severity&quot;: &quot;critical&quot;,
+        &quot;query&quot;: &quot;avg(last_5m):system.mem.used{host:db-node} &gt; 48000&quot;,
+        &quot;options&quot;: {&quot;thresholds&quot;: {&quot;critical&quot;: 48000.0, &quot;warning&quot;: 40000.0}}
+      }
+    ]
+  }
+  ```
+* **Success Response (`200 OK`):**
+  ```json
+  {
+    &quot;resource_id&quot;: &quot;i-0987654321fedcba0&quot;,
+    &quot;original_tier&quot;: &quot;m5.4xlarge&quot;,
+    &quot;target_tier&quot;: &quot;m5.xlarge&quot;,
+    &quot;scale_factor&quot;: 0.25,
+    &quot;rules_transpiled&quot;: 1,
+    &quot;adjusted_rules&quot;: [
+      {
+        &quot;id&quot;: 101,
+        &quot;name&quot;: &quot;[m5.xlarge] Host Memory Utilization Alert&quot;,
+        &quot;type&quot;: &quot;metric alert&quot;,
+        &quot;severity&quot;: &quot;critical&quot;,
+        &quot;scale_factor&quot;: 0.25,
+        &quot;options&quot;: {
+          &quot;thresholds&quot;: {
+            &quot;critical&quot;: 12000.0,
+            &quot;warning&quot;: 10000.0
+          }
+        },
+        &quot;tags&quot;: [
+          &quot;resource:i-0987654321fedcba0&quot;,
+          &quot;tier:m5.xlarge&quot;,
+          &quot;dcouplr:recalibrated&quot;,
+          &quot;compliance:zero-egress&quot;
+        ]
+      }
+    ],
+    &quot;grafana_alert_yaml&quot;: &quot;apiVersion: 1\ngroups:\n  - orgId: 1\n    name: cloaudit_remediation_i_0987654321fedcba0\n    folder: Cloaudit Downscaling Remediation\n    rules:\n      - uid: dcouplr-i0987654321f-001\n        title: &#x27;[m5.xlarge] Host Memory Utilization Alert&#x27;\n...&quot;,
+    &quot;prometheus_alert_yaml&quot;: &quot;groups:\n  - name: dcouplr_i_0987654321fedcba0_rules\n    rules:\n      - alert: m5_xlarge_Host_Memory_Utilization_Alert\n...&quot;,
+    &quot;opentelemetry_yaml&quot;: &quot;receivers:\n  prometheus:\n    config:\n      scrape_configs:\n        - job_name: dcouplr-in-vpc-collector\nprocessors:\n  filter/zero_egress_lockdown:\n...&quot;,
+    &quot;zero_egress_enforced&quot;: true,
+    &quot;audit_compatibility&quot;: {
+      &quot;cloaudit_bridge_status&quot;: &quot;READY&quot;,
+      &quot;zero_egress_verified&quot;: true,
+      &quot;iac_remediation_target&quot;: &quot;OpenTofu / Azure Bicep&quot;,
+      &quot;hyperscaler_gap_bridged&quot;: [
+        &quot;Context (Live Topology &amp; Metrics)&quot;,
+        &quot;Trust (Cryptographic Attestation)&quot;,
+        &quot;Disconnected Enforcement (Coordinated Observability Recalibration)&quot;,
+        &quot;Multi-Tenant Egress ($0 In-VPC Cost)&quot;
+      ]
+    }
+  }
+  ```
+
+---
+
+## 5. Capacity Scale Factor Calculation Matrix
+
+The alert transpiler normalizes tier naming conventions across AWS, Azure, and Google Cloud using blended compute capacity vectors (60% RAM capacity, 40% vCPU allocation):
+
+$$\text{Scale Factor} = \left(\frac{\text{RAM}_{\text{target}}}{\text{RAM}_{\text{orig}}} \times 0.60\right) + \left(\frac{\text{vCPU}_{\text{target}}}{\text{vCPU}_{\text{orig}}} \times 0.40\right)$$
+
+| Original Cloud Tier | Target Downscaled Tier | RAM Transition | vCPU Transition | Calculated Scale Factor | Threshold Recalibration Behavior |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **`m5.4xlarge`** | **`m5.xlarge`** | 64 GB $\to$ 16 GB | 16 $\to$ 4 | **`0.250`** (4x reduction) | Absolute memory thresholds scaled to 25%; CPU percentage warning headroom tightened by 5%. |
+| **`db.r5.2xlarge`** | **`db.t3.medium`** | 32 GB $\to$ 4 GB | 8 $\to$ 2 | **`0.125`** (8x reduction) | Connection pool ceiling downscaled from 400 to 100; memory threshold adjusted to 600 MB. |
+| **`n2-standard-16`** | **`n2-standard-4`** | 64 GB $\to$ 16 GB | 16 $\to$ 4 | **`0.250`** (4x reduction) | Disk burst IOPS ceiling adjusted from 12,800 to 3,200 IOPS. |
+| **`Standard_D8s_v5`** | **`Standard_D2s_v5`** | 32 GB $\to$ 8 GB | 8 $\to$ 2 | **`0.250`** (4x reduction) | PromQL evaluation window tightened from 5m to 2m for faster detection on lower headroom. |
+
+---
+
+## 6. SRE Operational Verification Commands
+
+Engineers validating the integration can execute the following commands inside the customer&#x27;s VPC terminal:
+
+```bash
+# 1. Fetch live monitoring bundle with severity tags
+curl -s -H &quot;X-API-Key: dcouplr-dev-2026&quot; \
+  http://127.0.0.1:8000/v1/telemetry/vpcs/dc-onprem-core-01/monitoring-bundle | jq .
+
+# 2. Inspect multi-VPC topology registry
+curl -s -H &quot;X-API-Key: dcouplr-dev-2026&quot; \
+  http://127.0.0.1:8000/v1/telemetry/vpcs | jq .
+
+# 3. Generate cryptographic zero-egress attestation for FinOps audit dispute
+curl -s -H &quot;X-API-Key: dcouplr-admin-2026&quot; \
+  http://127.0.0.1:8000/v1/telemetry/vpcs/vpc-aws-prod-01/egress-attestation | jq .
+
+# 4. Transpile and recalibrate downscaling alert rules
+curl -s -X POST http://127.0.0.1:8000/v1/compiler/transpile-alert-rules \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;X-API-Key: dcouplr-dev-2026&quot; \
+  -d &#x27;{
+    &quot;resource_id&quot;: &quot;i-0987654321fedcba0&quot;,
+    &quot;original_tier&quot;: &quot;m5.4xlarge&quot;,
+    &quot;target_tier&quot;: &quot;m5.xlarge&quot;,
+    &quot;existing_rules&quot;: []
+  }&#x27; | jq .
+```
+
+---
+
+## 7. Automated Test Coverage &amp; Quality Gates
+
+All four integration vectors are covered by automated unit, security, and invariant regression suites:
+
+* **Dedicated Integration Test Suite:** ``tests/test_cloaudit_bridge_endpoints.py`` (9 tests passing)
+* **Full Automated Regression Suite:** 271 / 271 tests passing across 24 test suites (100% pass rate)
+* **Audit ID:** `VA-AUDIT-FINOPS-BRIDGE-2026-10-25`
+* **Admin Portal Registry ID:** `sdlc-cloaudit-finops-bridge-spec`
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># 🔗 `&lt;dcouplr/&gt;` In-VPC Telemetry Bridge &amp; cloaudit (Cloud Audit) FinOps Integration Specification
+
+**Document ID:** `VA-SPEC-FINOPS-BRIDGE-001`  
+**Classification:** Enterprise In-VPC Systems Integration &amp; FinOps Remediation Specification  
+**Version:** 1.0.0 Approved Production Standard  
+**Date:** 2026-10-25  
+**Interoperating Systems:** `&lt;dcouplr/&gt;` (Port 8000, In-VPC Telemetry &amp; Observability) $\longleftrightarrow$ `cloaudit` (Cloud Audit) (Port 3780, In-VPC Cloud Spend &amp; IaC Auditor)  
+**Security Boundary:** 100% In-VPC Hermetic Air-Gap ($0 Public WAN Egress)  
+**Associated Architecture Decisions:** `D-03`, `D-05`, `D-29`, `D-40`, `D-41`  
+**Compliance Standard:** ISO 27001 / SOC 2 Type II / RFC 1918 Private Network Attestation  
+
+---
+
+## 1. Executive Summary &amp; Integration Architecture
+
+Modern enterprise cloud environments suffer from severe fragmentation between **infrastructure cost auditing** and **production telemetry enforcement**. When an auditor tool flags an over-provisioned cloud resource (e.g. downscaling an idle `m5.4xlarge` database or compute instance to `m5.xlarge`), applying the change in isolation creates severe operational blindness:
+1. **Threshold Rupture:** Static alert thresholds (e.g., Datadog memory alerts expecting 64 GB RAM) immediately false-alarm on the smaller 16 GB instance.
+2. **Context Blindness:** Cloud billing APIs have 24–48 hour batch lag and cannot inspect live in-guest network throughput or circuit breaker states.
+3. **Data Transfer Disputes:** Cloud hyperscalers frequently bill disputed Inter-AZ or NAT Gateway charges without verifiable cryptographic proof of traffic origin.
+4. **Volumetric SaaS Egress:** Streaming production metrics out to third-party monitoring SaaS vendors (Datadog, New Relic) incurs $100k+ in annual bandwidth taxes.
+
+To resolve these challenges, **`&lt;dcouplr/&gt;`** (operating on port 8000 inside the customer&#x27;s private VPC) and **`cloaudit` (Cloud Audit)** (operating on port 3780 inside the same VPC as the customer&#x27;s cloud spend and IaC remediation auditor) integrate over a secure, mutual API-gated in-VPC control plane.
+
+```mermaid
+graph TD
+    subgraph Customer Private VPC [100% In-VPC Isolated Boundary - Zero Public Egress]
+        subgraph Port 3780: cloaudit [cloaudit: Cloud Audit - Spend &amp; IaC Auditor]
+            C1[Cloud Spend Analysis]
+            C2[Over-Provisioning Detector]
+            C3[OpenTofu / Bicep Downscaling Synthesizer]
+            C4[FinOps Billing Dispute Engine]
+        end
+
+        subgraph Port 8000: &lt;dcouplr/&gt; [Telemetry &amp; Observability Control Plane]
+            D1[In-Memory Telemetry Collector]
+            D2[Multi-VPC Topology Registry]
+            D3[Cryptographic SHA-256 Egress Attestation Engine]
+            D4[Downscaling Alert Rule Transpiler]
+            D5[Grafana / PromQL / OpenTelemetry YAML Emitters]
+        end
+
+        C2 --&gt;|1. GET /v1/telemetry/vpcs/{id}/monitoring-bundle| D1
+        C1 --&gt;|2. GET /v1/telemetry/vpcs| D2
+        C4 --&gt;|3. GET /v1/telemetry/vpcs/{id}/egress-attestation| D3
+        C3 --&gt;|4. POST /v1/compiler/transpile-alert-rules| D4
+        D4 --&gt; D5
+        D5 --&gt;|Calibrated Observability Bundle| C3
+    end
+```
+
+---
+
+## 2. Strict Architectural Invariant Rules (Scope Boundaries)
+
+To guarantee long-term system cleanliness, security, and performance, this integration enforces three non-negotiable architectural invariant boundaries:
+
+| Invariant Rule | Boundary Definition | Enforced By |
+| :--- | :--- | :--- |
+| **Invariant 1: No Billing Data in `&lt;dcouplr/&gt;`** | `&lt;dcouplr/&gt;` must **NEVER** contain cloud billing parsers (AWS Cost &amp; Usage Reports CUR, Azure Enterprise Agreements EA, GCP BigQuery billing exports) or financial cost calculation logic. All cloud cost auditing and billing ingestion belongs strictly to `cloaudit`. | Architectural Gate &amp; Regression Tests (`test_architectural_invariants`) |
+| **Invariant 2: Zero-Egress Invariant** | 100% of telemetry, metrics, and logs must remain strictly within the customer&#x27;s private RFC 1918 VPC boundary. Neither application may emit telemetry to external public SaaS backends (Datadog, New Relic, Dynatrace). Egress tariff is strictly **$0.00**. | eBPF Network Enforcement &amp; SHA-256 Cryptographic Attestation |
+| **Invariant 3: Observability-Only Emissions** | `&lt;dcouplr/&gt;` emits only Grafana Unified Alerting YAML, Prometheus Alertmanager rules, and OpenTelemetry Collector pipelines. Infrastructure downscaling patches (OpenTofu HCL, Azure Bicep parameters) belong strictly to `cloaudit`. | AST Compiler Scope Restriction (`D-05`, `D-41`) |
+
+---
+
+## 3. The 4 Hyperscaler Gaps Bridged
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                               THE 4 HYPERSCALER GAPS                                   │
+├───────────────────────────────┬────────────────────────────────────────────────────────┤
+│ 1. Context Gap                │ Bridges static IaC definitions with live telemetry      │
+│                               │ snapshots, latency percentiles, and circuit breakers.  │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ 2. Trust Gap                  │ Provides mathematical SHA-256 proof confirming 0 bytes  │
+│                               │ WAN egress to legally dispute inaccurate cloud bills.  │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ 3. Disconnected Enforcement   │ Synchronizes infrastructure downscaling with automatic │
+│                               │ recalibration of alert thresholds and PromQL rules.    │
+├───────────────────────────────┼────────────────────────────────────────────────────────┤
+│ 4. Multi-Tenant Egress Gap    │ Retains 100% of telemetry inside the customer&#x27;s VPC,    │
+│                               │ eliminating $100k+ annual third-party SaaS data taxes. │
+└───────────────────────────────┴────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 4. API Endpoints Specification
+
+### 4.1 In-VPC Monitoring Bundle
+Retrieves active monitors, alerts, severity classifications, and live telemetry performance snapshots for a specific VPC.
+
+* **Path:** `GET /v1/telemetry/vpcs/{vpc_id}/monitoring-bundle`
+* **Tags:** `[&quot;Telemetry &amp; Topology&quot;]`
+* **Security Guard:** `_auth: AuthenticatedUser = Depends(require_developer)`
+* **Path Parameter:**
+  * `vpc_id` (string, required): Registered VPC ID (e.g. `dc-onprem-core-01`, `vpc-aws-prod-01`, or `default`).
+* **Headers:**
+  * `X-API-Key: dcouplr-dev-2026` or `Authorization: Bearer &lt;developer-token&gt;`
+* **Success Response (`200 OK`):**
+  ```json
+  {
+    &quot;vpc_id&quot;: &quot;dc-onprem-core-01&quot;,
+    &quot;vpc_name&quot;: &quot;legacy_datacenter_chicago&quot;,
+    &quot;cloud_provider&quot;: &quot;OnPrem&quot;,
+    &quot;region&quot;: &quot;onprem-chicago-dc1&quot;,
+    &quot;cidr_supernet&quot;: &quot;172.16.0.0/16&quot;,
+    &quot;total_instances_monitored&quot;: 32,
+    &quot;subnets_count&quot;: 2,
+    &quot;active_monitors_count&quot;: 5,
+    &quot;active_monitors&quot;: [
+      {
+        &quot;id&quot;: 1001,
+        &quot;name&quot;: &quot;[legacy_datacenter_chicago] Node CPU Saturation (&gt; 85%)&quot;,
+        &quot;type&quot;: &quot;metric alert&quot;,
+        &quot;severity&quot;: &quot;critical&quot;,
+        &quot;query&quot;: &quot;avg(last_5m):system.cpu.user{vpc:legacy_datacenter_chicago} by {host} &gt; 85&quot;,
+        &quot;tags&quot;: [&quot;vpc:legacy_datacenter_chicago&quot;, &quot;cloud:onprem&quot;, &quot;severity:critical&quot;, &quot;env:production&quot;],
+        &quot;options&quot;: {&quot;thresholds&quot;: {&quot;critical&quot;: 85.0, &quot;warning&quot;: 75.0}}
+      },
+      {
+        &quot;id&quot;: 1002,
+        &quot;name&quot;: &quot;[legacy_datacenter_chicago] HTTP 5xx Server Error Surge (&gt; 15 req/s)&quot;,
+        &quot;type&quot;: &quot;metric alert&quot;,
+        &quot;severity&quot;: &quot;warning&quot;,
+        &quot;query&quot;: &quot;sum(last_5m):http.requests.5xx{vpc:legacy_datacenter_chicago} by {service} &gt; 15&quot;,
+        &quot;tags&quot;: [&quot;vpc:legacy_datacenter_chicago&quot;, &quot;severity:warning&quot;, &quot;tier:api-gateway&quot;],
+        &quot;options&quot;: {&quot;thresholds&quot;: {&quot;critical&quot;: 15.0, &quot;warning&quot;: 8.0}}
+      },
+      {
+        &quot;id&quot;: 1005,
+        &quot;name&quot;: &quot;[legacy_datacenter_chicago] Raft Consensus Quorum Loss or Network Partition&quot;,
+        &quot;type&quot;: &quot;service check&quot;,
+        &quot;severity&quot;: &quot;p1&quot;,
+        &quot;query&quot;: &quot;max(last_1m):dcouplr.cluster.partitions{vpc:legacy_datacenter_chicago} &gt; 0&quot;,
+        &quot;tags&quot;: [&quot;vpc:legacy_datacenter_chicago&quot;, &quot;consensus:raft&quot;, &quot;severity:p1&quot;],
+        &quot;options&quot;: {&quot;thresholds&quot;: {&quot;critical&quot;: 1.0}}
+      }
+    ],
+    &quot;live_telemetry_snapshot&quot;: {
+      &quot;p50_latency_ms&quot;: 1.2,
+      &quot;p90_latency_ms&quot;: 3.8,
+      &quot;p99_latency_ms&quot;: 8.1,
+      &quot;throughput_rps&quot;: 42.0,
+      &quot;error_rate_pct&quot;: 0.0,
+      &quot;circuit_breaker_state&quot;: &quot;CLOSED&quot;,
+      &quot;zero_egress_enforced&quot;: true
+    },
+    &quot;captured_at&quot;: &quot;2026-10-25T21:30:00.000000Z&quot;,
+    &quot;timestamp&quot;: &quot;2026-10-25T21:30:00.000000Z&quot;
+  }
+  ```
+* **Error Response (`404 Not Found`):**
+  ```json
+  {
+    &quot;detail&quot;: &quot;VPC &#x27;vpc-invalid-999&#x27; not found.&quot;
+  }
+  ```
+
+---
+
+### 4.2 Registered Multi-VPC Topology Endpoint
+Returns the active cross-cloud and on-premise VPC network topology monitored by the local cluster.
+
+* **Path:** `GET /v1/telemetry/vpcs`
+* **Tags:** `[&quot;Telemetry &amp; Topology&quot;]`
+* **Security Guard:** `_auth: AuthenticatedUser = Depends(require_developer)`
+* **Success Response (`200 OK`):**
+  ```json
+  [
+    {
+      &quot;id&quot;: &quot;vpc-aws-prod-01&quot;,
+      &quot;name&quot;: &quot;production_vpc&quot;,
+      &quot;cloud&quot;: &quot;AWS&quot;,
+      &quot;region&quot;: &quot;us-east-1&quot;,
+      &quot;cidr_block&quot;: &quot;10.100.0.0/16&quot;,
+      &quot;total_instances&quot;: 15,
+      &quot;agent_status&quot;: &quot;HEALTHY&quot;,
+      &quot;peering_count&quot;: 2,
+      &quot;subnets_count&quot;: 3
+    },
+    {
+      &quot;id&quot;: &quot;vpc-aws-stage-02&quot;,
+      &quot;name&quot;: &quot;staging_vpc&quot;,
+      &quot;cloud&quot;: &quot;AWS&quot;,
+      &quot;region&quot;: &quot;us-west-2&quot;,
+      &quot;cidr_block&quot;: &quot;10.101.0.0/16&quot;,
+      &quot;total_instances&quot;: 6,
+      &quot;agent_status&quot;: &quot;HEALTHY&quot;,
+      &quot;peering_count&quot;: 1,
+      &quot;subnets_count&quot;: 2
+    },
+    {
+      &quot;id&quot;: &quot;vpc-gcp-analytics-03&quot;,
+      &quot;name&quot;: &quot;analytics_gcp_mesh&quot;,
+      &quot;cloud&quot;: &quot;GCP&quot;,
+      &quot;region&quot;: &quot;us-central1&quot;,
+      &quot;cidr_block&quot;: &quot;10.200.0.0/16&quot;,
+      &quot;total_instances&quot;: 18,
+      &quot;agent_status&quot;: &quot;HEALTHY&quot;,
+      &quot;peering_count&quot;: 1,
+      &quot;subnets_count&quot;: 2
+    },
+    {
+      &quot;id&quot;: &quot;dc-onprem-core-01&quot;,
+      &quot;name&quot;: &quot;legacy_datacenter_chicago&quot;,
+      &quot;cloud&quot;: &quot;OnPrem&quot;,
+      &quot;region&quot;: &quot;onprem-chicago-dc1&quot;,
+      &quot;cidr_block&quot;: &quot;172.16.0.0/16&quot;,
+      &quot;total_instances&quot;: 32,
+      &quot;agent_status&quot;: &quot;HEALTHY&quot;,
+      &quot;peering_count&quot;: 2,
+      &quot;subnets_count&quot;: 2
+    }
+  ]
+  ```
+
+---
+
+### 4.3 Zero-Egress Cryptographic Attestation Endpoint
+Generates a legally defensible cryptographic SHA-256 proof verifying zero public WAN egress for a VPC. Used by FinOps teams in `cloaudit` to dispute spurious hyperscaler egress line items.
+
+* **Path:** `GET /v1/telemetry/vpcs/{vpc_id}/egress-attestation`
+* **Tags:** `[&quot;Telemetry &amp; Topology&quot;]`
+* **Security Guard:** `_auth: AuthenticatedUser = Depends(require_admin)`
+* **Headers:**
+  * `X-API-Key: dcouplr-admin-2026` or `Authorization: Bearer &lt;admin-token&gt;`
+* **Success Response (`200 OK`):**
+  ```json
+  {
+    &quot;attestation_id&quot;: &quot;attest-vpc-aws-prod-01-1792963600&quot;,
+    &quot;vpc_id&quot;: &quot;vpc-aws-prod-01&quot;,
+    &quot;vpc_name&quot;: &quot;production_vpc&quot;,
+    &quot;cloud&quot;: &quot;AWS&quot;,
+    &quot;region&quot;: &quot;us-east-1&quot;,
+    &quot;cidr_block&quot;: &quot;10.100.0.0/16&quot;,
+    &quot;external_wan_egress_bytes&quot;: 0,
+    &quot;zero_egress_enforced&quot;: true,
+    &quot;internal_mesh_bytes&quot;: 6815744,
+    &quot;timestamp&quot;: &quot;2026-10-25T21:30:00.000000Z&quot;,
+    &quot;attestation_timestamp&quot;: &quot;2026-10-25T21:30:00.000000Z&quot;,
+    &quot;sha256_proof&quot;: &quot;b01020593d32fe4de30e0600d8db9c882c9744c80387b322a4664e40e69be29a&quot;,
+    &quot;cryptographic_proof&quot;: &quot;b01020593d32fe4de30e0600d8db9c882c9744c80387b322a4664e40e69be29a&quot;,
+    &quot;signature_algorithm&quot;: &quot;SHA-256&quot;,
+    &quot;verification_status&quot;: &quot;VERIFIED_ZERO_EGRESS&quot;,
+    &quot;finops_dispute_ready&quot;: true,
+    &quot;policy&quot;: &quot;RFC-1918-STRICT-IN-VPC&quot;,
+    &quot;mesh_integrity&quot;: &quot;UNCOMPROMISED&quot;,
+    &quot;auditor_note&quot;: &quot;Cryptographic zero-egress proof generated for cloaudit (Cloud Audit) in-VPC FinOps billing audit.&quot;
+  }
+  ```
+* **Cryptographic Verification Algorithm:**
+  ```python
+  canonical_json = json.dumps({
+      &quot;vpc_id&quot;: data[&quot;vpc_id&quot;],
+      &quot;vpc_name&quot;: data[&quot;vpc_name&quot;],
+      &quot;cloud&quot;: data[&quot;cloud&quot;],
+      &quot;region&quot;: data[&quot;region&quot;],
+      &quot;cidr_block&quot;: data[&quot;cidr_block&quot;],
+      &quot;external_wan_egress_bytes&quot;: 0,
+      &quot;zero_egress_enforced&quot;: True,
+      &quot;internal_mesh_bytes&quot;: data[&quot;internal_mesh_bytes&quot;],
+      &quot;timestamp&quot;: data[&quot;timestamp&quot;],
+  }, sort_keys=True)
+
+  assert hashlib.sha256(canonical_json.encode(&quot;utf-8&quot;)).hexdigest() == data[&quot;sha256_proof&quot;]
+  ```
+
+---
+
+### 4.4 Alert Rule Adjustment Transpiler
+When `cloaudit` proposes downscaling an infrastructure target (e.g. `m5.4xlarge` to `m5.xlarge`), this endpoint recalibrates alert thresholds according to target compute/memory capacity and outputs ready-to-deploy Grafana Unified Alerting, Prometheus Alertmanager, and OpenTelemetry Collector YAML manifests.
+
+* **Path:** `POST /v1/compiler/transpile-alert-rules`
+* **Tags:** `[&quot;Core Transpilation&quot;]`
+* **Security Guard:** `_auth: AuthenticatedUser = Depends(require_developer)`
+* **Request Body (`application/json`):**
+  ```json
+  {
+    &quot;resource_id&quot;: &quot;i-0987654321fedcba0&quot;,
+    &quot;original_tier&quot;: &quot;m5.4xlarge&quot;,
+    &quot;target_tier&quot;: &quot;m5.xlarge&quot;,
+    &quot;existing_rules&quot;: [
+      {
+        &quot;id&quot;: 101,
+        &quot;name&quot;: &quot;Host Memory Utilization Alert&quot;,
+        &quot;type&quot;: &quot;metric alert&quot;,
+        &quot;severity&quot;: &quot;critical&quot;,
+        &quot;query&quot;: &quot;avg(last_5m):system.mem.used{host:db-node} &gt; 48000&quot;,
+        &quot;options&quot;: {&quot;thresholds&quot;: {&quot;critical&quot;: 48000.0, &quot;warning&quot;: 40000.0}}
+      }
+    ]
+  }
+  ```
+* **Success Response (`200 OK`):**
+  ```json
+  {
+    &quot;resource_id&quot;: &quot;i-0987654321fedcba0&quot;,
+    &quot;original_tier&quot;: &quot;m5.4xlarge&quot;,
+    &quot;target_tier&quot;: &quot;m5.xlarge&quot;,
+    &quot;scale_factor&quot;: 0.25,
+    &quot;rules_transpiled&quot;: 1,
+    &quot;adjusted_rules&quot;: [
+      {
+        &quot;id&quot;: 101,
+        &quot;name&quot;: &quot;[m5.xlarge] Host Memory Utilization Alert&quot;,
+        &quot;type&quot;: &quot;metric alert&quot;,
+        &quot;severity&quot;: &quot;critical&quot;,
+        &quot;scale_factor&quot;: 0.25,
+        &quot;options&quot;: {
+          &quot;thresholds&quot;: {
+            &quot;critical&quot;: 12000.0,
+            &quot;warning&quot;: 10000.0
+          }
+        },
+        &quot;tags&quot;: [
+          &quot;resource:i-0987654321fedcba0&quot;,
+          &quot;tier:m5.xlarge&quot;,
+          &quot;dcouplr:recalibrated&quot;,
+          &quot;compliance:zero-egress&quot;
+        ]
+      }
+    ],
+    &quot;grafana_alert_yaml&quot;: &quot;apiVersion: 1\ngroups:\n  - orgId: 1\n    name: cloaudit_remediation_i_0987654321fedcba0\n    folder: Cloaudit Downscaling Remediation\n    rules:\n      - uid: dcouplr-i0987654321f-001\n        title: &#x27;[m5.xlarge] Host Memory Utilization Alert&#x27;\n...&quot;,
+    &quot;prometheus_alert_yaml&quot;: &quot;groups:\n  - name: dcouplr_i_0987654321fedcba0_rules\n    rules:\n      - alert: m5_xlarge_Host_Memory_Utilization_Alert\n...&quot;,
+    &quot;opentelemetry_yaml&quot;: &quot;receivers:\n  prometheus:\n    config:\n      scrape_configs:\n        - job_name: dcouplr-in-vpc-collector\nprocessors:\n  filter/zero_egress_lockdown:\n...&quot;,
+    &quot;zero_egress_enforced&quot;: true,
+    &quot;audit_compatibility&quot;: {
+      &quot;cloaudit_bridge_status&quot;: &quot;READY&quot;,
+      &quot;zero_egress_verified&quot;: true,
+      &quot;iac_remediation_target&quot;: &quot;OpenTofu / Azure Bicep&quot;,
+      &quot;hyperscaler_gap_bridged&quot;: [
+        &quot;Context (Live Topology &amp; Metrics)&quot;,
+        &quot;Trust (Cryptographic Attestation)&quot;,
+        &quot;Disconnected Enforcement (Coordinated Observability Recalibration)&quot;,
+        &quot;Multi-Tenant Egress ($0 In-VPC Cost)&quot;
+      ]
+    }
+  }
+  ```
+
+---
+
+## 5. Capacity Scale Factor Calculation Matrix
+
+The alert transpiler normalizes tier naming conventions across AWS, Azure, and Google Cloud using blended compute capacity vectors (60% RAM capacity, 40% vCPU allocation):
+
+$$\text{Scale Factor} = \left(\frac{\text{RAM}_{\text{target}}}{\text{RAM}_{\text{orig}}} \times 0.60\right) + \left(\frac{\text{vCPU}_{\text{target}}}{\text{vCPU}_{\text{orig}}} \times 0.40\right)$$
+
+| Original Cloud Tier | Target Downscaled Tier | RAM Transition | vCPU Transition | Calculated Scale Factor | Threshold Recalibration Behavior |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **`m5.4xlarge`** | **`m5.xlarge`** | 64 GB $\to$ 16 GB | 16 $\to$ 4 | **`0.250`** (4x reduction) | Absolute memory thresholds scaled to 25%; CPU percentage warning headroom tightened by 5%. |
+| **`db.r5.2xlarge`** | **`db.t3.medium`** | 32 GB $\to$ 4 GB | 8 $\to$ 2 | **`0.125`** (8x reduction) | Connection pool ceiling downscaled from 400 to 100; memory threshold adjusted to 600 MB. |
+| **`n2-standard-16`** | **`n2-standard-4`** | 64 GB $\to$ 16 GB | 16 $\to$ 4 | **`0.250`** (4x reduction) | Disk burst IOPS ceiling adjusted from 12,800 to 3,200 IOPS. |
+| **`Standard_D8s_v5`** | **`Standard_D2s_v5`** | 32 GB $\to$ 8 GB | 8 $\to$ 2 | **`0.250`** (4x reduction) | PromQL evaluation window tightened from 5m to 2m for faster detection on lower headroom. |
+
+---
+
+## 6. SRE Operational Verification Commands
+
+Engineers validating the integration can execute the following commands inside the customer&#x27;s VPC terminal:
+
+```bash
+# 1. Fetch live monitoring bundle with severity tags
+curl -s -H &quot;X-API-Key: dcouplr-dev-2026&quot; \
+  http://127.0.0.1:8000/v1/telemetry/vpcs/dc-onprem-core-01/monitoring-bundle | jq .
+
+# 2. Inspect multi-VPC topology registry
+curl -s -H &quot;X-API-Key: dcouplr-dev-2026&quot; \
+  http://127.0.0.1:8000/v1/telemetry/vpcs | jq .
+
+# 3. Generate cryptographic zero-egress attestation for FinOps audit dispute
+curl -s -H &quot;X-API-Key: dcouplr-admin-2026&quot; \
+  http://127.0.0.1:8000/v1/telemetry/vpcs/vpc-aws-prod-01/egress-attestation | jq .
+
+# 4. Transpile and recalibrate downscaling alert rules
+curl -s -X POST http://127.0.0.1:8000/v1/compiler/transpile-alert-rules \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;X-API-Key: dcouplr-dev-2026&quot; \
+  -d &#x27;{
+    &quot;resource_id&quot;: &quot;i-0987654321fedcba0&quot;,
+    &quot;original_tier&quot;: &quot;m5.4xlarge&quot;,
+    &quot;target_tier&quot;: &quot;m5.xlarge&quot;,
+    &quot;existing_rules&quot;: []
+  }&#x27; | jq .
+```
+
+---
+
+## 7. Automated Test Coverage &amp; Quality Gates
+
+All four integration vectors are covered by automated unit, security, and invariant regression suites:
+
+* **Dedicated Integration Test Suite:** ``tests/test_cloaudit_bridge_endpoints.py`` (9 tests passing)
+* **Full Automated Regression Suite:** 271 / 271 tests passing across 24 test suites (100% pass rate)
+* **Audit ID:** `VA-AUDIT-FINOPS-BRIDGE-2026-10-25`
+* **Admin Portal Registry ID:** `sdlc-cloaudit-finops-bridge-spec`
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

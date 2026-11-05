@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-DAY0-POST-PURCHASE-AND-CLI-INSTALLATION-LIFECYCLE.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-DAY0-POST-PURCHASE-AND-CLI-INSTALLATION-LIFECYCLE.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-DAY0-POST-PURCHASE-AND-CLI-INSTALLATION-LIFECYCLE.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="dcouplr-day-0-post-purchase-cli-installation-lifecycle-runbook">📘 <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Day-0 Post-Purchase &amp; CLI Installation Lifecycle Runbook</h1>
+<p><strong>Document ID:</strong> <code>VA-RUN-DAY0-INSTALL-ADMIN-001</code><br />
+<strong>Classification:</strong> Enterprise Operational Architecture &amp; Administrator Onboarding<br />
+<strong>Security Guarantee:</strong> Zero-Cloud-Exfiltration ($0.00 WAN Egress Guaranteed)<br />
+<strong>Target Release:</strong> v1.0.0 GA<br />
+<strong>Canonical Domain:</strong> <code>https://dcouplr.com</code></p>
+<hr />
+<h2 id="executive-summary">Executive Summary</h2>
+<p>This runbook establishes the authoritative, end-to-end lifecycle following enterprise purchase of <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>, covering the initial CLI installation, automated Application Administrator credentials provisioning, and Day-0 web component usability.</p>
+<h3 id="key-architectural-answers">Key Architectural Answers:</h3>
+<ol>
+<li><strong>Is <code>http://localhost:8000/AdminDesk</code> one of the few components usable immediately during/after CLI installation?</strong><br />
+<strong>YES.</strong> The <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> distribution is an all-in-one, self-contained, air-gapped appliance binary. The CLI engine, the embedded SQLite Single Source of Truth (SSOT), and the web application desks (<code>/AdminDesk</code>, <code>/companyadmin</code>, <code>/DBADesk</code>, <code>/dashboard</code>, <code>/matrix</code>, <code>/compiler</code>) are bundled directly into the installation package. Before any downstream telemetry agents, worker nodes, or VPC collectors are connected, the Application Administrator boots <code>dcouplr serve --port 8000</code> to access <code>/AdminDesk</code> for initial license activation, capacity sizing, encryption key generation, and RBAC user provisioning.</li>
+<li><strong>When does Application Administrator credential setup occur?</strong><br />
+<strong>During the CLI installation itself.</strong> Step 3c of the enterprise installer (<code>install-enterprise.sh</code> / <code>install-enterprise.ps1</code>) prompts the operator to configure the Application Administrator username and password (or ingests them via <code>DCOUPLR_ADMIN_USER</code> and <code>DCOUPLR_ADMIN_PASSWORD</code>). The CLI immediately provisions the administrator into the in-VPC SQLite SSOT (<code>rbac_users</code> and <code>system_configuration_ssot</code>) with full <code>Obs-Admins</code> authority before the web server ever starts.</li>
+</ol>
+<hr />
+<h2 id="1-end-to-end-post-purchase-timeline-chronological-flow">1. End-to-End Post-Purchase Timeline (Chronological Flow)</h2>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">flowchart TD
+    subgraph Phase1[&quot;Phase 1: Purchase &amp; Entitlement Issuance&quot;]
+        A[Commercial Subscription / PO Signed] --&gt; B[Ed25519 Cryptographic Token Issued&lt;br/&gt;DCL-CLUS-SM-COMMERCIAL-PRO-E-DA86FCB2B]
+        B --&gt; C[Air-Gap Release Bundle / Installer Delivery&lt;br/&gt;install-enterprise.sh / dcouplr-enterprise.tar.gz]
+    end
+
+    subgraph Phase2[&quot;Phase 2: CLI Installation Execution&quot;]
+        C --&gt; D[Run Enterprise Installer&lt;br/&gt;curl -fsSL https://dcouplr.com/install-enterprise.sh | sh]
+        D --&gt; E[Step 1: Install Engine Binary to /usr/local/bin/dcouplr]
+        E --&gt; F[Step 2: Enter Commercial License Key]
+        F --&gt; G[Step 3: Offline Ed25519 Signature Verification&lt;br/&gt;Zero WAN Egress / ~/.dcouplr/license.json]
+    end
+
+    subgraph Phase3[&quot;Phase 3: Cryptographic &amp; Admin Provisioning&quot;]
+        G --&gt; H[Step 3b: Generate Hardware Machine Fingerprint&lt;br/&gt;Provision Hub Transmission Key ~/.dcouplr/hub_transmission.key]
+        H --&gt; I[Step 3c: Provision Application Administrator Account&lt;br/&gt;Prompts for Admin User &amp; Pass / dcouplr auth admin-user]
+        I --&gt; J[Initialize in-VPC SQLite SSOT Database&lt;br/&gt;Seed rbac_users &amp; system_configuration_ssot]
+    end
+
+    subgraph Phase4[&quot;Phase 4: Daemon Startup &amp; Day-0 Usability&quot;]
+        J --&gt; K[Step 4: Inspect Active Entitlement Status&lt;br/&gt;dcouplr auth status]
+        K --&gt; L[Operator Launches In-VPC Daemon&lt;br/&gt;dcouplr serve --port 8000]
+        L --&gt; M[Access http://localhost:8000/AdminDesk&lt;br/&gt;Login with Provisioned Admin Credentials]
+    end
+
+    Phase1 --&gt; Phase2
+    Phase2 --&gt; Phase3
+    Phase3 --&gt; Phase4
+</code></pre></div>
+<hr />
+<h2 id="2-detailed-lifecycle-walkthrough">2. Detailed Lifecycle Walkthrough</h2>
+<h3 id="phase-1-commercial-purchase-entitlement-fulfillment">Phase 1: Commercial Purchase &amp; Entitlement Fulfillment</h3>
+<ol>
+<li><strong>Subscription Options:</strong>
+<ul>
+<li><strong>Marketplace:</strong> Subscribed via AWS Marketplace or GCP Cloud Commerce.</li>
+<li><strong>Direct Enterprise PO:</strong> Executed Master Services Agreement (MSA) with Varinull Operations.</li>
+</ul>
+</li>
+<li><strong>Entitlement Delivery:</strong>
+<ul>
+<li>The customer receives an authoritative Ed25519 cryptographic license key (e.g. <code>DCL-CLUS-SM-COMMERCIAL-PRO-E-DA86FCB2B</code>).</li>
+<li>The license key contains self-attesting cryptographic claims: Tier (<code>Cluster Pro</code>), Licensed Node Capacity (<code>50 Nodes</code>), SLA Level (<code>Priority Business 4-Hour Response</code>), and Expiration.</li>
+<li>Customer receives the offline distribution package or curl-to-shell installer URL.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3 id="phase-2-cli-installation-execution">Phase 2: CLI Installation Execution</h3>
+<h4 id="linux-macos-installation">Linux &amp; macOS Installation:</h4>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Interactive Mode (Prompts for License Key &amp; Admin Credentials):
+curl -fsSL https://dcouplr.com/install-enterprise.sh | sh
+
+# Non-Interactive / Unattended CI/CD Mode:
+DCOUPLR_LICENSE_KEY=&quot;DCL-CLUS-SM-COMMERCIAL-PRO-E-DA86FCB2B&quot; \
+DCOUPLR_ADMIN_USER=&quot;companyadmin&quot; \
+DCOUPLR_ADMIN_PASSWORD=&quot;MySecureAdminPass2026!&quot; \
+curl -fsSL https://dcouplr.com/install-enterprise.sh | sh
+</code></pre></div>
+<h4 id="windows-powershell-installation">Windows (PowerShell) Installation:</h4>
+<div class="code-box"><div class="code-box-header"><span>powershell</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-powershell"># Interactive Mode:
+irm https://dcouplr.com/install-enterprise.ps1 | iex
+
+# Non-Interactive Mode:
+$env:DCOUPLR_LICENSE_KEY=&quot;DCL-CLUS-SM-COMMERCIAL-PRO-E-DA86FCB2B&quot;
+$env:DCOUPLR_ADMIN_USER=&quot;companyadmin&quot;
+$env:DCOUPLR_ADMIN_PASSWORD=&quot;MySecureAdminPass2026!&quot;
+irm https://dcouplr.com/install-enterprise.ps1 | iex
+</code></pre></div>
+<hr />
+<h3 id="phase-3-cryptographic-administrator-account-provisioning">Phase 3: Cryptographic &amp; Administrator Account Provisioning</h3>
+<p>During Step 3c of the installer, the installation script invokes:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">dcouplr auth admin-user \
+    --username &quot;${ADMIN_USER:-companyadmin}&quot; \
+    --password &quot;${ADMIN_PASS:-comp-admin-2026}&quot; \
+    --email &quot;${ADMIN_EMAIL:-companyadmin@enterprise.internal}&quot;
+</code></pre></div>
+<h4 id="what-happens-internally">What Happens Internally:</h4>
+<ol>
+<li><strong>In-VPC SQLite Database Initialization:</strong>
+<ul>
+<li>Connects to the local database file (<code>data/vpc_telemetry.db</code> / <code>~/.dcouplr/corp_central_vault.db</code>).</li>
+<li>Ensures the authoritative <code>rbac_users</code>, <code>system_configuration_ssot</code>, and <code>audit_logs</code> tables exist with PRAGMA integrity verification.</li>
+</ul>
+</li>
+<li><strong>RBAC Record Insertion (<code>rbac_users</code>):</strong>
+<ul>
+<li>Injects the administrator with <code>user_id = &lt;username&gt;</code>, role <code>Obs-Admins</code>, team scope <code>*</code>, and authentication provider <code>local_ssot</code>.</li>
+</ul>
+</li>
+<li><strong>Password Configuration (<code>system_configuration_ssot</code>):</strong>
+<ul>
+<li>Securely stores the administrator's password in the SSOT configuration table (<code>auth_user_pass_&lt;username&gt;</code>).</li>
+</ul>
+</li>
+<li><strong>Audit Logging:</strong>
+<ul>
+<li>Writes an immutable audit trail entry into <code>audit_logs</code>:
+<code>actor_username=&quot;cli-installer&quot;, action=&quot;ADMIN_PROVISIONED&quot;, target_resource=&quot;rbac_users:&lt;username&gt;&quot;</code></li>
+</ul>
+</li>
+<li><strong>Zero-WAN Egress Guarantee:</strong>
+<ul>
+<li>All credentials and hashes remain strictly inside the local host disk and RAM. Zero bytes are exfiltrated to the internet ($0.00 WAN egress).</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3 id="phase-4-daemon-startup-immediate-day-0-access">Phase 4: Daemon Startup &amp; Immediate Day-0 Access</h3>
+<p>Once the installer completes, the administrator executes:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">dcouplr serve --port 8000
+</code></pre></div>
+<p><em>(Or enables the Linux systemd daemon via <code>systemctl enable --now dcouplr</code>)</em>.</p>
+<p>The FastAPI web engine initializes in less than 50 milliseconds, immediately exposing all embedded management consoles.</p>
+<hr />
+<h2 id="3-day-0-component-usability-matrix">3. Day-0 Component Usability Matrix</h2>
+<p>The following matrix distinguishes between components that are <strong>usable immediately on Day-0</strong> (zero nodes or external agents required) versus components that activate on Day-1/Day-2 once cluster nodes begin reporting telemetry:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Component / Console URL</th>
+<th style="text-align:left">Usability Status</th>
+<th style="text-align:left">Day-0 Purpose &amp; Capabilities</th>
+<th style="text-align:left">External Ingestion Required?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/AdminDesk</code></strong></td>
+<td style="text-align:left"><strong>IMMEDIATELY USABLE (Flagship)</strong></td>
+<td style="text-align:left">Authoritative 2-Way Enterprise Control Desk. Configure license keys, node census quotas, encryption keys, anti-flap audit trails, and financial reconciliation.</td>
+<td style="text-align:left"><strong>NO (100% Standalone)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/companyadmin</code></strong></td>
+<td style="text-align:left"><strong>IMMEDIATELY USABLE</strong></td>
+<td style="text-align:left">In-VPC Company Administrator Console. Local identity management, SQLCipher database encryption rotation, data retention, and backup snapshots.</td>
+<td style="text-align:left"><strong>NO (100% Standalone)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/DBADesk</code></strong></td>
+<td style="text-align:left"><strong>IMMEDIATELY USABLE</strong></td>
+<td style="text-align:left">Database Administrator Inspection Console. Fluid zero-egress console, live SQLite PRAGMA storage health, schema explorer, and read-only SQL scratchpad with 403 mutation guardrails.</td>
+<td style="text-align:left"><strong>NO (100% Standalone)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/dashboard</code></strong></td>
+<td style="text-align:left"><strong>IMMEDIATELY USABLE</strong></td>
+<td style="text-align:left">SRE Live Observability Dashboard. Renders host ring-buffers, in-memory CPU/RAM gauges, and simulated traffic topologies.</td>
+<td style="text-align:left"><strong>NO (Pre-seeded with Local Host Metrics)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/matrix</code></strong></td>
+<td style="text-align:left"><strong>IMMEDIATELY USABLE</strong></td>
+<td style="text-align:left">7-Tier Full-Stack Invariant Matrix. Interactive verification of 127 architectural invariants across compute, networking, and data tiers.</td>
+<td style="text-align:left"><strong>NO (Pre-seeded SSOT Rules)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/compiler</code></strong></td>
+<td style="text-align:left"><strong>IMMEDIATELY USABLE</strong></td>
+<td style="text-align:left">Living AST Migration Compiler Studio. Interactive transpilation of Datadog, CloudWatch, and Terraform HCL into Prometheus rules and OpenTofu.</td>
+<td style="text-align:left"><strong>NO (Local File &amp; AST Parsing)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/docs</code></strong></td>
+<td style="text-align:left"><strong>IMMEDIATELY USABLE</strong></td>
+<td style="text-align:left">Self-Hosted Air-Gapped TechDocs. Full architectural whitepapers, patent disclosures, and compliance runbooks.</td>
+<td style="text-align:left"><strong>NO (Embedded Markdown &amp; Swagger)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/traces</code> (APM Flamegraphs)</strong></td>
+<td style="text-align:left"><em>Day-1 / Day-2 Active</em></td>
+<td style="text-align:left">Displays live distributed traces and Jaeger flamegraphs once application microservices emit OpenTelemetry spans to port 4318.</td>
+<td style="text-align:left"><strong>YES (Requires OTLP Ingestion)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/logs</code> (High-Throughput)</strong></td>
+<td style="text-align:left"><em>Day-1 / Day-2 Active</em></td>
+<td style="text-align:left">Displays clustered log error patterns once cluster nodes stream loglines to port 9428 or <code>/v1/logs</code>.</td>
+<td style="text-align:left"><strong>YES (Requires Node Log Stream)</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-administrator-authentication-verification-protocol">4. Administrator Authentication Verification Protocol</h2>
+<p>To verify that the provisioned credentials function properly across all entry points:</p>
+<h3 id="1-verification-via-cli">1. Verification via CLI:</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">dcouplr auth status
+</code></pre></div>
+<p><em>Displays active tier, licensed nodes, hardware fingerprint, and Outside-VPC Hub Transmission Key.</em></p>
+<h3 id="2-verification-via-rest-api">2. Verification via REST API:</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -X POST http://localhost:8000/v1/admin/auth/verify \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;username&quot;: &quot;companyadmin&quot;,
+    &quot;passcode&quot;: &quot;comp-admin-2026&quot;,
+    &quot;portal&quot;: &quot;companyadmin&quot;
+  }'
+</code></pre></div>
+<p><em>Expected Response (HTTP 200 OK):</em></p>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;status&quot;: &quot;authenticated&quot;,
+  &quot;username&quot;: &quot;companyadmin&quot;,
+  &quot;token&quot;: &quot;session_admin_token_2026&quot;,
+  &quot;role&quot;: &quot;Obs-Admins&quot;,
+  &quot;token_type&quot;: &quot;Bearer&quot;,
+  &quot;expires_in&quot;: 86400,
+  &quot;two_factor_verified&quot;: false
+}
+</code></pre></div>
+<h3 id="3-verification-via-browser">3. Verification via Browser:</h3>
+<ol>
+<li>Open <code>http://localhost:8000/AdminDesk</code> or <code>http://localhost:8000/companyadmin</code>.</li>
+<li>Enter the provisioned username (<code>companyadmin</code> or your custom user) and password.</li>
+<li>Upon authentication, the gate unlocks immediately, revealing the full 7-tab control desk.</li>
+</ol>
+<hr />
+<h2 id="5-security-air-gap-attestation">5. Security &amp; Air-Gap Attestation</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Security Vector</th>
+<th style="text-align:left">Implementation Detail</th>
+<th style="text-align:left">Guarantee</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Cloud Phone-Home</strong></td>
+<td style="text-align:left">Zero outbound HTTP/HTTPS calls made to vendor servers</td>
+<td style="text-align:left"><strong>$0.00 WAN Egress Guaranteed</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Credential Storage</strong></td>
+<td style="text-align:left">Local SQLite SSOT (<code>vpc_telemetry.db</code>) protected by OS permissions (0600)</td>
+<td style="text-align:left"><strong>Zero Cloud Exfiltration</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Cryptographic Attestation</strong></td>
+<td style="text-align:left">Ed25519 signature verified in volatile memory</td>
+<td style="text-align:left"><strong>Tamper-Proof Offline Enforcement</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Mutation Guardrails</strong></td>
+<td style="text-align:left">DBA console rejects all <code>DROP</code>, <code>DELETE</code>, <code>UPDATE</code>, <code>ALTER</code> with HTTP 403</td>
+<td style="text-align:left"><strong>Zero Accidental Data Destruction</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+      <pre id="raw-view"><code># 📘 `&lt;dcouplr/&gt;` Day-0 Post-Purchase &amp; CLI Installation Lifecycle Runbook
+**Document ID:** `VA-RUN-DAY0-INSTALL-ADMIN-001`  
+**Classification:** Enterprise Operational Architecture &amp; Administrator Onboarding  
+**Security Guarantee:** Zero-Cloud-Exfiltration ($0.00 WAN Egress Guaranteed)  
+**Target Release:** v1.0.0 GA  
+**Canonical Domain:** `https://dcouplr.com`  
+
+---
+
+## Executive Summary
+
+This runbook establishes the authoritative, end-to-end lifecycle following enterprise purchase of `&lt;dcouplr/&gt;`, covering the initial CLI installation, automated Application Administrator credentials provisioning, and Day-0 web component usability.
+
+### Key Architectural Answers:
+1. **Is `http://localhost:8000/AdminDesk` one of the few components usable immediately during/after CLI installation?**  
+   **YES.** The `&lt;dcouplr/&gt;` distribution is an all-in-one, self-contained, air-gapped appliance binary. The CLI engine, the embedded SQLite Single Source of Truth (SSOT), and the web application desks (`/AdminDesk`, `/companyadmin`, `/DBADesk`, `/dashboard`, `/matrix`, `/compiler`) are bundled directly into the installation package. Before any downstream telemetry agents, worker nodes, or VPC collectors are connected, the Application Administrator boots `dcouplr serve --port 8000` to access `/AdminDesk` for initial license activation, capacity sizing, encryption key generation, and RBAC user provisioning.
+2. **When does Application Administrator credential setup occur?**  
+   **During the CLI installation itself.** Step 3c of the enterprise installer (`install-enterprise.sh` / `install-enterprise.ps1`) prompts the operator to configure the Application Administrator username and password (or ingests them via `DCOUPLR_ADMIN_USER` and `DCOUPLR_ADMIN_PASSWORD`). The CLI immediately provisions the administrator into the in-VPC SQLite SSOT (`rbac_users` and `system_configuration_ssot`) with full `Obs-Admins` authority before the web server ever starts.
+
+---
+
+## 1. End-to-End Post-Purchase Timeline (Chronological Flow)
+
+```mermaid
+flowchart TD
+    subgraph Phase1[&quot;Phase 1: Purchase &amp; Entitlement Issuance&quot;]
+        A[Commercial Subscription / PO Signed] --&gt; B[Ed25519 Cryptographic Token Issued&lt;br/&gt;DCL-CLUS-SM-COMMERCIAL-PRO-E-DA86FCB2B]
+        B --&gt; C[Air-Gap Release Bundle / Installer Delivery&lt;br/&gt;install-enterprise.sh / dcouplr-enterprise.tar.gz]
+    end
+
+    subgraph Phase2[&quot;Phase 2: CLI Installation Execution&quot;]
+        C --&gt; D[Run Enterprise Installer&lt;br/&gt;curl -fsSL https://dcouplr.com/install-enterprise.sh | sh]
+        D --&gt; E[Step 1: Install Engine Binary to /usr/local/bin/dcouplr]
+        E --&gt; F[Step 2: Enter Commercial License Key]
+        F --&gt; G[Step 3: Offline Ed25519 Signature Verification&lt;br/&gt;Zero WAN Egress / ~/.dcouplr/license.json]
+    end
+
+    subgraph Phase3[&quot;Phase 3: Cryptographic &amp; Admin Provisioning&quot;]
+        G --&gt; H[Step 3b: Generate Hardware Machine Fingerprint&lt;br/&gt;Provision Hub Transmission Key ~/.dcouplr/hub_transmission.key]
+        H --&gt; I[Step 3c: Provision Application Administrator Account&lt;br/&gt;Prompts for Admin User &amp; Pass / dcouplr auth admin-user]
+        I --&gt; J[Initialize in-VPC SQLite SSOT Database&lt;br/&gt;Seed rbac_users &amp; system_configuration_ssot]
+    end
+
+    subgraph Phase4[&quot;Phase 4: Daemon Startup &amp; Day-0 Usability&quot;]
+        J --&gt; K[Step 4: Inspect Active Entitlement Status&lt;br/&gt;dcouplr auth status]
+        K --&gt; L[Operator Launches In-VPC Daemon&lt;br/&gt;dcouplr serve --port 8000]
+        L --&gt; M[Access http://localhost:8000/AdminDesk&lt;br/&gt;Login with Provisioned Admin Credentials]
+    end
+
+    Phase1 --&gt; Phase2
+    Phase2 --&gt; Phase3
+    Phase3 --&gt; Phase4
+```
+
+---
+
+## 2. Detailed Lifecycle Walkthrough
+
+### Phase 1: Commercial Purchase &amp; Entitlement Fulfillment
+1. **Subscription Options:**
+   - **Marketplace:** Subscribed via AWS Marketplace or GCP Cloud Commerce.
+   - **Direct Enterprise PO:** Executed Master Services Agreement (MSA) with Varinull Operations.
+2. **Entitlement Delivery:**
+   - The customer receives an authoritative Ed25519 cryptographic license key (e.g. `DCL-CLUS-SM-COMMERCIAL-PRO-E-DA86FCB2B`).
+   - The license key contains self-attesting cryptographic claims: Tier (`Cluster Pro`), Licensed Node Capacity (`50 Nodes`), SLA Level (`Priority Business 4-Hour Response`), and Expiration.
+   - Customer receives the offline distribution package or curl-to-shell installer URL.
+
+---
+
+### Phase 2: CLI Installation Execution
+
+#### Linux &amp; macOS Installation:
+```bash
+# Interactive Mode (Prompts for License Key &amp; Admin Credentials):
+curl -fsSL https://dcouplr.com/install-enterprise.sh | sh
+
+# Non-Interactive / Unattended CI/CD Mode:
+DCOUPLR_LICENSE_KEY=&quot;DCL-CLUS-SM-COMMERCIAL-PRO-E-DA86FCB2B&quot; \
+DCOUPLR_ADMIN_USER=&quot;companyadmin&quot; \
+DCOUPLR_ADMIN_PASSWORD=&quot;MySecureAdminPass2026!&quot; \
+curl -fsSL https://dcouplr.com/install-enterprise.sh | sh
+```
+
+#### Windows (PowerShell) Installation:
+```powershell
+# Interactive Mode:
+irm https://dcouplr.com/install-enterprise.ps1 | iex
+
+# Non-Interactive Mode:
+$env:DCOUPLR_LICENSE_KEY=&quot;DCL-CLUS-SM-COMMERCIAL-PRO-E-DA86FCB2B&quot;
+$env:DCOUPLR_ADMIN_USER=&quot;companyadmin&quot;
+$env:DCOUPLR_ADMIN_PASSWORD=&quot;MySecureAdminPass2026!&quot;
+irm https://dcouplr.com/install-enterprise.ps1 | iex
+```
+
+---
+
+### Phase 3: Cryptographic &amp; Administrator Account Provisioning
+
+During Step 3c of the installer, the installation script invokes:
+```bash
+dcouplr auth admin-user \
+    --username &quot;${ADMIN_USER:-companyadmin}&quot; \
+    --password &quot;${ADMIN_PASS:-comp-admin-2026}&quot; \
+    --email &quot;${ADMIN_EMAIL:-companyadmin@enterprise.internal}&quot;
+```
+
+#### What Happens Internally:
+1. **In-VPC SQLite Database Initialization:**
+   - Connects to the local database file (`data/vpc_telemetry.db` / `~/.dcouplr/corp_central_vault.db`).
+   - Ensures the authoritative `rbac_users`, `system_configuration_ssot`, and `audit_logs` tables exist with PRAGMA integrity verification.
+2. **RBAC Record Insertion (`rbac_users`):**
+   - Injects the administrator with `user_id = &lt;username&gt;`, role `Obs-Admins`, team scope `*`, and authentication provider `local_ssot`.
+3. **Password Configuration (`system_configuration_ssot`):**
+   - Securely stores the administrator&#x27;s password in the SSOT configuration table (`auth_user_pass_&lt;username&gt;`).
+4. **Audit Logging:**
+   - Writes an immutable audit trail entry into `audit_logs`:
+     `actor_username=&quot;cli-installer&quot;, action=&quot;ADMIN_PROVISIONED&quot;, target_resource=&quot;rbac_users:&lt;username&gt;&quot;`
+5. **Zero-WAN Egress Guarantee:**
+   - All credentials and hashes remain strictly inside the local host disk and RAM. Zero bytes are exfiltrated to the internet ($0.00 WAN egress).
+
+---
+
+### Phase 4: Daemon Startup &amp; Immediate Day-0 Access
+
+Once the installer completes, the administrator executes:
+```bash
+dcouplr serve --port 8000
+```
+*(Or enables the Linux systemd daemon via `systemctl enable --now dcouplr`)*.
+
+The FastAPI web engine initializes in less than 50 milliseconds, immediately exposing all embedded management consoles.
+
+---
+
+## 3. Day-0 Component Usability Matrix
+
+The following matrix distinguishes between components that are **usable immediately on Day-0** (zero nodes or external agents required) versus components that activate on Day-1/Day-2 once cluster nodes begin reporting telemetry:
+
+| Component / Console URL | Usability Status | Day-0 Purpose &amp; Capabilities | External Ingestion Required? |
+| :--- | :--- | :--- | :--- |
+| **`http://localhost:8000/AdminDesk`** | **IMMEDIATELY USABLE (Flagship)** | Authoritative 2-Way Enterprise Control Desk. Configure license keys, node census quotas, encryption keys, anti-flap audit trails, and financial reconciliation. | **NO (100% Standalone)** |
+| **`http://localhost:8000/companyadmin`** | **IMMEDIATELY USABLE** | In-VPC Company Administrator Console. Local identity management, SQLCipher database encryption rotation, data retention, and backup snapshots. | **NO (100% Standalone)** |
+| **`http://localhost:8000/DBADesk`** | **IMMEDIATELY USABLE** | Database Administrator Inspection Console. Fluid zero-egress console, live SQLite PRAGMA storage health, schema explorer, and read-only SQL scratchpad with 403 mutation guardrails. | **NO (100% Standalone)** |
+| **`http://localhost:8000/dashboard`** | **IMMEDIATELY USABLE** | SRE Live Observability Dashboard. Renders host ring-buffers, in-memory CPU/RAM gauges, and simulated traffic topologies. | **NO (Pre-seeded with Local Host Metrics)** |
+| **`http://localhost:8000/matrix`** | **IMMEDIATELY USABLE** | 7-Tier Full-Stack Invariant Matrix. Interactive verification of 127 architectural invariants across compute, networking, and data tiers. | **NO (Pre-seeded SSOT Rules)** |
+| **`http://localhost:8000/compiler`** | **IMMEDIATELY USABLE** | Living AST Migration Compiler Studio. Interactive transpilation of Datadog, CloudWatch, and Terraform HCL into Prometheus rules and OpenTofu. | **NO (Local File &amp; AST Parsing)** |
+| **`http://localhost:8000/docs`** | **IMMEDIATELY USABLE** | Self-Hosted Air-Gapped TechDocs. Full architectural whitepapers, patent disclosures, and compliance runbooks. | **NO (Embedded Markdown &amp; Swagger)** |
+| **`http://localhost:8000/traces` (APM Flamegraphs)** | *Day-1 / Day-2 Active* | Displays live distributed traces and Jaeger flamegraphs once application microservices emit OpenTelemetry spans to port 4318. | **YES (Requires OTLP Ingestion)** |
+| **`http://localhost:8000/logs` (High-Throughput)** | *Day-1 / Day-2 Active* | Displays clustered log error patterns once cluster nodes stream loglines to port 9428 or `/v1/logs`. | **YES (Requires Node Log Stream)** |
+
+---
+
+## 4. Administrator Authentication Verification Protocol
+
+To verify that the provisioned credentials function properly across all entry points:
+
+### 1. Verification via CLI:
+```bash
+dcouplr auth status
+```
+*Displays active tier, licensed nodes, hardware fingerprint, and Outside-VPC Hub Transmission Key.*
+
+### 2. Verification via REST API:
+```bash
+curl -X POST http://localhost:8000/v1/admin/auth/verify \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;username&quot;: &quot;companyadmin&quot;,
+    &quot;passcode&quot;: &quot;comp-admin-2026&quot;,
+    &quot;portal&quot;: &quot;companyadmin&quot;
+  }&#x27;
+```
+*Expected Response (HTTP 200 OK):*
+```json
+{
+  &quot;status&quot;: &quot;authenticated&quot;,
+  &quot;username&quot;: &quot;companyadmin&quot;,
+  &quot;token&quot;: &quot;session_admin_token_2026&quot;,
+  &quot;role&quot;: &quot;Obs-Admins&quot;,
+  &quot;token_type&quot;: &quot;Bearer&quot;,
+  &quot;expires_in&quot;: 86400,
+  &quot;two_factor_verified&quot;: false
+}
+```
+
+### 3. Verification via Browser:
+1. Open `http://localhost:8000/AdminDesk` or `http://localhost:8000/companyadmin`.
+2. Enter the provisioned username (`companyadmin` or your custom user) and password.
+3. Upon authentication, the gate unlocks immediately, revealing the full 7-tab control desk.
+
+---
+
+## 5. Security &amp; Air-Gap Attestation
+
+| Security Vector | Implementation Detail | Guarantee |
+| :--- | :--- | :--- |
+| **Cloud Phone-Home** | Zero outbound HTTP/HTTPS calls made to vendor servers | **$0.00 WAN Egress Guaranteed** |
+| **Credential Storage** | Local SQLite SSOT (`vpc_telemetry.db`) protected by OS permissions (0600) | **Zero Cloud Exfiltration** |
+| **Cryptographic Attestation** | Ed25519 signature verified in volatile memory | **Tamper-Proof Offline Enforcement** |
+| **Mutation Guardrails** | DBA console rejects all `DROP`, `DELETE`, `UPDATE`, `ALTER` with HTTP 403 | **Zero Accidental Data Destruction** |
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># 📘 `&lt;dcouplr/&gt;` Day-0 Post-Purchase &amp; CLI Installation Lifecycle Runbook
+**Document ID:** `VA-RUN-DAY0-INSTALL-ADMIN-001`  
+**Classification:** Enterprise Operational Architecture &amp; Administrator Onboarding  
+**Security Guarantee:** Zero-Cloud-Exfiltration ($0.00 WAN Egress Guaranteed)  
+**Target Release:** v1.0.0 GA  
+**Canonical Domain:** `https://dcouplr.com`  
+
+---
+
+## Executive Summary
+
+This runbook establishes the authoritative, end-to-end lifecycle following enterprise purchase of `&lt;dcouplr/&gt;`, covering the initial CLI installation, automated Application Administrator credentials provisioning, and Day-0 web component usability.
+
+### Key Architectural Answers:
+1. **Is `http://localhost:8000/AdminDesk` one of the few components usable immediately during/after CLI installation?**  
+   **YES.** The `&lt;dcouplr/&gt;` distribution is an all-in-one, self-contained, air-gapped appliance binary. The CLI engine, the embedded SQLite Single Source of Truth (SSOT), and the web application desks (`/AdminDesk`, `/companyadmin`, `/DBADesk`, `/dashboard`, `/matrix`, `/compiler`) are bundled directly into the installation package. Before any downstream telemetry agents, worker nodes, or VPC collectors are connected, the Application Administrator boots `dcouplr serve --port 8000` to access `/AdminDesk` for initial license activation, capacity sizing, encryption key generation, and RBAC user provisioning.
+2. **When does Application Administrator credential setup occur?**  
+   **During the CLI installation itself.** Step 3c of the enterprise installer (`install-enterprise.sh` / `install-enterprise.ps1`) prompts the operator to configure the Application Administrator username and password (or ingests them via `DCOUPLR_ADMIN_USER` and `DCOUPLR_ADMIN_PASSWORD`). The CLI immediately provisions the administrator into the in-VPC SQLite SSOT (`rbac_users` and `system_configuration_ssot`) with full `Obs-Admins` authority before the web server ever starts.
+
+---
+
+## 1. End-to-End Post-Purchase Timeline (Chronological Flow)
+
+```mermaid
+flowchart TD
+    subgraph Phase1[&quot;Phase 1: Purchase &amp; Entitlement Issuance&quot;]
+        A[Commercial Subscription / PO Signed] --&gt; B[Ed25519 Cryptographic Token Issued&lt;br/&gt;DCL-CLUS-SM-COMMERCIAL-PRO-E-DA86FCB2B]
+        B --&gt; C[Air-Gap Release Bundle / Installer Delivery&lt;br/&gt;install-enterprise.sh / dcouplr-enterprise.tar.gz]
+    end
+
+    subgraph Phase2[&quot;Phase 2: CLI Installation Execution&quot;]
+        C --&gt; D[Run Enterprise Installer&lt;br/&gt;curl -fsSL https://dcouplr.com/install-enterprise.sh | sh]
+        D --&gt; E[Step 1: Install Engine Binary to /usr/local/bin/dcouplr]
+        E --&gt; F[Step 2: Enter Commercial License Key]
+        F --&gt; G[Step 3: Offline Ed25519 Signature Verification&lt;br/&gt;Zero WAN Egress / ~/.dcouplr/license.json]
+    end
+
+    subgraph Phase3[&quot;Phase 3: Cryptographic &amp; Admin Provisioning&quot;]
+        G --&gt; H[Step 3b: Generate Hardware Machine Fingerprint&lt;br/&gt;Provision Hub Transmission Key ~/.dcouplr/hub_transmission.key]
+        H --&gt; I[Step 3c: Provision Application Administrator Account&lt;br/&gt;Prompts for Admin User &amp; Pass / dcouplr auth admin-user]
+        I --&gt; J[Initialize in-VPC SQLite SSOT Database&lt;br/&gt;Seed rbac_users &amp; system_configuration_ssot]
+    end
+
+    subgraph Phase4[&quot;Phase 4: Daemon Startup &amp; Day-0 Usability&quot;]
+        J --&gt; K[Step 4: Inspect Active Entitlement Status&lt;br/&gt;dcouplr auth status]
+        K --&gt; L[Operator Launches In-VPC Daemon&lt;br/&gt;dcouplr serve --port 8000]
+        L --&gt; M[Access http://localhost:8000/AdminDesk&lt;br/&gt;Login with Provisioned Admin Credentials]
+    end
+
+    Phase1 --&gt; Phase2
+    Phase2 --&gt; Phase3
+    Phase3 --&gt; Phase4
+```
+
+---
+
+## 2. Detailed Lifecycle Walkthrough
+
+### Phase 1: Commercial Purchase &amp; Entitlement Fulfillment
+1. **Subscription Options:**
+   - **Marketplace:** Subscribed via AWS Marketplace or GCP Cloud Commerce.
+   - **Direct Enterprise PO:** Executed Master Services Agreement (MSA) with Varinull Operations.
+2. **Entitlement Delivery:**
+   - The customer receives an authoritative Ed25519 cryptographic license key (e.g. `DCL-CLUS-SM-COMMERCIAL-PRO-E-DA86FCB2B`).
+   - The license key contains self-attesting cryptographic claims: Tier (`Cluster Pro`), Licensed Node Capacity (`50 Nodes`), SLA Level (`Priority Business 4-Hour Response`), and Expiration.
+   - Customer receives the offline distribution package or curl-to-shell installer URL.
+
+---
+
+### Phase 2: CLI Installation Execution
+
+#### Linux &amp; macOS Installation:
+```bash
+# Interactive Mode (Prompts for License Key &amp; Admin Credentials):
+curl -fsSL https://dcouplr.com/install-enterprise.sh | sh
+
+# Non-Interactive / Unattended CI/CD Mode:
+DCOUPLR_LICENSE_KEY=&quot;DCL-CLUS-SM-COMMERCIAL-PRO-E-DA86FCB2B&quot; \
+DCOUPLR_ADMIN_USER=&quot;companyadmin&quot; \
+DCOUPLR_ADMIN_PASSWORD=&quot;MySecureAdminPass2026!&quot; \
+curl -fsSL https://dcouplr.com/install-enterprise.sh | sh
+```
+
+#### Windows (PowerShell) Installation:
+```powershell
+# Interactive Mode:
+irm https://dcouplr.com/install-enterprise.ps1 | iex
+
+# Non-Interactive Mode:
+$env:DCOUPLR_LICENSE_KEY=&quot;DCL-CLUS-SM-COMMERCIAL-PRO-E-DA86FCB2B&quot;
+$env:DCOUPLR_ADMIN_USER=&quot;companyadmin&quot;
+$env:DCOUPLR_ADMIN_PASSWORD=&quot;MySecureAdminPass2026!&quot;
+irm https://dcouplr.com/install-enterprise.ps1 | iex
+```
+
+---
+
+### Phase 3: Cryptographic &amp; Administrator Account Provisioning
+
+During Step 3c of the installer, the installation script invokes:
+```bash
+dcouplr auth admin-user \
+    --username &quot;${ADMIN_USER:-companyadmin}&quot; \
+    --password &quot;${ADMIN_PASS:-comp-admin-2026}&quot; \
+    --email &quot;${ADMIN_EMAIL:-companyadmin@enterprise.internal}&quot;
+```
+
+#### What Happens Internally:
+1. **In-VPC SQLite Database Initialization:**
+   - Connects to the local database file (`data/vpc_telemetry.db` / `~/.dcouplr/corp_central_vault.db`).
+   - Ensures the authoritative `rbac_users`, `system_configuration_ssot`, and `audit_logs` tables exist with PRAGMA integrity verification.
+2. **RBAC Record Insertion (`rbac_users`):**
+   - Injects the administrator with `user_id = &lt;username&gt;`, role `Obs-Admins`, team scope `*`, and authentication provider `local_ssot`.
+3. **Password Configuration (`system_configuration_ssot`):**
+   - Securely stores the administrator&#x27;s password in the SSOT configuration table (`auth_user_pass_&lt;username&gt;`).
+4. **Audit Logging:**
+   - Writes an immutable audit trail entry into `audit_logs`:
+     `actor_username=&quot;cli-installer&quot;, action=&quot;ADMIN_PROVISIONED&quot;, target_resource=&quot;rbac_users:&lt;username&gt;&quot;`
+5. **Zero-WAN Egress Guarantee:**
+   - All credentials and hashes remain strictly inside the local host disk and RAM. Zero bytes are exfiltrated to the internet ($0.00 WAN egress).
+
+---
+
+### Phase 4: Daemon Startup &amp; Immediate Day-0 Access
+
+Once the installer completes, the administrator executes:
+```bash
+dcouplr serve --port 8000
+```
+*(Or enables the Linux systemd daemon via `systemctl enable --now dcouplr`)*.
+
+The FastAPI web engine initializes in less than 50 milliseconds, immediately exposing all embedded management consoles.
+
+---
+
+## 3. Day-0 Component Usability Matrix
+
+The following matrix distinguishes between components that are **usable immediately on Day-0** (zero nodes or external agents required) versus components that activate on Day-1/Day-2 once cluster nodes begin reporting telemetry:
+
+| Component / Console URL | Usability Status | Day-0 Purpose &amp; Capabilities | External Ingestion Required? |
+| :--- | :--- | :--- | :--- |
+| **`http://localhost:8000/AdminDesk`** | **IMMEDIATELY USABLE (Flagship)** | Authoritative 2-Way Enterprise Control Desk. Configure license keys, node census quotas, encryption keys, anti-flap audit trails, and financial reconciliation. | **NO (100% Standalone)** |
+| **`http://localhost:8000/companyadmin`** | **IMMEDIATELY USABLE** | In-VPC Company Administrator Console. Local identity management, SQLCipher database encryption rotation, data retention, and backup snapshots. | **NO (100% Standalone)** |
+| **`http://localhost:8000/DBADesk`** | **IMMEDIATELY USABLE** | Database Administrator Inspection Console. Fluid zero-egress console, live SQLite PRAGMA storage health, schema explorer, and read-only SQL scratchpad with 403 mutation guardrails. | **NO (100% Standalone)** |
+| **`http://localhost:8000/dashboard`** | **IMMEDIATELY USABLE** | SRE Live Observability Dashboard. Renders host ring-buffers, in-memory CPU/RAM gauges, and simulated traffic topologies. | **NO (Pre-seeded with Local Host Metrics)** |
+| **`http://localhost:8000/matrix`** | **IMMEDIATELY USABLE** | 7-Tier Full-Stack Invariant Matrix. Interactive verification of 127 architectural invariants across compute, networking, and data tiers. | **NO (Pre-seeded SSOT Rules)** |
+| **`http://localhost:8000/compiler`** | **IMMEDIATELY USABLE** | Living AST Migration Compiler Studio. Interactive transpilation of Datadog, CloudWatch, and Terraform HCL into Prometheus rules and OpenTofu. | **NO (Local File &amp; AST Parsing)** |
+| **`http://localhost:8000/docs`** | **IMMEDIATELY USABLE** | Self-Hosted Air-Gapped TechDocs. Full architectural whitepapers, patent disclosures, and compliance runbooks. | **NO (Embedded Markdown &amp; Swagger)** |
+| **`http://localhost:8000/traces` (APM Flamegraphs)** | *Day-1 / Day-2 Active* | Displays live distributed traces and Jaeger flamegraphs once application microservices emit OpenTelemetry spans to port 4318. | **YES (Requires OTLP Ingestion)** |
+| **`http://localhost:8000/logs` (High-Throughput)** | *Day-1 / Day-2 Active* | Displays clustered log error patterns once cluster nodes stream loglines to port 9428 or `/v1/logs`. | **YES (Requires Node Log Stream)** |
+
+---
+
+## 4. Administrator Authentication Verification Protocol
+
+To verify that the provisioned credentials function properly across all entry points:
+
+### 1. Verification via CLI:
+```bash
+dcouplr auth status
+```
+*Displays active tier, licensed nodes, hardware fingerprint, and Outside-VPC Hub Transmission Key.*
+
+### 2. Verification via REST API:
+```bash
+curl -X POST http://localhost:8000/v1/admin/auth/verify \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;username&quot;: &quot;companyadmin&quot;,
+    &quot;passcode&quot;: &quot;comp-admin-2026&quot;,
+    &quot;portal&quot;: &quot;companyadmin&quot;
+  }&#x27;
+```
+*Expected Response (HTTP 200 OK):*
+```json
+{
+  &quot;status&quot;: &quot;authenticated&quot;,
+  &quot;username&quot;: &quot;companyadmin&quot;,
+  &quot;token&quot;: &quot;session_admin_token_2026&quot;,
+  &quot;role&quot;: &quot;Obs-Admins&quot;,
+  &quot;token_type&quot;: &quot;Bearer&quot;,
+  &quot;expires_in&quot;: 86400,
+  &quot;two_factor_verified&quot;: false
+}
+```
+
+### 3. Verification via Browser:
+1. Open `http://localhost:8000/AdminDesk` or `http://localhost:8000/companyadmin`.
+2. Enter the provisioned username (`companyadmin` or your custom user) and password.
+3. Upon authentication, the gate unlocks immediately, revealing the full 7-tab control desk.
+
+---
+
+## 5. Security &amp; Air-Gap Attestation
+
+| Security Vector | Implementation Detail | Guarantee |
+| :--- | :--- | :--- |
+| **Cloud Phone-Home** | Zero outbound HTTP/HTTPS calls made to vendor servers | **$0.00 WAN Egress Guaranteed** |
+| **Credential Storage** | Local SQLite SSOT (`vpc_telemetry.db`) protected by OS permissions (0600) | **Zero Cloud Exfiltration** |
+| **Cryptographic Attestation** | Ed25519 signature verified in volatile memory | **Tamper-Proof Offline Enforcement** |
+| **Mutation Guardrails** | DBA console rejects all `DROP`, `DELETE`, `UPDATE`, `ALTER` with HTTP 403 | **Zero Accidental Data Destruction** |
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

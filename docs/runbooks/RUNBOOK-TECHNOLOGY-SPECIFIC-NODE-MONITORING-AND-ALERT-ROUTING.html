@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-TECHNOLOGY-SPECIFIC-NODE-MONITORING-AND-ALERT-ROUTING.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-TECHNOLOGY-SPECIFIC-NODE-MONITORING-AND-ALERT-ROUTING.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-TECHNOLOGY-SPECIFIC-NODE-MONITORING-AND-ALERT-ROUTING.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="sre-engineering-runbook-technology-specific-node-monitoring-universal-alert-routing">SRE Engineering Runbook: Technology-Specific Node Monitoring &amp; Universal Alert Routing</h1>
+<p><strong>Document ID:</strong> <code>VA-RUNBOOK-TECH-ROUTING-001</code><br />
+<strong>Classification:</strong> Enterprise Internal / Class 4 Baseline<br />
+<strong>Target Systems:</strong> <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> In-Perimeter Observer Mesh, Bare-Metal Datacenter Hosts, Cloud VPC Nodes, Enterprise Ticketing Tools<br />
+<strong>Target Audience:</strong> Site Reliability Engineers (SRE), Systems Administrators, Network Operations Center (NOC), Platform Engineers<br />
+<strong>Status:</strong> <code>VERIFIED &amp; OPERATIONAL</code></p>
+<hr />
+<h2 id="1-executive-summary-purpose">1. Executive Summary &amp; Purpose</h2>
+<p>Modern enterprise environments host heterogeneous workloads across bare-metal datacenter servers and cloud VPC instances. A generic operating-system-level observer (monitoring only CPU and memory) fails to detect application-level brownouts such as database lock escalation, Kafka consumer lag accumulation, JVM garbage-collection pauses, or proxy buffer exhaustion.</p>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> introduces the <strong>Technology-Specific Node Discovery &amp; Monitoring Engine</strong> combined with the <strong>Universal Alerting, Routing &amp; Enterprise Ticketing Connector Framework</strong>. This system:</p>
+<ol>
+<li><strong>Discovers and monitors technology-specific installations on each host node</strong> without external agents or WAN dependencies, evaluating real-time operational metrics against mathematical thresholds.</li>
+<li><strong>Routes alerts to any enterprise ticketing, paging, or ChatOps tool</strong> (ServiceNow, Jira Service Management, PagerDuty, ChatOps webhooks, RFC 5424 Syslog, and Local Air-Gapped Spools).</li>
+<li><strong>Provides native, in-perimeter integration with your Enterprise Ticketing Tool (ServiceNow, Jira Service Management, or custom internal ticketing systems)</strong> via a local loopback bridge (<code>http://127.0.0.1:9000/v1/support/receiver/ingest</code>) and zero-WAN atomic disk spool (<code>./data/incident_spool/</code>), operating under a <strong>Minimal Connectivity / Full Coverage</strong> paradigm (zero external cloud egress, &lt; 1.5 KB payload, complete diagnostic context, and SHA-256 attestation).</li>
+</ol>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">+---------------------------------------------------------------------------------------------------+
+|                                      <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> HOST NODE                                         |
+|                                                                                                   |
+|  +---------------------+  +----------------------+  +---------------------+  +-----------------+  |
+|  | Oracle DB / Postgres|  | Kafka / RabbitMQ     |  | Redis / In-Memory   |  | Nginx / Envoy   |  |
+|  | Port 1521 / 5432    |  | Port 9092 / 5672     |  | Port 6379           |  | Port 443 / 10000|  |
+|  +----------+----------+  +----------+-----------+  +----------+----------+  +--------+--------+  |
+|             |                        |                         |                      |           |
+|             +------------------------+-------------------------+----------------------+           |
+|                                                  |                                                |
+|                                      [ In-Perimeter eBPF ]                                        |
+|                                  [ Procfs &amp; Socket Inspector ]                                    |
+|                                                  |                                                |
+|                                   <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Unified Observer                                     |
++--------------------------------------------------+------------------------------------------------+
+                                                   |
+                        +--------------------------+--------------------------+
+                        |                                                     |
+             [ Primary In-Perimeter ]                               [ Air-Gap Fallback ]
+                        |                                                     |
+                        v                                                     v
+          +----------------------------+                        +---------------------------+
+          |  Enterprise Ticketing Tool |                        | Atomic Local JSON Spool   |
+          |  (ServiceNow/Jira/Bridge)  |                        |  ./data/incident_spool/   |
+          |   http://127.0.0.1:9000    |                        | (Zero Network Required)   |
+          +----------------------------+                        +---------------------------+
+                        |
+                        +---&gt; Auto-Ticket (P0/P1/P2) -&gt; SLA Countdown -&gt; Auto-Resolve on Recovery
+</code></pre></div>
+<hr />
+<h2 id="2-technology-specific-monitoring-architecture">2. Technology-Specific Monitoring Architecture</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> continuously inspects local nodes across 6 major technology domains covering 24 enterprise software stacks:</p>
+<h3 id="21-domain-overview-default-port-census">2.1 Domain Overview &amp; Default Port Census</h3>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Technology Stack</th>
+<th>Default Ports</th>
+<th>Process Signature</th>
+<th>Key Observability Focus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Relational &amp; Distributed SQL</strong></td>
+<td>Oracle Database 19c RAC</td>
+<td><code>1521</code></td>
+<td><code>ora_pmon_*</code></td>
+<td>SGA Hit Ratio, Redo Log Latency, Tablespace Full %</td>
+</tr>
+<tr>
+<td></td>
+<td>PostgreSQL 16</td>
+<td><code>5432</code></td>
+<td><code>postgres</code></td>
+<td>WAL Rate, Active Backends %, Autovacuum Backlog, Replication Lag</td>
+</tr>
+<tr>
+<td></td>
+<td>MySQL / MariaDB</td>
+<td><code>3306</code></td>
+<td><code>mysqld</code></td>
+<td>InnoDB Buffer Pool %, Slow Queries/sec, Seconds Behind Source</td>
+</tr>
+<tr>
+<td></td>
+<td>TiDB Distributed SQL</td>
+<td><code>4000</code>, <code>20160</code></td>
+<td><code>tidb-server</code>, <code>tikv-server</code></td>
+<td>Coprocessor Wait, Raftstore CPU, 2PC Commit Latency</td>
+</tr>
+<tr>
+<td><strong>NoSQL &amp; In-Memory Stores</strong></td>
+<td>Apache Cassandra</td>
+<td><code>9042</code>, <code>7000</code></td>
+<td><code>org.apache.cassandra</code></td>
+<td>SSTables per Read, Compactions Pending, Write P99 Latency</td>
+</tr>
+<tr>
+<td></td>
+<td>MongoDB</td>
+<td><code>27017</code></td>
+<td><code>mongod</code></td>
+<td>WiredTiger Cache Saturation, Oplog Window, Current Connections</td>
+</tr>
+<tr>
+<td></td>
+<td>Redis / KeyDB</td>
+<td><code>6379</code>, <code>16379</code></td>
+<td><code>redis-server</code></td>
+<td>Memory Fragmentation Ratio, Evicted Keys/s, Instantaneous Ops</td>
+</tr>
+<tr>
+<td></td>
+<td>Memcached</td>
+<td><code>11211</code></td>
+<td><code>memcached</code></td>
+<td>Slab Allocation Limit, Cache Eviction Rate, Hit Ratio</td>
+</tr>
+<tr>
+<td><strong>Event Streaming &amp; Queues</strong></td>
+<td>Apache Kafka</td>
+<td><code>9092</code>, <code>9093</code></td>
+<td><code>kafka.Kafka</code></td>
+<td>Under-Replicated Partitions, Consumer Group Lag, ISR Shrink</td>
+</tr>
+<tr>
+<td></td>
+<td>RabbitMQ</td>
+<td><code>5672</code>, <code>15672</code></td>
+<td><code>beam.smp</code></td>
+<td>Queue Total Depth, Unacknowledged Messages, Memory Alarm</td>
+</tr>
+<tr>
+<td></td>
+<td>Apache Pulsar</td>
+<td><code>6650</code>, <code>8080</code></td>
+<td><code>pulsar</code></td>
+<td>Backlog Quota, Publish Latency, Cursor Backlog</td>
+</tr>
+<tr>
+<td><strong>Web Servers &amp; Ingress Proxies</strong></td>
+<td>NGINX Plus / Open Source</td>
+<td><code>80</code>, <code>443</code></td>
+<td><code>nginx: worker</code></td>
+<td>Active TCP Connections, Upstream 5xx %, SSL Handshake P99</td>
+</tr>
+<tr>
+<td></td>
+<td>Envoy Proxy</td>
+<td><code>10000</code>, <code>9901</code></td>
+<td><code>envoy</code></td>
+<td>Downstream Cx Active, Request Overflow, Circuit Breakers</td>
+</tr>
+<tr>
+<td></td>
+<td>Apache HTTP Server</td>
+<td><code>80</code>, <code>443</code></td>
+<td><code>httpd</code>, <code>apache2</code></td>
+<td>Scoreboard Worker Allocation, Busy/Idle Ratio</td>
+</tr>
+<tr>
+<td></td>
+<td>HAProxy</td>
+<td><code>8080</code>, <code>8443</code></td>
+<td><code>haproxy</code></td>
+<td>Frontend Session Saturation, Backend Queue Depth, Server Health</td>
+</tr>
+<tr>
+<td><strong>Runtimes &amp; Virtual Machines</strong></td>
+<td>OpenJDK / HotSpot JVM</td>
+<td><code>8080</code>, <code>9999</code></td>
+<td><code>java -jar</code></td>
+<td>Tenured Heap Allocation, G1/ZGC Pause P99 ms, Live Threads</td>
+</tr>
+<tr>
+<td></td>
+<td>Node.js Runtime</td>
+<td><code>3000</code></td>
+<td><code>node server.js</code></td>
+<td>libuv Event Loop Lag P99 ms, V8 Heap Used %, Active Handles</td>
+</tr>
+<tr>
+<td></td>
+<td>Go Runtime (Golang)</td>
+<td><code>8081</code></td>
+<td><code>./service</code></td>
+<td>Goroutines Count, GC CPU Fraction %, Heap Alloc Size</td>
+</tr>
+<tr>
+<td></td>
+<td>Python Runtime</td>
+<td><code>8000</code></td>
+<td><code>gunicorn</code>, <code>uvicorn</code></td>
+<td>GIL Contention Latency, RSS Growth Rate, Worker Health</td>
+</tr>
+<tr>
+<td><strong>Enterprise Storage &amp; Compute</strong></td>
+<td>SAP HANA 2.0 In-Memory</td>
+<td><code>30015</code></td>
+<td><code>hdbdaemon</code></td>
+<td>Column Store Saturation %, Savepoint Flush Sec, Delta Merge</td>
+</tr>
+<tr>
+<td></td>
+<td>Ceph Storage SDS</td>
+<td><code>6789</code>, <code>6800</code></td>
+<td><code>ceph-osd</code></td>
+<td>OSDs Down/Degraded, Placement Group Degraded %, Scrub Latency</td>
+</tr>
+<tr>
+<td></td>
+<td>Docker / Containerd</td>
+<td><code>2375</code></td>
+<td><code>dockerd</code></td>
+<td>Container Crash Rate, Kernel OOM Events, Daemon Socket Latency</td>
+</tr>
+<tr>
+<td></td>
+<td>Kubernetes Node (Kubelet)</td>
+<td><code>10250</code></td>
+<td><code>kubelet</code></td>
+<td>PLEG Relist Duration Sec, Pod Evictions/hr, CFS Throttled %</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-mathematical-foundations-operational-thresholds">3. Mathematical Foundations &amp; Operational Thresholds</h2>
+<p>Each technology metric monitored by <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> evaluates against mathematically proven thresholds:</p>
+<h3 id="31-oracle-database-19c-rac-buffer-cache-hit-ratio">3.1 Oracle Database 19c RAC Buffer Cache Hit Ratio</h3>
+<p>$$\text{Hit Ratio} = 1 - \left( \frac{\text{Physical Reads}}{\text{DB Block Gets} + \text{Consistent Gets}} \right)$$</p>
+<ul>
+<li><strong>Warning Threshold:</strong> $&lt; 95.0%$</li>
+<li><strong>Critical Threshold:</strong> $&lt; 90.0%$</li>
+<li><strong>Alert Level:</strong> <code>P1 - Critical</code></li>
+<li><strong>Remediation:</strong> Inspect SQL query execution plans for unindexed full table scans (<code>V$SQL_PLAN</code>); increase <code>DB_CACHE_SIZE</code> within the System Global Area (SGA).</li>
+</ul>
+<h3 id="32-apache-kafka-consumer-lag-drift-velocity">3.2 Apache Kafka Consumer Lag Drift Velocity</h3>
+<p>$$\Delta \text{Lag}(t) = \frac{d}{dt} \Big( \text{LogEndOffset}(t) - \text{CurrentConsumerOffset}(t) \Big)$$</p>
+<ul>
+<li><strong>Warning Threshold:</strong> $&gt; 5,000\text{ messages}$ (or $\Delta \text{Lag} &gt; 250\text{ msgs/sec}$)</li>
+<li><strong>Critical Threshold:</strong> $&gt; 25,000\text{ messages}$ (or $\Delta \text{Lag} &gt; 1,500\text{ msgs/sec}$)</li>
+<li><strong>Alert Level:</strong> <code>P1 - Critical</code></li>
+<li><strong>Remediation:</strong> Autoscale consumer pod replicas or rebalance partitions. Check consumer group thread deadlocks via JMX.</li>
+</ul>
+<h3 id="33-redis-memory-fragmentation-ratio">3.3 Redis Memory Fragmentation Ratio</h3>
+<p>$$\text{Fragmentation Ratio} = \frac{\text{used_memory_rss}}{\text{used_memory}}$$</p>
+<ul>
+<li><strong>Warning Threshold:</strong> $&gt; 1.5$ (or $&lt; 0.9$ indicating OS swapping)</li>
+<li><strong>Critical Threshold:</strong> $&gt; 2.0$</li>
+<li><strong>Alert Level:</strong> <code>P2 - Major</code></li>
+<li><strong>Remediation:</strong> Trigger online active defragmentation (<code>CONFIG SET activedefrag yes</code>) or restart memory allocator (Jemalloc arena purging).</li>
+</ul>
+<h3 id="34-jvm-gc-pause-duration-cpu-overhead">3.4 JVM GC Pause Duration &amp; CPU Overhead</h3>
+<p>$$\text{GC Overhead Ratio} = \frac{\sum_{i=1}^n t_{\text{pause}, i}}{T_{\text{evaluation}}} \times 100%$$</p>
+<ul>
+<li><strong>Warning Threshold:</strong> Pause P99 $&gt; 100\text{ ms}$ (Overhead $&gt; 5%$)</li>
+<li><strong>Critical Threshold:</strong> Pause P99 $&gt; 500\text{ ms}$ (Overhead $&gt; 15%$)</li>
+<li><strong>Alert Level:</strong> <code>P2 - Major</code></li>
+<li><strong>Remediation:</strong> Transition heap to ZGC or generational Shenandoah; inspect survivor space sizing and tenuring thresholds (<code>-XX:MaxTenuringThreshold</code>).</li>
+</ul>
+<h3 id="35-postgresql-wal-generation-rate">3.5 PostgreSQL WAL Generation Rate</h3>
+<p>$$\dot{W}_{\text{WAL}} = \frac{\Delta \text{WAL Bytes}}{\Delta t}$$</p>
+<ul>
+<li><strong>Warning Threshold:</strong> $&gt; 80\text{ MB/s}$</li>
+<li><strong>Critical Threshold:</strong> $&gt; 150\text{ MB/s}$</li>
+<li><strong>Alert Level:</strong> <code>P1 - Critical</code></li>
+<li><strong>Remediation:</strong> Detect runaway batch bulk inserts or unvacuumed table bloat; verify archive command throughput to avoid disk saturation in <code>pg_wal</code>.</li>
+</ul>
+<hr />
+<h2 id="4-universal-alerting-routing-framework">4. Universal Alerting &amp; Routing Framework</h2>
+<p><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> decouples alert generation from downstream notification tools using an in-memory, zero-heap routing matrix.</p>
+<h3 id="41-supported-connectors">4.1 Supported Connectors</h3>
+<ol>
+<li><strong>Enterprise Ticketing Tool / Local Spool</strong> (<code>varinull_operations_engine</code> connector):
+<ul>
+<li>Protocol: Local HTTP socket <code>http://127.0.0.1:9000/v1/support/receiver/ingest</code> or local spool fallback.</li>
+<li>Auto-ticket creation for <code>P0</code>, <code>P1</code>, and <code>P2</code> incidents with SLA tracking and SHA-256 cryptographic attestation.</li>
+</ul>
+</li>
+<li><strong>Generic HTTP/REST Webhook</strong> (<code>generic_webhook</code>):
+<ul>
+<li>Custom endpoints, custom headers, payload template interpolation (<code>{alert_id}</code>, <code>{severity}</code>, <code>{title}</code>, <code>{node_id}</code>).</li>
+</ul>
+</li>
+<li><strong>ServiceNow ITSM</strong> (<code>servicenow</code>):
+<ul>
+<li>REST Table API (<code>/api/now/table/incident</code>) with assignment group and CMDB CI mapping.</li>
+</ul>
+</li>
+<li><strong>Jira Service Management</strong> (<code>jira_service_management</code>):
+<ul>
+<li>Atlassian REST API v3 with project key, custom fields, and transition workflows.</li>
+</ul>
+</li>
+<li><strong>PagerDuty Events v2</strong> (<code>pagerduty</code>):
+<ul>
+<li>Direct dispatch to <code>/v2/enqueue</code> with deduplication keys and client links.</li>
+</ul>
+</li>
+<li><strong>ChatOps</strong> (<code>slack_teams</code>):
+<ul>
+<li>Rich markdown attachments formatted for Slack, Microsoft Teams, Mattermost, and Discord.</li>
+</ul>
+</li>
+<li><strong>Syslog RFC 5424 SIEM Relay</strong> (<code>syslog_relay</code>):
+<ul>
+<li>UDP/TCP syslog packets to Splunk, Elastic, QRadar, or local syslogd.</li>
+</ul>
+</li>
+<li><strong>Air-Gapped Zero-Egress JSON Spool</strong> (<code>local_spool</code>):
+<ul>
+<li>100% offline file drop (<code>./data/alerts_spool/</code>) with atomic writes for air-gapped enclaves.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="5-in-perimeter-integration-with-enterprise-ticketing-tools-local-spooling">5. In-Perimeter Integration with Enterprise Ticketing Tools &amp; Local Spooling</h2>
+<h3 id="51-enterprise-ticketing-incident-management-overview">5.1 Enterprise Ticketing &amp; Incident Management Overview</h3>
+<p>Enterprise platforms require robust, reliable incident routing to your team's <strong>enterprise ticketing tool</strong>—whether your organization uses <strong>ServiceNow</strong>, <strong>Jira Service Management (Jira/JSM)</strong>, or an internal ITSM pipeline. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> integrates with your ticketing infrastructure using an in-perimeter <strong>Edge Ingest Bridge</strong> on port 9000 (<code>/v1/support/receiver/ingest</code>) and a local atomic spool (<code>./data/incident_spool/</code>):</p>
+<ul>
+<li><strong>Ticketing System Flexibility:</strong> Dispatches structured incident records directly to ServiceNow, Jira, or custom webhook endpoints with standard ITIL priority mappings.</li>
+<li><strong>In-Perimeter Edge Ingest Bridge:</strong> For high-security datacenter and VPC environments where <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> operates under a strict <strong>Zero-Egress Invariant (Zero WAN Egress)</strong>, the ingest bridge accepts local JSON envelopes over loopback HTTP and atomic disk spools.</li>
+<li><strong>Air-Gapped Sovereign Mode:</strong> In disconnected environments, tickets buffer safely to local disk without dropped events or external WAN dependencies.</li>
+</ul>
+<h3 id="52-minimal-connectivity-full-coverage-specification">5.2 Minimal Connectivity / Full Coverage Specification</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Implementation in <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Minimal Connectivity</strong></td>
+<td>Strictly in-perimeter. Default address is <code>http://127.0.0.1:9000/v1/support/receiver/ingest</code>. Zero public WAN packets are emitted.</td>
+</tr>
+<tr>
+<td><strong>Payload Compactness</strong></td>
+<td>Payload size is under 1.5 KB, containing only essential diagnostic keys.</td>
+</tr>
+<tr>
+<td><strong>Air-Gap Spool Fallback</strong></td>
+<td>If port 9000 is offline or isolated, <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> writes an atomic <code>.tmp</code> -&gt; <code>.json</code> file to <code>./data/incident_spool/TICKET-SPOOL-&lt;timestamp&gt;-&lt;rand&gt;.json</code>. Zero errors are raised; zero tickets are dropped.</td>
+</tr>
+<tr>
+<td><strong>Full Diagnostic Coverage</strong></td>
+<td>Ingest payload contains: <code>app_id: &quot;dcouplr&quot;</code>, <code>title</code>, <code>priority</code>, <code>category</code>, Markdown-formatted <code>description</code>, <code>affected_nodes</code>, plus <code>metadata</code> containing <code>node_id</code>, <code>tech_id</code>, <code>metric_key</code>, <code>metric_value</code>, <code>threshold</code>, <code>runbook_url</code>, and <code>cli_diagnostic</code>.</td>
+</tr>
+<tr>
+<td><strong>Cryptographic Attestation</strong></td>
+<td>Each ticket contains a SHA-256 signature generated over the incident parameters, ensuring verifiable audit trails.</td>
+</tr>
+<tr>
+<td><strong>Priority Mapping</strong></td>
+<td><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> severity maps directly to standard ITIL priority standards: <code>P0</code> -&gt; <code>P0 - Blocker</code>, <code>P1</code> -&gt; <code>P1 - Critical</code>, <code>P2</code> -&gt; <code>P2 - Major</code>, <code>P3/P4</code> -&gt; <code>P3 - Minor</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-incident-ingest-json-schema">5.2 Incident Ingest JSON Schema</h3>
+<div class="code-box"><div class="code-box-header"><span>json</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-json">{
+  &quot;app_id&quot;: &quot;dcouplr&quot;,
+  &quot;company_name&quot;: &quot;Enterprise Operations&quot;,
+  &quot;title&quot;: &quot;[ALERT] P1 - Critical in oracle_db on node-dc1-bm-01&quot;,
+  &quot;priority&quot;: &quot;P1 - Critical&quot;,
+  &quot;category&quot;: &quot;Infrastructure Incident / Tier Breach&quot;,
+  &quot;description&quot;: &quot;### <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Autonomous Telemetry Incident Report\n...&quot;,
+  &quot;affected_nodes&quot;: 1,
+  &quot;metadata&quot;: {
+    &quot;incident_id&quot;: &quot;INC-1793288393893-4182&quot;,
+    &quot;node_id&quot;: &quot;node-dc1-bm-01&quot;,
+    &quot;tech_id&quot;: &quot;oracle_db&quot;,
+    &quot;metric_key&quot;: &quot;sga_buffer_cache_hit_ratio&quot;,
+    &quot;metric_value&quot;: 88.4,
+    &quot;threshold&quot;: 90.0,
+    &quot;runbook_url&quot;: &quot;/docs/RUNBOOK-TECHNOLOGY-SPECIFIC-NODE-MONITORING-AND-ALERT-ROUTING.html#oracle_db&quot;,
+    &quot;cli_diagnostic&quot;: &quot;dcouplr node tech check --node node-dc1-bm-01 --tech oracle_db&quot;,
+    &quot;attestation_sha256&quot;: &quot;4a71b128c7f9e8a379d4608c0ef28bf3d8338f0e5726fa487b9292a4de80ef02&quot;,
+    &quot;connectivity_profile&quot;: &quot;minimal_in_perimeter&quot;,
+    &quot;zero_egress_verified&quot;: true
+  }
+}
+</code></pre></div>
+<hr />
+<h2 id="6-sre-operational-procedures-cli-diagnostics">6. SRE Operational Procedures &amp; CLI Diagnostics</h2>
+<h3 id="61-inspect-installed-technologies-on-a-node">6.1 Inspect Installed Technologies on a Node</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Query the live inventory across all nodes
+curl -s http://127.0.0.1:8000/v1/telemetry/nodes/technologies | jq .
+
+# Filter for a specific bare-metal or cloud node
+curl -s &quot;http://127.0.0.1:8000/v1/telemetry/nodes/technologies?node_id=node-dc1-bm-01&quot; | jq .
+</code></pre></div>
+<h3 id="62-trigger-autonomous-discovery-scan-on-a-node">6.2 Trigger Autonomous Discovery Scan on a Node</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -X POST http://127.0.0.1:8000/v1/telemetry/nodes/node-dc1-bm-01/technologies/scan | jq .
+</code></pre></div>
+<h3 id="63-update-metric-thresholds-on-a-node-technology">6.3 Update Metric Thresholds on a Node Technology</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -X POST http://127.0.0.1:8000/v1/telemetry/nodes/node-dc1-bm-01/technologies/configure \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;tech_id&quot;: &quot;oracle_db&quot;,
+    &quot;alert_level&quot;: &quot;P1&quot;,
+    &quot;evaluation_window&quot;: &quot;1m&quot;,
+    &quot;metrics&quot;: {
+      &quot;sga_buffer_cache_hit_ratio&quot;: {
+        &quot;warning&quot;: 96.0,
+        &quot;critical&quot;: 92.0
+      }
+    }
+  }' | jq .
+</code></pre></div>
+<h3 id="64-test-dispatch-to-enterprise-ticketing-tool">6.4 Test Dispatch to Enterprise Ticketing Tool</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -X POST http://127.0.0.1:8000/v1/telemetry/alerting/connectors/voe/sync \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;node_id&quot;: &quot;node-dc1-bm-01&quot;,
+    &quot;tech_id&quot;: &quot;oracle_db&quot;,
+    &quot;priority&quot;: &quot;P1 - Critical&quot;,
+    &quot;title&quot;: &quot;[SRE TEST] Verification of Enterprise Ticketing Queue Dispatch&quot;,
+    &quot;metric_key&quot;: &quot;sga_buffer_cache_hit_ratio&quot;,
+    &quot;metric_value&quot;: 88.2,
+    &quot;threshold&quot;: 90.0
+  }' | jq .
+</code></pre></div>
+<h3 id="65-review-ticket-history-dispatched-to-local-ticketing-spool">6.5 Review Ticket History Dispatched to Local Ticketing Spool</h3>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">curl -s http://127.0.0.1:8000/v1/telemetry/alerting/connectors/voe/tickets | jq .
+</code></pre></div>
+<hr />
+<h2 id="7-zero-egress-attestation-air-gap-verification">7. Zero-Egress Attestation &amp; Air-Gap Verification</h2>
+<p>To verify that the observer mesh emits zero bytes to public clouds or third-party networks:</p>
+<ol>
+<li>Run the local eBPF filter verification:<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">dcouplr check --tier tier_7_siem_audit --component security_compliance
+</code></pre></div>
+</li>
+<li>Verify that <code>ebpf_blocked_wan_packets == 0</code> and <code>airgap_drift_pct == 0.00%</code>.</li>
+<li>Inspect <code>attestation_sha256</code> in all dispatched ticket payloads. All hashes are generated using deterministic SHA-256 over incident identifiers, node state, and timestamps.</li>
+</ol>
+</div>
+      <pre id="raw-view"><code># SRE Engineering Runbook: Technology-Specific Node Monitoring &amp; Universal Alert Routing
+
+**Document ID:** `VA-RUNBOOK-TECH-ROUTING-001`  
+**Classification:** Enterprise Internal / Class 4 Baseline  
+**Target Systems:** `&lt;dcouplr/&gt;` In-Perimeter Observer Mesh, Bare-Metal Datacenter Hosts, Cloud VPC Nodes, Enterprise Ticketing Tools  
+**Target Audience:** Site Reliability Engineers (SRE), Systems Administrators, Network Operations Center (NOC), Platform Engineers  
+**Status:** `VERIFIED &amp; OPERATIONAL`  
+
+---
+
+## 1. Executive Summary &amp; Purpose
+
+Modern enterprise environments host heterogeneous workloads across bare-metal datacenter servers and cloud VPC instances. A generic operating-system-level observer (monitoring only CPU and memory) fails to detect application-level brownouts such as database lock escalation, Kafka consumer lag accumulation, JVM garbage-collection pauses, or proxy buffer exhaustion.
+
+`&lt;dcouplr/&gt;` introduces the **Technology-Specific Node Discovery &amp; Monitoring Engine** combined with the **Universal Alerting, Routing &amp; Enterprise Ticketing Connector Framework**. This system:
+1. **Discovers and monitors technology-specific installations on each host node** without external agents or WAN dependencies, evaluating real-time operational metrics against mathematical thresholds.
+2. **Routes alerts to any enterprise ticketing, paging, or ChatOps tool** (ServiceNow, Jira Service Management, PagerDuty, ChatOps webhooks, RFC 5424 Syslog, and Local Air-Gapped Spools).
+3. **Provides native, in-perimeter integration with your Enterprise Ticketing Tool (ServiceNow, Jira Service Management, or custom internal ticketing systems)** via a local loopback bridge (`http://127.0.0.1:9000/v1/support/receiver/ingest`) and zero-WAN atomic disk spool (`./data/incident_spool/`), operating under a **Minimal Connectivity / Full Coverage** paradigm (zero external cloud egress, &lt; 1.5 KB payload, complete diagnostic context, and SHA-256 attestation).
+
+```
++---------------------------------------------------------------------------------------------------+
+|                                      &lt;dcouplr/&gt; HOST NODE                                         |
+|                                                                                                   |
+|  +---------------------+  +----------------------+  +---------------------+  +-----------------+  |
+|  | Oracle DB / Postgres|  | Kafka / RabbitMQ     |  | Redis / In-Memory   |  | Nginx / Envoy   |  |
+|  | Port 1521 / 5432    |  | Port 9092 / 5672     |  | Port 6379           |  | Port 443 / 10000|  |
+|  +----------+----------+  +----------+-----------+  +----------+----------+  +--------+--------+  |
+|             |                        |                         |                      |           |
+|             +------------------------+-------------------------+----------------------+           |
+|                                                  |                                                |
+|                                      [ In-Perimeter eBPF ]                                        |
+|                                  [ Procfs &amp; Socket Inspector ]                                    |
+|                                                  |                                                |
+|                                   &lt;dcouplr/&gt; Unified Observer                                     |
++--------------------------------------------------+------------------------------------------------+
+                                                   |
+                        +--------------------------+--------------------------+
+                        |                                                     |
+             [ Primary In-Perimeter ]                               [ Air-Gap Fallback ]
+                        |                                                     |
+                        v                                                     v
+          +----------------------------+                        +---------------------------+
+          |  Enterprise Ticketing Tool |                        | Atomic Local JSON Spool   |
+          |  (ServiceNow/Jira/Bridge)  |                        |  ./data/incident_spool/   |
+          |   http://127.0.0.1:9000    |                        | (Zero Network Required)   |
+          +----------------------------+                        +---------------------------+
+                        |
+                        +---&gt; Auto-Ticket (P0/P1/P2) -&gt; SLA Countdown -&gt; Auto-Resolve on Recovery
+```
+
+---
+
+## 2. Technology-Specific Monitoring Architecture
+
+`&lt;dcouplr/&gt;` continuously inspects local nodes across 6 major technology domains covering 24 enterprise software stacks:
+
+### 2.1 Domain Overview &amp; Default Port Census
+
+| Domain | Technology Stack | Default Ports | Process Signature | Key Observability Focus |
+|---|---|---|---|---|
+| **Relational &amp; Distributed SQL** | Oracle Database 19c RAC | `1521` | `ora_pmon_*` | SGA Hit Ratio, Redo Log Latency, Tablespace Full % |
+| | PostgreSQL 16 | `5432` | `postgres` | WAL Rate, Active Backends %, Autovacuum Backlog, Replication Lag |
+| | MySQL / MariaDB | `3306` | `mysqld` | InnoDB Buffer Pool %, Slow Queries/sec, Seconds Behind Source |
+| | TiDB Distributed SQL | `4000`, `20160` | `tidb-server`, `tikv-server` | Coprocessor Wait, Raftstore CPU, 2PC Commit Latency |
+| **NoSQL &amp; In-Memory Stores** | Apache Cassandra | `9042`, `7000` | `org.apache.cassandra` | SSTables per Read, Compactions Pending, Write P99 Latency |
+| | MongoDB | `27017` | `mongod` | WiredTiger Cache Saturation, Oplog Window, Current Connections |
+| | Redis / KeyDB | `6379`, `16379` | `redis-server` | Memory Fragmentation Ratio, Evicted Keys/s, Instantaneous Ops |
+| | Memcached | `11211` | `memcached` | Slab Allocation Limit, Cache Eviction Rate, Hit Ratio |
+| **Event Streaming &amp; Queues** | Apache Kafka | `9092`, `9093` | `kafka.Kafka` | Under-Replicated Partitions, Consumer Group Lag, ISR Shrink |
+| | RabbitMQ | `5672`, `15672` | `beam.smp` | Queue Total Depth, Unacknowledged Messages, Memory Alarm |
+| | Apache Pulsar | `6650`, `8080` | `pulsar` | Backlog Quota, Publish Latency, Cursor Backlog |
+| **Web Servers &amp; Ingress Proxies** | NGINX Plus / Open Source | `80`, `443` | `nginx: worker` | Active TCP Connections, Upstream 5xx %, SSL Handshake P99 |
+| | Envoy Proxy | `10000`, `9901` | `envoy` | Downstream Cx Active, Request Overflow, Circuit Breakers |
+| | Apache HTTP Server | `80`, `443` | `httpd`, `apache2` | Scoreboard Worker Allocation, Busy/Idle Ratio |
+| | HAProxy | `8080`, `8443` | `haproxy` | Frontend Session Saturation, Backend Queue Depth, Server Health |
+| **Runtimes &amp; Virtual Machines** | OpenJDK / HotSpot JVM | `8080`, `9999` | `java -jar` | Tenured Heap Allocation, G1/ZGC Pause P99 ms, Live Threads |
+| | Node.js Runtime | `3000` | `node server.js` | libuv Event Loop Lag P99 ms, V8 Heap Used %, Active Handles |
+| | Go Runtime (Golang) | `8081` | `./service` | Goroutines Count, GC CPU Fraction %, Heap Alloc Size |
+| | Python Runtime | `8000` | `gunicorn`, `uvicorn` | GIL Contention Latency, RSS Growth Rate, Worker Health |
+| **Enterprise Storage &amp; Compute** | SAP HANA 2.0 In-Memory | `30015` | `hdbdaemon` | Column Store Saturation %, Savepoint Flush Sec, Delta Merge |
+| | Ceph Storage SDS | `6789`, `6800` | `ceph-osd` | OSDs Down/Degraded, Placement Group Degraded %, Scrub Latency |
+| | Docker / Containerd | `2375` | `dockerd` | Container Crash Rate, Kernel OOM Events, Daemon Socket Latency |
+| | Kubernetes Node (Kubelet) | `10250` | `kubelet` | PLEG Relist Duration Sec, Pod Evictions/hr, CFS Throttled % |
+
+---
+
+## 3. Mathematical Foundations &amp; Operational Thresholds
+
+Each technology metric monitored by `&lt;dcouplr/&gt;` evaluates against mathematically proven thresholds:
+
+### 3.1 Oracle Database 19c RAC Buffer Cache Hit Ratio
+$$\text{Hit Ratio} = 1 - \left( \frac{\text{Physical Reads}}{\text{DB Block Gets} + \text{Consistent Gets}} \right)$$
+* **Warning Threshold:** $&lt; 95.0\%$  
+* **Critical Threshold:** $&lt; 90.0\%$  
+* **Alert Level:** `P1 - Critical`  
+* **Remediation:** Inspect SQL query execution plans for unindexed full table scans (`V$SQL_PLAN`); increase `DB_CACHE_SIZE` within the System Global Area (SGA).
+
+### 3.2 Apache Kafka Consumer Lag Drift Velocity
+$$\Delta \text{Lag}(t) = \frac{d}{dt} \Big( \text{LogEndOffset}(t) - \text{CurrentConsumerOffset}(t) \Big)$$
+* **Warning Threshold:** $&gt; 5,000\text{ messages}$ (or $\Delta \text{Lag} &gt; 250\text{ msgs/sec}$)  
+* **Critical Threshold:** $&gt; 25,000\text{ messages}$ (or $\Delta \text{Lag} &gt; 1,500\text{ msgs/sec}$)  
+* **Alert Level:** `P1 - Critical`  
+* **Remediation:** Autoscale consumer pod replicas or rebalance partitions. Check consumer group thread deadlocks via JMX.
+
+### 3.3 Redis Memory Fragmentation Ratio
+$$\text{Fragmentation Ratio} = \frac{\text{used\_memory\_rss}}{\text{used\_memory}}$$
+* **Warning Threshold:** $&gt; 1.5$ (or $&lt; 0.9$ indicating OS swapping)  
+* **Critical Threshold:** $&gt; 2.0$  
+* **Alert Level:** `P2 - Major`  
+* **Remediation:** Trigger online active defragmentation (`CONFIG SET activedefrag yes`) or restart memory allocator (Jemalloc arena purging).
+
+### 3.4 JVM GC Pause Duration &amp; CPU Overhead
+$$\text{GC Overhead Ratio} = \frac{\sum_{i=1}^n t_{\text{pause}, i}}{T_{\text{evaluation}}} \times 100\%$$
+* **Warning Threshold:** Pause P99 $&gt; 100\text{ ms}$ (Overhead $&gt; 5\%$)  
+* **Critical Threshold:** Pause P99 $&gt; 500\text{ ms}$ (Overhead $&gt; 15\%$)  
+* **Alert Level:** `P2 - Major`  
+* **Remediation:** Transition heap to ZGC or generational Shenandoah; inspect survivor space sizing and tenuring thresholds (`-XX:MaxTenuringThreshold`).
+
+### 3.5 PostgreSQL WAL Generation Rate
+$$\dot{W}_{\text{WAL}} = \frac{\Delta \text{WAL Bytes}}{\Delta t}$$
+* **Warning Threshold:** $&gt; 80\text{ MB/s}$  
+* **Critical Threshold:** $&gt; 150\text{ MB/s}$  
+* **Alert Level:** `P1 - Critical`  
+* **Remediation:** Detect runaway batch bulk inserts or unvacuumed table bloat; verify archive command throughput to avoid disk saturation in `pg_wal`.
+
+---
+
+## 4. Universal Alerting &amp; Routing Framework
+
+`&lt;dcouplr/&gt;` decouples alert generation from downstream notification tools using an in-memory, zero-heap routing matrix.
+
+### 4.1 Supported Connectors
+
+1. **Enterprise Ticketing Tool / Local Spool** (`varinull_operations_engine` connector):
+   * Protocol: Local HTTP socket `http://127.0.0.1:9000/v1/support/receiver/ingest` or local spool fallback.
+   * Auto-ticket creation for `P0`, `P1`, and `P2` incidents with SLA tracking and SHA-256 cryptographic attestation.
+2. **Generic HTTP/REST Webhook** (`generic_webhook`):
+   * Custom endpoints, custom headers, payload template interpolation (`{alert_id}`, `{severity}`, `{title}`, `{node_id}`).
+3. **ServiceNow ITSM** (`servicenow`):
+   * REST Table API (`/api/now/table/incident`) with assignment group and CMDB CI mapping.
+4. **Jira Service Management** (`jira_service_management`):
+   * Atlassian REST API v3 with project key, custom fields, and transition workflows.
+5. **PagerDuty Events v2** (`pagerduty`):
+   * Direct dispatch to `/v2/enqueue` with deduplication keys and client links.
+6. **ChatOps** (`slack_teams`):
+   * Rich markdown attachments formatted for Slack, Microsoft Teams, Mattermost, and Discord.
+7. **Syslog RFC 5424 SIEM Relay** (`syslog_relay`):
+   * UDP/TCP syslog packets to Splunk, Elastic, QRadar, or local syslogd.
+8. **Air-Gapped Zero-Egress JSON Spool** (`local_spool`):
+   * 100% offline file drop (`./data/alerts_spool/`) with atomic writes for air-gapped enclaves.
+
+---
+
+## 5. In-Perimeter Integration with Enterprise Ticketing Tools &amp; Local Spooling
+
+### 5.1 Enterprise Ticketing &amp; Incident Management Overview
+Enterprise platforms require robust, reliable incident routing to your team&#x27;s **enterprise ticketing tool**—whether your organization uses **ServiceNow**, **Jira Service Management (Jira/JSM)**, or an internal ITSM pipeline. `&lt;dcouplr/&gt;` integrates with your ticketing infrastructure using an in-perimeter **Edge Ingest Bridge** on port 9000 (`/v1/support/receiver/ingest`) and a local atomic spool (`./data/incident_spool/`):
+* **Ticketing System Flexibility:** Dispatches structured incident records directly to ServiceNow, Jira, or custom webhook endpoints with standard ITIL priority mappings.
+* **In-Perimeter Edge Ingest Bridge:** For high-security datacenter and VPC environments where `&lt;dcouplr/&gt;` operates under a strict **Zero-Egress Invariant (Zero WAN Egress)**, the ingest bridge accepts local JSON envelopes over loopback HTTP and atomic disk spools.
+* **Air-Gapped Sovereign Mode:** In disconnected environments, tickets buffer safely to local disk without dropped events or external WAN dependencies.
+
+### 5.2 Minimal Connectivity / Full Coverage Specification
+
+| Requirement | Implementation in `&lt;dcouplr/&gt;` |
+|---|---|
+| **Minimal Connectivity** | Strictly in-perimeter. Default address is `http://127.0.0.1:9000/v1/support/receiver/ingest`. Zero public WAN packets are emitted. |
+| **Payload Compactness** | Payload size is under 1.5 KB, containing only essential diagnostic keys. |
+| **Air-Gap Spool Fallback** | If port 9000 is offline or isolated, `&lt;dcouplr/&gt;` writes an atomic `.tmp` -&gt; `.json` file to `./data/incident_spool/TICKET-SPOOL-&lt;timestamp&gt;-&lt;rand&gt;.json`. Zero errors are raised; zero tickets are dropped. |
+| **Full Diagnostic Coverage** | Ingest payload contains: `app_id: &quot;dcouplr&quot;`, `title`, `priority`, `category`, Markdown-formatted `description`, `affected_nodes`, plus `metadata` containing `node_id`, `tech_id`, `metric_key`, `metric_value`, `threshold`, `runbook_url`, and `cli_diagnostic`. |
+| **Cryptographic Attestation** | Each ticket contains a SHA-256 signature generated over the incident parameters, ensuring verifiable audit trails. |
+| **Priority Mapping** | `&lt;dcouplr/&gt;` severity maps directly to standard ITIL priority standards: `P0` -&gt; `P0 - Blocker`, `P1` -&gt; `P1 - Critical`, `P2` -&gt; `P2 - Major`, `P3/P4` -&gt; `P3 - Minor`. |
+
+### 5.2 Incident Ingest JSON Schema
+
+```json
+{
+  &quot;app_id&quot;: &quot;dcouplr&quot;,
+  &quot;company_name&quot;: &quot;Enterprise Operations&quot;,
+  &quot;title&quot;: &quot;[ALERT] P1 - Critical in oracle_db on node-dc1-bm-01&quot;,
+  &quot;priority&quot;: &quot;P1 - Critical&quot;,
+  &quot;category&quot;: &quot;Infrastructure Incident / Tier Breach&quot;,
+  &quot;description&quot;: &quot;### &lt;dcouplr/&gt; Autonomous Telemetry Incident Report\n...&quot;,
+  &quot;affected_nodes&quot;: 1,
+  &quot;metadata&quot;: {
+    &quot;incident_id&quot;: &quot;INC-1793288393893-4182&quot;,
+    &quot;node_id&quot;: &quot;node-dc1-bm-01&quot;,
+    &quot;tech_id&quot;: &quot;oracle_db&quot;,
+    &quot;metric_key&quot;: &quot;sga_buffer_cache_hit_ratio&quot;,
+    &quot;metric_value&quot;: 88.4,
+    &quot;threshold&quot;: 90.0,
+    &quot;runbook_url&quot;: &quot;/docs/RUNBOOK-TECHNOLOGY-SPECIFIC-NODE-MONITORING-AND-ALERT-ROUTING.html#oracle_db&quot;,
+    &quot;cli_diagnostic&quot;: &quot;dcouplr node tech check --node node-dc1-bm-01 --tech oracle_db&quot;,
+    &quot;attestation_sha256&quot;: &quot;4a71b128c7f9e8a379d4608c0ef28bf3d8338f0e5726fa487b9292a4de80ef02&quot;,
+    &quot;connectivity_profile&quot;: &quot;minimal_in_perimeter&quot;,
+    &quot;zero_egress_verified&quot;: true
+  }
+}
+```
+
+---
+
+## 6. SRE Operational Procedures &amp; CLI Diagnostics
+
+### 6.1 Inspect Installed Technologies on a Node
+```bash
+# Query the live inventory across all nodes
+curl -s http://127.0.0.1:8000/v1/telemetry/nodes/technologies | jq .
+
+# Filter for a specific bare-metal or cloud node
+curl -s &quot;http://127.0.0.1:8000/v1/telemetry/nodes/technologies?node_id=node-dc1-bm-01&quot; | jq .
+```
+
+### 6.2 Trigger Autonomous Discovery Scan on a Node
+```bash
+curl -X POST http://127.0.0.1:8000/v1/telemetry/nodes/node-dc1-bm-01/technologies/scan | jq .
+```
+
+### 6.3 Update Metric Thresholds on a Node Technology
+```bash
+curl -X POST http://127.0.0.1:8000/v1/telemetry/nodes/node-dc1-bm-01/technologies/configure \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;tech_id&quot;: &quot;oracle_db&quot;,
+    &quot;alert_level&quot;: &quot;P1&quot;,
+    &quot;evaluation_window&quot;: &quot;1m&quot;,
+    &quot;metrics&quot;: {
+      &quot;sga_buffer_cache_hit_ratio&quot;: {
+        &quot;warning&quot;: 96.0,
+        &quot;critical&quot;: 92.0
+      }
+    }
+  }&#x27; | jq .
+```
+
+### 6.4 Test Dispatch to Enterprise Ticketing Tool
+```bash
+curl -X POST http://127.0.0.1:8000/v1/telemetry/alerting/connectors/voe/sync \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;node_id&quot;: &quot;node-dc1-bm-01&quot;,
+    &quot;tech_id&quot;: &quot;oracle_db&quot;,
+    &quot;priority&quot;: &quot;P1 - Critical&quot;,
+    &quot;title&quot;: &quot;[SRE TEST] Verification of Enterprise Ticketing Queue Dispatch&quot;,
+    &quot;metric_key&quot;: &quot;sga_buffer_cache_hit_ratio&quot;,
+    &quot;metric_value&quot;: 88.2,
+    &quot;threshold&quot;: 90.0
+  }&#x27; | jq .
+```
+
+### 6.5 Review Ticket History Dispatched to Local Ticketing Spool
+```bash
+curl -s http://127.0.0.1:8000/v1/telemetry/alerting/connectors/voe/tickets | jq .
+```
+
+---
+
+## 7. Zero-Egress Attestation &amp; Air-Gap Verification
+
+To verify that the observer mesh emits zero bytes to public clouds or third-party networks:
+1. Run the local eBPF filter verification:
+   ```bash
+   dcouplr check --tier tier_7_siem_audit --component security_compliance
+   ```
+2. Verify that `ebpf_blocked_wan_packets == 0` and `airgap_drift_pct == 0.00%`.
+3. Inspect `attestation_sha256` in all dispatched ticket payloads. All hashes are generated using deterministic SHA-256 over incident identifiers, node state, and timestamps.
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># SRE Engineering Runbook: Technology-Specific Node Monitoring &amp; Universal Alert Routing
+
+**Document ID:** `VA-RUNBOOK-TECH-ROUTING-001`  
+**Classification:** Enterprise Internal / Class 4 Baseline  
+**Target Systems:** `&lt;dcouplr/&gt;` In-Perimeter Observer Mesh, Bare-Metal Datacenter Hosts, Cloud VPC Nodes, Enterprise Ticketing Tools  
+**Target Audience:** Site Reliability Engineers (SRE), Systems Administrators, Network Operations Center (NOC), Platform Engineers  
+**Status:** `VERIFIED &amp; OPERATIONAL`  
+
+---
+
+## 1. Executive Summary &amp; Purpose
+
+Modern enterprise environments host heterogeneous workloads across bare-metal datacenter servers and cloud VPC instances. A generic operating-system-level observer (monitoring only CPU and memory) fails to detect application-level brownouts such as database lock escalation, Kafka consumer lag accumulation, JVM garbage-collection pauses, or proxy buffer exhaustion.
+
+`&lt;dcouplr/&gt;` introduces the **Technology-Specific Node Discovery &amp; Monitoring Engine** combined with the **Universal Alerting, Routing &amp; Enterprise Ticketing Connector Framework**. This system:
+1. **Discovers and monitors technology-specific installations on each host node** without external agents or WAN dependencies, evaluating real-time operational metrics against mathematical thresholds.
+2. **Routes alerts to any enterprise ticketing, paging, or ChatOps tool** (ServiceNow, Jira Service Management, PagerDuty, ChatOps webhooks, RFC 5424 Syslog, and Local Air-Gapped Spools).
+3. **Provides native, in-perimeter integration with your Enterprise Ticketing Tool (ServiceNow, Jira Service Management, or custom internal ticketing systems)** via a local loopback bridge (`http://127.0.0.1:9000/v1/support/receiver/ingest`) and zero-WAN atomic disk spool (`./data/incident_spool/`), operating under a **Minimal Connectivity / Full Coverage** paradigm (zero external cloud egress, &lt; 1.5 KB payload, complete diagnostic context, and SHA-256 attestation).
+
+```
++---------------------------------------------------------------------------------------------------+
+|                                      &lt;dcouplr/&gt; HOST NODE                                         |
+|                                                                                                   |
+|  +---------------------+  +----------------------+  +---------------------+  +-----------------+  |
+|  | Oracle DB / Postgres|  | Kafka / RabbitMQ     |  | Redis / In-Memory   |  | Nginx / Envoy   |  |
+|  | Port 1521 / 5432    |  | Port 9092 / 5672     |  | Port 6379           |  | Port 443 / 10000|  |
+|  +----------+----------+  +----------+-----------+  +----------+----------+  +--------+--------+  |
+|             |                        |                         |                      |           |
+|             +------------------------+-------------------------+----------------------+           |
+|                                                  |                                                |
+|                                      [ In-Perimeter eBPF ]                                        |
+|                                  [ Procfs &amp; Socket Inspector ]                                    |
+|                                                  |                                                |
+|                                   &lt;dcouplr/&gt; Unified Observer                                     |
++--------------------------------------------------+------------------------------------------------+
+                                                   |
+                        +--------------------------+--------------------------+
+                        |                                                     |
+             [ Primary In-Perimeter ]                               [ Air-Gap Fallback ]
+                        |                                                     |
+                        v                                                     v
+          +----------------------------+                        +---------------------------+
+          |  Enterprise Ticketing Tool |                        | Atomic Local JSON Spool   |
+          |  (ServiceNow/Jira/Bridge)  |                        |  ./data/incident_spool/   |
+          |   http://127.0.0.1:9000    |                        | (Zero Network Required)   |
+          +----------------------------+                        +---------------------------+
+                        |
+                        +---&gt; Auto-Ticket (P0/P1/P2) -&gt; SLA Countdown -&gt; Auto-Resolve on Recovery
+```
+
+---
+
+## 2. Technology-Specific Monitoring Architecture
+
+`&lt;dcouplr/&gt;` continuously inspects local nodes across 6 major technology domains covering 24 enterprise software stacks:
+
+### 2.1 Domain Overview &amp; Default Port Census
+
+| Domain | Technology Stack | Default Ports | Process Signature | Key Observability Focus |
+|---|---|---|---|---|
+| **Relational &amp; Distributed SQL** | Oracle Database 19c RAC | `1521` | `ora_pmon_*` | SGA Hit Ratio, Redo Log Latency, Tablespace Full % |
+| | PostgreSQL 16 | `5432` | `postgres` | WAL Rate, Active Backends %, Autovacuum Backlog, Replication Lag |
+| | MySQL / MariaDB | `3306` | `mysqld` | InnoDB Buffer Pool %, Slow Queries/sec, Seconds Behind Source |
+| | TiDB Distributed SQL | `4000`, `20160` | `tidb-server`, `tikv-server` | Coprocessor Wait, Raftstore CPU, 2PC Commit Latency |
+| **NoSQL &amp; In-Memory Stores** | Apache Cassandra | `9042`, `7000` | `org.apache.cassandra` | SSTables per Read, Compactions Pending, Write P99 Latency |
+| | MongoDB | `27017` | `mongod` | WiredTiger Cache Saturation, Oplog Window, Current Connections |
+| | Redis / KeyDB | `6379`, `16379` | `redis-server` | Memory Fragmentation Ratio, Evicted Keys/s, Instantaneous Ops |
+| | Memcached | `11211` | `memcached` | Slab Allocation Limit, Cache Eviction Rate, Hit Ratio |
+| **Event Streaming &amp; Queues** | Apache Kafka | `9092`, `9093` | `kafka.Kafka` | Under-Replicated Partitions, Consumer Group Lag, ISR Shrink |
+| | RabbitMQ | `5672`, `15672` | `beam.smp` | Queue Total Depth, Unacknowledged Messages, Memory Alarm |
+| | Apache Pulsar | `6650`, `8080` | `pulsar` | Backlog Quota, Publish Latency, Cursor Backlog |
+| **Web Servers &amp; Ingress Proxies** | NGINX Plus / Open Source | `80`, `443` | `nginx: worker` | Active TCP Connections, Upstream 5xx %, SSL Handshake P99 |
+| | Envoy Proxy | `10000`, `9901` | `envoy` | Downstream Cx Active, Request Overflow, Circuit Breakers |
+| | Apache HTTP Server | `80`, `443` | `httpd`, `apache2` | Scoreboard Worker Allocation, Busy/Idle Ratio |
+| | HAProxy | `8080`, `8443` | `haproxy` | Frontend Session Saturation, Backend Queue Depth, Server Health |
+| **Runtimes &amp; Virtual Machines** | OpenJDK / HotSpot JVM | `8080`, `9999` | `java -jar` | Tenured Heap Allocation, G1/ZGC Pause P99 ms, Live Threads |
+| | Node.js Runtime | `3000` | `node server.js` | libuv Event Loop Lag P99 ms, V8 Heap Used %, Active Handles |
+| | Go Runtime (Golang) | `8081` | `./service` | Goroutines Count, GC CPU Fraction %, Heap Alloc Size |
+| | Python Runtime | `8000` | `gunicorn`, `uvicorn` | GIL Contention Latency, RSS Growth Rate, Worker Health |
+| **Enterprise Storage &amp; Compute** | SAP HANA 2.0 In-Memory | `30015` | `hdbdaemon` | Column Store Saturation %, Savepoint Flush Sec, Delta Merge |
+| | Ceph Storage SDS | `6789`, `6800` | `ceph-osd` | OSDs Down/Degraded, Placement Group Degraded %, Scrub Latency |
+| | Docker / Containerd | `2375` | `dockerd` | Container Crash Rate, Kernel OOM Events, Daemon Socket Latency |
+| | Kubernetes Node (Kubelet) | `10250` | `kubelet` | PLEG Relist Duration Sec, Pod Evictions/hr, CFS Throttled % |
+
+---
+
+## 3. Mathematical Foundations &amp; Operational Thresholds
+
+Each technology metric monitored by `&lt;dcouplr/&gt;` evaluates against mathematically proven thresholds:
+
+### 3.1 Oracle Database 19c RAC Buffer Cache Hit Ratio
+$$\text{Hit Ratio} = 1 - \left( \frac{\text{Physical Reads}}{\text{DB Block Gets} + \text{Consistent Gets}} \right)$$
+* **Warning Threshold:** $&lt; 95.0\%$  
+* **Critical Threshold:** $&lt; 90.0\%$  
+* **Alert Level:** `P1 - Critical`  
+* **Remediation:** Inspect SQL query execution plans for unindexed full table scans (`V$SQL_PLAN`); increase `DB_CACHE_SIZE` within the System Global Area (SGA).
+
+### 3.2 Apache Kafka Consumer Lag Drift Velocity
+$$\Delta \text{Lag}(t) = \frac{d}{dt} \Big( \text{LogEndOffset}(t) - \text{CurrentConsumerOffset}(t) \Big)$$
+* **Warning Threshold:** $&gt; 5,000\text{ messages}$ (or $\Delta \text{Lag} &gt; 250\text{ msgs/sec}$)  
+* **Critical Threshold:** $&gt; 25,000\text{ messages}$ (or $\Delta \text{Lag} &gt; 1,500\text{ msgs/sec}$)  
+* **Alert Level:** `P1 - Critical`  
+* **Remediation:** Autoscale consumer pod replicas or rebalance partitions. Check consumer group thread deadlocks via JMX.
+
+### 3.3 Redis Memory Fragmentation Ratio
+$$\text{Fragmentation Ratio} = \frac{\text{used\_memory\_rss}}{\text{used\_memory}}$$
+* **Warning Threshold:** $&gt; 1.5$ (or $&lt; 0.9$ indicating OS swapping)  
+* **Critical Threshold:** $&gt; 2.0$  
+* **Alert Level:** `P2 - Major`  
+* **Remediation:** Trigger online active defragmentation (`CONFIG SET activedefrag yes`) or restart memory allocator (Jemalloc arena purging).
+
+### 3.4 JVM GC Pause Duration &amp; CPU Overhead
+$$\text{GC Overhead Ratio} = \frac{\sum_{i=1}^n t_{\text{pause}, i}}{T_{\text{evaluation}}} \times 100\%$$
+* **Warning Threshold:** Pause P99 $&gt; 100\text{ ms}$ (Overhead $&gt; 5\%$)  
+* **Critical Threshold:** Pause P99 $&gt; 500\text{ ms}$ (Overhead $&gt; 15\%$)  
+* **Alert Level:** `P2 - Major`  
+* **Remediation:** Transition heap to ZGC or generational Shenandoah; inspect survivor space sizing and tenuring thresholds (`-XX:MaxTenuringThreshold`).
+
+### 3.5 PostgreSQL WAL Generation Rate
+$$\dot{W}_{\text{WAL}} = \frac{\Delta \text{WAL Bytes}}{\Delta t}$$
+* **Warning Threshold:** $&gt; 80\text{ MB/s}$  
+* **Critical Threshold:** $&gt; 150\text{ MB/s}$  
+* **Alert Level:** `P1 - Critical`  
+* **Remediation:** Detect runaway batch bulk inserts or unvacuumed table bloat; verify archive command throughput to avoid disk saturation in `pg_wal`.
+
+---
+
+## 4. Universal Alerting &amp; Routing Framework
+
+`&lt;dcouplr/&gt;` decouples alert generation from downstream notification tools using an in-memory, zero-heap routing matrix.
+
+### 4.1 Supported Connectors
+
+1. **Enterprise Ticketing Tool / Local Spool** (`varinull_operations_engine` connector):
+   * Protocol: Local HTTP socket `http://127.0.0.1:9000/v1/support/receiver/ingest` or local spool fallback.
+   * Auto-ticket creation for `P0`, `P1`, and `P2` incidents with SLA tracking and SHA-256 cryptographic attestation.
+2. **Generic HTTP/REST Webhook** (`generic_webhook`):
+   * Custom endpoints, custom headers, payload template interpolation (`{alert_id}`, `{severity}`, `{title}`, `{node_id}`).
+3. **ServiceNow ITSM** (`servicenow`):
+   * REST Table API (`/api/now/table/incident`) with assignment group and CMDB CI mapping.
+4. **Jira Service Management** (`jira_service_management`):
+   * Atlassian REST API v3 with project key, custom fields, and transition workflows.
+5. **PagerDuty Events v2** (`pagerduty`):
+   * Direct dispatch to `/v2/enqueue` with deduplication keys and client links.
+6. **ChatOps** (`slack_teams`):
+   * Rich markdown attachments formatted for Slack, Microsoft Teams, Mattermost, and Discord.
+7. **Syslog RFC 5424 SIEM Relay** (`syslog_relay`):
+   * UDP/TCP syslog packets to Splunk, Elastic, QRadar, or local syslogd.
+8. **Air-Gapped Zero-Egress JSON Spool** (`local_spool`):
+   * 100% offline file drop (`./data/alerts_spool/`) with atomic writes for air-gapped enclaves.
+
+---
+
+## 5. In-Perimeter Integration with Enterprise Ticketing Tools &amp; Local Spooling
+
+### 5.1 Enterprise Ticketing &amp; Incident Management Overview
+Enterprise platforms require robust, reliable incident routing to your team&#x27;s **enterprise ticketing tool**—whether your organization uses **ServiceNow**, **Jira Service Management (Jira/JSM)**, or an internal ITSM pipeline. `&lt;dcouplr/&gt;` integrates with your ticketing infrastructure using an in-perimeter **Edge Ingest Bridge** on port 9000 (`/v1/support/receiver/ingest`) and a local atomic spool (`./data/incident_spool/`):
+* **Ticketing System Flexibility:** Dispatches structured incident records directly to ServiceNow, Jira, or custom webhook endpoints with standard ITIL priority mappings.
+* **In-Perimeter Edge Ingest Bridge:** For high-security datacenter and VPC environments where `&lt;dcouplr/&gt;` operates under a strict **Zero-Egress Invariant (Zero WAN Egress)**, the ingest bridge accepts local JSON envelopes over loopback HTTP and atomic disk spools.
+* **Air-Gapped Sovereign Mode:** In disconnected environments, tickets buffer safely to local disk without dropped events or external WAN dependencies.
+
+### 5.2 Minimal Connectivity / Full Coverage Specification
+
+| Requirement | Implementation in `&lt;dcouplr/&gt;` |
+|---|---|
+| **Minimal Connectivity** | Strictly in-perimeter. Default address is `http://127.0.0.1:9000/v1/support/receiver/ingest`. Zero public WAN packets are emitted. |
+| **Payload Compactness** | Payload size is under 1.5 KB, containing only essential diagnostic keys. |
+| **Air-Gap Spool Fallback** | If port 9000 is offline or isolated, `&lt;dcouplr/&gt;` writes an atomic `.tmp` -&gt; `.json` file to `./data/incident_spool/TICKET-SPOOL-&lt;timestamp&gt;-&lt;rand&gt;.json`. Zero errors are raised; zero tickets are dropped. |
+| **Full Diagnostic Coverage** | Ingest payload contains: `app_id: &quot;dcouplr&quot;`, `title`, `priority`, `category`, Markdown-formatted `description`, `affected_nodes`, plus `metadata` containing `node_id`, `tech_id`, `metric_key`, `metric_value`, `threshold`, `runbook_url`, and `cli_diagnostic`. |
+| **Cryptographic Attestation** | Each ticket contains a SHA-256 signature generated over the incident parameters, ensuring verifiable audit trails. |
+| **Priority Mapping** | `&lt;dcouplr/&gt;` severity maps directly to standard ITIL priority standards: `P0` -&gt; `P0 - Blocker`, `P1` -&gt; `P1 - Critical`, `P2` -&gt; `P2 - Major`, `P3/P4` -&gt; `P3 - Minor`. |
+
+### 5.2 Incident Ingest JSON Schema
+
+```json
+{
+  &quot;app_id&quot;: &quot;dcouplr&quot;,
+  &quot;company_name&quot;: &quot;Enterprise Operations&quot;,
+  &quot;title&quot;: &quot;[ALERT] P1 - Critical in oracle_db on node-dc1-bm-01&quot;,
+  &quot;priority&quot;: &quot;P1 - Critical&quot;,
+  &quot;category&quot;: &quot;Infrastructure Incident / Tier Breach&quot;,
+  &quot;description&quot;: &quot;### &lt;dcouplr/&gt; Autonomous Telemetry Incident Report\n...&quot;,
+  &quot;affected_nodes&quot;: 1,
+  &quot;metadata&quot;: {
+    &quot;incident_id&quot;: &quot;INC-1793288393893-4182&quot;,
+    &quot;node_id&quot;: &quot;node-dc1-bm-01&quot;,
+    &quot;tech_id&quot;: &quot;oracle_db&quot;,
+    &quot;metric_key&quot;: &quot;sga_buffer_cache_hit_ratio&quot;,
+    &quot;metric_value&quot;: 88.4,
+    &quot;threshold&quot;: 90.0,
+    &quot;runbook_url&quot;: &quot;/docs/RUNBOOK-TECHNOLOGY-SPECIFIC-NODE-MONITORING-AND-ALERT-ROUTING.html#oracle_db&quot;,
+    &quot;cli_diagnostic&quot;: &quot;dcouplr node tech check --node node-dc1-bm-01 --tech oracle_db&quot;,
+    &quot;attestation_sha256&quot;: &quot;4a71b128c7f9e8a379d4608c0ef28bf3d8338f0e5726fa487b9292a4de80ef02&quot;,
+    &quot;connectivity_profile&quot;: &quot;minimal_in_perimeter&quot;,
+    &quot;zero_egress_verified&quot;: true
+  }
+}
+```
+
+---
+
+## 6. SRE Operational Procedures &amp; CLI Diagnostics
+
+### 6.1 Inspect Installed Technologies on a Node
+```bash
+# Query the live inventory across all nodes
+curl -s http://127.0.0.1:8000/v1/telemetry/nodes/technologies | jq .
+
+# Filter for a specific bare-metal or cloud node
+curl -s &quot;http://127.0.0.1:8000/v1/telemetry/nodes/technologies?node_id=node-dc1-bm-01&quot; | jq .
+```
+
+### 6.2 Trigger Autonomous Discovery Scan on a Node
+```bash
+curl -X POST http://127.0.0.1:8000/v1/telemetry/nodes/node-dc1-bm-01/technologies/scan | jq .
+```
+
+### 6.3 Update Metric Thresholds on a Node Technology
+```bash
+curl -X POST http://127.0.0.1:8000/v1/telemetry/nodes/node-dc1-bm-01/technologies/configure \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;tech_id&quot;: &quot;oracle_db&quot;,
+    &quot;alert_level&quot;: &quot;P1&quot;,
+    &quot;evaluation_window&quot;: &quot;1m&quot;,
+    &quot;metrics&quot;: {
+      &quot;sga_buffer_cache_hit_ratio&quot;: {
+        &quot;warning&quot;: 96.0,
+        &quot;critical&quot;: 92.0
+      }
+    }
+  }&#x27; | jq .
+```
+
+### 6.4 Test Dispatch to Enterprise Ticketing Tool
+```bash
+curl -X POST http://127.0.0.1:8000/v1/telemetry/alerting/connectors/voe/sync \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{
+    &quot;node_id&quot;: &quot;node-dc1-bm-01&quot;,
+    &quot;tech_id&quot;: &quot;oracle_db&quot;,
+    &quot;priority&quot;: &quot;P1 - Critical&quot;,
+    &quot;title&quot;: &quot;[SRE TEST] Verification of Enterprise Ticketing Queue Dispatch&quot;,
+    &quot;metric_key&quot;: &quot;sga_buffer_cache_hit_ratio&quot;,
+    &quot;metric_value&quot;: 88.2,
+    &quot;threshold&quot;: 90.0
+  }&#x27; | jq .
+```
+
+### 6.5 Review Ticket History Dispatched to Local Ticketing Spool
+```bash
+curl -s http://127.0.0.1:8000/v1/telemetry/alerting/connectors/voe/tickets | jq .
+```
+
+---
+
+## 7. Zero-Egress Attestation &amp; Air-Gap Verification
+
+To verify that the observer mesh emits zero bytes to public clouds or third-party networks:
+1. Run the local eBPF filter verification:
+   ```bash
+   dcouplr check --tier tier_7_siem_audit --component security_compliance
+   ```
+2. Verify that `ebpf_blocked_wan_packets == 0` and `airgap_drift_pct == 0.00%`.
+3. Inspect `attestation_sha256` in all dispatched ticket payloads. All hashes are generated using deterministic SHA-256 over incident identifiers, node state, and timestamps.
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

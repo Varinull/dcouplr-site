@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - RUNBOOK-DAY0-CLI-INSTALLATION-AND-FIRST-RUN-WEB-WIZARD.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/RUNBOOK-DAY0-CLI-INSTALLATION-AND-FIRST-RUN-WEB-WIZARD.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="RUNBOOK-DAY0-CLI-INSTALLATION-AND-FIRST-RUN-WEB-WIZARD.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="dcouplr-day-0-cli-installation-post-install-usability-first-run-web-wizard-runbook"><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Day-0 CLI Installation, Post-Install Usability &amp; First-Run Web Wizard Runbook</h1>
+<p><strong>Document Control:</strong> Authoritative Operations Dossier<br />
+<strong>Target Environments:</strong> Enterprise In-VPC (AWS, GCP, Azure, On-Premises Bare Metal, Air-Gapped Sovereign Enclaves)<br />
+<strong>Security Invariant:</strong> Zero External WAN Egress ($0.00) • Complete Sovereign In-VPC Operation</p>
+<hr />
+<h2 id="1-is-httplocalhost8000admindesk-usable-duringafter-cli-installation">1. Is http://localhost:8000/AdminDesk Usable During/After CLI Installation?</h2>
+<p><strong>Yes, absolutely.</strong></p>
+<p>When an administrator installs <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> via the CLI installer, the installation script places the self-contained binary package, Python environment, SQLite SSOT databases, and all bundled static web consoles directly into the local VPC host. Once the daemon is launched (<code>dcouplr serve --port 8000</code>, Docker container, or Linux systemd service), <strong><code>http://localhost:8000/AdminDesk</code> is immediately usable on Day 0</strong>.</p>
+<p>In fact, the CLI installs a complete sovereign in-VPC console suite that requires <strong>zero external cloud CDNs, zero third-party cloud assets, and zero internet access</strong>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Console URL</th>
+<th style="text-align:left">Persona / Role</th>
+<th style="text-align:left">Day-0 Purpose &amp; Capabilities</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/AdminDesk</code></strong></td>
+<td style="text-align:left"><strong>Application Administrator (<code>Obs-Admins</code>)</strong></td>
+<td style="text-align:left"><strong>Authoritative central control desk</strong>: user management, RBAC role assignment, corporate SSO identity sync, node licensing toggle ledger, audit logs, and system configuration SSOT.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/companyadmin</code></strong></td>
+<td style="text-align:left"><strong>Cluster Administrator (<code>CompanyAdmins</code>)</strong></td>
+<td style="text-align:left">In-VPC cluster administration and sovereign governance console.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/DBADesk</code></strong></td>
+<td style="text-align:left"><strong>Database Administrator (<code>Obs-DBA</code>)</strong></td>
+<td style="text-align:left">Sovereign in-VPC SQLite SSOT inspection console with safe read-only SQL scratchpad and auto-backup management.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/dashboard</code></strong></td>
+<td style="text-align:left"><strong>SRE / DevOps</strong></td>
+<td style="text-align:left">Real-time node census, fleet telemetry metrics, and cluster health overview.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/setup</code></strong></td>
+<td style="text-align:left"><strong>Infrastructure Architect</strong></td>
+<td style="text-align:left">In-VPC capabilities sizer, preset profile tuner, and deployment manifest generator.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/wizard</code></strong></td>
+<td style="text-align:left"><strong>Lead Systems Engineer / IT Director</strong></td>
+<td style="text-align:left">Interactive 5-step First-Run Web Installation Wizard for guided browser onboarding.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong><code>http://localhost:8000/docs</code></strong></td>
+<td style="text-align:left"><strong>All Teams</strong></td>
+<td style="text-align:left">Offline, air-gapped runbooks, API references, and architecture dossiers.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-walkthrough-from-purchase-to-first-install">2. Walkthrough: From Purchase to First Install</h2>
+<p>Here is the exact chronological journey of an enterprise customer from purchase to running <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> in production:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌───────────────────────────┐      ┌───────────────────────────┐      ┌───────────────────────────┐
+│  Step 1: Commercial Order │      │  Step 2: CLI Installation │      │ Step 3: Offline License   │
+│  &amp; Zero-Knowledge Handoff │ ───► │  (curl / PowerShell Script)│ ───► │ Activation &amp; HW Key Deriv.│
+└───────────────────────────┘      └───────────────────────────┘      └───────────────────────────┘
+                                                                                    │
+                                                                                    ▼
+┌───────────────────────────┐      ┌───────────────────────────┐      ┌───────────────────────────┐
+│ Step 6: Production Ops    │      │  Step 5: Daemon Activation│      │ Step 4: Admin Provisioning│
+│ (/AdminDesk &amp; Wallboards) │ ◄─── │  &amp; First-Boot Login       │ ◄─── │ (Interactive / Wizard)    │
+└───────────────────────────┘      └───────────────────────────┘      └───────────────────────────┘
+</code></pre></div>
+<h3 id="step-1-commercial-order-zero-knowledge-handoff">Step 1: Commercial Order &amp; Zero-Knowledge Handoff</h3>
+<ol>
+<li>The customer sizes their node fleet on the Commercial Pricing Calculator (e.g. 50 nodes → Cluster Small).</li>
+<li>Once the commercial agreement is confirmed or payment completes (Stripe/PayPal or enterprise PO invoice), <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> issues an offline <strong>Ed25519 cryptographic entitlement key</strong> (e.g., <code>DCL-CLUS-2026-X892A...</code>).</li>
+<li>For enterprise security compliance, keys are <strong>never transmitted over plaintext email</strong>; instead, an encrypted one-time SSO connection link is dispatched to the customer's IT administrator.</li>
+</ol>
+<h3 id="step-2-cli-engine-installation">Step 2: CLI Engine Installation</h3>
+<p>The customer executes the one-line sovereign installer on their target VPC Linux/macOS or Windows host:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash"># Linux / macOS (Air-Gapped or Connected VPC):
+curl -fsSL https://dcouplr.com/install-enterprise.sh | sh
+
+# Windows (PowerShell Administrator):
+irm https://dcouplr.com/install-enterprise.ps1 | iex
+</code></pre></div>
+<p>The script deploys:</p>
+<ul>
+<li>The compiled <code>dcouplr</code> CLI binary into <code>/usr/local/bin</code> (or <code>%LOCALAPPDATA%\Programs\dcouplr</code>).</li>
+<li>The Python virtual runtime and FastAPI engine.</li>
+<li>Bundled offline web console assets in <code>static/</code> (zero external CDN requests).</li>
+<li>Local SQLite database files in <code>./data/vpc_telemetry_db.db</code>.</li>
+</ul>
+<h3 id="step-3-offline-license-activation-hardware-key-derivation">Step 3: Offline License Activation &amp; Hardware Key Derivation</h3>
+<ol>
+<li>The installer parses and verifies the Ed25519 entitlement token completely offline with <strong>$0.00 cloud egress</strong>.</li>
+<li>It auto-derives the hardware-bound transmission secret key in <code>~/.dcouplr/hub_transmission.key</code>, used to cryptographically sign heartbeats across Outside-VPC Hubs without leaking payload telemetry.</li>
+</ol>
+<h3 id="step-4-application-administrator-provisioning-interactive-prompt">Step 4: Application Administrator Provisioning (Interactive Prompt)</h3>
+<p>The installer explicitly prompts for administrator credentials:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">==&gt; Step 3c of 5: Provisioning Application Administrator Account...
+    Select Account Type [1=Organizational User, 2=Local Dedicated Admin]: 1
+    Application Administrator Username [default: companyadmin]: jennifer.lee
+    Administrator Display Name: Jennifer Lee (Lead Systems Architect)
+    Application Administrator Email: jennifer.lee@yourcompany.com
+    Application Administrator Password: ****************
+    Confirm Password: ****************
+    RBAC Role Assigned [default: Obs-Admins]: Obs-Admins
+</code></pre></div>
+<p><strong>Flexible Identity Selection:</strong></p>
+<ul>
+<li><strong>Organizational User</strong>: Links an existing identity from Active Directory / LDAP / Okta (e.g., <code>jennifer.lee</code>).</li>
+<li><strong>Dedicated Local System Administrator</strong>: Creates a standalone system identity (e.g., <code>companyadmin</code> or <code>svc-dcouplr-admin</code>).</li>
+</ul>
+<p>Under the hood, this executes:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">dcouplr auth admin-user --username &quot;jennifer.lee&quot; --role &quot;Obs-Admins&quot; --email &quot;jennifer.lee@yourcompany.com&quot;
+</code></pre></div>
+<p>This writes the user to the in-VPC SQLite SSOT table <code>rbac_users</code> with role <code>Obs-Admins</code> (Application Administrator) and records an immutable audit log.</p>
+<h3 id="step-5-daemon-activation-first-login">Step 5: Daemon Activation &amp; First Login</h3>
+<p>The administrator launches the background daemon:</p>
+<div class="code-box"><div class="code-box-header"><span>bash</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-bash">dcouplr serve --port 8000
+</code></pre></div>
+<p>Visiting <code>http://localhost:8000/AdminDesk</code> allows the newly created administrator to immediately log in, configure VPC subnets, and activate monitored nodes.</p>
+<hr />
+<h2 id="3-interactive-first-run-web-wizard-wizard">3. Interactive First-Run Web Wizard (<code>/wizard</code>)</h2>
+<h3 id="purpose-architecture">Purpose &amp; Architecture</h3>
+<p>While DevOps teams love automated silent installs via Terraform or Ansible (<code>DCOUPLR_ADMIN_USER=...</code> and <code>DCOUPLR_LICENSE_KEY=...</code>), IT directors, DBAs, and enterprise systems architects prefer a <strong>visual browser-guided First-Run Installation Wizard</strong>.</p>
+<p>Accessible at:</p>
+<ul>
+<li><strong><code>http://localhost:8000/wizard</code></strong></li>
+<li><strong><code>http://localhost:8000/setup?mode=first-run</code></strong></li>
+</ul>
+<h3 id="wizard-step-progression">Wizard Step Progression</h3>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">[1. Preflight Checks] ── [2. License Key] ── [3. Admin User] ── [4. Sizing] ── [5. Launch]
+</code></pre></div>
+<ol>
+<li>
+<p><strong>Step 1: Preflight Environment Checks</strong></p>
+<ul>
+<li>Validates in-VPC SQLite storage write permissions.</li>
+<li>Tests volatile in-memory ring buffer allocation.</li>
+<li>Verifies zero-WAN egress network isolation boundary ($0.00 invariant).</li>
+<li>Validates port 8000 daemon socket health.</li>
+</ul>
+</li>
+<li>
+<p><strong>Step 2: License Key Entitlement &amp; Activation</strong></p>
+<ul>
+<li>Input field for Ed25519 offline license key token.</li>
+<li>One-click evaluation option: &quot;Evaluate Community Core (1 Node Free)&quot;.</li>
+<li>Real-time cryptographic tier recognition (Developer Pro, Cluster Small, Mission-Critical, Sovereign Air-Gap).</li>
+</ul>
+</li>
+<li>
+<p><strong>Step 3: Provision Authoritative Application Administrator</strong></p>
+<ul>
+<li>Selector for Account Type:
+<ul>
+<li><code>(•) Organizational User (Existing LDAP / Okta / Corporate SSO Username)</code></li>
+<li><code>( ) Dedicated Local System Administrator (e.g. 'svc-dcouplr-admin')</code></li>
+</ul>
+</li>
+<li>Inputs: Username, Display Name, Work Email, Password, Confirm Password.</li>
+<li>Role dropdown: <code>Obs-Admins (Application Administrator)</code> [Default] or <code>CompanyAdmins (Cluster Administrator)</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Step 4: Fleet Sizing &amp; Telemetry Configuration</strong></p>
+<ul>
+<li>Initial Monitored Node Fleet capacity (e.g., 25, 50, 75).</li>
+<li>Target VPC Subnet / CIDR range (e.g., <code>10.0.0.0/16</code>).</li>
+<li>Telemetry Buffer Mode: In-Memory Ring Buffer + SQLite SSOT.</li>
+</ul>
+</li>
+<li>
+<p><strong>Step 5: Launch &amp; Database Finalization</strong></p>
+<ul>
+<li>Complete configuration review card.</li>
+<li>Single-click action button: <code>🚀 Initialize In-VPC Engine &amp; Launch Admin Desk ➔</code>.</li>
+<li>Provisions database, sets <code>wizard_completed = 'true'</code> in <code>system_configuration_ssot</code>, creates session token, and automatically redirects to <code>http://localhost:8000/AdminDesk</code>.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="4-first-boot-redirect-logic">4. First-Boot Redirect Logic</h2>
+<ol>
+<li><strong>Fresh Installation Detection</strong>:
+<ul>
+<li>On server startup, if <code>wizard_completed != 'true'</code> and zero admin users exist in <code>rbac_users</code>, any browser navigation to <code>http://localhost:8000/AdminDesk</code> or <code>http://localhost:8000/setup</code> automatically redirects to <code>http://localhost:8000/wizard</code>.</li>
+</ul>
+</li>
+<li><strong>Bypass / Headless Override</strong>:
+<ul>
+<li>Passing <code>?bypass_wizard=1</code> or having pre-configured admin accounts (via environment variables <code>DCOUPLR_ADMIN_USER</code> and <code>DCOUPLR_ADMIN_PASSWORD</code>) bypasses the redirect, ensuring silent CI/CD automation is never interrupted.</li>
+</ul>
+</li>
+<li><strong>Replay Capability</strong>:
+<ul>
+<li>Calling <code>POST /v1/wizard/reset</code> or visiting <code>/wizard</code> directly allows administrators to re-run the wizard or inspect Day-0 provisioning settings at any time.</li>
+</ul>
+</li>
+</ol>
+</div>
+      <pre id="raw-view"><code># &amp;lt;dcouplr/&amp;gt; Day-0 CLI Installation, Post-Install Usability &amp;amp; First-Run Web Wizard Runbook
+
+**Document Control:** Authoritative Operations Dossier  
+**Target Environments:** Enterprise In-VPC (AWS, GCP, Azure, On-Premises Bare Metal, Air-Gapped Sovereign Enclaves)  
+**Security Invariant:** Zero External WAN Egress ($0.00) &amp;bull; Complete Sovereign In-VPC Operation  
+
+---
+
+## 1. Is http://localhost:8000/AdminDesk Usable During/After CLI Installation?
+
+**Yes, absolutely.**
+
+When an administrator installs `&lt;dcouplr/&gt;` via the CLI installer, the installation script places the self-contained binary package, Python environment, SQLite SSOT databases, and all bundled static web consoles directly into the local VPC host. Once the daemon is launched (`dcouplr serve --port 8000`, Docker container, or Linux systemd service), **`http://localhost:8000/AdminDesk` is immediately usable on Day 0**.
+
+In fact, the CLI installs a complete sovereign in-VPC console suite that requires **zero external cloud CDNs, zero third-party cloud assets, and zero internet access**:
+
+| Console URL | Persona / Role | Day-0 Purpose &amp;amp; Capabilities |
+| :--- | :--- | :--- |
+| **`http://localhost:8000/AdminDesk`** | **Application Administrator (`Obs-Admins`)** | **Authoritative central control desk**: user management, RBAC role assignment, corporate SSO identity sync, node licensing toggle ledger, audit logs, and system configuration SSOT. |
+| **`http://localhost:8000/companyadmin`** | **Cluster Administrator (`CompanyAdmins`)** | In-VPC cluster administration and sovereign governance console. |
+| **`http://localhost:8000/DBADesk`** | **Database Administrator (`Obs-DBA`)** | Sovereign in-VPC SQLite SSOT inspection console with safe read-only SQL scratchpad and auto-backup management. |
+| **`http://localhost:8000/dashboard`** | **SRE / DevOps** | Real-time node census, fleet telemetry metrics, and cluster health overview. |
+| **`http://localhost:8000/setup`** | **Infrastructure Architect** | In-VPC capabilities sizer, preset profile tuner, and deployment manifest generator. |
+| **`http://localhost:8000/wizard`** | **Lead Systems Engineer / IT Director** | Interactive 5-step First-Run Web Installation Wizard for guided browser onboarding. |
+| **`http://localhost:8000/docs`** | **All Teams** | Offline, air-gapped runbooks, API references, and architecture dossiers. |
+
+---
+
+## 2. Walkthrough: From Purchase to First Install
+
+Here is the exact chronological journey of an enterprise customer from purchase to running `&lt;dcouplr/&gt;` in production:
+
+```
+┌───────────────────────────┐      ┌───────────────────────────┐      ┌───────────────────────────┐
+│  Step 1: Commercial Order │      │  Step 2: CLI Installation │      │ Step 3: Offline License   │
+│  &amp; Zero-Knowledge Handoff │ ───► │  (curl / PowerShell Script)│ ───► │ Activation &amp; HW Key Deriv.│
+└───────────────────────────┘      └───────────────────────────┘      └───────────────────────────┘
+                                                                                    │
+                                                                                    ▼
+┌───────────────────────────┐      ┌───────────────────────────┐      ┌───────────────────────────┐
+│ Step 6: Production Ops    │      │  Step 5: Daemon Activation│      │ Step 4: Admin Provisioning│
+│ (/AdminDesk &amp; Wallboards) │ ◄─── │  &amp; First-Boot Login       │ ◄─── │ (Interactive / Wizard)    │
+└───────────────────────────┘      └───────────────────────────┘      └───────────────────────────┘
+```
+
+### Step 1: Commercial Order &amp;amp; Zero-Knowledge Handoff
+1. The customer sizes their node fleet on the Commercial Pricing Calculator (e.g. 50 nodes &amp;rarr; Cluster Small).
+2. Once the commercial agreement is confirmed or payment completes (Stripe/PayPal or enterprise PO invoice), `&lt;dcouplr/&gt;` issues an offline **Ed25519 cryptographic entitlement key** (e.g., `DCL-CLUS-2026-X892A...`).
+3. For enterprise security compliance, keys are **never transmitted over plaintext email**; instead, an encrypted one-time SSO connection link is dispatched to the customer&#x27;s IT administrator.
+
+### Step 2: CLI Engine Installation
+The customer executes the one-line sovereign installer on their target VPC Linux/macOS or Windows host:
+
+```bash
+# Linux / macOS (Air-Gapped or Connected VPC):
+curl -fsSL https://dcouplr.com/install-enterprise.sh | sh
+
+# Windows (PowerShell Administrator):
+irm https://dcouplr.com/install-enterprise.ps1 | iex
+```
+
+The script deploys:
+- The compiled `dcouplr` CLI binary into `/usr/local/bin` (or `%LOCALAPPDATA%\Programs\dcouplr`).
+- The Python virtual runtime and FastAPI engine.
+- Bundled offline web console assets in `static/` (zero external CDN requests).
+- Local SQLite database files in `./data/vpc_telemetry_db.db`.
+
+### Step 3: Offline License Activation &amp;amp; Hardware Key Derivation
+1. The installer parses and verifies the Ed25519 entitlement token completely offline with **\$0.00 cloud egress**.
+2. It auto-derives the hardware-bound transmission secret key in `~/.dcouplr/hub_transmission.key`, used to cryptographically sign heartbeats across Outside-VPC Hubs without leaking payload telemetry.
+
+### Step 4: Application Administrator Provisioning (Interactive Prompt)
+The installer explicitly prompts for administrator credentials:
+```text
+==&gt; Step 3c of 5: Provisioning Application Administrator Account...
+    Select Account Type [1=Organizational User, 2=Local Dedicated Admin]: 1
+    Application Administrator Username [default: companyadmin]: jennifer.lee
+    Administrator Display Name: Jennifer Lee (Lead Systems Architect)
+    Application Administrator Email: jennifer.lee@yourcompany.com
+    Application Administrator Password: ****************
+    Confirm Password: ****************
+    RBAC Role Assigned [default: Obs-Admins]: Obs-Admins
+```
+
+**Flexible Identity Selection:**
+- **Organizational User**: Links an existing identity from Active Directory / LDAP / Okta (e.g., `jennifer.lee`).
+- **Dedicated Local System Administrator**: Creates a standalone system identity (e.g., `companyadmin` or `svc-dcouplr-admin`).
+
+Under the hood, this executes:
+```bash
+dcouplr auth admin-user --username &quot;jennifer.lee&quot; --role &quot;Obs-Admins&quot; --email &quot;jennifer.lee@yourcompany.com&quot;
+```
+This writes the user to the in-VPC SQLite SSOT table `rbac_users` with role `Obs-Admins` (Application Administrator) and records an immutable audit log.
+
+### Step 5: Daemon Activation &amp;amp; First Login
+The administrator launches the background daemon:
+```bash
+dcouplr serve --port 8000
+```
+Visiting `http://localhost:8000/AdminDesk` allows the newly created administrator to immediately log in, configure VPC subnets, and activate monitored nodes.
+
+---
+
+## 3. Interactive First-Run Web Wizard (`/wizard`)
+
+### Purpose &amp;amp; Architecture
+While DevOps teams love automated silent installs via Terraform or Ansible (`DCOUPLR_ADMIN_USER=...` and `DCOUPLR_LICENSE_KEY=...`), IT directors, DBAs, and enterprise systems architects prefer a **visual browser-guided First-Run Installation Wizard**.
+
+Accessible at:
+- **`http://localhost:8000/wizard`**
+- **`http://localhost:8000/setup?mode=first-run`**
+
+### Wizard Step Progression
+
+```
+[1. Preflight Checks] ── [2. License Key] ── [3. Admin User] ── [4. Sizing] ── [5. Launch]
+```
+
+1. **Step 1: Preflight Environment Checks**
+   - Validates in-VPC SQLite storage write permissions.
+   - Tests volatile in-memory ring buffer allocation.
+   - Verifies zero-WAN egress network isolation boundary ($0.00 invariant).
+   - Validates port 8000 daemon socket health.
+
+2. **Step 2: License Key Entitlement &amp;amp; Activation**
+   - Input field for Ed25519 offline license key token.
+   - One-click evaluation option: &quot;Evaluate Community Core (1 Node Free)&quot;.
+   - Real-time cryptographic tier recognition (Developer Pro, Cluster Small, Mission-Critical, Sovereign Air-Gap).
+
+3. **Step 3: Provision Authoritative Application Administrator**
+   - Selector for Account Type:
+     - `(•) Organizational User (Existing LDAP / Okta / Corporate SSO Username)`
+     - `( ) Dedicated Local System Administrator (e.g. &#x27;svc-dcouplr-admin&#x27;)`
+   - Inputs: Username, Display Name, Work Email, Password, Confirm Password.
+   - Role dropdown: `Obs-Admins (Application Administrator)` [Default] or `CompanyAdmins (Cluster Administrator)`.
+
+4. **Step 4: Fleet Sizing &amp;amp; Telemetry Configuration**
+   - Initial Monitored Node Fleet capacity (e.g., 25, 50, 75).
+   - Target VPC Subnet / CIDR range (e.g., `10.0.0.0/16`).
+   - Telemetry Buffer Mode: In-Memory Ring Buffer + SQLite SSOT.
+
+5. **Step 5: Launch &amp;amp; Database Finalization**
+   - Complete configuration review card.
+   - Single-click action button: `🚀 Initialize In-VPC Engine &amp; Launch Admin Desk ➔`.
+   - Provisions database, sets `wizard_completed = &#x27;true&#x27;` in `system_configuration_ssot`, creates session token, and automatically redirects to `http://localhost:8000/AdminDesk`.
+
+---
+
+## 4. First-Boot Redirect Logic
+
+1. **Fresh Installation Detection**:
+   - On server startup, if `wizard_completed != &#x27;true&#x27;` and zero admin users exist in `rbac_users`, any browser navigation to `http://localhost:8000/AdminDesk` or `http://localhost:8000/setup` automatically redirects to `http://localhost:8000/wizard`.
+2. **Bypass / Headless Override**:
+   - Passing `?bypass_wizard=1` or having pre-configured admin accounts (via environment variables `DCOUPLR_ADMIN_USER` and `DCOUPLR_ADMIN_PASSWORD`) bypasses the redirect, ensuring silent CI/CD automation is never interrupted.
+3. **Replay Capability**:
+   - Calling `POST /v1/wizard/reset` or visiting `/wizard` directly allows administrators to re-run the wizard or inspect Day-0 provisioning settings at any time.
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &amp;lt;dcouplr/&amp;gt; Day-0 CLI Installation, Post-Install Usability &amp;amp; First-Run Web Wizard Runbook
+
+**Document Control:** Authoritative Operations Dossier  
+**Target Environments:** Enterprise In-VPC (AWS, GCP, Azure, On-Premises Bare Metal, Air-Gapped Sovereign Enclaves)  
+**Security Invariant:** Zero External WAN Egress ($0.00) &amp;bull; Complete Sovereign In-VPC Operation  
+
+---
+
+## 1. Is http://localhost:8000/AdminDesk Usable During/After CLI Installation?
+
+**Yes, absolutely.**
+
+When an administrator installs `&lt;dcouplr/&gt;` via the CLI installer, the installation script places the self-contained binary package, Python environment, SQLite SSOT databases, and all bundled static web consoles directly into the local VPC host. Once the daemon is launched (`dcouplr serve --port 8000`, Docker container, or Linux systemd service), **`http://localhost:8000/AdminDesk` is immediately usable on Day 0**.
+
+In fact, the CLI installs a complete sovereign in-VPC console suite that requires **zero external cloud CDNs, zero third-party cloud assets, and zero internet access**:
+
+| Console URL | Persona / Role | Day-0 Purpose &amp;amp; Capabilities |
+| :--- | :--- | :--- |
+| **`http://localhost:8000/AdminDesk`** | **Application Administrator (`Obs-Admins`)** | **Authoritative central control desk**: user management, RBAC role assignment, corporate SSO identity sync, node licensing toggle ledger, audit logs, and system configuration SSOT. |
+| **`http://localhost:8000/companyadmin`** | **Cluster Administrator (`CompanyAdmins`)** | In-VPC cluster administration and sovereign governance console. |
+| **`http://localhost:8000/DBADesk`** | **Database Administrator (`Obs-DBA`)** | Sovereign in-VPC SQLite SSOT inspection console with safe read-only SQL scratchpad and auto-backup management. |
+| **`http://localhost:8000/dashboard`** | **SRE / DevOps** | Real-time node census, fleet telemetry metrics, and cluster health overview. |
+| **`http://localhost:8000/setup`** | **Infrastructure Architect** | In-VPC capabilities sizer, preset profile tuner, and deployment manifest generator. |
+| **`http://localhost:8000/wizard`** | **Lead Systems Engineer / IT Director** | Interactive 5-step First-Run Web Installation Wizard for guided browser onboarding. |
+| **`http://localhost:8000/docs`** | **All Teams** | Offline, air-gapped runbooks, API references, and architecture dossiers. |
+
+---
+
+## 2. Walkthrough: From Purchase to First Install
+
+Here is the exact chronological journey of an enterprise customer from purchase to running `&lt;dcouplr/&gt;` in production:
+
+```
+┌───────────────────────────┐      ┌───────────────────────────┐      ┌───────────────────────────┐
+│  Step 1: Commercial Order │      │  Step 2: CLI Installation │      │ Step 3: Offline License   │
+│  &amp; Zero-Knowledge Handoff │ ───► │  (curl / PowerShell Script)│ ───► │ Activation &amp; HW Key Deriv.│
+└───────────────────────────┘      └───────────────────────────┘      └───────────────────────────┘
+                                                                                    │
+                                                                                    ▼
+┌───────────────────────────┐      ┌───────────────────────────┐      ┌───────────────────────────┐
+│ Step 6: Production Ops    │      │  Step 5: Daemon Activation│      │ Step 4: Admin Provisioning│
+│ (/AdminDesk &amp; Wallboards) │ ◄─── │  &amp; First-Boot Login       │ ◄─── │ (Interactive / Wizard)    │
+└───────────────────────────┘      └───────────────────────────┘      └───────────────────────────┘
+```
+
+### Step 1: Commercial Order &amp;amp; Zero-Knowledge Handoff
+1. The customer sizes their node fleet on the Commercial Pricing Calculator (e.g. 50 nodes &amp;rarr; Cluster Small).
+2. Once the commercial agreement is confirmed or payment completes (Stripe/PayPal or enterprise PO invoice), `&lt;dcouplr/&gt;` issues an offline **Ed25519 cryptographic entitlement key** (e.g., `DCL-CLUS-2026-X892A...`).
+3. For enterprise security compliance, keys are **never transmitted over plaintext email**; instead, an encrypted one-time SSO connection link is dispatched to the customer&#x27;s IT administrator.
+
+### Step 2: CLI Engine Installation
+The customer executes the one-line sovereign installer on their target VPC Linux/macOS or Windows host:
+
+```bash
+# Linux / macOS (Air-Gapped or Connected VPC):
+curl -fsSL https://dcouplr.com/install-enterprise.sh | sh
+
+# Windows (PowerShell Administrator):
+irm https://dcouplr.com/install-enterprise.ps1 | iex
+```
+
+The script deploys:
+- The compiled `dcouplr` CLI binary into `/usr/local/bin` (or `%LOCALAPPDATA%\Programs\dcouplr`).
+- The Python virtual runtime and FastAPI engine.
+- Bundled offline web console assets in `static/` (zero external CDN requests).
+- Local SQLite database files in `./data/vpc_telemetry_db.db`.
+
+### Step 3: Offline License Activation &amp;amp; Hardware Key Derivation
+1. The installer parses and verifies the Ed25519 entitlement token completely offline with **\$0.00 cloud egress**.
+2. It auto-derives the hardware-bound transmission secret key in `~/.dcouplr/hub_transmission.key`, used to cryptographically sign heartbeats across Outside-VPC Hubs without leaking payload telemetry.
+
+### Step 4: Application Administrator Provisioning (Interactive Prompt)
+The installer explicitly prompts for administrator credentials:
+```text
+==&gt; Step 3c of 5: Provisioning Application Administrator Account...
+    Select Account Type [1=Organizational User, 2=Local Dedicated Admin]: 1
+    Application Administrator Username [default: companyadmin]: jennifer.lee
+    Administrator Display Name: Jennifer Lee (Lead Systems Architect)
+    Application Administrator Email: jennifer.lee@yourcompany.com
+    Application Administrator Password: ****************
+    Confirm Password: ****************
+    RBAC Role Assigned [default: Obs-Admins]: Obs-Admins
+```
+
+**Flexible Identity Selection:**
+- **Organizational User**: Links an existing identity from Active Directory / LDAP / Okta (e.g., `jennifer.lee`).
+- **Dedicated Local System Administrator**: Creates a standalone system identity (e.g., `companyadmin` or `svc-dcouplr-admin`).
+
+Under the hood, this executes:
+```bash
+dcouplr auth admin-user --username &quot;jennifer.lee&quot; --role &quot;Obs-Admins&quot; --email &quot;jennifer.lee@yourcompany.com&quot;
+```
+This writes the user to the in-VPC SQLite SSOT table `rbac_users` with role `Obs-Admins` (Application Administrator) and records an immutable audit log.
+
+### Step 5: Daemon Activation &amp;amp; First Login
+The administrator launches the background daemon:
+```bash
+dcouplr serve --port 8000
+```
+Visiting `http://localhost:8000/AdminDesk` allows the newly created administrator to immediately log in, configure VPC subnets, and activate monitored nodes.
+
+---
+
+## 3. Interactive First-Run Web Wizard (`/wizard`)
+
+### Purpose &amp;amp; Architecture
+While DevOps teams love automated silent installs via Terraform or Ansible (`DCOUPLR_ADMIN_USER=...` and `DCOUPLR_LICENSE_KEY=...`), IT directors, DBAs, and enterprise systems architects prefer a **visual browser-guided First-Run Installation Wizard**.
+
+Accessible at:
+- **`http://localhost:8000/wizard`**
+- **`http://localhost:8000/setup?mode=first-run`**
+
+### Wizard Step Progression
+
+```
+[1. Preflight Checks] ── [2. License Key] ── [3. Admin User] ── [4. Sizing] ── [5. Launch]
+```
+
+1. **Step 1: Preflight Environment Checks**
+   - Validates in-VPC SQLite storage write permissions.
+   - Tests volatile in-memory ring buffer allocation.
+   - Verifies zero-WAN egress network isolation boundary ($0.00 invariant).
+   - Validates port 8000 daemon socket health.
+
+2. **Step 2: License Key Entitlement &amp;amp; Activation**
+   - Input field for Ed25519 offline license key token.
+   - One-click evaluation option: &quot;Evaluate Community Core (1 Node Free)&quot;.
+   - Real-time cryptographic tier recognition (Developer Pro, Cluster Small, Mission-Critical, Sovereign Air-Gap).
+
+3. **Step 3: Provision Authoritative Application Administrator**
+   - Selector for Account Type:
+     - `(•) Organizational User (Existing LDAP / Okta / Corporate SSO Username)`
+     - `( ) Dedicated Local System Administrator (e.g. &#x27;svc-dcouplr-admin&#x27;)`
+   - Inputs: Username, Display Name, Work Email, Password, Confirm Password.
+   - Role dropdown: `Obs-Admins (Application Administrator)` [Default] or `CompanyAdmins (Cluster Administrator)`.
+
+4. **Step 4: Fleet Sizing &amp;amp; Telemetry Configuration**
+   - Initial Monitored Node Fleet capacity (e.g., 25, 50, 75).
+   - Target VPC Subnet / CIDR range (e.g., `10.0.0.0/16`).
+   - Telemetry Buffer Mode: In-Memory Ring Buffer + SQLite SSOT.
+
+5. **Step 5: Launch &amp;amp; Database Finalization**
+   - Complete configuration review card.
+   - Single-click action button: `🚀 Initialize In-VPC Engine &amp; Launch Admin Desk ➔`.
+   - Provisions database, sets `wizard_completed = &#x27;true&#x27;` in `system_configuration_ssot`, creates session token, and automatically redirects to `http://localhost:8000/AdminDesk`.
+
+---
+
+## 4. First-Boot Redirect Logic
+
+1. **Fresh Installation Detection**:
+   - On server startup, if `wizard_completed != &#x27;true&#x27;` and zero admin users exist in `rbac_users`, any browser navigation to `http://localhost:8000/AdminDesk` or `http://localhost:8000/setup` automatically redirects to `http://localhost:8000/wizard`.
+2. **Bypass / Headless Override**:
+   - Passing `?bypass_wizard=1` or having pre-configured admin accounts (via environment variables `DCOUPLR_ADMIN_USER` and `DCOUPLR_ADMIN_PASSWORD`) bypasses the redirect, ensuring silent CI/CD automation is never interrupted.
+3. **Replay Capability**:
+   - Calling `POST /v1/wizard/reset` or visiting `/wizard` directly allows administrators to re-run the wizard or inspect Day-0 provisioning settings at any time.
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>

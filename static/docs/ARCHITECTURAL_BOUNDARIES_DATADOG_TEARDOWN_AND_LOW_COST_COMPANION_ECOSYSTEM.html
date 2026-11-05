@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&lt;dcouplr/&gt; Runbook - ARCHITECTURAL_BOUNDARIES_DATADOG_TEARDOWN_AND_LOW_COST_COMPANION_ECOSYSTEM.md</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --bg-card: #0f172a;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --brand-green: #39ff14;
+      --brand-cyan: #38bdf8;
+      --brand-emerald: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-logo {
+      display: inline-flex;
+      align-items: baseline;
+      text-decoration: none;
+      user-select: none;
+      line-height: 1;
+    }
+    .brand-bracket {
+      color: var(--brand-green) !important;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -1px;
+      text-shadow: 0 0 12px rgba(57, 255, 20, 0.55), 0 0 2px #39ff14;
+    }
+    .brand-text {
+      color: #ffffff !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      font-size: 1.22rem;
+      letter-spacing: -0.04em;
+      margin: 0 1.5px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, 0.2);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .nav-links a:hover { color: #fff; }
+    .main-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .action-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--brand-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--brand-cyan);
+      color: #fff;
+    }
+    .doc-viewer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      margin-top: 0;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 0.6rem;
+    }
+    .markdown-body h2 {
+      font-size: 1.35rem;
+      color: #38bdf8;
+      margin-top: 2rem;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 0.4rem;
+    }
+    .markdown-body h3 {
+      font-size: 1.1rem;
+      color: #e2e8f0;
+      margin-top: 1.5rem;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.84rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .markdown-body th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .markdown-body tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .markdown-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .code-box {
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+    }
+    .code-box-header {
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .code-box pre {
+      margin: 0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+    .code-box code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--brand-cyan);
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: rgba(56, 189, 248, 0.05);
+      color: #cbd5e1;
+    }
+    .markdown-body hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 2rem 0;
+    }
+    #raw-view {
+      display: none;
+      background: #030712;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="brand-logo" title="<dcouplr/> Home">
+        <span class="brand-bracket">&lt;</span><span class="brand-text">dcouplr</span><span class="brand-bracket">/&gt;</span>
+      </a>
+      <span style="color: var(--text-muted); font-size: 0.85rem;">/</span>
+      <span style="color: #cbd5e1; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">runbooks/ARCHITECTURAL_BOUNDARIES_DATADOG_TEARDOWN_AND_LOW_COST_COMPANION_ECOSYSTEM.md</span>
+    </div>
+    <nav class="nav-links">
+      <a href="/docs">Technical Docs</a>
+      <a href="/dashboard">Telemetry Dashboard</a>
+      <a href="/#pricing">Pricing &amp; Licensing</a>
+    </nav>
+  </header>
+
+  <main class="main-container">
+    <div class="action-bar">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="badge">SRE OPERATIONAL RUNBOOK</span>
+        <span class="badge" style="color: var(--brand-emerald); border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1);">ZERO-EGRESS IN-VPC</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-toggle-view" class="btn active" onclick="toggleView()">📄 Formatted</button>
+        <button id="btn-copy-raw" class="btn" onclick="copyRawMarkdown()">📋 Copy Markdown</button>
+        <a href="?raw=true" class="btn" download="ARCHITECTURAL_BOUNDARIES_DATADOG_TEARDOWN_AND_LOW_COST_COMPANION_ECOSYSTEM.md">⬇️ Download .md</a>
+      </div>
+    </div>
+
+    <div class="doc-viewer-card">
+      <div id="formatted-view" class="markdown-body"><h1 id="dcouplr-architectural-boundaries-datadog-acquisition-teardown-low-cost-companion-observability-ecosystem"><span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span> Architectural Boundaries, Datadog Acquisition Teardown &amp; Low-Cost Companion Observability Ecosystem</h1>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Metadata Property</th>
+<th style="text-align:left">Specification Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Document ID</strong></td>
+<td style="text-align:left"><code>VA-SPEC-ARCH-BOUNDARIES-DATADOG-TEARDOWN-001</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Document Classification</strong></td>
+<td style="text-align:left">Enterprise Systems Architecture, Vendor Teardown &amp; FinOps Blueprint</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Engine Target</strong></td>
+<td style="text-align:left"><span class="dcouplr-wordmark"><span class="dcouplr-bracket">&lt;</span><span class="dcouplr-text">dcouplr</span><span class="dcouplr-bracket">/&gt;</span></span> In-VPC Core (<code>:8000</code>), Living AST Compiler Studio (<code>:8000/compiler</code>)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Security Invariant</strong></td>
+<td style="text-align:left">100% In-VPC Air-Gap / Zero WAN Egress ($E_{\text{WAN}} \equiv 0.00$)</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Related Documents</strong></td>
+<td style="text-align:left"><code>VA-SPEC-BEYOND-VPC-OBSERVABILITY-001</code>, <code>VA-FRAMEWORK-PARITY-2026</code>, <code>VA-FINOPS-CALCULATOR-001</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Status</strong></td>
+<td style="text-align:left">Approved Production Reference Architecture</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Authors</strong></td>
+<td style="text-align:left">Principal Cloud Architect, Systems Engineering, FinOps Platform Core</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="executive-summary-the-in-vpc-boundary-the-saas-expansion-trap">Executive Summary: The In-VPC Boundary &amp; The SaaS Expansion Trap</h2>
+<p>A central value proposition of <strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code></strong> is providing sub-second infrastructure observability, change data capture (CDC) replication lag monitoring, living AST alert transpilation, and network connection tracing inside private RFC 1918 VPC subnets with <strong>zero WAN egress ($0.00)</strong> and <strong>zero per-seat licensing penalties</strong>.</p>
+<p>To preserve this strict performance envelope (<code>&lt;50 MiB</code> RAM baseline, <code>0%</code> external data leakage, lock-free ring buffers), <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> intentionally operates at <strong>Layer 2 (Data Link) and Layer 3 (Network)</strong>, coupled with kernel eBPF socket inspection and standard OpenTelemetry (OTLP) span ingestion.</p>
+<p>However, enterprise observability needs frequently extend beyond host VMs and network sockets. By examining <strong>Datadog's historical acquisitions</strong>—from APM (2016) to Sqreen (2021), Codiga (2023), Metaplane (2025), and Eppo (2025)—we observe how legacy SaaS vendors monetize every layer of the software lifecycle through compounding fees (per host, per developer seat, per GB ingested, per table queried, and per active user).</p>
+<p>This document details:</p>
+<ol>
+<li><strong>The Teardown</strong>: Mapping Datadog's major product milestones against <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>'s intentional scope.</li>
+<li><strong>The 5 Structural Blind Spots</strong>: Why Layer 2/3 in-VPC monitoring inherently excludes abstracted layers.</li>
+<li><strong>The Blueprints</strong>: How platform teams can architect lightweight, open-core companion tools to cover every gap while eliminating SaaS billing lock-in and minimizing ongoing operating costs.</li>
+<li><strong>The Summary Cost Matrix</strong>: Comparing high-cost SaaS subscriptions against the cost-minimized companion stack.</li>
+</ol>
+<hr />
+<h2 id="1-teardown-datadogs-acquisitions-vs-dcouplr-scope">1. Teardown: Datadog's Acquisitions vs. <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Scope</h2>
+<p>Datadog’s acquisition history reflects a deliberate transition from an infrastructure metric scraper into a sprawling multi-module SaaS suite. Because <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> is strictly engineered as an in-VPC, air-gapped, Layer 2 / Layer 3 infrastructure and network consensus engine with zero WAN egress ($0.00), it intentionally avoids several layers of the application and data lifecycle:</p>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">timeline
+    title Datadog Acquisition Expansion vs. <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Core In-VPC Scope
+    2016 : APM Beta : Bytecode Instrumentation : PARTIAL in <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> (L2/L3 &amp; OTLP only)
+    2021 : Sqreen : In-App RASP &amp; WAF : OUTSIDE SCOPE (0% - NetSec boundary only)
+    2023 : Codiga : Static Code Analysis / SAST : OUTSIDE SCOPE (0% - Live Infra runtime only)
+    April 2025 : Metaplane : Data Warehouse Observability : OUTSIDE SCOPE (0% - DB engine only)
+    May 2025 : Eppo : Feature Flagging &amp; Experimentation : OUTSIDE SCOPE (0% - System metrics only)
+</code></pre></div>
+<h3 id="detailed-capability-mapping">Detailed Capability Mapping</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Datadog Milestone / Acquisition</th>
+<th style="text-align:left">Primary Domain &amp; Capability</th>
+<th style="text-align:left">Monitored by <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>?</th>
+<th style="text-align:left">Why It Lies Outside <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>'s Core Architecture</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>2016: APM Beta</strong> <em>(Full-stack APM)</em></td>
+<td style="text-align:left">In-process runtime method profiling &amp; bytecode tracing (Java bytecode manipulation, Python/Node runtime monkey-patching, W3C trace context header injection).</td>
+<td style="text-align:left"><strong>PARTIAL</strong><br><em>(L2/L3 &amp; OTLP only)</em></td>
+<td style="text-align:left"><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> captures socket-level TCP connection lifecycles, kernel latency, and receives standard OpenTelemetry (OTLP) spans. It does not inject proprietary in-guest language profilers to inspect method-level execution flamegraphs.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>2021: Sqreen</strong> <em>(Cloud App Security &amp; RASP)</em></td>
+<td style="text-align:left">Runtime Application Self-Protection (RASP) &amp; in-app WAF. Intercepts incoming HTTP query parameters inside application memory to block SQL injection, XSS, SSRF, and RCE in real time.</td>
+<td style="text-align:left"><strong>NO (0%)</strong></td>
+<td style="text-align:left"><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> enforces network isolation (security groups, iptables, egress diodes, link-local metadata SSRF guards). It does not inspect application-level HTTP request bodies or act as an in-process security agent.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>2023: Codiga</strong> <em>(Static Code Analysis / SAST)</em></td>
+<td style="text-align:left">Software Development Lifecycle (SDLC) static code analysis. Pre-commit hooks, IDE linters, and CI/CD security scanning across application source code (Java, Python, C++, TypeScript).</td>
+<td style="text-align:left"><strong>NO (0%)</strong></td>
+<td style="text-align:left"><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> operates at runtime on live infrastructure and transpiles monitoring query ASTs (Datadog JSON $\rightarrow$ PromQL). It does not parse or lint developer application source code.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>April 2025: Metaplane</strong> <em>(Data Observability &amp; Pipelines)</em></td>
+<td style="text-align:left">Data Quality &amp; Warehouse Observability. Connects to Snowflake, BigQuery, and dbt to monitor schema drift (dropped columns), table freshness, row count anomalies, null-value spikes, and AI/RAG training data lineage.</td>
+<td style="text-align:left"><strong>NO (0%)</strong></td>
+<td style="text-align:left"><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> monitors database system engine health (connections, NVMe IOPS, WAL replication lag, buffer cache hits). It does not query internal table contents to validate whether data rows are corrupt or schema semantics changed.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>May 2025: Eppo</strong> <em>(Feature Flagging &amp; Experimentation)</em></td>
+<td style="text-align:left">Feature management &amp; A/B testing statistical engine. Evaluates feature flags in client code, assigns user cohorts, and runs statistical causal analysis (CUPED variance reduction, conversion funnels).</td>
+<td style="text-align:left"><strong>NO (0%)</strong></td>
+<td style="text-align:left"><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> monitors system-level throughput and error rates. It has no awareness of end-user identities, experiment variants, or product conversion metrics.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-the-5-structural-blind-spots-of-in-vpc-l2l3-monitoring">2. The 5 Structural Blind Spots of In-VPC L2/L3 Monitoring</h2>
+<p>Operating strictly in-VPC at Layers 2 and 3 provides absolute data sovereignty and eliminates cloud egress fees, but creates five inherent architectural boundaries:</p>
+<div class="code-box"><div class="code-box-header"><span>text</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-text">┌────────────────────────────────────────────────────────────────────────┐
+│                   OUTSIDE THE VPC / ABSTRACTED DOMAINS                 │
+│                                                                        │
+│  [ SDLC / Source Code ]       [ End-User Client Devices / RUM ]        │
+│    • Static Code Analysis (Codiga) • Browser / Mobile JS Web Vitals    │
+│    • Pre-commit Secret Scanning    • Global ISP Edge DNS Latencies     │
+│                                                                        │
+│  [ Abstracted Cloud PaaS ]     [ Data Warehouse Quality ]               │
+│    • Serverless (Lambda/CloudRun) • Schema Drift / Null Rates (Metaplane)│
+│    • Managed Queues (SQS / PubSub)• Vector DB Drift / AI RAG Lineage   │
+│                                                                        │
+│  [ App Runtime Security ]     [ Product Experimentation ]              │
+│    • In-App RASP / WAF (Sqreen)    • Feature Flags / A/B Stats (Eppo)  │
+└────────────────────────────────────────────────────────────────────────┘
+                                    │
+                       (Boundary / No Root OS Access)
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                    <span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> IN-VPC DOMAIN (LAYERS 2 &amp; 3)             │
+│                                                                        │
+│  • Bare Metal DC &amp; Cloud VPC VMs (eBPF socket tracing, CPU/Mem/Disk)    │
+│  • In-VPC Kubernetes Worker Nodes, Pods, and Kubelet Telemetry         │
+│  • Database Engine Health &amp; CDC Storage Replication Lag                │
+│  • Living Multi-Vendor AST Transpilation (Datadog/NRQL -&gt; PromQL/HCL)  │
+│  • Zero-Egress Network Isolation &amp; Cryptographic State Seals           │
+└────────────────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<h3 id="deep-dive-the-5-blind-spots">Deep Dive: The 5 Blind Spots</h3>
+<h4 id="1-abstracted-serverless-managed-paas-no-host-os-to-probe">1. Abstracted Serverless &amp; Managed PaaS (No Host OS to Probe)</h4>
+<ul>
+<li><strong>Impacted Services</strong>: AWS Lambda, GCP Cloud Run, AWS Fargate, Azure Functions.</li>
+<li><strong>Why L2/L3 misses it</strong>: Workloads run in ephemeral micro-VMs (Firecracker or gVisor) managed entirely by the hyperscaler. Because tenant users have no persistent Linux kernel, root shell, or <code>/sys/kernel/debug</code> access, eBPF probes cannot attach to syscalls or network devices.</li>
+<li><strong>Operational Risk</strong>: Cold start latency spikes, memory limit OOM terminations, and invocation timeouts remain undetected unless ingested via platform metrics.</li>
+</ul>
+<h4 id="2-serverless-message-busses-managed-queues">2. Serverless Message Busses &amp; Managed Queues</h4>
+<ul>
+<li><strong>Impacted Services</strong>: AWS SQS, AWS SNS, GCP Pub/Sub, Azure Event Hubs.</li>
+<li><strong>Why L2/L3 misses it</strong>: Messages transit over internal cloud provider service backplanes rather than customer VPC subnets. Standard VPC flow logs only capture HTTPS traffic to cloud API endpoints (<code>sqs.us-east-1.amazonaws.com</code>), but cannot inspect queue parameters like <code>ApproximateAgeOfOldestMessage</code>, dead-letter queue (DLQ) ingestion rates, or unacknowledged message counts.</li>
+<li><strong>Operational Risk</strong>: Silent pipeline stalls where producer instances run normally at low CPU, but messages accumulate in unconsumed queues.</li>
+</ul>
+<h4 id="3-hyperscaler-control-plane-iam-kms">3. Hyperscaler Control Plane, IAM &amp; KMS</h4>
+<ul>
+<li><strong>Impacted Services</strong>: AWS CloudTrail, AWS KMS, GCP Cloud Audit Logs, Azure Activity Log.</li>
+<li><strong>Why L2/L3 misses it</strong>: Administrative control actions (e.g., IAM role policy modifications, KMS key rotations, security group edits, storage bucket permission changes) execute via hyperscaler control plane REST endpoints outside customer private subnets.</li>
+<li><strong>Operational Risk</strong>: Unauthorized privilege escalations or quota exhaustion events occur without generating VPC packet events.</li>
+</ul>
+<h4 id="4-real-user-monitoring-rum-client-edge-experience">4. Real User Monitoring (RUM) &amp; Client Edge Experience</h4>
+<ul>
+<li><strong>Impacted Services</strong>: Browser JavaScript, Mobile apps (iOS/Android), Core Web Vitals (LCP, FID, CLS), CDN Edge Latency (Cloudflare, CloudFront).</li>
+<li><strong>Why L2/L3 misses it</strong>: Application code executes on end-user client devices and traverses public ISP networks before reaching the target cloud VPC ingress load balancer.</li>
+<li><strong>Operational Risk</strong>: Severe client-side rendering bottlenecks, edge DNS failures, or localized ISP routing outages cannot be seen from within the cloud datacenter.</li>
+</ul>
+<h4 id="5-data-quality-warehouse-schemas">5. Data Quality &amp; Warehouse Schemas</h4>
+<ul>
+<li><strong>Impacted Services</strong>: Snowflake, Databricks, BigQuery, dbt transformations, Apache Iceberg tables.</li>
+<li><strong>Why L2/L3 misses it</strong>: Analytical data stores hold columnar business data. Infrastructure metrics can confirm the database cluster CPU is at 20% and IOPS are healthy, but cannot detect whether an ETL pipeline inserted 10,000 duplicate records, dropped critical columns, or experienced an 80% spike in null values.</li>
+<li><strong>Operational Risk</strong>: Silent business data corruption feeding downstream ML models and executive BI dashboards.</li>
+</ul>
+<hr />
+<h2 id="3-blueprints-how-to-build-low-cost-tools-to-cover-these-gaps">3. Blueprints: How to Build Low-Cost Tools to Cover These Gaps</h2>
+<p>To minimize future observability spend without falling into Datadog's multi-module licensing traps, you can orchestrate lightweight, open-core companion tools that operate alongside <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>:</p>
+<div class="code-box"><div class="code-box-header"><span>mermaid</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-mermaid">flowchart LR
+    subgraph CI_CD [&quot;CI/CD Pipeline (Code Stage)&quot;]
+        Semgrep[&quot;Semgrep OSS\n(SAST - Codiga alt)&quot;]
+        Trivy[&quot;Trivy + Gitleaks\n(Secret/Vuln Scan)&quot;]
+    end
+
+    subgraph Ingress [&quot;In-VPC Ingress (App Security)&quot;]
+        Envoy[&quot;Envoy Proxy Sidecar&quot;]
+        Coraza[&quot;Coraza WAF (OWASP CRS)\n(RASP - Sqreen alt)&quot;]
+        Envoy --&gt; Coraza
+    end
+
+    subgraph DataPlane [&quot;Data Warehouse &amp; ETL&quot;]
+        SodaCore[&quot;Soda Core / Elementary OSS\n(Data Quality - Metaplane alt)&quot;]
+        Warehouse[(&quot;BigQuery / Snowflake&quot;)]
+        SodaCore --&gt;|Hourly Query| Warehouse
+    end
+
+    subgraph Product [&quot;Product &amp; Features&quot;]
+        GrowthBook[&quot;GrowthBook OSS Container\n(A/B Testing - Eppo alt)&quot;]
+        Postgres[(&quot;Internal App DB&quot;)]
+        GrowthBook --&gt; Postgres
+    end
+
+    subgraph CoreObs [&quot;<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> In-VPC Core&quot;]
+        Engine[&quot;<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span> Telemetry Engine (:8000)&quot;]
+        AST[&quot;Living AST Compiler (:8000/compiler)&quot;]
+        WebhookIngest[&quot;Syslog / Webhook Ingestion&quot;]
+    end
+
+    Semgrep -.-&gt;|Fail build on P0| CI_CD
+    Coraza -.-&gt;|Block SQLi/XSS| Ingress
+    SodaCore --&gt;|Alert JSON| WebhookIngest
+    GrowthBook --&gt;|Perf Metrics| Engine
+</code></pre></div>
+<h3 id="gap-1-static-code-analysis-security-codiga-equivalent">Gap 1: Static Code Analysis &amp; Security (Codiga Equivalent)</h3>
+<ul>
+<li><strong>Datadog Monetization Trap</strong>: Charges per developer seat ($15–$35/seat/mo) plus CI/CD pipeline execution duration fees.</li>
+<li><strong>Low-Cost Open-Core Solution</strong>:
+<ul>
+<li>Execute <strong>Semgrep OSS</strong> alongside <strong>Trivy</strong> and <strong>Gitleaks</strong> directly inside your GitHub Actions or GitLab CI runners.</li>
+<li>Define security rules as YAML in version control to check for OWASP Top 10 vulnerabilities, insecure deserialization, and leaked secrets prior to pull request merge.</li>
+</ul>
+</li>
+<li><strong>Operational Cost</strong>: <strong>$0.00 additional SaaS fees</strong> (executes on existing CI runner compute).</li>
+</ul>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml"># .github/workflows/security-sast.yml (Free Codiga Alternative)
+name: Static Code Security &amp; Secret Scan
+on: [pull_request, push]
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Semgrep OSS
+        run: |
+          docker run --rm -v &quot;${{ github.workspace }}:/src&quot; returntocorp/semgrep \
+            semgrep scan --config=auto --error
+      - name: Run Gitleaks Secret Detector
+        run: |
+          docker run --rm -v &quot;${{ github.workspace }}:/path&quot; zricethezav/gitleaks:latest \
+            detect --source=&quot;/path&quot; --verbose --redact
+</code></pre></div>
+<hr />
+<h3 id="gap-2-in-app-security-rasp-sqreen-equivalent">Gap 2: In-App Security &amp; RASP (Sqreen Equivalent)</h3>
+<ul>
+<li><strong>Datadog Monetization Trap</strong>: Heavy per-host and per-application license fees ($40+/host/mo) requiring in-memory runtime agents.</li>
+<li><strong>Low-Cost Open-Core Solution</strong>:
+<ul>
+<li>Deploy <strong>Coraza WAF</strong> (compiled with OWASP Core Rule Set) as an <strong>Envoy In-VPC Sidecar Proxy</strong> or integrate <strong>ModSecurity</strong> at your ingress controller.</li>
+<li>Inspect and sanitize incoming HTTP bodies, headers, and query parameters before traffic reaches application runtime memory, blocking SQL injection (SQLi), Cross-Site Scripting (XSS), Server-Side Request Forgery (SSRF), and Remote Code Execution (RCE).</li>
+</ul>
+</li>
+<li><strong>Operational Cost</strong>: <strong>Purely local compute overhead</strong> (negligible CPU, <code>&lt;20 MiB</code> RAM per sidecar).</li>
+</ul>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml"># coraza-envoy-filter.yaml (In-VPC RASP / WAF Filter)
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: coraza-waf-filter
+  namespace: production
+spec:
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: &quot;envoy.filters.network.http_connection_manager&quot;
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: f5.coraza.waf
+          typed_config:
+            &quot;@type&quot;: type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+            config:
+              configuration:
+                directives: |
+                  Include @owasp_crs/*.conf
+                  SecRuleEngine On
+</code></pre></div>
+<hr />
+<h3 id="gap-3-data-observability-pipeline-health-metaplane-equivalent">Gap 3: Data Observability &amp; Pipeline Health (Metaplane Equivalent)</h3>
+<ul>
+<li><strong>Datadog Monetization Trap</strong>: Charges per table, per query, and per data warehouse connection ($100–$500+/mo per warehouse connector).</li>
+<li><strong>Low-Cost Open-Core Solution</strong>:
+<ul>
+<li>Deploy <strong>Soda Core OSS</strong> or <strong>Elementary Data OSS</strong> on an hourly cron job running inside a lightweight container in your VPC.</li>
+<li>Query warehouse metadata and information schemas directly inside BigQuery, Snowflake, or PostgreSQL to assert row counts, check column types, and flag null-rate spikes.</li>
+<li>Pipe alert payloads directly into <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>’s notification engine or webhook dispatcher.</li>
+</ul>
+</li>
+<li><strong>Operational Cost</strong>: <strong>Only a few cents of daily warehouse query compute</strong> (queries metadata/aggregates rather than full table scans).</li>
+</ul>
+<div class="code-box"><div class="code-box-header"><span>yaml</span><button class="btn" style="padding:2px 8px;font-size:0.68rem;" onclick="copySnippet(this)">Copy</button></div><pre><code class="language-yaml"># soda-checks.yml (Free Metaplane Data Quality Alternative)
+checks for raw_customer_transactions:
+  - row_count &gt; 0:
+      name: &quot;Assert table has live ingestion&quot;
+  - missing_count(transaction_id) = 0:
+      name: &quot;Primary key cannot have null values&quot;
+  - schema:
+      fail:
+        when required column missing: [transaction_id, account_id, amount_cents]
+  - freshness(created_at) &lt; 1h:
+      name: &quot;Data freshness SLA: 1 hour&quot;
+</code></pre></div>
+<hr />
+<h3 id="gap-4-feature-flagging-experimentation-eppo-equivalent">Gap 4: Feature Flagging &amp; Experimentation (Eppo Equivalent)</h3>
+<ul>
+<li><strong>Datadog Monetization Trap</strong>: Charges per Monthly Active User (MAU) tracked in experiments, penalizing high-traffic consumer applications.</li>
+<li><strong>Low-Cost Open-Core Solution</strong>:
+<ul>
+<li>Deploy <strong>GrowthBook OSS</strong> or <strong>Unleash OSS</strong> within an internal VPC container backed by a shared PostgreSQL database.</li>
+<li>Evaluate feature flags locally in application memory with sub-millisecond latency (no outbound network call per evaluation).</li>
+<li>Run experiment statistical causal analysis (Bayesian or CUPED variance reduction) directly against your local analytics database.</li>
+</ul>
+</li>
+<li><strong>Operational Cost</strong>: <strong>Single small VM or container ($15–$30/mo)</strong> vs. tens of thousands of dollars in SaaS fees.</li>
+</ul>
+<hr />
+<h3 id="gap-5-serverless-beyond-vpc-cloud-services-the-3-adapter-architecture">Gap 5: Serverless &amp; Beyond-VPC Cloud Services (The 3-Adapter Architecture)</h3>
+<ul>
+<li><strong>Architectural Reference</strong>: Fully specified in <code>docs/ENTERPRISE_CLOUD_ECOSYSTEM_OBSERVABILITY_BEYOND_VPC_ARCHITECTURE_AND_DECISION_ITEMS.md</code>.</li>
+<li><strong>The 3 Adapters</strong>:
+<ol>
+<li><strong>Adapter 1 (Existing Core)</strong>: Host eBPF &amp; Kernel Engine for Bare Metal, VMs, and Kubernetes nodes.</li>
+<li><strong>Adapter 2 (Boundary Proxy Sensor)</strong>: In-VPC forward proxy capturing outbound API requests to hyperscaler PaaS services (S3, DynamoDB, Stripe) via PrivateLink or VPC Endpoints.</li>
+<li><strong>Adapter 3 (Zero-Egress Cloud Poller)</strong>: Queries hyperscaler CloudWatch, Cloud Monitoring, and Azure Monitor APIs exclusively through private VPC interface endpoints ($0.00 WAN egress).</li>
+</ol>
+</li>
+</ul>
+<hr />
+<h2 id="4-summary-matrix-the-cost-minimized-observability-stack">4. Summary Matrix: The Cost-Minimized Observability Stack</h2>
+<p>By combining <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>'s zero-egress in-VPC core with lightweight open-core companions, enterprises achieve complete lifecycle observability without incurring SaaS license bloat:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Observability Layer</th>
+<th style="text-align:left">High-Cost SaaS Vendor (Datadog)</th>
+<th style="text-align:left">Low-Cost Open-Core / Companion Architecture</th>
+<th style="text-align:center">Expected Cost Reduction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>L2/L3 Network &amp; Infra</strong></td>
+<td style="text-align:left">Datadog Agent + Network NPM</td>
+<td style="text-align:left"><strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> In-VPC Core</strong> (<code>:8000</code>)</td>
+<td style="text-align:center"><strong>90% – 100%</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Alert Rule Translation</strong></td>
+<td style="text-align:left">Manual vendor migration lock-in</td>
+<td style="text-align:left"><strong><code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> AST Compiler</strong> (<code>:8000/compiler</code>)</td>
+<td style="text-align:center"><strong>100% (Instant)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Code Quality (SAST)</strong></td>
+<td style="text-align:left">Datadog / Codiga ($/seat)</td>
+<td style="text-align:left"><strong>Semgrep OSS + Trivy in CI/CD</strong></td>
+<td style="text-align:center"><strong>100% ($0 SaaS)</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>App Security (RASP)</strong></td>
+<td style="text-align:left">Datadog / Sqreen ($/host)</td>
+<td style="text-align:left"><strong>Envoy + Coraza WAF In-VPC</strong></td>
+<td style="text-align:center"><strong>95%</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Data Quality</strong></td>
+<td style="text-align:left">Datadog / Metaplane ($/table)</td>
+<td style="text-align:left"><strong>Soda Core / Elementary Data OSS</strong></td>
+<td style="text-align:center"><strong>85% – 95%</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Feature Flags / A/B</strong></td>
+<td style="text-align:left">Datadog / Eppo ($/MAU)</td>
+<td style="text-align:left"><strong>GrowthBook OSS In-VPC</strong></td>
+<td style="text-align:center"><strong>90%</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Data Transfer / Egress</strong></td>
+<td style="text-align:left">$0.09/GB internet traversal</td>
+<td style="text-align:left"><strong>RFC 1918 Private Endpoints ($0.00)</strong></td>
+<td style="text-align:center"><strong>100% ($0.00)</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-strategic-architectural-guidance-for-platform-teams">5. Strategic Architectural Guidance for Platform Teams</h2>
+<ol>
+<li>
+<p><strong>Keep <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> Laser-Focused on In-VPC Infrastructure &amp; CDC Replication</strong>:
+Do not bloat the <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code> binary with heavy static analysis parsers or warehouse query engines. Maintaining an ultra-lean footprint (<code>&lt;50 MiB</code> RAM) ensures it can be injected everywhere from micro-VMs to massive DB clusters without performance penalties.</p>
+</li>
+<li>
+<p><strong>Use Standard Webhook Ingestion</strong>:
+Companion tools (Soda Core for data quality, Semgrep for CI/CD, Envoy Coraza for WAF) can publish alert JSON to <code><span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span></code>’s notification engine or local syslog, providing a unified incident wallboard without consolidating vendor contracts.</p>
+</li>
+<li>
+<p><strong>Enforce the Zero-Egress Invariant</strong>:
+All companion tools should execute either in existing CI/CD runners or inside private VPC subnets communicating over RFC 1918 addresses or cloud provider PrivateLink endpoints, preserving the <strong>$0.00 WAN egress guarantee</strong>.</p>
+</li>
+</ol>
+</div>
+      <pre id="raw-view"><code># &lt;span class=&quot;dcouplr-wordmark&quot;&gt;&lt;span class=&quot;dcouplr-bracket&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;dcouplr-text&quot;&gt;dcouplr&lt;/span&gt;&lt;span class=&quot;dcouplr-bracket&quot;&gt;/&amp;gt;&lt;/span&gt;&lt;/span&gt; Architectural Boundaries, Datadog Acquisition Teardown &amp; Low-Cost Companion Observability Ecosystem
+
+| Metadata Property | Specification Detail |
+| :--- | :--- |
+| **Document ID** | `VA-SPEC-ARCH-BOUNDARIES-DATADOG-TEARDOWN-001` |
+| **Document Classification** | Enterprise Systems Architecture, Vendor Teardown &amp; FinOps Blueprint |
+| **Engine Target** | &lt;span class=&quot;dcouplr-wordmark&quot;&gt;&lt;span class=&quot;dcouplr-bracket&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;dcouplr-text&quot;&gt;dcouplr&lt;/span&gt;&lt;span class=&quot;dcouplr-bracket&quot;&gt;/&amp;gt;&lt;/span&gt;&lt;/span&gt; In-VPC Core (`:8000`), Living AST Compiler Studio (`:8000/compiler`) |
+| **Security Invariant** | 100% In-VPC Air-Gap / Zero WAN Egress ($E_{\text{WAN}} \equiv 0.00$) |
+| **Related Documents** | `VA-SPEC-BEYOND-VPC-OBSERVABILITY-001`, `VA-FRAMEWORK-PARITY-2026`, `VA-FINOPS-CALCULATOR-001` |
+| **Status** | Approved Production Reference Architecture |
+| **Authors** | Principal Cloud Architect, Systems Engineering, FinOps Platform Core |
+
+---
+
+## Executive Summary: The In-VPC Boundary &amp; The SaaS Expansion Trap
+
+A central value proposition of **`&lt;dcouplr/&gt;`** is providing sub-second infrastructure observability, change data capture (CDC) replication lag monitoring, living AST alert transpilation, and network connection tracing inside private RFC 1918 VPC subnets with **zero WAN egress ($0.00)** and **zero per-seat licensing penalties**.
+
+To preserve this strict performance envelope (`&lt;50 MiB` RAM baseline, `0%` external data leakage, lock-free ring buffers), `&lt;dcouplr/&gt;` intentionally operates at **Layer 2 (Data Link) and Layer 3 (Network)**, coupled with kernel eBPF socket inspection and standard OpenTelemetry (OTLP) span ingestion.
+
+However, enterprise observability needs frequently extend beyond host VMs and network sockets. By examining **Datadog&#x27;s historical acquisitions**—from APM (2016) to Sqreen (2021), Codiga (2023), Metaplane (2025), and Eppo (2025)—we observe how legacy SaaS vendors monetize every layer of the software lifecycle through compounding fees (per host, per developer seat, per GB ingested, per table queried, and per active user).
+
+This document details:
+1. **The Teardown**: Mapping Datadog&#x27;s major product milestones against `&lt;dcouplr/&gt;`&#x27;s intentional scope.
+2. **The 5 Structural Blind Spots**: Why Layer 2/3 in-VPC monitoring inherently excludes abstracted layers.
+3. **The Blueprints**: How platform teams can architect lightweight, open-core companion tools to cover every gap while eliminating SaaS billing lock-in and minimizing ongoing operating costs.
+4. **The Summary Cost Matrix**: Comparing high-cost SaaS subscriptions against the cost-minimized companion stack.
+
+---
+
+## 1. Teardown: Datadog&#x27;s Acquisitions vs. `&lt;dcouplr/&gt;` Scope
+
+Datadog’s acquisition history reflects a deliberate transition from an infrastructure metric scraper into a sprawling multi-module SaaS suite. Because `&lt;dcouplr/&gt;` is strictly engineered as an in-VPC, air-gapped, Layer 2 / Layer 3 infrastructure and network consensus engine with zero WAN egress ($0.00), it intentionally avoids several layers of the application and data lifecycle:
+
+```mermaid
+timeline
+    title Datadog Acquisition Expansion vs. &lt;dcouplr/&gt; Core In-VPC Scope
+    2016 : APM Beta : Bytecode Instrumentation : PARTIAL in &lt;dcouplr/&gt; (L2/L3 &amp; OTLP only)
+    2021 : Sqreen : In-App RASP &amp; WAF : OUTSIDE SCOPE (0% - NetSec boundary only)
+    2023 : Codiga : Static Code Analysis / SAST : OUTSIDE SCOPE (0% - Live Infra runtime only)
+    April 2025 : Metaplane : Data Warehouse Observability : OUTSIDE SCOPE (0% - DB engine only)
+    May 2025 : Eppo : Feature Flagging &amp; Experimentation : OUTSIDE SCOPE (0% - System metrics only)
+```
+
+### Detailed Capability Mapping
+
+| Datadog Milestone / Acquisition | Primary Domain &amp; Capability | Monitored by `&lt;dcouplr/&gt;`? | Why It Lies Outside `&lt;dcouplr/&gt;`&#x27;s Core Architecture |
+| :--- | :--- | :--- | :--- |
+| **2016: APM Beta** *(Full-stack APM)* | In-process runtime method profiling &amp; bytecode tracing (Java bytecode manipulation, Python/Node runtime monkey-patching, W3C trace context header injection). | **PARTIAL**&lt;br&gt;*(L2/L3 &amp; OTLP only)* | `&lt;dcouplr/&gt;` captures socket-level TCP connection lifecycles, kernel latency, and receives standard OpenTelemetry (OTLP) spans. It does not inject proprietary in-guest language profilers to inspect method-level execution flamegraphs. |
+| **2021: Sqreen** *(Cloud App Security &amp; RASP)* | Runtime Application Self-Protection (RASP) &amp; in-app WAF. Intercepts incoming HTTP query parameters inside application memory to block SQL injection, XSS, SSRF, and RCE in real time. | **NO (0%)** | `&lt;dcouplr/&gt;` enforces network isolation (security groups, iptables, egress diodes, link-local metadata SSRF guards). It does not inspect application-level HTTP request bodies or act as an in-process security agent. |
+| **2023: Codiga** *(Static Code Analysis / SAST)* | Software Development Lifecycle (SDLC) static code analysis. Pre-commit hooks, IDE linters, and CI/CD security scanning across application source code (Java, Python, C++, TypeScript). | **NO (0%)** | `&lt;dcouplr/&gt;` operates at runtime on live infrastructure and transpiles monitoring query ASTs (Datadog JSON $\rightarrow$ PromQL). It does not parse or lint developer application source code. |
+| **April 2025: Metaplane** *(Data Observability &amp; Pipelines)* | Data Quality &amp; Warehouse Observability. Connects to Snowflake, BigQuery, and dbt to monitor schema drift (dropped columns), table freshness, row count anomalies, null-value spikes, and AI/RAG training data lineage. | **NO (0%)** | `&lt;dcouplr/&gt;` monitors database system engine health (connections, NVMe IOPS, WAL replication lag, buffer cache hits). It does not query internal table contents to validate whether data rows are corrupt or schema semantics changed. |
+| **May 2025: Eppo** *(Feature Flagging &amp; Experimentation)* | Feature management &amp; A/B testing statistical engine. Evaluates feature flags in client code, assigns user cohorts, and runs statistical causal analysis (CUPED variance reduction, conversion funnels). | **NO (0%)** | `&lt;dcouplr/&gt;` monitors system-level throughput and error rates. It has no awareness of end-user identities, experiment variants, or product conversion metrics. |
+
+---
+
+## 2. The 5 Structural Blind Spots of In-VPC L2/L3 Monitoring
+
+Operating strictly in-VPC at Layers 2 and 3 provides absolute data sovereignty and eliminates cloud egress fees, but creates five inherent architectural boundaries:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                   OUTSIDE THE VPC / ABSTRACTED DOMAINS                 │
+│                                                                        │
+│  [ SDLC / Source Code ]       [ End-User Client Devices / RUM ]        │
+│    • Static Code Analysis (Codiga) • Browser / Mobile JS Web Vitals    │
+│    • Pre-commit Secret Scanning    • Global ISP Edge DNS Latencies     │
+│                                                                        │
+│  [ Abstracted Cloud PaaS ]     [ Data Warehouse Quality ]               │
+│    • Serverless (Lambda/CloudRun) • Schema Drift / Null Rates (Metaplane)│
+│    • Managed Queues (SQS / PubSub)• Vector DB Drift / AI RAG Lineage   │
+│                                                                        │
+│  [ App Runtime Security ]     [ Product Experimentation ]              │
+│    • In-App RASP / WAF (Sqreen)    • Feature Flags / A/B Stats (Eppo)  │
+└────────────────────────────────────────────────────────────────────────┘
+                                    │
+                       (Boundary / No Root OS Access)
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                    &lt;dcouplr/&gt; IN-VPC DOMAIN (LAYERS 2 &amp; 3)             │
+│                                                                        │
+│  • Bare Metal DC &amp; Cloud VPC VMs (eBPF socket tracing, CPU/Mem/Disk)    │
+│  • In-VPC Kubernetes Worker Nodes, Pods, and Kubelet Telemetry         │
+│  • Database Engine Health &amp; CDC Storage Replication Lag                │
+│  • Living Multi-Vendor AST Transpilation (Datadog/NRQL -&gt; PromQL/HCL)  │
+│  • Zero-Egress Network Isolation &amp; Cryptographic State Seals           │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### Deep Dive: The 5 Blind Spots
+
+#### 1. Abstracted Serverless &amp; Managed PaaS (No Host OS to Probe)
+* **Impacted Services**: AWS Lambda, GCP Cloud Run, AWS Fargate, Azure Functions.
+* **Why L2/L3 misses it**: Workloads run in ephemeral micro-VMs (Firecracker or gVisor) managed entirely by the hyperscaler. Because tenant users have no persistent Linux kernel, root shell, or `/sys/kernel/debug` access, eBPF probes cannot attach to syscalls or network devices.
+* **Operational Risk**: Cold start latency spikes, memory limit OOM terminations, and invocation timeouts remain undetected unless ingested via platform metrics.
+
+#### 2. Serverless Message Busses &amp; Managed Queues
+* **Impacted Services**: AWS SQS, AWS SNS, GCP Pub/Sub, Azure Event Hubs.
+* **Why L2/L3 misses it**: Messages transit over internal cloud provider service backplanes rather than customer VPC subnets. Standard VPC flow logs only capture HTTPS traffic to cloud API endpoints (`sqs.us-east-1.amazonaws.com`), but cannot inspect queue parameters like `ApproximateAgeOfOldestMessage`, dead-letter queue (DLQ) ingestion rates, or unacknowledged message counts.
+* **Operational Risk**: Silent pipeline stalls where producer instances run normally at low CPU, but messages accumulate in unconsumed queues.
+
+#### 3. Hyperscaler Control Plane, IAM &amp; KMS
+* **Impacted Services**: AWS CloudTrail, AWS KMS, GCP Cloud Audit Logs, Azure Activity Log.
+* **Why L2/L3 misses it**: Administrative control actions (e.g., IAM role policy modifications, KMS key rotations, security group edits, storage bucket permission changes) execute via hyperscaler control plane REST endpoints outside customer private subnets.
+* **Operational Risk**: Unauthorized privilege escalations or quota exhaustion events occur without generating VPC packet events.
+
+#### 4. Real User Monitoring (RUM) &amp; Client Edge Experience
+* **Impacted Services**: Browser JavaScript, Mobile apps (iOS/Android), Core Web Vitals (LCP, FID, CLS), CDN Edge Latency (Cloudflare, CloudFront).
+* **Why L2/L3 misses it**: Application code executes on end-user client devices and traverses public ISP networks before reaching the target cloud VPC ingress load balancer.
+* **Operational Risk**: Severe client-side rendering bottlenecks, edge DNS failures, or localized ISP routing outages cannot be seen from within the cloud datacenter.
+
+#### 5. Data Quality &amp; Warehouse Schemas
+* **Impacted Services**: Snowflake, Databricks, BigQuery, dbt transformations, Apache Iceberg tables.
+* **Why L2/L3 misses it**: Analytical data stores hold columnar business data. Infrastructure metrics can confirm the database cluster CPU is at 20% and IOPS are healthy, but cannot detect whether an ETL pipeline inserted 10,000 duplicate records, dropped critical columns, or experienced an 80% spike in null values.
+* **Operational Risk**: Silent business data corruption feeding downstream ML models and executive BI dashboards.
+
+---
+
+## 3. Blueprints: How to Build Low-Cost Tools to Cover These Gaps
+
+To minimize future observability spend without falling into Datadog&#x27;s multi-module licensing traps, you can orchestrate lightweight, open-core companion tools that operate alongside `&lt;dcouplr/&gt;`:
+
+```mermaid
+flowchart LR
+    subgraph CI_CD [&quot;CI/CD Pipeline (Code Stage)&quot;]
+        Semgrep[&quot;Semgrep OSS\n(SAST - Codiga alt)&quot;]
+        Trivy[&quot;Trivy + Gitleaks\n(Secret/Vuln Scan)&quot;]
+    end
+
+    subgraph Ingress [&quot;In-VPC Ingress (App Security)&quot;]
+        Envoy[&quot;Envoy Proxy Sidecar&quot;]
+        Coraza[&quot;Coraza WAF (OWASP CRS)\n(RASP - Sqreen alt)&quot;]
+        Envoy --&gt; Coraza
+    end
+
+    subgraph DataPlane [&quot;Data Warehouse &amp; ETL&quot;]
+        SodaCore[&quot;Soda Core / Elementary OSS\n(Data Quality - Metaplane alt)&quot;]
+        Warehouse[(&quot;BigQuery / Snowflake&quot;)]
+        SodaCore --&gt;|Hourly Query| Warehouse
+    end
+
+    subgraph Product [&quot;Product &amp; Features&quot;]
+        GrowthBook[&quot;GrowthBook OSS Container\n(A/B Testing - Eppo alt)&quot;]
+        Postgres[(&quot;Internal App DB&quot;)]
+        GrowthBook --&gt; Postgres
+    end
+
+    subgraph CoreObs [&quot;&lt;dcouplr/&gt; In-VPC Core&quot;]
+        Engine[&quot;&lt;dcouplr/&gt; Telemetry Engine (:8000)&quot;]
+        AST[&quot;Living AST Compiler (:8000/compiler)&quot;]
+        WebhookIngest[&quot;Syslog / Webhook Ingestion&quot;]
+    end
+
+    Semgrep -.-&gt;|Fail build on P0| CI_CD
+    Coraza -.-&gt;|Block SQLi/XSS| Ingress
+    SodaCore --&gt;|Alert JSON| WebhookIngest
+    GrowthBook --&gt;|Perf Metrics| Engine
+```
+
+### Gap 1: Static Code Analysis &amp; Security (Codiga Equivalent)
+* **Datadog Monetization Trap**: Charges per developer seat ($15–$35/seat/mo) plus CI/CD pipeline execution duration fees.
+* **Low-Cost Open-Core Solution**:
+  * Execute **Semgrep OSS** alongside **Trivy** and **Gitleaks** directly inside your GitHub Actions or GitLab CI runners.
+  * Define security rules as YAML in version control to check for OWASP Top 10 vulnerabilities, insecure deserialization, and leaked secrets prior to pull request merge.
+* **Operational Cost**: **$0.00 additional SaaS fees** (executes on existing CI runner compute).
+
+```yaml
+# .github/workflows/security-sast.yml (Free Codiga Alternative)
+name: Static Code Security &amp; Secret Scan
+on: [pull_request, push]
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Semgrep OSS
+        run: |
+          docker run --rm -v &quot;${{ github.workspace }}:/src&quot; returntocorp/semgrep \
+            semgrep scan --config=auto --error
+      - name: Run Gitleaks Secret Detector
+        run: |
+          docker run --rm -v &quot;${{ github.workspace }}:/path&quot; zricethezav/gitleaks:latest \
+            detect --source=&quot;/path&quot; --verbose --redact
+```
+
+---
+
+### Gap 2: In-App Security &amp; RASP (Sqreen Equivalent)
+* **Datadog Monetization Trap**: Heavy per-host and per-application license fees ($40+/host/mo) requiring in-memory runtime agents.
+* **Low-Cost Open-Core Solution**:
+  * Deploy **Coraza WAF** (compiled with OWASP Core Rule Set) as an **Envoy In-VPC Sidecar Proxy** or integrate **ModSecurity** at your ingress controller.
+  * Inspect and sanitize incoming HTTP bodies, headers, and query parameters before traffic reaches application runtime memory, blocking SQL injection (SQLi), Cross-Site Scripting (XSS), Server-Side Request Forgery (SSRF), and Remote Code Execution (RCE).
+* **Operational Cost**: **Purely local compute overhead** (negligible CPU, `&lt;20 MiB` RAM per sidecar).
+
+```yaml
+# coraza-envoy-filter.yaml (In-VPC RASP / WAF Filter)
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: coraza-waf-filter
+  namespace: production
+spec:
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: &quot;envoy.filters.network.http_connection_manager&quot;
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: f5.coraza.waf
+          typed_config:
+            &quot;@type&quot;: type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+            config:
+              configuration:
+                directives: |
+                  Include @owasp_crs/*.conf
+                  SecRuleEngine On
+```
+
+---
+
+### Gap 3: Data Observability &amp; Pipeline Health (Metaplane Equivalent)
+* **Datadog Monetization Trap**: Charges per table, per query, and per data warehouse connection ($100–$500+/mo per warehouse connector).
+* **Low-Cost Open-Core Solution**:
+  * Deploy **Soda Core OSS** or **Elementary Data OSS** on an hourly cron job running inside a lightweight container in your VPC.
+  * Query warehouse metadata and information schemas directly inside BigQuery, Snowflake, or PostgreSQL to assert row counts, check column types, and flag null-rate spikes.
+  * Pipe alert payloads directly into `&lt;dcouplr/&gt;`’s notification engine or webhook dispatcher.
+* **Operational Cost**: **Only a few cents of daily warehouse query compute** (queries metadata/aggregates rather than full table scans).
+
+```yaml
+# soda-checks.yml (Free Metaplane Data Quality Alternative)
+checks for raw_customer_transactions:
+  - row_count &gt; 0:
+      name: &quot;Assert table has live ingestion&quot;
+  - missing_count(transaction_id) = 0:
+      name: &quot;Primary key cannot have null values&quot;
+  - schema:
+      fail:
+        when required column missing: [transaction_id, account_id, amount_cents]
+  - freshness(created_at) &lt; 1h:
+      name: &quot;Data freshness SLA: 1 hour&quot;
+```
+
+---
+
+### Gap 4: Feature Flagging &amp; Experimentation (Eppo Equivalent)
+* **Datadog Monetization Trap**: Charges per Monthly Active User (MAU) tracked in experiments, penalizing high-traffic consumer applications.
+* **Low-Cost Open-Core Solution**:
+  * Deploy **GrowthBook OSS** or **Unleash OSS** within an internal VPC container backed by a shared PostgreSQL database.
+  * Evaluate feature flags locally in application memory with sub-millisecond latency (no outbound network call per evaluation).
+  * Run experiment statistical causal analysis (Bayesian or CUPED variance reduction) directly against your local analytics database.
+* **Operational Cost**: **Single small VM or container ($15–$30/mo)** vs. tens of thousands of dollars in SaaS fees.
+
+---
+
+### Gap 5: Serverless &amp; Beyond-VPC Cloud Services (The 3-Adapter Architecture)
+* **Architectural Reference**: Fully specified in `docs/ENTERPRISE_CLOUD_ECOSYSTEM_OBSERVABILITY_BEYOND_VPC_ARCHITECTURE_AND_DECISION_ITEMS.md`.
+* **The 3 Adapters**:
+  1. **Adapter 1 (Existing Core)**: Host eBPF &amp; Kernel Engine for Bare Metal, VMs, and Kubernetes nodes.
+  2. **Adapter 2 (Boundary Proxy Sensor)**: In-VPC forward proxy capturing outbound API requests to hyperscaler PaaS services (S3, DynamoDB, Stripe) via PrivateLink or VPC Endpoints.
+  3. **Adapter 3 (Zero-Egress Cloud Poller)**: Queries hyperscaler CloudWatch, Cloud Monitoring, and Azure Monitor APIs exclusively through private VPC interface endpoints ($0.00 WAN egress).
+
+---
+
+## 4. Summary Matrix: The Cost-Minimized Observability Stack
+
+By combining `&lt;dcouplr/&gt;`&#x27;s zero-egress in-VPC core with lightweight open-core companions, enterprises achieve complete lifecycle observability without incurring SaaS license bloat:
+
+| Observability Layer | High-Cost SaaS Vendor (Datadog) | Low-Cost Open-Core / Companion Architecture | Expected Cost Reduction |
+| :--- | :--- | :--- | :---: |
+| **L2/L3 Network &amp; Infra** | Datadog Agent + Network NPM | **`&lt;dcouplr/&gt;` In-VPC Core** (`:8000`) | **90% – 100%** |
+| **Alert Rule Translation** | Manual vendor migration lock-in | **`&lt;dcouplr/&gt;` AST Compiler** (`:8000/compiler`) | **100% (Instant)** |
+| **Code Quality (SAST)** | Datadog / Codiga ($/seat) | **Semgrep OSS + Trivy in CI/CD** | **100% ($0 SaaS)** |
+| **App Security (RASP)** | Datadog / Sqreen ($/host) | **Envoy + Coraza WAF In-VPC** | **95%** |
+| **Data Quality** | Datadog / Metaplane ($/table) | **Soda Core / Elementary Data OSS** | **85% – 95%** |
+| **Feature Flags / A/B** | Datadog / Eppo ($/MAU) | **GrowthBook OSS In-VPC** | **90%** |
+| **Data Transfer / Egress** | $0.09/GB internet traversal | **RFC 1918 Private Endpoints ($0.00)** | **100% ($0.00)** |
+
+---
+
+## 5. Strategic Architectural Guidance for Platform Teams
+
+1. **Keep `&lt;dcouplr/&gt;` Laser-Focused on In-VPC Infrastructure &amp; CDC Replication**:
+   Do not bloat the `&lt;dcouplr/&gt;` binary with heavy static analysis parsers or warehouse query engines. Maintaining an ultra-lean footprint (`&lt;50 MiB` RAM) ensures it can be injected everywhere from micro-VMs to massive DB clusters without performance penalties.
+
+2. **Use Standard Webhook Ingestion**:
+   Companion tools (Soda Core for data quality, Semgrep for CI/CD, Envoy Coraza for WAF) can publish alert JSON to `&lt;dcouplr/&gt;`’s notification engine or local syslog, providing a unified incident wallboard without consolidating vendor contracts.
+
+3. **Enforce the Zero-Egress Invariant**:
+   All companion tools should execute either in existing CI/CD runners or inside private VPC subnets communicating over RFC 1918 addresses or cloud provider PrivateLink endpoints, preserving the **$0.00 WAN egress guarantee**.
+
+</code></pre>
+    </div>
+  </main>
+
+  <script id="raw-markdown-data" type="text/markdown"># &lt;span class=&quot;dcouplr-wordmark&quot;&gt;&lt;span class=&quot;dcouplr-bracket&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;dcouplr-text&quot;&gt;dcouplr&lt;/span&gt;&lt;span class=&quot;dcouplr-bracket&quot;&gt;/&amp;gt;&lt;/span&gt;&lt;/span&gt; Architectural Boundaries, Datadog Acquisition Teardown &amp; Low-Cost Companion Observability Ecosystem
+
+| Metadata Property | Specification Detail |
+| :--- | :--- |
+| **Document ID** | `VA-SPEC-ARCH-BOUNDARIES-DATADOG-TEARDOWN-001` |
+| **Document Classification** | Enterprise Systems Architecture, Vendor Teardown &amp; FinOps Blueprint |
+| **Engine Target** | &lt;span class=&quot;dcouplr-wordmark&quot;&gt;&lt;span class=&quot;dcouplr-bracket&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;dcouplr-text&quot;&gt;dcouplr&lt;/span&gt;&lt;span class=&quot;dcouplr-bracket&quot;&gt;/&amp;gt;&lt;/span&gt;&lt;/span&gt; In-VPC Core (`:8000`), Living AST Compiler Studio (`:8000/compiler`) |
+| **Security Invariant** | 100% In-VPC Air-Gap / Zero WAN Egress ($E_{\text{WAN}} \equiv 0.00$) |
+| **Related Documents** | `VA-SPEC-BEYOND-VPC-OBSERVABILITY-001`, `VA-FRAMEWORK-PARITY-2026`, `VA-FINOPS-CALCULATOR-001` |
+| **Status** | Approved Production Reference Architecture |
+| **Authors** | Principal Cloud Architect, Systems Engineering, FinOps Platform Core |
+
+---
+
+## Executive Summary: The In-VPC Boundary &amp; The SaaS Expansion Trap
+
+A central value proposition of **`&lt;dcouplr/&gt;`** is providing sub-second infrastructure observability, change data capture (CDC) replication lag monitoring, living AST alert transpilation, and network connection tracing inside private RFC 1918 VPC subnets with **zero WAN egress ($0.00)** and **zero per-seat licensing penalties**.
+
+To preserve this strict performance envelope (`&lt;50 MiB` RAM baseline, `0%` external data leakage, lock-free ring buffers), `&lt;dcouplr/&gt;` intentionally operates at **Layer 2 (Data Link) and Layer 3 (Network)**, coupled with kernel eBPF socket inspection and standard OpenTelemetry (OTLP) span ingestion.
+
+However, enterprise observability needs frequently extend beyond host VMs and network sockets. By examining **Datadog&#x27;s historical acquisitions**—from APM (2016) to Sqreen (2021), Codiga (2023), Metaplane (2025), and Eppo (2025)—we observe how legacy SaaS vendors monetize every layer of the software lifecycle through compounding fees (per host, per developer seat, per GB ingested, per table queried, and per active user).
+
+This document details:
+1. **The Teardown**: Mapping Datadog&#x27;s major product milestones against `&lt;dcouplr/&gt;`&#x27;s intentional scope.
+2. **The 5 Structural Blind Spots**: Why Layer 2/3 in-VPC monitoring inherently excludes abstracted layers.
+3. **The Blueprints**: How platform teams can architect lightweight, open-core companion tools to cover every gap while eliminating SaaS billing lock-in and minimizing ongoing operating costs.
+4. **The Summary Cost Matrix**: Comparing high-cost SaaS subscriptions against the cost-minimized companion stack.
+
+---
+
+## 1. Teardown: Datadog&#x27;s Acquisitions vs. `&lt;dcouplr/&gt;` Scope
+
+Datadog’s acquisition history reflects a deliberate transition from an infrastructure metric scraper into a sprawling multi-module SaaS suite. Because `&lt;dcouplr/&gt;` is strictly engineered as an in-VPC, air-gapped, Layer 2 / Layer 3 infrastructure and network consensus engine with zero WAN egress ($0.00), it intentionally avoids several layers of the application and data lifecycle:
+
+```mermaid
+timeline
+    title Datadog Acquisition Expansion vs. &lt;dcouplr/&gt; Core In-VPC Scope
+    2016 : APM Beta : Bytecode Instrumentation : PARTIAL in &lt;dcouplr/&gt; (L2/L3 &amp; OTLP only)
+    2021 : Sqreen : In-App RASP &amp; WAF : OUTSIDE SCOPE (0% - NetSec boundary only)
+    2023 : Codiga : Static Code Analysis / SAST : OUTSIDE SCOPE (0% - Live Infra runtime only)
+    April 2025 : Metaplane : Data Warehouse Observability : OUTSIDE SCOPE (0% - DB engine only)
+    May 2025 : Eppo : Feature Flagging &amp; Experimentation : OUTSIDE SCOPE (0% - System metrics only)
+```
+
+### Detailed Capability Mapping
+
+| Datadog Milestone / Acquisition | Primary Domain &amp; Capability | Monitored by `&lt;dcouplr/&gt;`? | Why It Lies Outside `&lt;dcouplr/&gt;`&#x27;s Core Architecture |
+| :--- | :--- | :--- | :--- |
+| **2016: APM Beta** *(Full-stack APM)* | In-process runtime method profiling &amp; bytecode tracing (Java bytecode manipulation, Python/Node runtime monkey-patching, W3C trace context header injection). | **PARTIAL**&lt;br&gt;*(L2/L3 &amp; OTLP only)* | `&lt;dcouplr/&gt;` captures socket-level TCP connection lifecycles, kernel latency, and receives standard OpenTelemetry (OTLP) spans. It does not inject proprietary in-guest language profilers to inspect method-level execution flamegraphs. |
+| **2021: Sqreen** *(Cloud App Security &amp; RASP)* | Runtime Application Self-Protection (RASP) &amp; in-app WAF. Intercepts incoming HTTP query parameters inside application memory to block SQL injection, XSS, SSRF, and RCE in real time. | **NO (0%)** | `&lt;dcouplr/&gt;` enforces network isolation (security groups, iptables, egress diodes, link-local metadata SSRF guards). It does not inspect application-level HTTP request bodies or act as an in-process security agent. |
+| **2023: Codiga** *(Static Code Analysis / SAST)* | Software Development Lifecycle (SDLC) static code analysis. Pre-commit hooks, IDE linters, and CI/CD security scanning across application source code (Java, Python, C++, TypeScript). | **NO (0%)** | `&lt;dcouplr/&gt;` operates at runtime on live infrastructure and transpiles monitoring query ASTs (Datadog JSON $\rightarrow$ PromQL). It does not parse or lint developer application source code. |
+| **April 2025: Metaplane** *(Data Observability &amp; Pipelines)* | Data Quality &amp; Warehouse Observability. Connects to Snowflake, BigQuery, and dbt to monitor schema drift (dropped columns), table freshness, row count anomalies, null-value spikes, and AI/RAG training data lineage. | **NO (0%)** | `&lt;dcouplr/&gt;` monitors database system engine health (connections, NVMe IOPS, WAL replication lag, buffer cache hits). It does not query internal table contents to validate whether data rows are corrupt or schema semantics changed. |
+| **May 2025: Eppo** *(Feature Flagging &amp; Experimentation)* | Feature management &amp; A/B testing statistical engine. Evaluates feature flags in client code, assigns user cohorts, and runs statistical causal analysis (CUPED variance reduction, conversion funnels). | **NO (0%)** | `&lt;dcouplr/&gt;` monitors system-level throughput and error rates. It has no awareness of end-user identities, experiment variants, or product conversion metrics. |
+
+---
+
+## 2. The 5 Structural Blind Spots of In-VPC L2/L3 Monitoring
+
+Operating strictly in-VPC at Layers 2 and 3 provides absolute data sovereignty and eliminates cloud egress fees, but creates five inherent architectural boundaries:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                   OUTSIDE THE VPC / ABSTRACTED DOMAINS                 │
+│                                                                        │
+│  [ SDLC / Source Code ]       [ End-User Client Devices / RUM ]        │
+│    • Static Code Analysis (Codiga) • Browser / Mobile JS Web Vitals    │
+│    • Pre-commit Secret Scanning    • Global ISP Edge DNS Latencies     │
+│                                                                        │
+│  [ Abstracted Cloud PaaS ]     [ Data Warehouse Quality ]               │
+│    • Serverless (Lambda/CloudRun) • Schema Drift / Null Rates (Metaplane)│
+│    • Managed Queues (SQS / PubSub)• Vector DB Drift / AI RAG Lineage   │
+│                                                                        │
+│  [ App Runtime Security ]     [ Product Experimentation ]              │
+│    • In-App RASP / WAF (Sqreen)    • Feature Flags / A/B Stats (Eppo)  │
+└────────────────────────────────────────────────────────────────────────┘
+                                    │
+                       (Boundary / No Root OS Access)
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                    &lt;dcouplr/&gt; IN-VPC DOMAIN (LAYERS 2 &amp; 3)             │
+│                                                                        │
+│  • Bare Metal DC &amp; Cloud VPC VMs (eBPF socket tracing, CPU/Mem/Disk)    │
+│  • In-VPC Kubernetes Worker Nodes, Pods, and Kubelet Telemetry         │
+│  • Database Engine Health &amp; CDC Storage Replication Lag                │
+│  • Living Multi-Vendor AST Transpilation (Datadog/NRQL -&gt; PromQL/HCL)  │
+│  • Zero-Egress Network Isolation &amp; Cryptographic State Seals           │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### Deep Dive: The 5 Blind Spots
+
+#### 1. Abstracted Serverless &amp; Managed PaaS (No Host OS to Probe)
+* **Impacted Services**: AWS Lambda, GCP Cloud Run, AWS Fargate, Azure Functions.
+* **Why L2/L3 misses it**: Workloads run in ephemeral micro-VMs (Firecracker or gVisor) managed entirely by the hyperscaler. Because tenant users have no persistent Linux kernel, root shell, or `/sys/kernel/debug` access, eBPF probes cannot attach to syscalls or network devices.
+* **Operational Risk**: Cold start latency spikes, memory limit OOM terminations, and invocation timeouts remain undetected unless ingested via platform metrics.
+
+#### 2. Serverless Message Busses &amp; Managed Queues
+* **Impacted Services**: AWS SQS, AWS SNS, GCP Pub/Sub, Azure Event Hubs.
+* **Why L2/L3 misses it**: Messages transit over internal cloud provider service backplanes rather than customer VPC subnets. Standard VPC flow logs only capture HTTPS traffic to cloud API endpoints (`sqs.us-east-1.amazonaws.com`), but cannot inspect queue parameters like `ApproximateAgeOfOldestMessage`, dead-letter queue (DLQ) ingestion rates, or unacknowledged message counts.
+* **Operational Risk**: Silent pipeline stalls where producer instances run normally at low CPU, but messages accumulate in unconsumed queues.
+
+#### 3. Hyperscaler Control Plane, IAM &amp; KMS
+* **Impacted Services**: AWS CloudTrail, AWS KMS, GCP Cloud Audit Logs, Azure Activity Log.
+* **Why L2/L3 misses it**: Administrative control actions (e.g., IAM role policy modifications, KMS key rotations, security group edits, storage bucket permission changes) execute via hyperscaler control plane REST endpoints outside customer private subnets.
+* **Operational Risk**: Unauthorized privilege escalations or quota exhaustion events occur without generating VPC packet events.
+
+#### 4. Real User Monitoring (RUM) &amp; Client Edge Experience
+* **Impacted Services**: Browser JavaScript, Mobile apps (iOS/Android), Core Web Vitals (LCP, FID, CLS), CDN Edge Latency (Cloudflare, CloudFront).
+* **Why L2/L3 misses it**: Application code executes on end-user client devices and traverses public ISP networks before reaching the target cloud VPC ingress load balancer.
+* **Operational Risk**: Severe client-side rendering bottlenecks, edge DNS failures, or localized ISP routing outages cannot be seen from within the cloud datacenter.
+
+#### 5. Data Quality &amp; Warehouse Schemas
+* **Impacted Services**: Snowflake, Databricks, BigQuery, dbt transformations, Apache Iceberg tables.
+* **Why L2/L3 misses it**: Analytical data stores hold columnar business data. Infrastructure metrics can confirm the database cluster CPU is at 20% and IOPS are healthy, but cannot detect whether an ETL pipeline inserted 10,000 duplicate records, dropped critical columns, or experienced an 80% spike in null values.
+* **Operational Risk**: Silent business data corruption feeding downstream ML models and executive BI dashboards.
+
+---
+
+## 3. Blueprints: How to Build Low-Cost Tools to Cover These Gaps
+
+To minimize future observability spend without falling into Datadog&#x27;s multi-module licensing traps, you can orchestrate lightweight, open-core companion tools that operate alongside `&lt;dcouplr/&gt;`:
+
+```mermaid
+flowchart LR
+    subgraph CI_CD [&quot;CI/CD Pipeline (Code Stage)&quot;]
+        Semgrep[&quot;Semgrep OSS\n(SAST - Codiga alt)&quot;]
+        Trivy[&quot;Trivy + Gitleaks\n(Secret/Vuln Scan)&quot;]
+    end
+
+    subgraph Ingress [&quot;In-VPC Ingress (App Security)&quot;]
+        Envoy[&quot;Envoy Proxy Sidecar&quot;]
+        Coraza[&quot;Coraza WAF (OWASP CRS)\n(RASP - Sqreen alt)&quot;]
+        Envoy --&gt; Coraza
+    end
+
+    subgraph DataPlane [&quot;Data Warehouse &amp; ETL&quot;]
+        SodaCore[&quot;Soda Core / Elementary OSS\n(Data Quality - Metaplane alt)&quot;]
+        Warehouse[(&quot;BigQuery / Snowflake&quot;)]
+        SodaCore --&gt;|Hourly Query| Warehouse
+    end
+
+    subgraph Product [&quot;Product &amp; Features&quot;]
+        GrowthBook[&quot;GrowthBook OSS Container\n(A/B Testing - Eppo alt)&quot;]
+        Postgres[(&quot;Internal App DB&quot;)]
+        GrowthBook --&gt; Postgres
+    end
+
+    subgraph CoreObs [&quot;&lt;dcouplr/&gt; In-VPC Core&quot;]
+        Engine[&quot;&lt;dcouplr/&gt; Telemetry Engine (:8000)&quot;]
+        AST[&quot;Living AST Compiler (:8000/compiler)&quot;]
+        WebhookIngest[&quot;Syslog / Webhook Ingestion&quot;]
+    end
+
+    Semgrep -.-&gt;|Fail build on P0| CI_CD
+    Coraza -.-&gt;|Block SQLi/XSS| Ingress
+    SodaCore --&gt;|Alert JSON| WebhookIngest
+    GrowthBook --&gt;|Perf Metrics| Engine
+```
+
+### Gap 1: Static Code Analysis &amp; Security (Codiga Equivalent)
+* **Datadog Monetization Trap**: Charges per developer seat ($15–$35/seat/mo) plus CI/CD pipeline execution duration fees.
+* **Low-Cost Open-Core Solution**:
+  * Execute **Semgrep OSS** alongside **Trivy** and **Gitleaks** directly inside your GitHub Actions or GitLab CI runners.
+  * Define security rules as YAML in version control to check for OWASP Top 10 vulnerabilities, insecure deserialization, and leaked secrets prior to pull request merge.
+* **Operational Cost**: **$0.00 additional SaaS fees** (executes on existing CI runner compute).
+
+```yaml
+# .github/workflows/security-sast.yml (Free Codiga Alternative)
+name: Static Code Security &amp; Secret Scan
+on: [pull_request, push]
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Semgrep OSS
+        run: |
+          docker run --rm -v &quot;${{ github.workspace }}:/src&quot; returntocorp/semgrep \
+            semgrep scan --config=auto --error
+      - name: Run Gitleaks Secret Detector
+        run: |
+          docker run --rm -v &quot;${{ github.workspace }}:/path&quot; zricethezav/gitleaks:latest \
+            detect --source=&quot;/path&quot; --verbose --redact
+```
+
+---
+
+### Gap 2: In-App Security &amp; RASP (Sqreen Equivalent)
+* **Datadog Monetization Trap**: Heavy per-host and per-application license fees ($40+/host/mo) requiring in-memory runtime agents.
+* **Low-Cost Open-Core Solution**:
+  * Deploy **Coraza WAF** (compiled with OWASP Core Rule Set) as an **Envoy In-VPC Sidecar Proxy** or integrate **ModSecurity** at your ingress controller.
+  * Inspect and sanitize incoming HTTP bodies, headers, and query parameters before traffic reaches application runtime memory, blocking SQL injection (SQLi), Cross-Site Scripting (XSS), Server-Side Request Forgery (SSRF), and Remote Code Execution (RCE).
+* **Operational Cost**: **Purely local compute overhead** (negligible CPU, `&lt;20 MiB` RAM per sidecar).
+
+```yaml
+# coraza-envoy-filter.yaml (In-VPC RASP / WAF Filter)
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: coraza-waf-filter
+  namespace: production
+spec:
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: &quot;envoy.filters.network.http_connection_manager&quot;
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: f5.coraza.waf
+          typed_config:
+            &quot;@type&quot;: type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+            config:
+              configuration:
+                directives: |
+                  Include @owasp_crs/*.conf
+                  SecRuleEngine On
+```
+
+---
+
+### Gap 3: Data Observability &amp; Pipeline Health (Metaplane Equivalent)
+* **Datadog Monetization Trap**: Charges per table, per query, and per data warehouse connection ($100–$500+/mo per warehouse connector).
+* **Low-Cost Open-Core Solution**:
+  * Deploy **Soda Core OSS** or **Elementary Data OSS** on an hourly cron job running inside a lightweight container in your VPC.
+  * Query warehouse metadata and information schemas directly inside BigQuery, Snowflake, or PostgreSQL to assert row counts, check column types, and flag null-rate spikes.
+  * Pipe alert payloads directly into `&lt;dcouplr/&gt;`’s notification engine or webhook dispatcher.
+* **Operational Cost**: **Only a few cents of daily warehouse query compute** (queries metadata/aggregates rather than full table scans).
+
+```yaml
+# soda-checks.yml (Free Metaplane Data Quality Alternative)
+checks for raw_customer_transactions:
+  - row_count &gt; 0:
+      name: &quot;Assert table has live ingestion&quot;
+  - missing_count(transaction_id) = 0:
+      name: &quot;Primary key cannot have null values&quot;
+  - schema:
+      fail:
+        when required column missing: [transaction_id, account_id, amount_cents]
+  - freshness(created_at) &lt; 1h:
+      name: &quot;Data freshness SLA: 1 hour&quot;
+```
+
+---
+
+### Gap 4: Feature Flagging &amp; Experimentation (Eppo Equivalent)
+* **Datadog Monetization Trap**: Charges per Monthly Active User (MAU) tracked in experiments, penalizing high-traffic consumer applications.
+* **Low-Cost Open-Core Solution**:
+  * Deploy **GrowthBook OSS** or **Unleash OSS** within an internal VPC container backed by a shared PostgreSQL database.
+  * Evaluate feature flags locally in application memory with sub-millisecond latency (no outbound network call per evaluation).
+  * Run experiment statistical causal analysis (Bayesian or CUPED variance reduction) directly against your local analytics database.
+* **Operational Cost**: **Single small VM or container ($15–$30/mo)** vs. tens of thousands of dollars in SaaS fees.
+
+---
+
+### Gap 5: Serverless &amp; Beyond-VPC Cloud Services (The 3-Adapter Architecture)
+* **Architectural Reference**: Fully specified in `docs/ENTERPRISE_CLOUD_ECOSYSTEM_OBSERVABILITY_BEYOND_VPC_ARCHITECTURE_AND_DECISION_ITEMS.md`.
+* **The 3 Adapters**:
+  1. **Adapter 1 (Existing Core)**: Host eBPF &amp; Kernel Engine for Bare Metal, VMs, and Kubernetes nodes.
+  2. **Adapter 2 (Boundary Proxy Sensor)**: In-VPC forward proxy capturing outbound API requests to hyperscaler PaaS services (S3, DynamoDB, Stripe) via PrivateLink or VPC Endpoints.
+  3. **Adapter 3 (Zero-Egress Cloud Poller)**: Queries hyperscaler CloudWatch, Cloud Monitoring, and Azure Monitor APIs exclusively through private VPC interface endpoints ($0.00 WAN egress).
+
+---
+
+## 4. Summary Matrix: The Cost-Minimized Observability Stack
+
+By combining `&lt;dcouplr/&gt;`&#x27;s zero-egress in-VPC core with lightweight open-core companions, enterprises achieve complete lifecycle observability without incurring SaaS license bloat:
+
+| Observability Layer | High-Cost SaaS Vendor (Datadog) | Low-Cost Open-Core / Companion Architecture | Expected Cost Reduction |
+| :--- | :--- | :--- | :---: |
+| **L2/L3 Network &amp; Infra** | Datadog Agent + Network NPM | **`&lt;dcouplr/&gt;` In-VPC Core** (`:8000`) | **90% – 100%** |
+| **Alert Rule Translation** | Manual vendor migration lock-in | **`&lt;dcouplr/&gt;` AST Compiler** (`:8000/compiler`) | **100% (Instant)** |
+| **Code Quality (SAST)** | Datadog / Codiga ($/seat) | **Semgrep OSS + Trivy in CI/CD** | **100% ($0 SaaS)** |
+| **App Security (RASP)** | Datadog / Sqreen ($/host) | **Envoy + Coraza WAF In-VPC** | **95%** |
+| **Data Quality** | Datadog / Metaplane ($/table) | **Soda Core / Elementary Data OSS** | **85% – 95%** |
+| **Feature Flags / A/B** | Datadog / Eppo ($/MAU) | **GrowthBook OSS In-VPC** | **90%** |
+| **Data Transfer / Egress** | $0.09/GB internet traversal | **RFC 1918 Private Endpoints ($0.00)** | **100% ($0.00)** |
+
+---
+
+## 5. Strategic Architectural Guidance for Platform Teams
+
+1. **Keep `&lt;dcouplr/&gt;` Laser-Focused on In-VPC Infrastructure &amp; CDC Replication**:
+   Do not bloat the `&lt;dcouplr/&gt;` binary with heavy static analysis parsers or warehouse query engines. Maintaining an ultra-lean footprint (`&lt;50 MiB` RAM) ensures it can be injected everywhere from micro-VMs to massive DB clusters without performance penalties.
+
+2. **Use Standard Webhook Ingestion**:
+   Companion tools (Soda Core for data quality, Semgrep for CI/CD, Envoy Coraza for WAF) can publish alert JSON to `&lt;dcouplr/&gt;`’s notification engine or local syslog, providing a unified incident wallboard without consolidating vendor contracts.
+
+3. **Enforce the Zero-Egress Invariant**:
+   All companion tools should execute either in existing CI/CD runners or inside private VPC subnets communicating over RFC 1918 addresses or cloud provider PrivateLink endpoints, preserving the **$0.00 WAN egress guarantee**.
+
+</script>
+
+  <script>
+    let isRaw = false;
+    function toggleView() {
+      isRaw = !isRaw;
+      const formattedEl = document.getElementById('formatted-view');
+      const rawEl = document.getElementById('raw-view');
+      const btn = document.getElementById('btn-toggle-view');
+
+      if (isRaw) {
+        formattedEl.style.display = 'none';
+        rawEl.style.display = 'block';
+        btn.textContent = '📝 Raw View';
+        btn.classList.add('active');
+      } else {
+        formattedEl.style.display = 'block';
+        rawEl.style.display = 'none';
+        btn.textContent = '📄 Formatted';
+        btn.classList.add('active');
+      }
+    }
+
+    function copyRawMarkdown() {
+      const text = document.getElementById('raw-markdown-data').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy-raw');
+        const orig = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '#fff';
+        }, 2000);
+      });
+    }
+
+    function copySnippet(btn) {
+      const pre = btn.closest('.code-box').querySelector('pre code');
+      if (pre) {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+      }
+    }
+
+    // Self-contained offline zero-egress Markdown-to-HTML parser
+    function renderMarkdown() {
+      const raw = document.getElementById('raw-markdown-data').textContent;
+      const lines = raw.split('\n');
+      let html = '';
+      let inCode = false;
+      let codeLang = '';
+      let codeBuf = [];
+      let inTable = false;
+      let tableRows = [];
+
+      function flushTable() {
+        if (!tableRows.length) return;
+        let tHtml = '<table><thead>';
+        tableRows.forEach((r, idx) => {
+          if (idx === 1 && r.every(cell => cell.match(/^[:\s-]+$/))) return; // separator row
+          const tag = idx === 0 ? 'th' : 'td';
+          if (idx === 1) tHtml += '</thead><tbody>';
+          tHtml += '<tr>' + r.map(c => `<${tag}>${formatInline(c.trim())}</${tag}>`).join('') + '</tr>';
+        });
+        tHtml += '</tbody></table>';
+        html += tHtml;
+        tableRows = [];
+        inTable = false;
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(new RegExp('&lt;dcouplr/&gt;', 'gi'), '<span style="color:#39ff14;font-family:monospace;font-weight:700;">&lt;</span><span style="color:#ffffff;font-family:monospace;font-weight:700;">dcouplr</span><span style="color:#39ff14;font-family:monospace;font-weight:700;">/&gt;</span>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#38bdf8;">$1</a>');
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Code block toggle
+        if (line.trim().startsWith('```')) {
+          if (inCode) {
+            html += `<div class="code-box"><div class="code-box-header"><span>${codeLang || 'text'}</span><button class="btn" style="padding:2px 8px;font-size:0.65rem;" onclick="copySnippet(this)">Copy</button></div><pre><code>${codeBuf.map(l => l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')).join('\n')}</code></pre></div>`;
+            inCode = false;
+            codeBuf = [];
+            codeLang = '';
+          } else {
+            if (inTable) flushTable();
+            inCode = true;
+            codeLang = line.trim().slice(3).trim();
+          }
+          continue;
+        }
+
+        if (inCode) {
+          codeBuf.push(line);
+          continue;
+        }
+
+        // Table row
+        if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+          const cells = line.trim().slice(1, -1).split('|');
+          tableRows.push(cells);
+          inTable = true;
+          continue;
+        } else if (inTable) {
+          flushTable();
+        }
+
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          continue;
+        }
+
+        if (trimmed === '---' || trimmed === '***') {
+          html += '<hr>';
+        } else if (trimmed.startsWith('# ')) {
+          html += `<h1>${formatInline(trimmed.slice(2))}</h1>`;
+        } else if (trimmed.startsWith('## ')) {
+          html += `<h2>${formatInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('### ')) {
+          html += `<h3>${formatInline(trimmed.slice(4))}</h3>`;
+        } else if (trimmed.startsWith('#### ')) {
+          html += `<h4>${formatInline(trimmed.slice(5))}</h4>`;
+        } else if (trimmed.startsWith('> ')) {
+          html += `<blockquote>${formatInline(trimmed.slice(2))}</blockquote>`;
+        } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+          html += `<ul><li>${formatInline(trimmed.slice(2))}</li></ul>`;
+        } else {
+          html += `<p>${formatInline(trimmed)}</p>`;
+        }
+      }
+
+      if (inTable) flushTable();
+      if (inCode) {
+        html += `<div class="code-box"><pre><code>${codeBuf.join('\n')}</code></pre></div>`;
+      }
+
+      document.getElementById('formatted-view').innerHTML = html;
+    }
+
+    // Server-side rendered by dcouplr markdown engine
+  </script>
+</body>
+</html>
