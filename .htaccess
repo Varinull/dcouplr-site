@@ -6,16 +6,27 @@
 RewriteEngine On
 DirectoryIndex index.html index.php
 
-# 0. STRICT IN-VPC APPLIANCE BOUNDARY ENFORCEMENT
+# ------------------------------------------------------------------------------
+# 0. CUSTOM ERROR HANDLING: AUTOMATIC HOMEPAGE RETURN
+# When any page is missing, unavailable, or restricted, return directly to homepage
+# instead of displaying Hostinger's default "This Page Does Not Exist" template.
+# ------------------------------------------------------------------------------
+ErrorDocument 404 https://dcouplr.com/
+ErrorDocument 403 https://dcouplr.com/
+
+# ------------------------------------------------------------------------------
+# 1. STRICT IN-VPC APPLIANCE BOUNDARY ENFORCEMENT
 # The dashboard, admin vault, compiler studio, upgrade portal, internal tools, and legacy legal pages
 # run strictly in-VPC or are disabled, and MUST NEVER be accessible on the public production website (https://dcouplr.com).
+# Redirect any requests for internal in-VPC appliance consoles directly to homepage.
+# ------------------------------------------------------------------------------
 RewriteCond %{THE_REQUEST} \s/+*(dashboard|admin|compiler|telemetry|support|pitch|presentation|dossier|legal|upgrade) [NC,OR]
 RewriteCond %{REQUEST_URI} ^/*(dashboard|admin|compiler|telemetry|support|pitch|presentation|dossier|legal|upgrade) [NC,OR]
 RewriteCond %{REQUEST_URI} ^/*(dashboard|admin|compiler|support|pitch|presentation|legal_terms|legal_privacy|legal_security|upgrade)\.(html|js|css)$ [NC]
-RewriteRule ^ - [R=404,L]
+RewriteRule ^ https://dcouplr.com/ [R=302,L]
 
-RewriteRule ^/*(dashboard|admin|compiler|telemetry|support|pitch|presentation|dossier|legal|upgrade)(/.*)?$ - [R=404,L]
-RewriteRule ^/*(dashboard|admin|compiler|support|pitch|presentation|legal_terms|legal_privacy|legal_security|upgrade)\.(html|js|css)$ - [R=404,L]
+RewriteRule ^/*(dashboard|admin|compiler|telemetry|support|pitch|presentation|dossier|legal|upgrade)(/.*)?$ https://dcouplr.com/ [R=302,L]
+RewriteRule ^/*(dashboard|admin|compiler|support|pitch|presentation|legal_terms|legal_privacy|legal_security|upgrade)\.(html|js|css)$ https://dcouplr.com/ [R=302,L]
 
 # Prevent any caching on blocked appliance consoles
 SetEnvIf Request_URI "^/*(dashboard|admin|compiler|telemetry|support|pitch|presentation|dossier|legal|upgrade)" NO_CACHE=1
@@ -61,6 +72,14 @@ RewriteRule ^v1/community/stats/?$ register.php?action=stats [L,QSA]
 # General .html fallback
 RewriteCond %{REQUEST_FILENAME}.html -f
 RewriteRule ^([^/]+)/?$ $1.html [L]
+
+# ------------------------------------------------------------------------------
+# 2.1 CATCH-ALL HOMEPAGE REDIRECT FOR NON-EXISTENT PAGES
+# If the requested path is not a file and not a directory, return the visitor directly to homepage.
+# ------------------------------------------------------------------------------
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^.*$ https://dcouplr.com/ [R=302,L]
 
 # 3. Security Headers
 <IfModule mod_headers.c>
