@@ -1654,6 +1654,9 @@
           <button type="button" class="comp-rbac-subtab-btn" data-subtab="docs" style="padding: 6px 14px; font-size: 0.8rem; font-weight: 600; border-radius: 6px; cursor: pointer; background: transparent; color: #94a3b8; border: 1px solid transparent;">
             📖 Governance Runbook
           </button>
+          <button type="button" class="comp-rbac-subtab-btn" data-subtab="jurisdictions" style="padding: 6px 14px; font-size: 0.8rem; font-weight: 700; border-radius: 6px; cursor: pointer; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4);">
+            🌍 Global Governance, Country Purchaser &amp; Regional Setup
+          </button>
         </div>
 
         <!-- SUBTAB 1: USERS & IDENTITIES -->
@@ -2144,6 +2147,335 @@
             <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 1rem;">
               <strong style="color: #34d399;">SOP-04: Corporate SAML / OIDC</strong>
               <p style="color: #94a3b8; margin: 4px 0 0 0;">Configure Okta or Azure AD to send <code style="color:#34d399;">groups</code> attribute. Map groups to roles dynamically upon token exchange.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBTAB 7: DYNAMIC ENTERPRISE GOVERNANCE, COUNTRY PURCHASER & REGIONAL SETUP -->
+        <div id="comp-rbac-subpane-jurisdictions" class="comp-rbac-subpane" style="display: none;">
+          <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.4); border-left: 4px solid #38bdf8; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+              <div>
+                <div style="font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #38bdf8; font-weight: 700;">ZERO HARDCODED COUNTRIES &bull; FULLY CONFIGURABLE ENTERPRISE GOVERNANCE TOPOLOGY</div>
+                <h3 style="font-size: 1.12rem; font-weight: 800; color: #fff; margin: 4px 0;">
+                  🌍 Enterprise Country Purchaser, Multi-Country / Regional Partitioning &amp; Environment Control Configurator
+                </h3>
+                <p style="font-size: 0.8rem; color: #cbd5e1; margin: 4px 0 0 0; line-height: 1.5; max-width: 960px;">
+                  No country or region is hardcoded. Use the <strong>Enterprise Administrator Console</strong> below to choose your company's governance setup model—whether <strong>one country controls everything</strong>, <strong>one country maintains all Cloud infrastructure while each country maintains its own On-Premises datacenter</strong>, <strong>per-region with multiple countries inside each region</strong>, or <strong>central purchaser with autonomous countries</strong>—and add, edit, or remove any country or regional member on demand.
+                </p>
+              </div>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button type="button" class="btn btn-cyan" onclick="applyGovernanceTopologyModel(true)" style="font-size: 0.76rem; font-weight: 700; padding: 7px 12px;" title="Reload default Country/Region members for the selected setup model">
+                  🔄 Load / Restore Preset Members
+                </button>
+                <button type="button" class="btn btn-green" onclick="toggleAddJurisdictionModal(true)" style="font-size: 0.78rem; font-weight: 700; padding: 7px 14px;">
+                  ➕ Add / Configure Country or Region Member
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 1: ENTERPRISE GOVERNANCE TOPOLOGY MODEL & PURCHASER BAR (Label on Left, Input/Dropdown on Right) -->
+            <div style="background: rgba(6, 10, 18, 0.72); border: 1px solid rgba(56, 189, 248, 0.32); border-radius: 10px; padding: 1.1rem 1.25rem; margin-bottom: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; padding-bottom: 0.55rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-wrap: wrap; gap: 8px;">
+                <div style="font-size: 0.82rem; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.04em;">
+                  🏛️ Enterprise Governance Setup &amp; Subscription Purchaser Configuration
+                </div>
+                <span id="gov-verified-pill" style="font-size: 0.68rem; font-family: 'JetBrains Mono', monospace; background: rgba(57, 255, 20, 0.14); color: #39ff14; border: 1px solid rgba(57, 255, 20, 0.4); padding: 2px 9px; border-radius: 999px; font-weight: 700;">
+                  ✓ VERIFIED 8-MODEL &amp; 24-PURCHASER SYNC ACTIVE
+                </span>
+              </div>
+
+              <!-- 2-Column Form Table: Labels on Left (350px) | Input & Dropdown Boxes on Right (1fr) -->
+              <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                <!-- Row 1 -->
+                <div style="display: grid; grid-template-columns: minmax(280px, 360px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.55); padding: 0.55rem 0.85rem; border-radius: 7px; border: 1px solid rgba(56, 189, 248, 0.18);">
+                  <label for="gov-topology-model-select" style="font-size: 0.78rem; color: #38bdf8; font-weight: 700; line-height: 1.35;">
+                    1. Select Enterprise Governance &amp; Infrastructure Control Setup Model
+                    <span style="display: block; font-size: 0.68rem; color: #64748b; font-weight: 500; margin-top: 2px;">Defines who controls Cloud vs. On-Premises &amp; loads preset members</span>
+                  </label>
+                  <select id="gov-topology-model-select" onchange="onGovernanceModelDropdownChange()" style="width: 100%; box-sizing: border-box; padding: 8px 12px; font-size: 0.81rem; font-weight: 600; background: #070b14; border: 1px solid rgba(56, 189, 248, 0.5); border-radius: 6px; color: #fff; cursor: pointer;">
+                    <option value="model_1_central_single_country">Model 1: Single Country / Global HQ Controls Everything (Centralized Cloud + On-Prem)</option>
+                    <option value="model_2_cloud_hq_local_onprem">Model 2: Global Cloud HQ + Country On-Prem Plants/Datacenters (STIHL / Bosch / Siemens Model)</option>
+                    <option value="model_3_regional_multi_country">Model 3: Regional Super-Hubs with Multiple Countries per Region (HP / Dell / Cisco AMS-EMEA-APJ Model)</option>
+                    <option value="model_4_purchaser_only_autonomous_countries">Model 4: Central FinOps Purchaser + 100% Autonomous Subsidiaries (HSBC / Vodafone Banking &amp; Telecom Model)</option>
+                    <option value="model_5_gsi_follow_the_sun_sovereign">Model 5: Follow-the-Sun Delivery Centers + Citizen-Cleared Sovereign Enclaves (Accenture / Deloitte Model)</option>
+                    <option value="model_6_intergovernmental_treaty_un">Model 6: Intergovernmental Treaty, Autonomous Agencies &amp; Field Missions (United Nations / UNICC / WHO Model)</option>
+                    <option value="model_7_conglomerate_brand_country_matrix">Model 7: Multi-Brand Conglomerate Matrix — Operating Brand × Country (VW Group / J&amp;J / LVMH Model)</option>
+                    <option value="model_8_airgapped_defense_critical_infra">Model 8: Sovereign Air-Gapped Defense, SCADA &amp; Critical Infrastructure (Aerospace / National Grid Model)</option>
+                  </select>
+                </div>
+
+                <!-- Row 2 -->
+                <div style="display: grid; grid-template-columns: minmax(280px, 360px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.55); padding: 0.55rem 0.85rem; border-radius: 7px; border: 1px solid rgba(57, 255, 20, 0.2);">
+                  <label for="gov-purchaser-preset-select" style="font-size: 0.78rem; color: #39ff14; font-weight: 700; line-height: 1.35;">
+                    2. Subscription Purchaser Country / Region / Entity
+                    <span style="display: block; font-size: 0.68rem; color: #64748b; font-weight: 500; margin-top: 2px;">Contracting HQ that provisions licenses &amp; seat quotas</span>
+                  </label>
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <select id="gov-purchaser-preset-select" onchange="onPurchaserPresetChange()" style="flex: 1; box-sizing: border-box; padding: 8px 12px; font-size: 0.81rem; font-weight: 600; background: #070b14; border: 1px solid rgba(57, 255, 20, 0.45); border-radius: 6px; color: #fff; cursor: pointer;">
+                      <optgroup label="Sovereign Countries (National / Global Corporate HQs)">
+                        <option value="DE">🇩🇪 Germany (DE — EU Cloud &amp; Manufacturing HQ)</option>
+                        <option value="US">🇺🇸 United States (US — Global Corporate HQ)</option>
+                        <option value="GB">🇬🇧 United Kingdom (GB — London EMEA HQ)</option>
+                        <option value="CH">🇨🇭 Switzerland (CH — Zurich / Geneva HQ)</option>
+                        <option value="FR">🇫🇷 France (FR — Paris EU HQ)</option>
+                        <option value="NL">🇳🇱 Netherlands (NL — Amsterdam EU HQ)</option>
+                        <option value="SG">🇸🇬 Singapore (SG — APAC Regional HQ)</option>
+                        <option value="JP">🇯🇵 Japan (JP — Tokyo Corporate HQ)</option>
+                        <option value="AU">🇦🇺 Australia (AU — Sydney ANZ HQ)</option>
+                        <option value="CA">🇨🇦 Canada (CA — Toronto HQ)</option>
+                        <option value="BR">🇧🇷 Brazil (BR — São Paulo LATAM HQ)</option>
+                        <option value="IN">🇮🇳 India (IN — Global Delivery HQ)</option>
+                        <option value="AE">🇦🇪 United Arab Emirates (AE — Dubai MEA HQ)</option>
+                      </optgroup>
+                      <optgroup label="Macro-Regions &amp; International / Holding Entities">
+                        <option value="HQ-GLOBAL">🌐 Global Unified Operations HQ (HQ-GLOBAL — Model 1 Default)</option>
+                        <option value="CORP-HQ">🏢 Global Corporate IT Procurement (CORP-HQ — Model 3 Default)</option>
+                        <option value="GROUP-FINOPS">🏦 Group Holding FinOps Allocator (GROUP-FINOPS — Model 4 Default)</option>
+                        <option value="GSI-GLOBAL">☀️ Global Managed Services Contracting (GSI-GLOBAL — Model 5 Default)</option>
+                        <option value="UNICC-HQ">🇺🇳 United Nations / UNICC Umbrella (UNICC-HQ — Model 6 Default)</option>
+                        <option value="HOLDING-GROUP">🏎️ Multi-Brand Conglomerate Holding (HOLDING-GROUP — Model 7 Default)</option>
+                        <option value="DEFENSE-HQ">🛡️ Corporate Defense Contracting HQ (DEFENSE-HQ — Model 8 Default)</option>
+                        <option value="REG-EMEA">🇪🇺 EMEA Super-Region Hub (REG-EMEA)</option>
+                        <option value="REG-AMS">🌎 Americas Super-Region Hub (REG-AMS)</option>
+                        <option value="REG-APJ">🌏 Asia-Pacific &amp; Japan Super-Region Hub (REG-APJ)</option>
+                      </optgroup>
+                      <optgroup label="Custom Code">
+                        <option value="CUSTOM">✏️ Custom Country / Region Code...</option>
+                      </optgroup>
+                    </select>
+                    <input type="text" id="gov-purchaser-code-input" value="DE" placeholder="Custom Code" onchange="savePurchaserAndGovernancePolicy()" style="display: none; width: 120px; box-sizing: border-box; padding: 8px 10px; font-size: 0.8rem; background: #070b14; border: 1px solid rgba(56,189,248,0.5); border-radius: 6px; color: #39ff14; font-family: monospace; font-weight: 700;">
+                  </div>
+                </div>
+
+                <!-- Row 3 -->
+                <div style="display: grid; grid-template-columns: minmax(280px, 360px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.5rem 0.85rem; border-radius: 7px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                  <label for="gov-purchaser-name-input" style="font-size: 0.77rem; color: #e2e8f0; font-weight: 700; line-height: 1.35;">
+                    3. Subscription Purchaser Legal / Display Name
+                    <span style="display: block; font-size: 0.68rem; color: #64748b; font-weight: 500; margin-top: 2px;">Auto-populated from Dropdown #2 or customized for your legal entity</span>
+                  </label>
+                  <input type="text" id="gov-purchaser-name-input" value="Germany Global Engineering &amp; Cloud HQ (Subscription Purchaser)" onchange="savePurchaserAndGovernancePolicy()" placeholder="e.g. Global Procurement HQ" style="width: 100%; box-sizing: border-box; padding: 8px 12px; font-size: 0.8rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: #fff;">
+                </div>
+
+                <!-- Row 4 -->
+                <div style="display: grid; grid-template-columns: minmax(280px, 360px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.5rem 0.85rem; border-radius: 7px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                  <label for="gov-regulatory-regime-select" style="font-size: 0.77rem; color: #e2e8f0; font-weight: 700; line-height: 1.35;">
+                    4. Primary Regulatory &amp; Data Sovereignty Regime
+                    <span style="display: block; font-size: 0.68rem; color: #64748b; font-weight: 500; margin-top: 2px;">Governing data residency &amp; compliance mandate across partitions</span>
+                  </label>
+                  <select id="gov-regulatory-regime-select" onchange="savePurchaserAndGovernancePolicy()" style="width: 100%; box-sizing: border-box; padding: 8px 12px; font-size: 0.79rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: #cbd5e1; cursor: pointer;">
+                    <option value="gdpr_onprem_split">EU GDPR / BDSG + Local Country On-Prem Sovereignty (STIHL / Bosch)</option>
+                    <option value="multi_region_residency">Multi-Region Data Residency (GDPR / CCPA / LGPD / PDPA / APPI)</option>
+                    <option value="citizen_cleared_sovereign">Citizen-Cleared Sovereign Enclaves (FedRAMP High / ITAR / BSI C5)</option>
+                    <option value="un_treaty_inviolability">1946 UN Convention Diplomatic Archive Inviolability &amp; Agency Isolation</option>
+                    <option value="national_financial_regulator">National Banking/Telecom Regulator Isolation (BaFin / OCC / FCA / BACEN)</option>
+                    <option value="airgapped_scif_nerc">100% Air-Gapped Classified SCIF / NERC CIP National Grid SCADA</option>
+                    <option value="global_unified_iso">Unified Global Corporate Policy (ISO 27001 / SOC 2 Type II)</option>
+                  </select>
+                </div>
+
+                <!-- Row 5 -->
+                <div style="display: grid; grid-template-columns: minmax(280px, 360px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.5rem 0.85rem; border-radius: 7px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                  <label for="gov-telemetry-rollup-select" style="font-size: 0.77rem; color: #e2e8f0; font-weight: 700; line-height: 1.35;">
+                    5. Cross-Border Telemetry &amp; Billing Rollup Policy
+                    <span style="display: block; font-size: 0.68rem; color: #64748b; font-weight: 500; margin-top: 2px;">Controls whether raw logs/IPs or only seat counts cross borders to HQ</span>
+                  </label>
+                  <select id="gov-telemetry-rollup-select" onchange="savePurchaserAndGovernancePolicy()" style="width: 100%; box-sizing: border-box; padding: 8px 12px; font-size: 0.79rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: #cbd5e1; cursor: pointer;">
+                    <option value="seat_count_only">Seat-Count Heartbeat Only to Purchaser (0% Raw Logs/IPs Cross Borders)</option>
+                    <option value="sanitized_health_pulse">Sanitized Health Status + Seat Count Only (Zero PII / Zero Private IPs)</option>
+                    <option value="full_central_telemetry">Full Central Telemetry Rollup to Purchasing HQ (Single-Controller Mode)</option>
+                    <option value="offline_airgapped_token">100% Offline Air-Gapped USB/QR Cryptographic Seat Token (Zero Network Link)</option>
+                  </select>
+                </div>
+
+                <!-- Row 6 -->
+                <div style="display: grid; grid-template-columns: minmax(280px, 360px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.5rem 0.85rem; border-radius: 7px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                  <label for="gov-currency-tld-select" style="font-size: 0.77rem; color: #e2e8f0; font-weight: 700; line-height: 1.35;">
+                    6. Master Contract Currency &amp; HQ Domain TLD
+                    <span style="display: block; font-size: 0.68rem; color: #64748b; font-weight: 500; margin-top: 2px;">Primary enterprise billing currency and corporate TLD extensions</span>
+                  </label>
+                  <select id="gov-currency-tld-select" onchange="savePurchaserAndGovernancePolicy()" style="width: 100%; box-sizing: border-box; padding: 8px 12px; font-size: 0.79rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: #cbd5e1; cursor: pointer;">
+                    <option value="EUR_DE">EUR (€) &bull; Primary HQ Domains: .de / .com / .eu</option>
+                    <option value="USD_US">USD ($) &bull; Primary HQ Domains: .us / .com</option>
+                    <option value="GBP_GB">GBP (£) &bull; Primary HQ Domains: .co.uk / .com</option>
+                    <option value="CHF_CH">CHF (CHF) &bull; Primary HQ Domains: .ch / .int / .org</option>
+                    <option value="SGD_SG">SGD (S$) &bull; Primary HQ Domains: .sg / .com</option>
+                    <option value="JPY_JP">JPY (¥) &bull; Primary HQ Domains: .jp / .co.jp</option>
+                    <option value="BRL_BR">BRL (R$) &bull; Primary HQ Domains: .com.br / .br</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Footer Summary & Action Bar -->
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.85rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.08);">
+                <div id="gov-topology-summary-banner" style="font-size: 0.76rem; color: #cbd5e1;">
+                  Active Setup: <strong style="color:#39ff14;" id="gov-active-model-label">Loading governance topology...</strong>
+                </div>
+                <div style="display: flex; gap: 0.55rem; align-items: center; flex-wrap: wrap;">
+                  <label style="font-size: 0.73rem; color: #cbd5e1; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                    <input type="checkbox" id="gov-reset-template-checkbox" checked>
+                    Reset/load preset members when switching Model (#1)
+                  </label>
+                  <button type="button" class="btn btn-green" onclick="savePurchaserAndGovernancePolicy()" style="font-size: 0.75rem; font-weight: 700; padding: 6px 13px;">
+                    💾 Save Purchaser &amp; Policy Settings
+                  </button>
+                  <button type="button" class="btn btn-cyan" onclick="applyGovernanceTopologyModel(true)" style="font-size: 0.75rem; font-weight: 700; padding: 6px 13px;">
+                    🔄 Reload Model Preset Members
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 2: COLLAPSIBLE ADD / EDIT COUNTRY OR REGION MEMBER FORM (Labels on Left, Boxes on Right) -->
+            <div id="gov-member-form-card" style="display: none; background: rgba(11, 17, 32, 0.96); border: 1px solid rgba(57, 255, 20, 0.45); border-radius: 10px; padding: 1.15rem 1.25rem; margin-bottom: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; padding-bottom: 0.6rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-wrap: wrap; gap: 8px;">
+                <h4 id="gov-member-form-title" style="margin: 0; font-size: 0.95rem; color: #39ff14;">➕ Configure Country, Multi-Country Region, or Agency Member</h4>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                  <label for="jm-preset-select" style="font-size: 0.74rem; color: #38bdf8; font-weight: 700;">⚡ Quick-Fill Country / Region Preset:</label>
+                  <select id="jm-preset-select" onchange="onMemberPresetChange()" style="padding: 6px 10px; font-size: 0.77rem; font-weight: 600; background: #070b14; border: 1px solid #38bdf8; border-radius: 5px; color: #fff; cursor: pointer;">
+                    <option value="">-- Choose a Country or Region Preset to Auto-Fill --</option>
+                    <option value="US">🇺🇸 United States (US — Private On-Premises / Cloud)</option>
+                    <option value="DE">🇩🇪 Germany (DE — EU Cloud / Manufacturing HQ)</option>
+                    <option value="BR">🇧🇷 Brazil (BR — LGPD Regional Enclave)</option>
+                    <option value="GB">🇬🇧 United Kingdom (GB — UK GDPR Enclave)</option>
+                    <option value="CH">🇨🇭 Switzerland (CH — Swiss FADP Sovereign Enclave)</option>
+                    <option value="FR">🇫🇷 France (FR — SecNumCloud / EU Enclave)</option>
+                    <option value="NL">🇳🇱 Netherlands (NL — EU Cloud Enclave)</option>
+                    <option value="JP">🇯🇵 Japan (JP — APPI Tokyo Enclave)</option>
+                    <option value="SG">🇸🇬 Singapore (SG — PDPA APAC Hub)</option>
+                    <option value="CA">🇨🇦 Canada (CA — PIPEDA Sovereign Enclave)</option>
+                    <option value="AU">🇦🇺 Australia (AU — Privacy Act ANZ Enclave)</option>
+                    <option value="IN">🇮🇳 India (IN — DPDP / Global Delivery Center)</option>
+                    <option value="MX">🇲🇽 Mexico (MX — LATAM Operations Enclave)</option>
+                    <option value="AE">🇦🇪 United Arab Emirates (AE — DIFC / Middle East Hub)</option>
+                    <option value="REG-EMEA">🇪🇺 EMEA Multi-Country Region (DE, GB, FR, NL, AE)</option>
+                    <option value="REG-AMS">🌎 Americas (AMS) Multi-Country Region (US, CA, BR, MX)</option>
+                    <option value="REG-APJ">🌏 Asia-Pacific &amp; Japan (APJ) Region (SG, JP, IN, AU)</option>
+                    <option value="AGENCY-HUMANITARIAN">🇺🇳 UN Specialized Agency Enclave (WHO / UNHCR / WFP)</option>
+                    <option value="FIELD-MISSIONS">🕊️ UN Peacekeeping &amp; Regional Field Missions (Nairobi / Bangkok)</option>
+                  </select>
+                  <button type="button" class="btn btn-secondary" onclick="toggleAddJurisdictionModal(false)" style="font-size: 0.74rem; padding: 5px 10px;">✕ Close</button>
+                </div>
+              </div>
+
+              <form id="gov-member-form" onsubmit="saveJurisdictionMember(event); return false;" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <div style="display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.45rem 0.8rem; border-radius: 6px;">
+                  <label for="jm-code" style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">1. Country / Region / Agency Code *</label>
+                  <input type="text" id="jm-code" placeholder="e.g. US, DE, BR, JP, REG-EMEA, REG-APJ" required style="width: 100%; box-sizing: border-box; padding: 7px 10px; font-size: 0.78rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff;">
+                </div>
+                <div style="display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.45rem 0.8rem; border-radius: 6px;">
+                  <label for="jm-scope-type" style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">2. Member Scope Type *</label>
+                  <select id="jm-scope-type" style="width: 100%; box-sizing: border-box; padding: 7px 10px; font-size: 0.78rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff;">
+                    <option value="country">Single Country Member</option>
+                    <option value="region">Multi-Country Region (Several Countries in 1 Region)</option>
+                    <option value="global_hq">Global HQ / Master Controller</option>
+                  </select>
+                </div>
+                <div style="display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.45rem 0.8rem; border-radius: 6px;">
+                  <label for="jm-name" style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">3. Display Name / Label *</label>
+                  <input type="text" id="jm-name" placeholder="e.g. United States Private On-Premises Datacenter" required style="width: 100%; box-sizing: border-box; padding: 7px 10px; font-size: 0.78rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff;">
+                </div>
+                <div style="display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.45rem 0.8rem; border-radius: 6px;">
+                  <label for="jm-member-countries" style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">4. Member Countries (comma-separated)</label>
+                  <input type="text" id="jm-member-countries" placeholder="e.g. DE, FR, NL, GB or US" style="width: 100%; box-sizing: border-box; padding: 7px 10px; font-size: 0.78rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff;">
+                </div>
+                <div style="display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.45rem 0.8rem; border-radius: 6px;">
+                  <label for="jm-env-mode" style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">5. Environment Control Mode *</label>
+                  <select id="jm-env-mode" style="width: 100%; box-sizing: border-box; padding: 7px 10px; font-size: 0.78rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff;">
+                    <option value="on_prem_datacenter">Private On-Premises Datacenter (Country Controlled)</option>
+                    <option value="cloud_in_vpc">Cloud In-VPC Controller</option>
+                    <option value="cloud_and_onprem">Full Cloud + On-Premises (Unified Control)</option>
+                  </select>
+                </div>
+                <div style="display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.45rem 0.8rem; border-radius: 6px;">
+                  <label for="jm-regulatory" style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">6. Data Residency &amp; Regulatory Law</label>
+                  <select id="jm-regulatory" style="width: 100%; box-sizing: border-box; padding: 7px 10px; font-size: 0.78rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff;">
+                    <option value="US Sovereign On-Prem / CCPA / HIPAA / NIST">US Sovereign On-Prem / CCPA / HIPAA / NIST</option>
+                    <option value="EU GDPR / BDSG (Germany &amp; EU)">EU GDPR / BDSG (Germany &amp; EU)</option>
+                    <option value="Brazil LGPD / BACEN">Brazil LGPD / BACEN</option>
+                    <option value="UK GDPR &amp; Data Protection Act">UK GDPR &amp; Data Protection Act</option>
+                    <option value="Swiss FADP / FINMA">Swiss FADP / FINMA</option>
+                    <option value="APAC PDPA / Japan APPI / India DPDP">APAC PDPA / Japan APPI / India DPDP</option>
+                    <option value="FedRAMP High / ITAR / Citizen-Cleared">FedRAMP High / ITAR / Citizen-Cleared</option>
+                    <option value="1946 UN Convention Archive Inviolability">1946 UN Convention Archive Inviolability</option>
+                  </select>
+                </div>
+                <div style="display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.45rem 0.8rem; border-radius: 6px;">
+                  <label for="jm-topology" style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">7. Primary Cloud Region / Datacenter Location</label>
+                  <select id="jm-topology" style="width: 100%; box-sizing: border-box; padding: 7px 10px; font-size: 0.78rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff;">
+                    <option value="Local On-Premises In-Datacenter Appliance (Private Plant / DC)">Local On-Premises In-Datacenter Appliance (Private Plant / DC)</option>
+                    <option value="In-VPC Cloud Controller (eu-central-1 Frankfurt)">In-VPC Cloud Controller (eu-central-1 Frankfurt)</option>
+                    <option value="In-VPC Cloud Controller (us-east-1 / us-west-2)">In-VPC Cloud Controller (us-east-1 / us-west-2)</option>
+                    <option value="In-VPC / On-Prem Enclave (sa-east-1 São Paulo)">In-VPC / On-Prem Enclave (sa-east-1 São Paulo)</option>
+                    <option value="In-VPC Cloud Controller (eu-west-2 London / eu-west-1 Dublin)">In-VPC Cloud Controller (eu-west-2 London / eu-west-1 Dublin)</option>
+                    <option value="In-VPC Cloud Controller (ap-southeast-1 Singapore / ap-northeast-1 Tokyo)">In-VPC Cloud Controller (ap-southeast-1 Singapore / ap-northeast-1 Tokyo)</option>
+                    <option value="100% Air-Gapped Bunker / SCADA Enclave (Offline Token)">100% Air-Gapped Bunker / SCADA Enclave (Offline Token)</option>
+                  </select>
+                </div>
+                <div style="display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.45rem 0.8rem; border-radius: 6px;">
+                  <label for="jm-provisioned-by" style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">8. Subscription Provisioned By (Purchaser) *</label>
+                  <input type="text" id="jm-provisioned-by" placeholder="e.g. DE, US, HQ-GLOBAL" required style="width: 100%; box-sizing: border-box; padding: 7px 10px; font-size: 0.78rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff;">
+                </div>
+                <div style="display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.45rem 0.8rem; border-radius: 6px;">
+                  <label for="jm-operated-by" style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">9. Operated &amp; Monitored By *</label>
+                  <input type="text" id="jm-operated-by" placeholder="e.g. US, DE, REG-EMEA, REG-APJ" required style="width: 100%; box-sizing: border-box; padding: 7px 10px; font-size: 0.78rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff;">
+                </div>
+                <div style="display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.45rem 0.8rem; border-radius: 6px;">
+                  <label for="jm-vpcs" style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">10. Assigned VPC / Datacenter IDs (comma-sep) *</label>
+                  <input type="text" id="jm-vpcs" placeholder="e.g. dc-onprem-core-01, vpc-eu-central-de-01" required style="width: 100%; box-sizing: border-box; padding: 7px 10px; font-size: 0.78rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff;">
+                </div>
+                <div style="display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.45rem 0.8rem; border-radius: 6px;">
+                  <label for="jm-domains" style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">11. Allowed Domain Extensions (comma-sep) *</label>
+                  <input type="text" id="jm-domains" placeholder="e.g. .us or .de, .com or .co.jp" required style="width: 100%; box-sizing: border-box; padding: 7px 10px; font-size: 0.78rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff;">
+                </div>
+                <div style="display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.45rem 0.8rem; border-radius: 6px;">
+                  <label for="jm-recipients" style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">12. Notification Recipient Emails (comma-sep) *</label>
+                  <input type="text" id="jm-recipients" placeholder="e.g. sre-onprem@company.us, noc@company.us" required style="width: 100%; box-sizing: border-box; padding: 7px 10px; font-size: 0.78rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff;">
+                </div>
+                <div style="display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.45rem 0.8rem; border-radius: 6px;">
+                  <label style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">13. Allocated Seat Quota / Active Licensed Nodes</label>
+                  <div style="display: flex; gap: 8px;">
+                    <input type="number" id="jm-allocated-nodes" value="25" min="1" title="Allocated Seat Quota" style="width: 50%; box-sizing: border-box; padding: 7px 10px; font-size: 0.78rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff;">
+                    <input type="number" id="jm-licensed-nodes" value="20" min="0" title="Active Nodes" style="width: 50%; box-sizing: border-box; padding: 7px 10px; font-size: 0.78rem; background: #070b14; border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff;">
+                  </div>
+                </div>
+                <div style="display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 1rem; align-items: center; background: rgba(15, 23, 42, 0.45); padding: 0.55rem 0.8rem; border-radius: 6px;">
+                  <span style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">14. Cross-Border Raw Telemetry Permission</span>
+                  <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+                    <label style="font-size: 0.75rem; color: #cbd5e1; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                      <input type="checkbox" id="jm-allow-purchaser-telemetry">
+                      Allow Purchaser HQ to view raw logs/IPs (unchecked = Seat-Count Heartbeat Only)
+                    </label>
+                    <button type="submit" class="btn btn-green" style="font-size: 0.78rem; font-weight: 700; padding: 7px 16px;">
+                      💾 Save Country / Region Member
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <!-- STEP 3: DYNAMICALLY RENDERED COUNTRY / REGION CARDS -->
+            <div id="jurisdictions-dynamic-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 1rem; margin-top: 0.75rem;">
+              <!-- Populated dynamically by loadJurisdictionGovernanceConfig() -->
+            </div>
+          </div>
+
+          <!-- Interactive Notification Filtering & Split-Provisioning Simulator -->
+          <div style="background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.85rem;">
+              <div>
+                <h4 style="margin: 0; font-size: 0.98rem; color: #fff;">⚡ Live Country / Region Alert Filter &amp; Domain Extension Router (Dry-Run Simulator)</h4>
+                <p style="margin: 3px 0 0 0; font-size: 0.76rem; color: #94a3b8;">
+                  Click any configured Country or Regional perimeter below to fire a test alert and verify that <strong>only</strong> the matching member's domain group receives the notification while cross-border groups are deterministically blocked:
+                </p>
+              </div>
+              <div id="jurisdiction-sim-buttons" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <!-- Dynamically populated buttons for every configured Country / Region -->
+              </div>
+            </div>
+
+            <div id="jurisdiction-dispatch-output" style="background: #070b14; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 6px; padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #cbd5e1; line-height: 1.55;">
+              Select any configured Country or Regional button above to test notification filtering, domain-extension verification, and purchaser vs. operator visibility boundaries.
             </div>
           </div>
         </div>
@@ -3811,5 +4143,470 @@
     </form>
   </dialog>
 
+  <script>
+    let _activeJurisdictionState = {
+      topology_model: 'model_2_cloud_hq_local_onprem',
+      purchaser_code: 'DE',
+      purchaser_name: 'Germany Cloud HQ (Subscription Purchaser)',
+      partitions: {},
+      available_models: {}
+    };
+
+    const _MODEL_LABELS = {
+      model_1_central_single_country: 'Model 1: Single Country / Global HQ Controls Everything (Centralized Cloud + On-Prem)',
+      model_2_cloud_hq_local_onprem: 'Model 2: Global Cloud HQ + Country On-Prem Plants/Datacenters (STIHL / Bosch / Siemens Model)',
+      model_3_regional_multi_country: 'Model 3: Regional Super-Hubs with Multiple Countries per Region (HP / Dell / Cisco AMS-EMEA-APJ Model)',
+      model_4_purchaser_only_autonomous_countries: 'Model 4: Central FinOps Purchaser + 100% Autonomous Subsidiaries (HSBC / Vodafone Model)',
+      model_5_gsi_follow_the_sun_sovereign: 'Model 5: Follow-the-Sun Delivery Centers + Citizen-Cleared Sovereign Enclaves (Accenture / Deloitte Model)',
+      model_6_intergovernmental_treaty_un: 'Model 6: Intergovernmental Treaty, Autonomous Agencies & Field Missions (United Nations / UNICC / WHO Model)',
+      model_7_conglomerate_brand_country_matrix: 'Model 7: Multi-Brand Conglomerate Matrix — Operating Brand × Country (VW Group / J&J Model)',
+      model_8_airgapped_defense_critical_infra: 'Model 8: Sovereign Air-Gapped Defense, SCADA & Critical Infrastructure (Aerospace / National Grid Model)'
+    };
+
+    function _envModeBadge(mode) {
+      if (mode === 'on_prem_datacenter') return { label: 'ISOLATED ON-PREM SOVEREIGN', color: '#38bdf8', bg: 'rgba(56,189,248,0.15)' };
+      if (mode === 'cloud_in_vpc') return { label: 'CLOUD IN-VPC CONTROLLER', color: '#39ff14', bg: 'rgba(57,255,20,0.15)' };
+      return { label: 'UNIFIED CLOUD + ON-PREM', color: '#c084fc', bg: 'rgba(192,132,252,0.18)' };
+    }
+
+    const _PURCHASER_PRESETS = {
+      'DE': { name: 'Germany Global Engineering & Cloud HQ (Subscription Purchaser)', currency: 'EUR_DE', regime: 'gdpr_onprem_split' },
+      'US': { name: 'United States Global Corporate HQ (Subscription Purchaser)', currency: 'USD_US', regime: 'multi_region_residency' },
+      'GB': { name: 'United Kingdom London EMEA HQ (Subscription Purchaser)', currency: 'GBP_GB', regime: 'multi_region_residency' },
+      'CH': { name: 'Switzerland Zurich / Geneva HQ (Subscription Purchaser)', currency: 'CHF_CH', regime: 'multi_region_residency' },
+      'FR': { name: 'France Paris EU Corporate HQ (Subscription Purchaser)', currency: 'EUR_DE', regime: 'gdpr_onprem_split' },
+      'NL': { name: 'Netherlands Amsterdam EU HQ (Subscription Purchaser)', currency: 'EUR_DE', regime: 'gdpr_onprem_split' },
+      'SG': { name: 'Singapore APAC Regional HQ (Subscription Purchaser)', currency: 'SGD_SG', regime: 'multi_region_residency' },
+      'JP': { name: 'Japan Tokyo Corporate HQ (Subscription Purchaser)', currency: 'JPY_JP', regime: 'multi_region_residency' },
+      'AU': { name: 'Australia Sydney ANZ HQ (Subscription Purchaser)', currency: 'USD_US', regime: 'multi_region_residency' },
+      'CA': { name: 'Canada Toronto Corporate HQ (Subscription Purchaser)', currency: 'USD_US', regime: 'multi_region_residency' },
+      'BR': { name: 'Brazil São Paulo LATAM HQ (Subscription Purchaser)', currency: 'BRL_BR', regime: 'multi_region_residency' },
+      'IN': { name: 'India Global Delivery Network HQ (Subscription Purchaser)', currency: 'USD_US', regime: 'multi_region_residency' },
+      'AE': { name: 'UAE Dubai Middle East HQ (Subscription Purchaser)', currency: 'USD_US', regime: 'multi_region_residency' },
+      'REG-EMEA': { name: 'EMEA Super-Region Hub (Global Subscription Purchaser)', currency: 'EUR_DE', regime: 'multi_region_residency' },
+      'REG-AMS': { name: 'Americas (AMS) Super-Region Hub (Global Subscription Purchaser)', currency: 'USD_US', regime: 'multi_region_residency' },
+      'REG-APJ': { name: 'Asia-Pacific & Japan (APJ) Super-Region Hub (Purchaser)', currency: 'SGD_SG', regime: 'multi_region_residency' },
+      'UNICC-HQ': { name: 'UN International Computing Centre (Geneva / NY Umbrella Provider)', currency: 'CHF_CH', regime: 'un_treaty_inviolability' },
+      'CORP-HQ': { name: 'Global Corporate IT Procurement (Palo Alto / Houston)', currency: 'USD_US', regime: 'multi_region_residency' },
+      'GROUP-FINOPS': { name: 'Group Holding FinOps (Seat Quota Allocator Only)', currency: 'EUR_DE', regime: 'national_financial_regulator' },
+      'GSI-GLOBAL': { name: 'Global Managed Services Contracting HQ (Dublin / New York)', currency: 'USD_US', regime: 'citizen_cleared_sovereign' },
+      'HOLDING-GROUP': { name: 'Conglomerate Group Holding Procurement', currency: 'EUR_DE', regime: 'multi_region_residency' },
+      'DEFENSE-HQ': { name: 'Corporate Defense & Critical Infrastructure Contracting HQ', currency: 'USD_US', regime: 'airgapped_scif_nerc' },
+      'HQ-GLOBAL': { name: 'Global Purchasing & Central Operations HQ', currency: 'USD_US', regime: 'global_unified_iso' }
+    };
+
+    const _MEMBER_PRESETS = {
+      'US': { code: 'US', scope: 'country', name: 'United States Private On-Premises Datacenter & Cloud', countries: 'US', env: 'on_prem_datacenter', reg: 'US Sovereign On-Prem / CCPA / HIPAA / NIST', top: 'Local On-Premises In-Datacenter Appliance (Private Plant / DC)', vpcs: 'dc-onprem-core-01, vpc-gcp-analytics-03', domains: '.us', recipients: 'sre-onprem@company.us, us-datacenter-noc@company.us', alloc: 35, lic: 32, allowRaw: false },
+      'DE': { code: 'DE', scope: 'country', name: 'Germany EU Cloud & Manufacturing HQ (Frankfurt)', countries: 'DE', env: 'cloud_in_vpc', reg: 'EU GDPR / BDSG (Germany & EU)', top: 'In-VPC Cloud Controller (eu-central-1 Frankfurt)', vpcs: 'vpc-eu-central-de-01, vpc-aws-prod-01', domains: '.de, .com', recipients: 'sre-germany@company.com, cloud-ops@company.de', alloc: 40, lic: 35, allowRaw: true },
+      'BR': { code: 'BR', scope: 'country', name: 'Brazil LGPD Sovereign Enclave (São Paulo)', countries: 'BR', env: 'on_prem_datacenter', reg: 'Brazil LGPD / BACEN', top: 'In-VPC / On-Prem Enclave (sa-east-1 São Paulo)', vpcs: 'vpc-sa-east-br-01', domains: '.com.br, .br', recipients: 'sre-brazil@company.com.br, noc-saopaulo@company.br', alloc: 15, lic: 12, allowRaw: false },
+      'GB': { code: 'GB', scope: 'country', name: 'United Kingdom Sovereign Enclave (London)', countries: 'GB', env: 'cloud_in_vpc', reg: 'UK GDPR & Data Protection Act', top: 'In-VPC Cloud Controller (eu-west-2 London / eu-west-1 Dublin)', vpcs: 'vpc-aws-stage-02', domains: '.co.uk, .uk', recipients: 'sre-uk@company.co.uk, noc-london@company.co.uk', alloc: 20, lic: 18, allowRaw: false },
+      'CH': { code: 'CH', scope: 'country', name: 'Switzerland Sovereign Enclave (Zurich / Geneva)', countries: 'CH', env: 'on_prem_datacenter', reg: 'Swiss FADP / FINMA', top: 'Local On-Premises In-Datacenter Appliance (Private Plant / DC)', vpcs: 'dc-onprem-core-01', domains: '.ch', recipients: 'sre-swiss@company.ch, noc-zurich@company.ch', alloc: 15, lic: 14, allowRaw: false },
+      'FR': { code: 'FR', scope: 'country', name: 'France SecNumCloud Sovereign Enclave (Paris)', countries: 'FR', env: 'cloud_in_vpc', reg: 'EU GDPR / BDSG (Germany & EU)', top: 'In-VPC Cloud Controller (eu-central-1 Frankfurt)', vpcs: 'vpc-eu-central-de-01', domains: '.fr, .eu', recipients: 'sre-france@company.fr', alloc: 20, lic: 16, allowRaw: false },
+      'NL': { code: 'NL', scope: 'country', name: 'Netherlands EU Cloud Enclave (Amsterdam)', countries: 'NL', env: 'cloud_in_vpc', reg: 'EU GDPR / BDSG (Germany & EU)', top: 'In-VPC Cloud Controller (eu-central-1 Frankfurt)', vpcs: 'vpc-aws-prod-01', domains: '.nl, .eu', recipients: 'sre-nl@company.nl', alloc: 15, lic: 12, allowRaw: false },
+      'JP': { code: 'JP', scope: 'country', name: 'Japan APPI Sovereign Enclave (Tokyo)', countries: 'JP', env: 'cloud_and_onprem', reg: 'APAC PDPA / Japan APPI / India DPDP', top: 'In-VPC Cloud Controller (ap-southeast-1 Singapore / ap-northeast-1 Tokyo)', vpcs: 'vnet-azure-core-01', domains: '.jp, .co.jp', recipients: 'sre-japan@company.co.jp, noc-tokyo@company.jp', alloc: 20, lic: 18, allowRaw: false },
+      'SG': { code: 'SG', scope: 'country', name: 'Singapore PDPA Regional Enclave', countries: 'SG', env: 'cloud_in_vpc', reg: 'APAC PDPA / Japan APPI / India DPDP', top: 'In-VPC Cloud Controller (ap-southeast-1 Singapore / ap-northeast-1 Tokyo)', vpcs: 'vnet-azure-core-01', domains: '.sg, .com.sg', recipients: 'sre-singapore@company.sg', alloc: 20, lic: 17, allowRaw: false },
+      'CA': { code: 'CA', scope: 'country', name: 'Canada PIPEDA Sovereign Enclave (Toronto / Montreal)', countries: 'CA', env: 'cloud_in_vpc', reg: 'US Sovereign On-Prem / CCPA / HIPAA / NIST', top: 'In-VPC Cloud Controller (us-east-1 / us-west-2)', vpcs: 'vpc-gcp-analytics-03', domains: '.ca', recipients: 'sre-canada@company.ca', alloc: 15, lic: 12, allowRaw: false },
+      'AU': { code: 'AU', scope: 'country', name: 'Australia Sovereign Enclave (Sydney)', countries: 'AU', env: 'cloud_in_vpc', reg: 'APAC PDPA / Japan APPI / India DPDP', top: 'In-VPC Cloud Controller (ap-southeast-1 Singapore / ap-northeast-1 Tokyo)', vpcs: 'vnet-azure-core-01', domains: '.com.au, .au', recipients: 'sre-anz@company.com.au', alloc: 15, lic: 12, allowRaw: false },
+      'IN': { code: 'IN', scope: 'country', name: 'India DPDP / Global Delivery Center (Bangalore)', countries: 'IN', env: 'cloud_in_vpc', reg: 'APAC PDPA / Japan APPI / India DPDP', top: 'In-VPC Cloud Controller (ap-southeast-1 Singapore / ap-northeast-1 Tokyo)', vpcs: 'vpc-aws-stage-02', domains: '.in, .co.in', recipients: 'gdc-bangalore@company.in', alloc: 25, lic: 22, allowRaw: false },
+      'MX': { code: 'MX', scope: 'country', name: 'Mexico LATAM Operations Enclave', countries: 'MX', env: 'on_prem_datacenter', reg: 'US Sovereign On-Prem / CCPA / HIPAA / NIST', top: 'Local On-Premises In-Datacenter Appliance (Private Plant / DC)', vpcs: 'dc-onprem-core-01', domains: '.mx, .com.mx', recipients: 'sre-mexico@company.mx', alloc: 12, lic: 10, allowRaw: false },
+      'AE': { code: 'AE', scope: 'country', name: 'UAE Middle East Sovereign Enclave (Dubai / Abu Dhabi)', countries: 'AE', env: 'cloud_in_vpc', reg: 'EU GDPR / BDSG (Germany & EU)', top: 'In-VPC Cloud Controller (eu-central-1 Frankfurt)', vpcs: 'vpc-aws-prod-01', domains: '.ae', recipients: 'sre-mena@company.ae', alloc: 12, lic: 10, allowRaw: false },
+      'REG-EMEA': { code: 'REG-EMEA', scope: 'region', name: 'EMEA Multi-Country Region (Germany, UK, France, Netherlands, UAE)', countries: 'DE, GB, FR, NL, AE', env: 'cloud_in_vpc', reg: 'EU GDPR / BDSG (Germany & EU)', top: 'In-VPC Cloud Controller (eu-central-1 Frankfurt)', vpcs: 'vpc-eu-central-de-01, vpc-aws-prod-01, vpc-aws-stage-02', domains: '.eu, .de, .co.uk, .fr, .ae', recipients: 'sre-emea@company.eu, ops-de@company.de, ops-uk@company.co.uk', alloc: 35, lic: 32, allowRaw: false },
+      'REG-AMS': { code: 'REG-AMS', scope: 'region', name: 'Americas (AMS) Multi-Country Region (US, Canada, Brazil, Mexico)', countries: 'US, CA, BR, MX', env: 'cloud_and_onprem', reg: 'US Sovereign On-Prem / CCPA / HIPAA / NIST', top: 'In-VPC Cloud Controller (us-east-1 / us-west-2)', vpcs: 'dc-onprem-core-01, vpc-gcp-analytics-03, vpc-sa-east-br-01', domains: '.us, .ca, .com.br, .mx, .com', recipients: 'sre-ams@company.com, noc-us@company.us, sre-brazil@company.com.br', alloc: 35, lic: 30, allowRaw: false },
+      'REG-APJ': { code: 'REG-APJ', scope: 'region', name: 'Asia-Pacific & Japan (APJ) Multi-Country Region (SG, JP, IN, AU)', countries: 'SG, JP, IN, AU', env: 'cloud_in_vpc', reg: 'APAC PDPA / Japan APPI / India DPDP', top: 'In-VPC Cloud Controller (ap-southeast-1 Singapore / ap-northeast-1 Tokyo)', vpcs: 'vnet-azure-core-01', domains: '.sg, .jp, .in, .com.au', recipients: 'sre-apj@company.sg, noc-tokyo@company.jp, ops-sydney@company.com.au', alloc: 20, lic: 16, allowRaw: false },
+      'AGENCY-HUMANITARIAN': { code: 'AGENCY-HUMANITARIAN', scope: 'region', name: 'UN Autonomous Specialized Agencies (WHO / UNHCR / WFP Enclave)', countries: 'CH, IT, DK', env: 'cloud_and_onprem', reg: '1946 UN Convention Archive Inviolability', top: 'In-VPC Cloud Controller (eu-central-1 Frankfurt)', vpcs: 'vpc-gcp-analytics-03, vpc-aws-stage-02', domains: '.int, .org', recipients: 'sre-health-enclave@who.int, protection-noc@unhcr.org', alloc: 30, lic: 27, allowRaw: false },
+      'FIELD-MISSIONS': { code: 'FIELD-MISSIONS', scope: 'region', name: 'UN Regional Commissions & Peacekeeping Field Missions (UNON / ESCAP)', countries: 'KE, TH, CL, ET', env: 'on_prem_datacenter', reg: '1946 UN Convention Archive Inviolability', top: 'Local On-Premises In-Datacenter Appliance (Private Plant / DC)', vpcs: 'dc-onprem-core-01, vpc-sa-east-br-01', domains: '.org, .ke, .th, .cl', recipients: 'field-noc-nairobi@un.org, mission-comms@unon.ke', alloc: 20, lic: 18, allowRaw: false }
+    };
+
+    const _MODEL_DEFAULT_SETTINGS = {
+      'model_1_central_single_country': { purchaser: 'HQ-GLOBAL', regime: 'global_unified_iso', rollup: 'full_central_telemetry', currency: 'USD_US' },
+      'model_2_cloud_hq_local_onprem': { purchaser: 'DE', regime: 'gdpr_onprem_split', rollup: 'seat_count_only', currency: 'EUR_DE' },
+      'model_3_regional_multi_country': { purchaser: 'CORP-HQ', regime: 'multi_region_residency', rollup: 'sanitized_health_pulse', currency: 'USD_US' },
+      'model_4_purchaser_only_autonomous_countries': { purchaser: 'GROUP-FINOPS', regime: 'national_financial_regulator', rollup: 'seat_count_only', currency: 'EUR_DE' },
+      'model_5_gsi_follow_the_sun_sovereign': { purchaser: 'GSI-GLOBAL', regime: 'citizen_cleared_sovereign', rollup: 'seat_count_only', currency: 'USD_US' },
+      'model_6_intergovernmental_treaty_un': { purchaser: 'UNICC-HQ', regime: 'un_treaty_inviolability', rollup: 'seat_count_only', currency: 'CHF_CH' },
+      'model_7_conglomerate_brand_country_matrix': { purchaser: 'HOLDING-GROUP', regime: 'multi_region_residency', rollup: 'seat_count_only', currency: 'EUR_DE' },
+      'model_8_airgapped_defense_critical_infra': { purchaser: 'DEFENSE-HQ', regime: 'airgapped_scif_nerc', rollup: 'offline_airgapped_token', currency: 'USD_US' }
+    };
+
+    async function onPurchaserPresetChange() {
+      const sel = document.getElementById('gov-purchaser-preset-select');
+      const codeIn = document.getElementById('gov-purchaser-code-input');
+      const nameIn = document.getElementById('gov-purchaser-name-input');
+      const currSel = document.getElementById('gov-currency-tld-select');
+      const regSel = document.getElementById('gov-regulatory-regime-select');
+      if (!sel) return;
+      if (sel.value === 'CUSTOM') {
+        if (codeIn) { codeIn.style.display = 'block'; codeIn.focus(); }
+        return;
+      } else {
+        if (codeIn) { codeIn.style.display = 'none'; codeIn.value = sel.value; }
+        const preset = _PURCHASER_PRESETS[sel.value];
+        if (preset) {
+          if (nameIn) nameIn.value = preset.name;
+          if (currSel && preset.currency) currSel.value = preset.currency;
+          if (regSel && preset.regime) regSel.value = preset.regime;
+        }
+      }
+      await savePurchaserAndGovernancePolicy();
+    }
+
+    async function onGovernanceModelDropdownChange() {
+      const modelSel = document.getElementById('gov-topology-model-select');
+      const pPresetSel = document.getElementById('gov-purchaser-preset-select');
+      const pCodeIn = document.getElementById('gov-purchaser-code-input');
+      const pNameIn = document.getElementById('gov-purchaser-name-input');
+      const regSel = document.getElementById('gov-regulatory-regime-select');
+      const rollSel = document.getElementById('gov-telemetry-rollup-select');
+      const currSel = document.getElementById('gov-currency-tld-select');
+      const modelId = modelSel ? modelSel.value : 'model_2_cloud_hq_local_onprem';
+      const def = _MODEL_DEFAULT_SETTINGS[modelId];
+      if (def) {
+        if (pPresetSel) pPresetSel.value = def.purchaser;
+        if (pCodeIn) { pCodeIn.style.display = 'none'; pCodeIn.value = def.purchaser; }
+        const preset = _PURCHASER_PRESETS[def.purchaser];
+        if (preset && pNameIn) pNameIn.value = preset.name;
+        if (regSel) regSel.value = def.regime;
+        if (rollSel) rollSel.value = def.rollup;
+        if (currSel) currSel.value = def.currency;
+      }
+      await applyGovernanceTopologyModel(true);
+    }
+
+    async function savePurchaserAndGovernancePolicy() {
+      const modelSel = document.getElementById('gov-topology-model-select');
+      const pPresetSel = document.getElementById('gov-purchaser-preset-select');
+      const pCodeIn = document.getElementById('gov-purchaser-code-input');
+      const pNameIn = document.getElementById('gov-purchaser-name-input');
+      const regSel = document.getElementById('gov-regulatory-regime-select');
+      const rollSel = document.getElementById('gov-telemetry-rollup-select');
+      const currSel = document.getElementById('gov-currency-tld-select');
+      const selectedCode = (pPresetSel && pPresetSel.value !== 'CUSTOM') ? pPresetSel.value : (pCodeIn ? pCodeIn.value.trim().toUpperCase() : 'DE');
+      const payload = {
+        topology_model: modelSel ? modelSel.value : 'model_2_cloud_hq_local_onprem',
+        purchaser_code: selectedCode,
+        purchaser_name: pNameIn ? pNameIn.value.trim() : selectedCode,
+        regulatory_regime: regSel ? regSel.value : 'gdpr_onprem_split',
+        telemetry_rollup_policy: rollSel ? rollSel.value : 'seat_count_only',
+        currency_tld: currSel ? currSel.value : 'EUR_DE',
+        load_template_partitions: false
+      };
+      const resp = await fetch('/v1/company/jurisdictions/topology-model', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (resp.ok) {
+        await loadJurisdictionGovernanceConfig();
+      }
+    }
+
+    function onMemberPresetChange() {
+      const sel = document.getElementById('jm-preset-select');
+      if (!sel || !sel.value) return;
+      const p = _MEMBER_PRESETS[sel.value];
+      if (!p) return;
+      document.getElementById('jm-code').value = p.code;
+      document.getElementById('jm-scope-type').value = p.scope;
+      document.getElementById('jm-name').value = p.name;
+      document.getElementById('jm-member-countries').value = p.countries;
+      document.getElementById('jm-env-mode').value = p.env;
+      const regEl = document.getElementById('jm-regulatory');
+      if (regEl) regEl.value = p.reg;
+      const topEl = document.getElementById('jm-topology');
+      if (topEl) topEl.value = p.top;
+      document.getElementById('jm-provisioned-by').value = _activeJurisdictionState.purchaser_code || 'DE';
+      document.getElementById('jm-operated-by').value = p.code;
+      document.getElementById('jm-vpcs').value = p.vpcs;
+      document.getElementById('jm-domains').value = p.domains;
+      document.getElementById('jm-recipients').value = p.recipients;
+      document.getElementById('jm-allocated-nodes').value = p.alloc;
+      document.getElementById('jm-licensed-nodes').value = p.lic;
+      document.getElementById('jm-allow-purchaser-telemetry').checked = Boolean(p.allowRaw);
+    }
+
+    async function loadJurisdictionGovernanceConfig() {
+      try {
+        let resp = await fetch('/v1/company/jurisdictions');
+        let data = await resp.json();
+        if (Array.isArray(data.partitions) && data.partitions.length === 0) {
+          const seedResp = await fetch('/v1/company/jurisdictions/topology-model', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              topology_model: data.topology_model || 'model_2_cloud_hq_local_onprem',
+              load_template_partitions: true
+            })
+          });
+          if (seedResp.ok) data = await seedResp.json();
+        }
+        if (Array.isArray(data.partitions)) {
+          const map = {};
+          for (const item of data.partitions) {
+            if (item && item.jurisdiction_code) map[item.jurisdiction_code] = item;
+          }
+          data.partitions = map;
+        }
+        _activeJurisdictionState = data;
+        const modelSel = document.getElementById('gov-topology-model-select');
+        const pPresetSel = document.getElementById('gov-purchaser-preset-select');
+        const pCodeIn = document.getElementById('gov-purchaser-code-input');
+        const pNameIn = document.getElementById('gov-purchaser-name-input');
+        const regSel = document.getElementById('gov-regulatory-regime-select');
+        const rollSel = document.getElementById('gov-telemetry-rollup-select');
+        const currSel = document.getElementById('gov-currency-tld-select');
+        const bannerLbl = document.getElementById('gov-active-model-label');
+
+        if (modelSel && data.topology_model) modelSel.value = data.topology_model;
+        if (pCodeIn && data.purchaser_code) pCodeIn.value = data.purchaser_code;
+        if (pPresetSel && data.purchaser_code) {
+          const hasOpt = Array.from(pPresetSel.options).some(o => o.value === data.purchaser_code);
+          pPresetSel.value = hasOpt ? data.purchaser_code : 'CUSTOM';
+          if (pCodeIn) pCodeIn.style.display = hasOpt ? 'none' : 'block';
+        }
+        if (pNameIn && data.purchaser_name) pNameIn.value = data.purchaser_name;
+        if (regSel && data.regulatory_regime) regSel.value = data.regulatory_regime;
+        if (rollSel && data.telemetry_rollup_policy) rollSel.value = data.telemetry_rollup_policy;
+        if (currSel && data.currency_tld) currSel.value = data.currency_tld;
+
+        if (bannerLbl) {
+          const mTitle = _MODEL_LABELS[data.topology_model] || data.topology_model;
+          const count = Object.keys(data.partitions || {}).length;
+          bannerLbl.textContent = `${mTitle} • Purchaser: ${data.purchaser_code} (${data.purchaser_name}) • ${count} Configured Member(s)`;
+        }
+
+        renderJurisdictionCardsAndButtons();
+      } catch (err) {
+        console.error('Failed to load jurisdiction governance config:', err);
+      }
+    }
+
+    function renderJurisdictionCardsAndButtons() {
+      const grid = document.getElementById('jurisdictions-dynamic-grid');
+      const simBtns = document.getElementById('jurisdiction-sim-buttons');
+      if (!grid || !simBtns) return;
+
+      const partitions = _activeJurisdictionState.partitions || {};
+      const entries = Object.entries(partitions);
+      if (!entries.length) {
+        grid.innerHTML = '<div style="color:#94a3b8; font-size:0.8rem; padding:1rem;">No Country or Regional members configured. Click <strong>🔄 Reload Model Preset Members</strong> or <strong>➕ Add / Configure Country or Region Member</strong> above.</div>';
+        simBtns.innerHTML = '';
+        return;
+      }
+
+      grid.innerHTML = entries.map(([code, p]) => {
+        const badge = _envModeBadge(p.environment_mode);
+        const members = (p.member_countries && p.member_countries.length) ? p.member_countries.join(', ') : code;
+        const vpcs = (p.vpc_ids || []).map(v => `<code>${v}</code>`).join(', ');
+        const domains = (p.allowed_domain_extensions || []).map(d => `<code style="color:${badge.color};">${d}</code>`).join(', ');
+        const recipients = (p.recipient_groups || []).map(r => `<code>${r}</code>`).join(', ');
+        const regLaw = p.regulatory_framework || 'Sovereign Data Residency';
+        const installTop = p.installation_topology || 'Local In-Perimeter Appliance';
+        const isPurchaser = (p.provisioned_by_jurisdiction || '').toUpperCase() === code.toUpperCase() && (p.operational_owner_jurisdiction || '').toUpperCase() === code.toUpperCase();
+        const visibilityText = (p.allow_provisioner_raw_telemetry || isPurchaser)
+          ? '<span style="color:#39ff14;">Full Cloud/Local Telemetry Visibility</span>'
+          : `<span style="color:#fbbf24;">Purchaser (${p.provisioned_by_jurisdiction}) sees ONLY seat count (${p.licensed_nodes || 0}/${p.allocated_nodes || 0} nodes) — Zero raw logs/IPs</span>`;
+
+        return `
+          <div style="background: rgba(0,0,0,0.48); border: 1px solid ${badge.color}55; border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; flex-wrap: wrap;">
+                <strong style="color: #fff; font-size: 0.92rem;">${p.flag || '🌐'} ${code} — ${p.country_name || code}</strong>
+                <span style="font-size: 0.66rem; font-family: 'JetBrains Mono', monospace; background: ${badge.bg}; color: ${badge.color}; padding: 2px 6px; border-radius: 4px;">${badge.label}</span>
+              </div>
+              <div style="font-size: 0.75rem; color: #94a3b8; line-height: 1.55;">
+                <div>• <strong>Scope &amp; Member Countries:</strong> <code>${(p.scope_type || 'country').toUpperCase()}</code> (${members})</div>
+                <div>• <strong>Regulatory &amp; Sovereignty Law:</strong> <span style="color:#cbd5e1;">${regLaw}</span></div>
+                <div>• <strong>Deployment Topology:</strong> <span style="color:#cbd5e1;">${installTop}</span></div>
+                <div>• <strong>Provisioned By (Purchaser):</strong> <code style="color:#39ff14;">${p.provisioned_by_jurisdiction}</code> | <strong>Operated By:</strong> <code style="color:#38bdf8;">${p.operational_owner_jurisdiction}</code></div>
+                <div>• <strong>Environments / VPCs:</strong> ${vpcs || 'None'}</div>
+                <div>• <strong>Allowed Domain Extensions:</strong> ${domains}</div>
+                <div>• <strong>Notification Groups:</strong> ${recipients}</div>
+                <div>• <strong>Purchaser Telemetry Boundary:</strong> ${visibilityText}</div>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
+              <button type="button" class="btn btn-cyan" onclick="runJurisdictionDispatchTest('${(p.vpc_ids && p.vpc_ids[0]) || 'vpc-' + code.toLowerCase()}', '${code}', 'P1 ${p.country_name || code} Sovereignty &amp; Latency Alert')" style="font-size: 0.7rem; padding: 4px 9px;">
+                ⚡ Test ${code} Alert
+              </button>
+              <div style="display: flex; gap: 5px;">
+                <button type="button" class="btn btn-secondary" onclick="editJurisdictionMember('${code}')" style="font-size: 0.7rem; padding: 4px 8px;">✏️ Edit</button>
+                <button type="button" class="btn btn-secondary" onclick="deleteJurisdictionMember('${code}')" style="font-size: 0.7rem; padding: 4px 8px; color: #f87171; border-color: rgba(248,113,113,0.35);">🗑️ Remove</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      simBtns.innerHTML = entries.map(([code, p]) => {
+        const firstVpc = (p.vpc_ids && p.vpc_ids[0]) || ('vpc-' + code.toLowerCase());
+        const doms = (p.allowed_domain_extensions || []).join(' / ');
+        return `
+          <button type="button" class="btn btn-cyan" onclick="runJurisdictionDispatchTest('${firstVpc}', '${code}', 'P1 ${p.country_name || code} Production Alert (${firstVpc})')" style="font-size: 0.74rem; padding: 6px 11px;">
+            ⚡ Test ${code} (${doms})
+          </button>
+        `;
+      }).join('');
+    }
+
+    async function applyGovernanceTopologyModel(forceLoadTemplate) {
+      const modelSel = document.getElementById('gov-topology-model-select');
+      const pPresetSel = document.getElementById('gov-purchaser-preset-select');
+      const pCodeIn = document.getElementById('gov-purchaser-code-input');
+      const pNameIn = document.getElementById('gov-purchaser-name-input');
+      const regSel = document.getElementById('gov-regulatory-regime-select');
+      const rollSel = document.getElementById('gov-telemetry-rollup-select');
+      const currSel = document.getElementById('gov-currency-tld-select');
+      const resetChk = document.getElementById('gov-reset-template-checkbox');
+      const loadPreset = forceLoadTemplate === true ? true : (resetChk ? resetChk.checked : true);
+      const selectedCode = (pPresetSel && pPresetSel.value !== 'CUSTOM') ? pPresetSel.value : (pCodeIn ? pCodeIn.value.trim().toUpperCase() : null);
+      const payload = {
+        topology_model: modelSel ? modelSel.value : 'model_2_cloud_hq_local_onprem',
+        purchaser_code: selectedCode,
+        purchaser_name: pNameIn ? pNameIn.value.trim() : null,
+        regulatory_regime: regSel ? regSel.value : 'gdpr_onprem_split',
+        telemetry_rollup_policy: rollSel ? rollSel.value : 'seat_count_only',
+        currency_tld: currSel ? currSel.value : 'EUR_DE',
+        load_template_partitions: loadPreset
+      };
+      const resp = await fetch('/v1/company/jurisdictions/topology-model', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (resp.ok) {
+        await loadJurisdictionGovernanceConfig();
+        const firstCode = Object.keys(_activeJurisdictionState.partitions || {})[0];
+        if (firstCode) {
+          const p = _activeJurisdictionState.partitions[firstCode];
+          const firstVpc = (p.vpc_ids && p.vpc_ids[0]) || ('vpc-' + firstCode.toLowerCase());
+          runJurisdictionDispatchTest(firstVpc, firstCode, `Verified ${payload.topology_model} Routing for ${firstCode}`);
+        }
+      }
+    }
+
+    function toggleAddJurisdictionModal(show) {
+      const card = document.getElementById('gov-member-form-card');
+      if (!card) return;
+      card.style.display = show ? 'block' : 'none';
+      if (show) {
+        document.getElementById('gov-member-form-title').textContent = '➕ Add / Configure Country, Multi-Country Region, or Agency Member';
+        document.getElementById('jm-provisioned-by').value = _activeJurisdictionState.purchaser_code || 'DE';
+      }
+    }
+
+    function editJurisdictionMember(code) {
+      const p = (_activeJurisdictionState.partitions || {})[code];
+      if (!p) return;
+      toggleAddJurisdictionModal(true);
+      document.getElementById('gov-member-form-title').textContent = `✏️ Edit Country / Regional Member: ${code}`;
+      document.getElementById('jm-code').value = code;
+      document.getElementById('jm-scope-type').value = p.scope_type || 'country';
+      document.getElementById('jm-name').value = p.country_name || code;
+      document.getElementById('jm-member-countries').value = (p.member_countries || [code]).join(', ');
+      document.getElementById('jm-env-mode').value = p.environment_mode || 'on_prem_datacenter';
+      const regEl = document.getElementById('jm-regulatory');
+      if (regEl && p.regulatory_framework) regEl.value = p.regulatory_framework;
+      const topEl = document.getElementById('jm-topology');
+      if (topEl && p.installation_topology) topEl.value = p.installation_topology;
+      document.getElementById('jm-provisioned-by').value = p.provisioned_by_jurisdiction || _activeJurisdictionState.purchaser_code || 'DE';
+      document.getElementById('jm-operated-by').value = p.operational_owner_jurisdiction || code;
+      document.getElementById('jm-vpcs').value = (p.vpc_ids || []).join(', ');
+      document.getElementById('jm-domains').value = (p.allowed_domain_extensions || []).join(', ');
+      document.getElementById('jm-recipients').value = (p.recipient_groups || []).join(', ');
+      document.getElementById('jm-allocated-nodes').value = p.allocated_nodes || 25;
+      document.getElementById('jm-licensed-nodes').value = p.licensed_nodes || 20;
+      document.getElementById('jm-allow-purchaser-telemetry').checked = Boolean(p.allow_provisioner_raw_telemetry);
+    }
+
+    async function saveJurisdictionMember(e) {
+      if (e) e.preventDefault();
+      const splitCsv = (val) => val.split(',').map(s => s.trim()).filter(Boolean);
+      const code = document.getElementById('jm-code').value.trim().toUpperCase();
+      const regEl = document.getElementById('jm-regulatory');
+      const topEl = document.getElementById('jm-topology');
+      const payload = {
+        jurisdiction_code: code,
+        scope_type: document.getElementById('jm-scope-type').value,
+        country_name: document.getElementById('jm-name').value.trim(),
+        member_countries: splitCsv(document.getElementById('jm-member-countries').value || code),
+        environment_mode: document.getElementById('jm-env-mode').value,
+        regulatory_framework: regEl ? regEl.value : 'Sovereign Data Residency',
+        installation_topology: topEl ? topEl.value : 'Local In-Perimeter Appliance',
+        provisioned_by_jurisdiction: document.getElementById('jm-provisioned-by').value.trim().toUpperCase(),
+        operational_owner_jurisdiction: document.getElementById('jm-operated-by').value.trim().toUpperCase(),
+        vpc_ids: splitCsv(document.getElementById('jm-vpcs').value),
+        allowed_domain_extensions: splitCsv(document.getElementById('jm-domains').value),
+        recipient_groups: splitCsv(document.getElementById('jm-recipients').value),
+        allocated_nodes: parseInt(document.getElementById('jm-allocated-nodes').value || '25', 10),
+        licensed_nodes: parseInt(document.getElementById('jm-licensed-nodes').value || '20', 10),
+        allow_provisioner_raw_telemetry: document.getElementById('jm-allow-purchaser-telemetry').checked
+      };
+      const resp = await fetch('/v1/company/jurisdictions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (resp.ok) {
+        toggleAddJurisdictionModal(false);
+        await loadJurisdictionGovernanceConfig();
+      }
+    }
+
+    async function deleteJurisdictionMember(code) {
+      const resp = await fetch(`/v1/company/jurisdictions/${encodeURIComponent(code)}`, { method: 'DELETE' });
+      if (resp.ok) {
+        await loadJurisdictionGovernanceConfig();
+      }
+    }
+
+    async function runJurisdictionDispatchTest(vpcId, jurisdictionCode, alertTitle) {
+      const box = document.getElementById('jurisdiction-dispatch-output');
+      if (!box) return;
+      box.innerHTML = '<span style="color:#38bdf8;">[Evaluating Enterprise Governance Topology, Country/Regional Ownership &amp; TLD Filter...]</span>';
+      try {
+        const resp = await fetch('/v1/company/jurisdictions/test-dispatch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            vpc_id: vpcId,
+            jurisdiction: jurisdictionCode,
+            alert_title: alertTitle,
+            severity: 'critical'
+          })
+        });
+        const data = await resp.json();
+        const r = data.routing || {};
+        const deliveredHtml = (r.delivered_recipients || []).map(d =>
+          `<div style="color:#39ff14; margin: 3px 0;">✅ DELIVERED &rarr; <strong>${d.recipient}</strong> [TLD: <code>${d.matched_extension}</code>] &mdash; ${d.reason}</div>`
+        ).join('');
+        const blockedHtml = (r.blocked_recipients || []).map(b =>
+          `<div style="color:#f87171; margin: 3px 0;">🛡️ ${b.reason}</div>`
+        ).join('');
+
+        box.innerHTML = `
+          <div style="margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <strong style="color:#fff;">Governance Model:</strong> <code style="color:#c084fc;">${r.governance_topology_model || _activeJurisdictionState.topology_model}</code> |
+            <strong style="color:#fff;">Alert Fired:</strong> <span style="color:#fbbf24;">${r.alert_title}</span> |
+            <strong style="color:#fff;">Perimeter:</strong> <code style="color:#38bdf8;">${r.vpc_id}</code> |
+            <strong style="color:#fff;">Owning Member:</strong> <code style="color:#39ff14;">${r.owning_jurisdiction} (${r.country_name})</code>
+          </div>
+          <div style="margin-bottom: 6px;">
+            <strong style="color:#cbd5e1;">Subscription Purchaser:</strong> <code>${r.provisioned_by_jurisdiction}</code> &bull;
+            <strong style="color:#cbd5e1;">Operational Owner:</strong> <code>${r.operational_owner_jurisdiction}</code> &bull;
+            <strong style="color:#cbd5e1;">Member Countries:</strong> <code>${(r.member_countries || []).join(', ')}</code> &bull;
+            <strong style="color:#cbd5e1;">Purchaser Visibility:</strong> <span style="color:#c084fc;">${r.provisioner_visibility_summary}</span>
+          </div>
+          <div style="margin-top: 8px;"><strong style="color:#fff;">1. Allowed Recipients (Matched Member &amp; Domain Extension ${(r.allowed_domain_extensions || []).join(', ')}):</strong>${deliveredHtml}</div>
+          <div style="margin-top: 8px;"><strong style="color:#fff;">2. Cross-Border / Non-Matching Recipients Automatically Blocked (Zero Cross-Jurisdiction Leakage):</strong>${blockedHtml || '<div style="color:#94a3b8; margin:3px 0;">No cross-border groups configured (Single-Controller Mode).</div>'}</div>
+        `;
+      } catch (err) {
+        box.innerHTML = `<span style="color:#f87171;">Error running jurisdiction dispatch simulation: ${err}</span>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadJurisdictionGovernanceConfig();
+    });
+  </script>
 </body>
 </html>
